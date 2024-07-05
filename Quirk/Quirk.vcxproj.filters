@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Core">
+      <UniqueIdentifier>{2EB4837C-1AEB-840D-C3D7-6A10AFED000F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Input">
+      <UniqueIdentifier>{AD4E7BCD-9906-BD1A-020E-9676EEE4570B}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\Core\Input\KeyCodes.h">
+      <Filter>Core\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Core\core.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Qkpch.h" />
+    <ClInclude Include="src\Quirk.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\Qkpch.cpp" />
+  </ItemGroup>
+</Project>
