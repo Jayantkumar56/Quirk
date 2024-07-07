@@ -25,10 +25,11 @@ namespace Quirk {
 		QK_CORE_ASSERT(hInstance, "Didn't got HINSTANCE from windows api!");
 		s_HInstance = hInstance;
 
-		//****************************** TO DO ******************************//
-		// Make this portable to all window verstions
 		// to maintin uniformity in window size among different dpi monitors
-		SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
+		QK_CORE_ASSERTEX(
+			SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2), 
+			"Unable to set Dpi Awareness to DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2"
+		);
     }
 
 	WindowsWindow::WindowsWindow(const WindowProps& props) : 

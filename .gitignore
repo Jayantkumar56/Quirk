@@ -23,3 +23,9 @@
 # Excluding all the binaries
 bin/
 bin-int/
+Quirk/Quirk.vcxproj
+Quirk.vcxproj.filters
+Quirk.vcxproj.user
+Sandbox.vcxproj
+Sandbox.vcxproj.filters
+Sandbox.vcxproj.user
