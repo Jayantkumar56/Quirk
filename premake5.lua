@@ -93,6 +93,7 @@ project "Sandbox"
 
     filter "system:windows"
         systemversion "latest"
+        entrypoint "WinMainCRTStartup"
 
         defines
         {
@@ -101,7 +102,10 @@ project "Sandbox"
         }
 
     filter "configurations:Debug"
-        defines "QK_DEBUG"
+        defines { 
+            "QK_ENABLE_ASSERTS", 
+            "QK_DEBUG" 
+        }
         runtime "Debug"
         symbols "On"
 
