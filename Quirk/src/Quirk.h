@@ -2,7 +2,7 @@
 
 #pragma once
 
-
+#include "Debug/Log.h"
 #include "Core/core.h"
 #include "Core/Window.h"
 #include "Core/Application.h"

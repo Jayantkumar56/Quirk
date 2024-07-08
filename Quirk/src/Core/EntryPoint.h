@@ -9,6 +9,11 @@ extern Quirk::Application* Quirk::CreateApplication();
 #include "Platform/Windows/WindowsWindow.h"
 
 int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPSTR lpCmdLine, _In_ int nShowCmd) {
+#ifdef QK_ENABLE_LOG
+	Quirk::Log::Init();
+#endif // QK_ENABLE_LOG
+
+
 	Quirk::WindowsWindow::Init(hInstance);
 	Quirk::Application* app = Quirk::CreateApplication();
 

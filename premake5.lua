@@ -11,6 +11,10 @@ configurations
 
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
+-- Include directories relative to root folder (solution directory)
+IncludeDir = {}
+IncludeDir["spdlog"] = "Quirk/vendor/spdlog/include"
+
 project "Quirk"
     location "Quirk"
     kind "StaticLib"
@@ -35,7 +39,8 @@ project "Quirk"
 
     includedirs
     {
-        "Quirk/src"
+        "Quirk/src",
+        "%{IncludeDir.spdlog}"
     }
 
     filter "system:windows"
@@ -48,7 +53,6 @@ project "Quirk"
 
     filter "configurations:Debug"
         defines { 
-            "QK_ENABLE_ASSERTS", 
             "QK_DEBUG" 
         }
 
@@ -83,7 +87,8 @@ project "Sandbox"
 
     includedirs
     {
-        "Quirk/src"
+        "Quirk/src",
+        "%{IncludeDir.spdlog}"
     }
 
     links
@@ -103,7 +108,6 @@ project "Sandbox"
 
     filter "configurations:Debug"
         defines { 
-            "QK_ENABLE_ASSERTS", 
             "QK_DEBUG" 
         }
         runtime "Debug"

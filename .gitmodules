@@ -1,6 +1,3 @@
-[submodule "Quirk/Quirk/vendor"]
-	path = Quirk/Quirk/vendor
-	url = https://github.com/gabime/spdlog
 [submodule "Quirk/vendor/spdlog"]
 	path = Quirk/vendor/spdlog
 	url = https://github.com/gabime/spdlog
