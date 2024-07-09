@@ -4,12 +4,13 @@
 #ifdef QK_PLATFORM_WINDOWS
 
 #include <bitset>
+#include "Core/Window.h"
 
 namespace Quirk {
 
 	class WindowsWindow : public Window{
 		struct WindowData {
-			std::string Title;
+			std::wstring Title;
 			unsigned int Width, Height;
 		};
 

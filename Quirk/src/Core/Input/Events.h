@@ -11,7 +11,7 @@ namespace Quirk {
 		MouseMovedEvent, MouseButtonDblClickEvent,
 		MouseScrolledEvent, MouseScrolledHEvent,
 		MouseButtonPressedEvent, MouseButtonReleasedEvent, 
-		KeyPressedEvent, KeyReleasedEvent
+		KeyPressedEvent, KeyReleasedEvent, KeyRepeatEvent
 	};
 
 	enum EventCategory : uint16_t{
@@ -31,23 +31,10 @@ namespace Quirk {
 		virtual inline EventType GetEventType() = 0;
 		inline bool IsHandled() const { return m_Handeled; }
 
-		inline bool IsCategory(EventCategory category) { GetEventCategory() & category; }
+		inline bool IsCategory(EventCategory category) { return GetEventCategory() & category; }
 
 	private:
-		bool m_Handeled;
-
-	};
-
-	class ApplicationEvent : public Event {
-	public:
-		virtual inline uint16_t GetEventCategory() override { return EventCategory::ApplicationEvent; }
-
-	};
-
-	class KeyPressedEvent : public Event {
-	public:
-		virtual inline uint16_t GetEventCategory() override { return EventCategory::InputEvent | EventCategory::KeyboardEvent; }
-
+		bool m_Handeled = false;
 	};
 
 }

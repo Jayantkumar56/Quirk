@@ -15,6 +15,7 @@ namespace Quirk {
 	}
 
 	Application::~Application() {
+		delete m_Window;
 	}
 
 	void Application::Run() {

@@ -3,20 +3,19 @@
 
 #include <string>
 
-#include "Core/Core.h"
-
 
 namespace Quirk {
 
 	struct WindowProps {
-		std::string Title;
+		std::wstring Title;
 		unsigned int Width;
 		unsigned int Height;
 
-		WindowProps(std::string title = "Quirk Engine!!!!", unsigned int width = 1200, unsigned int height = 800) :
-			Title(title), Width(width), Height(height) {
-
-		}
+		WindowProps(std::wstring title = L"Quirk Engine!!!!", unsigned int width = 1200, unsigned int height = 800) :
+				Title(title), 
+				Width(width), 
+				Height(height) 
+		{}
 	};
 
 	class  Window {

@@ -5,11 +5,12 @@
 #ifdef QK_PLATFORM_WINDOWS
 
 #include "Core/core.h"
-
-#include "Core/Window.h"
 #include "WindowsWindow.h"
 #include "Core/Input/KeyCodes.h"
 
+#include "Core/Input/Events.h"
+#include "Core/Input/MouseEvents.h"
+#include "Core/Input/KeyboardEvents.h"
 
 namespace Quirk {
 	HINSTANCE WindowsWindow::s_HInstance = nullptr;
@@ -36,18 +37,19 @@ namespace Quirk {
 			m_WindowHandle(nullptr), 
 			m_Data({props.Title, props.Width, props.Height})
 	{
-		WNDCLASS wc = { };
+		WNDCLASSEXW wc = {};
+		wc.cbSize = sizeof(WNDCLASSEXW);
 		wc.hInstance = s_HInstance;
 		wc.lpszClassName = L"Quirk Engine";
-		wc.style = CS_HREDRAW | CS_VREDRAW;			//refresh window on resize
-		wc.lpfnWndProc = WindowProc;				//pass our callback function
+		wc.style = CS_HREDRAW | CS_VREDRAW;			// refresh window on resize
+		wc.lpfnWndProc = WindowProc;				// pass our callback function
 
-		if (!RegisterClass(&wc)) { return; }
+		QK_CORE_ASSERTEX(RegisterClassExW(&wc), "Failed to Register the window class!");
 
-		m_WindowHandle = CreateWindowEx(
+		m_WindowHandle = CreateWindowExW(
 			WS_EX_ACCEPTFILES,						// The window accepts drag-drop files.
-			L"Quirk Engine",					    // Window class
-			L"Learn to Program Windows",			// Window text
+			L"Quirk Engine",						// Window class
+			props.Title.c_str(),					// Window text
 			WS_OVERLAPPEDWINDOW | WS_VISIBLE,       // Window style
 
 			CW_USEDEFAULT, CW_USEDEFAULT, props.Width, props.Height,
@@ -57,6 +59,8 @@ namespace Quirk {
 			s_HInstance,	// Instance handle
 			NULL			// Additional application data
 		);
+
+		QK_CORE_ASSERT(m_WindowHandle, "Failed to create Window handle!");
 
 		SetPropA(m_WindowHandle, "wndptr", this);
 		SetForegroundWindow(m_WindowHandle);
