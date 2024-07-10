@@ -7,16 +7,19 @@
 
 namespace Quirk {
 
-	enum class EventType {
-		MouseMovedEvent, MouseButtonDblClickEvent,
-		MouseScrolledEvent, MouseScrolledHEvent,
-		MouseButtonPressedEvent, MouseButtonReleasedEvent, 
-		KeyPressedEvent, KeyReleasedEvent, KeyRepeatEvent
+	enum class EventType : uint16_t{
+		None = 0,
+		WindowCloseEvent,				WindowResizeEvent,				WindowMoveEvent,
+		WindowMinimizeEvent,			WindowMaximizeEvent,			WindowToggledFocusEvent,
+		MouseEnteredEvent,				MouseExitEvent,						
+		MouseScrolledEvent,				MouseScrolledHEvent,			MouseMovedEvent,
+		MouseButtonPressedEvent,		MouseButtonReleasedEvent,		MouseButtonDblClickEvent,	
+		KeyPressedEvent,				KeyReleasedEvent,				KeyRepeatEvent
 	};
 
 	enum EventCategory : uint16_t{
 		None				= 0,
-		ApplicationEvent	= BIT(0),
+		WindowEvent			= BIT(0),
 		InputEvent			= BIT(1),
 		MouseEvent			= BIT(2),
 		KeyboardEvent		= BIT(3)

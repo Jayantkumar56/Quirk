@@ -11,6 +11,7 @@
 #include "Core/Input/Events.h"
 #include "Core/Input/MouseEvents.h"
 #include "Core/Input/KeyboardEvents.h"
+#include "Core/Input/ApplicationEvents.h"
 
 namespace Quirk {
 	HINSTANCE WindowsWindow::s_HInstance = nullptr;

@@ -1,0 +1,5 @@
+
+
+#define CATEGORY_AND_TYPE(category, type)	virtual inline uint16_t GetEventCategory() override { return category; }\
+											virtual inline EventType GetEventType() override { return type; }
+

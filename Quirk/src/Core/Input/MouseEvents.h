@@ -27,6 +27,9 @@ namespace Quirk {
 		{}
 
 		inline uint8_t GetButton() const { return m_Button; }
+		inline float GetPosX() const { return m_PosX; }
+		inline float GetPosY() const { return m_PosY; }
+
 		CATEGORY_AND_TYPE(EventCategory::InputEvent | EventCategory::MouseEvent, EventType::MouseButtonDblClickEvent);
 
 	private:
@@ -42,6 +45,9 @@ namespace Quirk {
 		{}
 
 		inline uint8_t GetButton() const { return m_Button; }
+		inline float GetPosX() const { return m_PosX; }
+		inline float GetPosY() const { return m_PosY; }
+
 		CATEGORY_AND_TYPE(EventCategory::InputEvent | EventCategory::MouseEvent, EventType::MouseButtonPressedEvent);
 
 	private:
@@ -57,6 +63,9 @@ namespace Quirk {
 		{}
 
 		inline uint8_t GetButton() const { return m_Button; }
+		inline float GetPosX() const { return m_PosX; }
+		inline float GetPosY() const { return m_PosY; }
+
 		CATEGORY_AND_TYPE(EventCategory::InputEvent | EventCategory::MouseEvent, EventType::MouseButtonReleasedEvent);
 
 	private:
