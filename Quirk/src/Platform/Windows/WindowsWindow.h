@@ -3,15 +3,18 @@
 
 #ifdef QK_PLATFORM_WINDOWS
 
-#include <bitset>
 #include "Core/Window.h"
+#include "Core/Renderer/GraphicalContext.h"
 
 namespace Quirk {
 
 	class WindowsWindow : public Window{
 		struct WindowData {
-			std::wstring Title;
-			unsigned int Width, Height;
+			HWND WindowHandle;
+			uint16_t WindWidth, WindHeight;
+			uint16_t ClientWidth, ClientHeight;
+
+			std::function<void(Event&)> EventCallbackFn;
 		};
 
 	public:
@@ -19,27 +22,31 @@ namespace Quirk {
 
 	public:
 		WindowsWindow(const WindowProps& props);
+		~WindowsWindow();
 
 		virtual void OnUpdate();
 
-		inline virtual unsigned int GetWidth() const override { return m_Data.Width; }
-		inline virtual unsigned int GetHeight() const override { return m_Data.Height; }
+		virtual inline uint16_t GetWidth() const override { return m_Data.ClientWidth; }
+		virtual inline uint16_t GetHeight() const override { return m_Data.ClientHeight; }
+		virtual inline uint16_t GetWindWidth() const override { return m_Data.WindWidth; }
+		virtual inline uint16_t GetWindHeight() const override { return m_Data.WindHeight; }
 
-		inline virtual void* GetNativeWindow() override { return m_WindowHandle; }
+		virtual inline void* GetNativeWindow() override { return m_Data.WindowHandle; }
+		virtual inline void SetEventCallback(std::function<void(Event&)> fun) override { m_Data.EventCallbackFn = fun; }
 
 	private:
 		static LRESULT WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 	private:
-		static HINSTANCE s_HInstance;
-
-		static std::bitset<256> s_KeyPressed;
-		static std::bitset<256> s_KeyRepeat;
+		void AdjustClientArea(DWORD windowStyle, DWORD windowExStyle);
 
 	private:
-		HWND m_WindowHandle;
-		WindowData m_Data;
+		static HINSTANCE s_HInstance;
 
+	private:
+		std::wstring Title;
+		WindowData m_Data;
+		GraphicalContext* m_Context;
 	};
 
 }

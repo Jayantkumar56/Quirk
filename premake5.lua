@@ -14,6 +14,9 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 -- Include directories relative to root folder (solution directory)
 IncludeDir = {}
 IncludeDir["spdlog"] = "Quirk/vendor/spdlog/include"
+IncludeDir["Glad"] = "Quirk/vendor/Glad/include"
+
+include "Quirk/vendor/Glad"
 
 project "Quirk"
     location "Quirk"
@@ -40,7 +43,14 @@ project "Quirk"
     includedirs
     {
         "Quirk/src",
-        "%{IncludeDir.spdlog}"
+        "%{IncludeDir.spdlog}",
+        "%{IncludeDir.Glad}"
+    }
+
+    links
+    {
+        "Glad",
+        "opengl32.lib"
     }
 
     filter "system:windows"

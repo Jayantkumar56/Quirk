@@ -2,16 +2,22 @@
 #pragma once
 
 #include <string>
+#include "Core/Input/Events.h"
+#include "Core/Input/Input.h"
 
+#include "Core/Input/KeyCodes.h"
+#include "Core/Input/MouseEvents.h"
+#include "Core/Input/KeyboardEvents.h"
+#include "Core/Input/ApplicationEvents.h"
 
 namespace Quirk {
 
 	struct WindowProps {
 		std::wstring Title;
-		unsigned int Width;
-		unsigned int Height;
+		uint16_t Width;
+		uint16_t Height;
 
-		WindowProps(std::wstring title = L"Quirk Engine!!!!", unsigned int width = 1200, unsigned int height = 800) :
+		WindowProps(std::wstring title = L"Quirk Engine!!!!", uint16_t width = 1200, uint16_t height = 800) :
 				Title(title), 
 				Width(width), 
 				Height(height) 
@@ -27,10 +33,14 @@ namespace Quirk {
 
 		virtual void OnUpdate() = 0;
 
-		virtual unsigned int GetWidth() const = 0;
-		virtual unsigned int GetHeight() const = 0;
+		virtual inline uint16_t GetWidth() const = 0;
+		virtual inline uint16_t GetHeight() const = 0;
+
+		virtual inline uint16_t GetWindWidth() const = 0;
+		virtual inline uint16_t GetWindHeight() const = 0;
 
 		virtual void* GetNativeWindow() = 0;
+		virtual inline void SetEventCallback(std::function<void(Event&)> fun) = 0;
 
 	};
 

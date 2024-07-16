@@ -2,10 +2,17 @@
 
 #pragma once
 
+#define QK_RENDERER_OPENGL			1
+
+//**************************** Macro to select rendering API ****************************//
+#define QK_RENDERING_API			QK_RENDERER_OPENGL
+//**************************** Macro to select rendering API ****************************//
+
+
+#include "Debug/Log.h"
 #ifdef QK_DEBUG
 #define QK_ENABLE_ASSERTS
 #define QK_ENABLE_LOG
-#include "Debug/Log.h"
 #endif // QK_DEBUG
 
 // ***********************************  TO DO  *********************************** //
@@ -13,9 +20,9 @@
 #define DEBUG_BREAK __debugbreak()
 
 #ifdef QK_ENABLE_ASSERTS
-	#define QK_ASSERT(x, ...)		 { if(!(x)) { QK_CORE_ERROR(__VA_ARGS__); DEBUG_BREAK; } }
+	#define QK_ASSERT(x, ...)		 { if(!(x)) { QK_ERROR(__VA_ARGS__); DEBUG_BREAK; } }
 	#define QK_CORE_ASSERT(x, ...)	 { if(!(x)) { QK_CORE_ERROR(__VA_ARGS__); DEBUG_BREAK; } }
-	#define QK_ASSERTEX(x, ...)		 { if(!(x)) { QK_CORE_ERROR(__VA_ARGS__); DEBUG_BREAK; } }
+	#define QK_ASSERTEX(x, ...)		 { if(!(x)) { QK_ERROR(__VA_ARGS__); DEBUG_BREAK; } }
 	#define QK_CORE_ASSERTEX(x, ...) { if(!(x)) { QK_CORE_ERROR(__VA_ARGS__); DEBUG_BREAK; } }
 #else
 	#define QK_ASSERT(x, ...) 
@@ -26,3 +33,7 @@
 
 // to set xth bit with remaining bits to zero
 #define BIT(x)		(1 << x)
+
+// to bind event function with the respective function
+#define QK_BIND_EVENT_FN(x) std::bind(&x, this, std::placeholders::_1)
+

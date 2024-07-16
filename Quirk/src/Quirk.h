@@ -8,6 +8,10 @@
 #include "Core/Application.h"
 
 #include "Core/Input/KeyCodes.h"
+#include "Core/Input/Events.h"
+#include "Core/Input/MouseEvents.h"
+#include "Core/Input/KeyboardEvents.h"
+#include "Core/Input/ApplicationEvents.h"
 
 #ifdef QK_PLATFORM_WINDOWS
 #define WIN32_LEAN_AND_MEAN

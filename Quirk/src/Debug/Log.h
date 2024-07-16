@@ -39,5 +39,19 @@ namespace Quirk{
 #define QK_ERROR(...)         ::Quirk::Log::GetClientLogger()->error(__VA_ARGS__)
 #define QK_FATAL(...)         ::Quirk::Log::GetClientLogger()->fatal(__VA_ARGS__)
 
+#else
+#define QK_CORE_INFO(...) 
+#define QK_CORE_TRACE(...)
+#define QK_CORE_WARN(...) 
+#define QK_CORE_ERROR(...)
+#define QK_CORE_FATAL(...)
+
+// Core logging macros
+#define QK_INFO(...)      
+#define QK_TRACE(...)     
+#define QK_WARN(...)      
+#define QK_ERROR(...)     
+#define QK_FATAL(...)     
+
 #endif // QK_ENABLE_LOG
 

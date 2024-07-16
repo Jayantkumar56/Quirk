@@ -21,55 +21,73 @@ namespace Quirk {
 
 	class MouseButtonDblClickEvent : public Event {
 	public:
-		MouseButtonDblClickEvent(uint8_t button, float xPos, float yPos) :
+		MouseButtonDblClickEvent(int button, float xPos, float yPos) :
 			m_Button(button),
 			m_PosX(xPos), m_PosY(yPos)
 		{}
 
-		inline uint8_t GetButton() const { return m_Button; }
+		inline int GetButton() const { return m_Button; }
 		inline float GetPosX() const { return m_PosX; }
 		inline float GetPosY() const { return m_PosY; }
 
 		CATEGORY_AND_TYPE(EventCategory::InputEvent | EventCategory::MouseEvent, EventType::MouseButtonDblClickEvent);
 
 	private:
-		uint8_t m_Button;
+		int m_Button;
 		float m_PosX, m_PosY;
 	};
 
 	class MouseButtonPressedEvent : public Event {
 	public:
-		MouseButtonPressedEvent(uint8_t button, float xPos, float yPos) :
+		MouseButtonPressedEvent(int button, float xPos, float yPos) :
 			m_Button(button),
 			m_PosX(xPos), m_PosY(yPos)
 		{}
 
-		inline uint8_t GetButton() const { return m_Button; }
+		inline int GetButton() const { return m_Button; }
 		inline float GetPosX() const { return m_PosX; }
 		inline float GetPosY() const { return m_PosY; }
 
 		CATEGORY_AND_TYPE(EventCategory::InputEvent | EventCategory::MouseEvent, EventType::MouseButtonPressedEvent);
 
 	private:
-		uint8_t m_Button;
+		int m_Button;
+		float m_PosX, m_PosY;
+	};
+
+	class MouseButtonRepeatEvent : public Event {
+	public:
+		MouseButtonRepeatEvent(int button, float xPos, float yPos) :
+			m_Button(button),
+			m_PosX(xPos), m_PosY(yPos)
+		{}
+
+		inline int GetButton() const { return m_Button; }
+		inline float GetPosX() const { return m_PosX; }
+		inline float GetPosY() const { return m_PosY; }
+
+		CATEGORY_AND_TYPE(EventCategory::InputEvent | EventCategory::MouseEvent, EventType::MouseButtonRepeatEvent);
+
+	private:
+		int m_Button;
 		float m_PosX, m_PosY;
 	};
 
 	class MouseButtonReleasedEvent : public Event {
 	public:
-		MouseButtonReleasedEvent(uint8_t button, float xPos, float yPos) :
+		MouseButtonReleasedEvent(int button, float xPos, float yPos) :
 			m_Button(button),
 			m_PosX(xPos), m_PosY(yPos)
 		{}
 
-		inline uint8_t GetButton() const { return m_Button; }
+		inline int GetButton() const { return m_Button; }
 		inline float GetPosX() const { return m_PosX; }
 		inline float GetPosY() const { return m_PosY; }
 
 		CATEGORY_AND_TYPE(EventCategory::InputEvent | EventCategory::MouseEvent, EventType::MouseButtonReleasedEvent);
 
 	private:
-		uint8_t m_Button;
+		int m_Button;
 		float m_PosX, m_PosY;
 	};
 

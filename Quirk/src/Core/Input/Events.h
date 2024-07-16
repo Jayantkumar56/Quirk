@@ -3,6 +3,7 @@
 #pragma once
 
 #include <utility>
+#include<functional>
 #include "Core/core.h"
 
 namespace Quirk {
@@ -11,8 +12,8 @@ namespace Quirk {
 		None = 0,
 		WindowCloseEvent,				WindowResizeEvent,				WindowMoveEvent,
 		WindowMinimizeEvent,			WindowMaximizeEvent,			WindowToggledFocusEvent,
-		MouseEnteredEvent,				MouseExitEvent,						
-		MouseScrolledEvent,				MouseScrolledHEvent,			MouseMovedEvent,
+		MouseEnteredEvent,				MouseExitEvent,					MouseMovedEvent,
+		MouseScrolledEvent,				MouseScrolledHEvent,			MouseButtonRepeatEvent,
 		MouseButtonPressedEvent,		MouseButtonReleasedEvent,		MouseButtonDblClickEvent,	
 		KeyPressedEvent,				KeyReleasedEvent,				KeyRepeatEvent
 	};
@@ -26,9 +27,12 @@ namespace Quirk {
 	};
 
 #define CATEGORY_AND_TYPE(category, type)	virtual inline uint16_t GetEventCategory() override { return category; }\
+											static inline EventType GetStaticEventType() { return type; }\
 											virtual inline EventType GetEventType() override { return type; }
 
 	class Event {
+		friend class EventDispatcher;
+
 	public:
 		virtual inline uint16_t GetEventCategory() = 0;
 		virtual inline EventType GetEventType() = 0;
@@ -39,6 +43,31 @@ namespace Quirk {
 	private:
 		bool m_Handeled = false;
 	};
+
+	// contains only static member functions and static variables
+	// Done in order to have a singleton EventDispatcher
+	class EventDispatcher {
+	public:
+		static inline void HandleEvent(Event& event) { 
+			m_Event = &event;
+			m_EventType = m_Event->GetEventType();
+		}
+
+		template<typename T>
+		static bool Dispatch(std::function<bool(T&)> fun) {
+			if (T::GetStaticEventType() == m_EventType) {
+				m_Event->m_Handeled = fun(*(T*)m_Event);
+				return true;
+			}
+
+			return false;
+		}
+
+	private:
+		static Event* m_Event;
+		static EventType m_EventType;
+	};
+
 
 }
 

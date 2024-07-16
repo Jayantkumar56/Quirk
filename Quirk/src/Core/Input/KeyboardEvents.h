@@ -7,7 +7,7 @@
 
 namespace Quirk {
 
-	class KeyPressedEvent : Event {
+	class KeyPressedEvent : public Event {
 	public:
 		KeyPressedEvent(int keyCode) : m_KeyCode(keyCode) {}
 		inline int GetKeyCode() const { return m_KeyCode; }
@@ -15,10 +15,10 @@ namespace Quirk {
 		CATEGORY_AND_TYPE(EventCategory::InputEvent | EventCategory::KeyboardEvent, EventType::KeyPressedEvent);
 
 	private:
-		uint16_t m_KeyCode;
+		int m_KeyCode;
 	};
 
-	class KeyRepeatEvent : Event {
+	class KeyRepeatEvent : public Event {
 	public:
 		KeyRepeatEvent(int keyCode) : m_KeyCode(keyCode) {}
 		inline int GetKeyCode() const { return m_KeyCode; }
@@ -26,10 +26,10 @@ namespace Quirk {
 		CATEGORY_AND_TYPE(EventCategory::InputEvent | EventCategory::KeyboardEvent, EventType::KeyRepeatEvent);
 
 	private:
-		uint16_t m_KeyCode;
+		int m_KeyCode;
 	};
 
-	class KeyReleaseEvent : Event {
+	class KeyReleaseEvent : public Event {
 	public:
 		KeyReleaseEvent(int keyCode) : m_KeyCode(keyCode) {}
 		inline int GetKeyCode() const { return m_KeyCode; }
@@ -37,7 +37,7 @@ namespace Quirk {
 		CATEGORY_AND_TYPE(EventCategory::InputEvent | EventCategory::KeyboardEvent, EventType::KeyPressedEvent);
 
 	private:
-		uint16_t m_KeyCode;
+		int m_KeyCode;
 	};
 
 }

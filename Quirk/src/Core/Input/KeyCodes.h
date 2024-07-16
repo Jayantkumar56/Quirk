@@ -185,8 +185,8 @@
 #define QK_Key_RightShift					0xA1  // Right shift key
 #define QK_Key_LeftCtrl						0xA2  // Left control key
 #define QK_Key_RightCtrl					0xA3  // Right control key
-#define QK_Key_LeftMenu						0xA4  // Left menu key
-#define QK_Key_RightMenu					0xA5  // Right menu
+#define QK_Key_LeftAlt						0xA4  // Left alt key
+#define QK_Key_RightAlt						0xA5  // Right alt key
 												 	 
 #define QK_Key_BrowserBack					0xA6  // Browser back button
 #define QK_Key_BrowserForward				0xA7  // Browser forward button
