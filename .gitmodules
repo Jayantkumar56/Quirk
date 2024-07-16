@@ -1,3 +1,7 @@
 [submodule "Quirk/vendor/spdlog"]
 	path = Quirk/vendor/spdlog
 	url = https://github.com/gabime/spdlog
+[submodule "Quirk/vendor/imgui"]
+	path = Quirk/vendor/imgui
+	url = https://github.com/Jayantkumar56/imgui
+	branch = docking

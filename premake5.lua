@@ -15,8 +15,10 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 IncludeDir = {}
 IncludeDir["spdlog"] = "Quirk/vendor/spdlog/include"
 IncludeDir["Glad"] = "Quirk/vendor/Glad/include"
+IncludeDir["Imgui"] = "Quirk/vendor/imgui"
 
 include "Quirk/vendor/Glad"
+include "Quirk/vendor/imgui"
 
 project "Quirk"
     location "Quirk"
@@ -44,12 +46,14 @@ project "Quirk"
     {
         "Quirk/src",
         "%{IncludeDir.spdlog}",
-        "%{IncludeDir.Glad}"
+        "%{IncludeDir.Glad}",
+        "%{IncludeDir.Imgui}"
     }
 
     links
     {
         "Glad",
+        "imgui",
         "opengl32.lib"
     }
 
