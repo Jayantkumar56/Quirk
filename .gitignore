@@ -21,6 +21,7 @@
 **.csproj
 
 # Excluding all the binaries
+Quirk.sln
 bin/
 bin-int/
 Quirk/Quirk.vcxproj
