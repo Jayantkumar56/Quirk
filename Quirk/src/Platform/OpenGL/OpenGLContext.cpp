@@ -9,6 +9,8 @@
 #include "Platform/Windows/WindowsWindow.h"
 #include "glad/glad.h"
 
+#include "Core/Application/Application.h"
+
 namespace Quirk {
 
 #ifdef QK_PLATFORM_WINDOWS
@@ -19,9 +21,8 @@ namespace Quirk {
 		return new OpenGLWindowsContext();
 	}
 
-	Wglproc OpenGLWindowsContext::GetProcAddressWGL(const char* procName) {
-		const Wglproc proc = (Wglproc)wglGetProcAddress(procName);
-		if (proc) {
+	Wglproc OpenGLWindowsContext::GetProcAddressWGL(const char* procName) {	
+		if (const Wglproc proc = (Wglproc)wglGetProcAddress(procName); proc) {
 			return proc;
 		}
 		return (Wglproc)GetProcAddress(OpenGLWindowsContext::s_WGL.OpenGL32DLL, procName);
@@ -40,34 +41,17 @@ namespace Quirk {
 		QK_CORE_ASSERTEX(ReleaseDC(m_ContextData.WindowHandle, m_ContextData.DeviceContext), "Failed to release DC!");
 	}
 
-	void OpenGLWindowsContext::Init(void* window) {
-		m_ContextData.WindowHandle = (HWND)window;
+	void OpenGLWindowsContext::Init(Window* window) {
+		m_ContextData.WindowHandle = (HWND)window->GetNativeWindow();
 		m_ContextData.DeviceContext = GetDC(m_ContextData.WindowHandle);
 		QK_CORE_ASSERT(m_ContextData.DeviceContext, "Windows failed to provide a device context!");
 
-		// Creating a temporary window class
-		WNDCLASSEXW wc = {};
-		wc.cbSize = sizeof(WNDCLASSEXW);
-		wc.style = CS_OWNDC;
-		wc.lpfnWndProc = &WndProcTemp;
-		wc.cbClsExtra = 0;
-		wc.cbWndExtra = 0;
-		wc.hInstance = GetModuleHandleW(NULL);
-		wc.hIcon = 0;
-		wc.hCursor = LoadCursor(0, IDC_ARROW);
-		wc.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
-		wc.lpszMenuName = 0;
-		wc.lpszClassName = L"temp";
-		wc.hIconSm = 0;
-
-		QK_CORE_ASSERTEX(RegisterClassExW(&wc), "Failed to Register the dummy window class!");
-
 		// Creating a temporary window
 		HWND tempWindowHandle = CreateWindowExW(
-			0,										// The window accepts drag-drop files.
-			L"temp",								// Window class
-			L"Temp Window",							// Window text
-			WS_OVERLAPPEDWINDOW,					// Window style
+			0,																
+			((WindowsWindow*)window)->GetWindowClassName().c_str(),			// Window class
+			L"Temp Window",													// Window text
+			WS_OVERLAPPEDWINDOW,											// Window style
 
 			CW_USEDEFAULT, CW_USEDEFAULT,
 			800, 600,
@@ -81,7 +65,7 @@ namespace Quirk {
 		QK_CORE_ASSERT(tempWindowHandle, "Failed to create dummy window!");
 
 		HDC tempDeviceContext = GetDC(tempWindowHandle);
-		QK_CORE_ASSERT(tempDeviceContext, "Windows failed to provide a device context!");
+		QK_CORE_ASSERT(tempWindowHandle, "Windows failed to provide a device context!");
 
 		PIXELFORMATDESCRIPTOR tempPFD = {};
 		tempPFD.nSize = sizeof(PIXELFORMATDESCRIPTOR);
@@ -164,7 +148,7 @@ namespace Quirk {
 			0
 		};
 
-		m_ContextData.GLContext = s_WGL.CreateContextAttribsARB(tempDeviceContext, NULL, attribs);
+		m_ContextData.GLContext = s_WGL.CreateContextAttribsARB(m_ContextData.DeviceContext, NULL, attribs);
 		QK_CORE_ASSERT(m_ContextData.GLContext, "Could not create wgl context!");
 
 		QK_CORE_ASSERTEX(wglDeleteContext(tempGLContext), "Failed to delete context!");

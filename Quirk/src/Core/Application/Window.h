@@ -1,6 +1,8 @@
 
 #pragma once
 
+#include "Core/Renderer/GraphicalContext.h"
+
 #include <string>
 #include "Core/Input/Events.h"
 #include "Core/Input/Input.h"
@@ -39,9 +41,9 @@ namespace Quirk {
 		virtual inline uint16_t GetWindWidth() const = 0;
 		virtual inline uint16_t GetWindHeight() const = 0;
 
-		virtual void* GetNativeWindow() = 0;
+		virtual inline void* GetNativeWindow() = 0;
+		virtual inline GraphicalContext* GetGraphicalContext() = 0;
 		virtual inline void SetEventCallback(std::function<void(Event&)> fun) = 0;
-
 	};
 
 }

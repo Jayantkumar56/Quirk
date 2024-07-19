@@ -1,7 +1,8 @@
 
 #pragma once
 
-#include "Core/Window.h"
+#include "Core/Application/Window.h"
+#include "Core/Application/Layer.h"
 
 namespace Quirk {
 
@@ -21,6 +22,8 @@ namespace Quirk {
 	private:
 		Window* m_Window;
 		bool m_Running;
+		LayerStack m_LayerStack;
+		Layer* m_ImguiLayer;
 
 	private:
 		static Application* s_Instance;

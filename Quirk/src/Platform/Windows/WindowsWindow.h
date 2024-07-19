@@ -3,7 +3,7 @@
 
 #ifdef QK_PLATFORM_WINDOWS
 
-#include "Core/Window.h"
+#include "Core/Application/Window.h"
 #include "Core/Renderer/GraphicalContext.h"
 
 namespace Quirk {
@@ -14,7 +14,11 @@ namespace Quirk {
 			uint16_t WindWidth, WindHeight;
 			uint16_t ClientWidth, ClientHeight;
 
+			GraphicalContext* Context;
 			std::function<void(Event&)> EventCallbackFn;
+
+			std::wstring Title;
+			std::wstring WindClassName;
 		};
 
 	public:
@@ -31,7 +35,11 @@ namespace Quirk {
 		virtual inline uint16_t GetWindWidth() const override { return m_Data.WindWidth; }
 		virtual inline uint16_t GetWindHeight() const override { return m_Data.WindHeight; }
 
+		inline std::wstring GetWindowClassName() const { return m_Data.WindClassName; }
+
 		virtual inline void* GetNativeWindow() override { return m_Data.WindowHandle; }
+		virtual inline GraphicalContext* GetGraphicalContext() override { return m_Data.Context; }
+
 		virtual inline void SetEventCallback(std::function<void(Event&)> fun) override { m_Data.EventCallbackFn = fun; }
 
 	private:
@@ -44,9 +52,7 @@ namespace Quirk {
 		static HINSTANCE s_HInstance;
 
 	private:
-		std::wstring Title;
 		WindowData m_Data;
-		GraphicalContext* m_Context;
 	};
 
 }

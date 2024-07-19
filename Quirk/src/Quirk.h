@@ -2,10 +2,12 @@
 
 #pragma once
 
+#include "Core/Core.h"
 #include "Debug/Log.h"
-#include "Core/core.h"
-#include "Core/Window.h"
-#include "Core/Application.h"
+
+#include "Core/Application/Window.h"
+#include "Core/Application/Application.h"
+#include "Core/Application/Layer.h"
 
 #include "Core/Input/KeyCodes.h"
 #include "Core/Input/Events.h"
@@ -21,5 +23,5 @@
 
 //**** Entry Point of the program ****//
 // Must be the last thing in this list
-#include "Core/EntryPoint.h"
+#include "Core/Application/EntryPoint.h"
 //**** Entry Point of the program ****//

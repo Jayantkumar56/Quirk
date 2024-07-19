@@ -4,6 +4,9 @@
 
 #ifdef QK_PLATFORM_WINDOWS
 
+// to provide imgui with the event data
+extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
 #include "Core/core.h"
 #include "WindowsWindow.h"
 #include "Platform/OpenGL/OpenGLContext.h"
@@ -33,13 +36,18 @@ namespace Quirk {
     }
 
 	WindowsWindow::WindowsWindow(const WindowProps& props) : 
-			Title(props.Title),
-			m_Data({ nullptr, props.Width, props.Height, props.Width, props.Height, nullptr}),
-			m_Context(GraphicalContext::CreateContext())
+			m_Data({ 
+				nullptr, 
+				props.Width, props.Height, 
+				props.Width, props.Height, 
+				GraphicalContext::CreateContext(), 
+				nullptr,
+				props.Title, 
+				L"Quirk"
+			})
 	{
 		DWORD windowStyle = WS_OVERLAPPEDWINDOW | WS_VISIBLE;
 		DWORD windowExStyle = WS_EX_ACCEPTFILES;
-		LPCWSTR windClassName = L"Quirk";
 
 		WNDCLASSEXW wc = {};
 		wc.cbSize			= sizeof(WNDCLASSEXW);
@@ -52,7 +60,7 @@ namespace Quirk {
 		wc.hCursor			= LoadCursorW(NULL, IDC_ARROW);
 		wc.hbrBackground	= (HBRUSH)GetStockObject(BLACK_BRUSH);
 		wc.lpszMenuName		= 0;
-		wc.lpszClassName	= windClassName;
+		wc.lpszClassName	= m_Data.WindClassName.c_str();
 		wc.hIconSm			= 0;
 
 		QK_CORE_ASSERTEX(RegisterClassExW(&wc), "Failed to Register the window class! {0}", GetLastError());
@@ -61,8 +69,8 @@ namespace Quirk {
 		
 		m_Data.WindowHandle = CreateWindowExW(
 			windowExStyle,							// The window accepts drag-drop files.
-			windClassName,							// Window class
-			Title.c_str(),							// Window text
+			m_Data.WindClassName.c_str(),			// Window class
+			m_Data.Title.c_str(),							// Window text
 			windowStyle,							// Window style
 
 			CW_USEDEFAULT, CW_USEDEFAULT, 
@@ -77,32 +85,34 @@ namespace Quirk {
 		QK_CORE_ASSERT(m_Data.WindowHandle, "Failed to create Window handle!");
 
 		// Creating graphical context for current window
-		m_Context->Init((void*)m_Data.WindowHandle);
+		m_Data.Context->Init(this);
 
 		// putting this WindowsWindow pointer into created HWND
 		SetPropW(m_Data.WindowHandle, L"wndptr", this);
+
+		ShowWindow(m_Data.WindowHandle, SW_SHOWDEFAULT);
+		UpdateWindow(m_Data.WindowHandle);
 		SetForegroundWindow(m_Data.WindowHandle);
 	}
 
 	WindowsWindow::~WindowsWindow() {
-		delete m_Context;
+		delete m_Data.Context;
 	}
 
 	void WindowsWindow::OnUpdate() {
-		glClearColor(0.10156f, 0.17968f, 0.20703f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		 
 		MSG msg;
-		while (PeekMessageW(&msg, m_Data.WindowHandle, 0, 0, PM_REMOVE) > 0) {
+		while (PeekMessageW(&msg, nullptr, 0, 0, PM_REMOVE) > 0) {
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		}
 
-		m_Context->SwapBuffer();
+		m_Data.Context->SwapBuffer();
 	}
 
 	LRESULT WindowsWindow::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		WindowsWindow* window = (WindowsWindow*)GetPropW(hwnd, L"wndptr");
+		if (ImGui_ImplWin32_WndProcHandler(hwnd, uMsg, wParam, lParam))
+			return true;
 
 		switch (uMsg) {
 			case WM_CLOSE: {

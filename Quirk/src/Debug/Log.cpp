@@ -1,6 +1,7 @@
 
 #include<qkpch.h>
-#include "Log.h"
+
+#include "Core/Core.h"
 
 #ifdef QK_ENABLE_LOG
 

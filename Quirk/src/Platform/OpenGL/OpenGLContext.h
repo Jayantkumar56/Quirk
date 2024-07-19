@@ -24,7 +24,7 @@ namespace Quirk {
 		OpenGLContext() = default;
 		virtual ~OpenGLContext() {}
 
-		virtual void Init(void* ContextData) override = 0;
+		virtual void Init(Window* ContextData) override = 0;
 		virtual void SwapBuffer() override = 0;
 	};
 
@@ -50,18 +50,22 @@ namespace Quirk {
 			ContextData() : WindowHandle(nullptr), GLContext(nullptr), DeviceContext(nullptr) {}
 		};
 
-		static Wglproc GetProcAddressWGL(const char* procName);
-		static LRESULT CALLBACK WndProcTemp(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+	public:
+		static WGL s_WGL;
 
 	public:
 		OpenGLWindowsContext() = default;
 		~OpenGLWindowsContext();
 
-		virtual void Init(void* ContextData) override;
+		virtual void Init(Window* ContextData) override;
 		virtual void SwapBuffer() override;
 
-	public:
-		static WGL s_WGL;
+		inline HGLRC GetGLContext() const { return m_ContextData.GLContext; }
+		inline HDC GetDeviceContext() const { return m_ContextData.DeviceContext; }
+
+	private:
+		static Wglproc GetProcAddressWGL(const char* procName);
+		static LRESULT CALLBACK WndProcTemp(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 	private:
 		ContextData m_ContextData;

@@ -9,11 +9,11 @@
 //**************************** Macro to select rendering API ****************************//
 
 
-#include "Debug/Log.h"
 #ifdef QK_DEBUG
 #define QK_ENABLE_ASSERTS
 #define QK_ENABLE_LOG
 #endif // QK_DEBUG
+#include "Debug/Log.h"
 
 // ***********************************  TO DO  *********************************** //
 // Make debug break portable to other compilers
