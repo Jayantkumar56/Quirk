@@ -3,10 +3,6 @@
 #include "ImGuiLayer.h"
 #include "Core/Core.h"
 
-#include "Core/Input/KeyboardEvents.h"
-#include "Core/Input/MouseEvents.h"
-#include "Core/Input/ApplicationEvents.h"
-
 #include "Core/Application/Application.h"
 #include "Platform/OpenGL/OpenGLContext.h"
 
@@ -18,10 +14,6 @@ namespace Quirk {
 			Layer("ImguiLayer"), 
 			m_MainWindowContextData()
 	{
-	}
-
-	ImguiLayer::~ImguiLayer() {
-
 	}
 
 	void ImguiLayer::CleanupDeviceWGL(HWND hWnd, ContextData* data) {

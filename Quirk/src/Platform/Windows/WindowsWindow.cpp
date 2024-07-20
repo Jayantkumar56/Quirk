@@ -66,14 +66,18 @@ namespace Quirk {
 		QK_CORE_ASSERTEX(RegisterClassExW(&wc), "Failed to Register the window class! {0}", GetLastError());
 
 		AdjustClientArea(windowStyle, windowExStyle);
+
+		// to position the window in the center of the display
+		int windPosX = (GetSystemMetrics(SM_CXSCREEN) - m_Data.WindWidth) / 2;
+		int windPosY = (GetSystemMetrics(SM_CYSCREEN) - m_Data.WindHeight) / 2;
 		
 		m_Data.WindowHandle = CreateWindowExW(
 			windowExStyle,							// The window accepts drag-drop files.
 			m_Data.WindClassName.c_str(),			// Window class
-			m_Data.Title.c_str(),							// Window text
+			m_Data.Title.c_str(),					// Window text
 			windowStyle,							// Window style
 
-			CW_USEDEFAULT, CW_USEDEFAULT, 
+			windPosX, windPosY,
 			m_Data.WindWidth, m_Data.WindHeight,
 
 			NULL,			// Parent window    

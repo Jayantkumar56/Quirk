@@ -42,10 +42,15 @@ namespace Quirk {
 		EventDispatcher::HandleEvent(event);
 		EventDispatcher::Dispatch<WindowCloseEvent>(QK_BIND_EVENT_FN(Application::OnWindowClose));
 
-		/*EventDispatcher::Dispatch<MouseButtonPressedEvent>([&](MouseButtonPressedEvent& event) -> bool {
+		ImGuiIO& io = ImGui::GetIO();
+		if (io.WantCaptureKeyboard || io.WantCaptureMouse) {
+			return;
+		}
+
+		EventDispatcher::Dispatch<MouseButtonPressedEvent>([&](MouseButtonPressedEvent& event) -> bool {
 			QK_CORE_INFO("Mouse Pos {} {}", event.GetPosX(), event.GetPosY());
 			return true;
-		});*/
+		});
 
 		m_LayerStack.HandleEvent(event);
 	}
