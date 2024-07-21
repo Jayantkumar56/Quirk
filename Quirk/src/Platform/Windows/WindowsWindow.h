@@ -3,12 +3,13 @@
 
 #ifdef QK_PLATFORM_WINDOWS
 
-#include "Core/Application/Window.h"
-#include "Core/Renderer/GraphicalContext.h"
-
 namespace Quirk {
 
-	class WindowsWindow : public Window{
+	// forward declaration of graphical context and event class
+	class GraphicalContext;
+	class Event;
+
+	class Window{
 		struct WindowData {
 			HWND WindowHandle;
 			uint16_t WindWidth, WindHeight;
@@ -25,22 +26,22 @@ namespace Quirk {
 		static void Init(HINSTANCE hInstance);
 
 	public:
-		WindowsWindow(const WindowProps& props);
-		~WindowsWindow();
+		Window(const std::wstring title, uint16_t width, uint16_t height);
+		~Window();
 
-		virtual void OnUpdate();
+		void OnUpdate();
 
-		virtual inline uint16_t GetWidth() const override { return m_Data.ClientWidth; }
-		virtual inline uint16_t GetHeight() const override { return m_Data.ClientHeight; }
-		virtual inline uint16_t GetWindWidth() const override { return m_Data.WindWidth; }
-		virtual inline uint16_t GetWindHeight() const override { return m_Data.WindHeight; }
+		inline uint16_t GetWidth() const { return m_Data.ClientWidth; }
+		inline uint16_t GetHeight() const { return m_Data.ClientHeight; }
+		inline uint16_t GetWindWidth() const { return m_Data.WindWidth; }
+		inline uint16_t GetWindHeight() const { return m_Data.WindHeight; }
 
 		inline std::wstring GetWindowClassName() const { return m_Data.WindClassName; }
 
-		virtual inline void* GetNativeWindow() override { return m_Data.WindowHandle; }
-		virtual inline GraphicalContext* GetGraphicalContext() override { return m_Data.Context; }
+		inline void* GetNativeWindow() { return m_Data.WindowHandle; }
+		inline GraphicalContext* GetGraphicalContext() { return m_Data.Context; }
 
-		virtual inline void SetEventCallback(std::function<void(Event&)> fun) override { m_Data.EventCallbackFn = fun; }
+		inline void SetEventCallback(std::function<void(Event&)> fun) { m_Data.EventCallbackFn = fun; }
 
 	private:
 		static LRESULT WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);

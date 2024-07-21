@@ -5,6 +5,7 @@
 #include "Core/Core.h"
 
 #include "Core/Imgui/ImguiLayer.h"
+#include "Core/Input/MouseEvents.h"
 
 // temporary till we have renderer
 #include "glad/glad.h"
@@ -14,27 +15,27 @@ namespace Quirk {
 	Application* Application::s_Instance = nullptr;
 
 	Application::Application() :
-		m_Window(Window::Create()),
+		m_Window(L"Quirk Engine!!!!", 1200, 800),
 		m_Running(true)
 	{
 		s_Instance = this;
-		m_Window->SetEventCallback(QK_BIND_EVENT_FN(Application::OnEvent));
+		m_Window.SetEventCallback(QK_BIND_EVENT_FN(Application::OnEvent));
 
 		m_ImguiLayer = new ImguiLayer();
 		m_LayerStack.PushLayer(m_ImguiLayer);
+		glClearColor(0.10156f, 0.17968f, 0.20703f, 1.0f);
 	}
 
 	Application::~Application() {
-		delete m_Window;
+		
 	}
 
 	void Application::Run() {
 		while (m_Running) {
-			glClearColor(0.10156f, 0.17968f, 0.20703f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 			m_LayerStack.UpdateLayers();
-			m_Window->OnUpdate();
+			m_Window.OnUpdate();
 		}
 	}
 

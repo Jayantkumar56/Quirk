@@ -6,6 +6,10 @@
 #include "Core/Application/Application.h"
 #include "Platform/OpenGL/OpenGLContext.h"
 
+// From Glad.h
+#define GL_FALSE 0
+#define GL_TRUE 1
+
 namespace Quirk {
 
 	HGLRC ImguiLayer::GLContext = nullptr;
@@ -89,7 +93,7 @@ namespace Quirk {
 		const char* glsl_version = "#version 410";
 
 		Window& window = Application::Get().GetWindow();
-		OpenGLWindowsContext* context = (OpenGLWindowsContext*)window.GetGraphicalContext();
+		OpenGLContext* context = (OpenGLContext*)window.GetGraphicalContext();
 
 		m_MainWindowContextData.DeviceContext = context->GetDeviceContext();
 		GLContext = context->GetGLContext();

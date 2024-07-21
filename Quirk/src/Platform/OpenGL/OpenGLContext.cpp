@@ -3,32 +3,30 @@
 #include "Qkpch.h"
 #include "Core/Core.h"
 
-#if (QK_RENDERING_API == QK_RENDERER_OPENGL)
-
 #include "OpenGLContext.h"
 #include "Platform/Windows/WindowsWindow.h"
 #include "glad/glad.h"
-
-#include "Core/Application/Application.h"
 
 namespace Quirk {
 
 #ifdef QK_PLATFORM_WINDOWS
 
-	OpenGLWindowsContext::WGL OpenGLWindowsContext::s_WGL;
+	OpenGLContext::WGL OpenGLContext::s_WGL;
+
+	class WindowsWindow;
 
 	GraphicalContext* GraphicalContext::CreateContext() {
-		return new OpenGLWindowsContext();
+		return new OpenGLContext();
 	}
 
-	Wglproc OpenGLWindowsContext::GetProcAddressWGL(const char* procName) {	
+	Wglproc OpenGLContext::GetProcAddressWGL(const char* procName) {	
 		if (const Wglproc proc = (Wglproc)wglGetProcAddress(procName); proc) {
 			return proc;
 		}
-		return (Wglproc)GetProcAddress(OpenGLWindowsContext::s_WGL.OpenGL32DLL, procName);
+		return (Wglproc)GetProcAddress(OpenGLContext::s_WGL.OpenGL32DLL, procName);
 	}
 
-	LRESULT CALLBACK OpenGLWindowsContext::WndProcTemp(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
+	LRESULT CALLBACK OpenGLContext::WndProcTemp(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
 		switch (message) {
 			case WM_CREATE: return (LRESULT)0;
 			case WM_DESTROY: return (LRESULT)0;
@@ -36,12 +34,12 @@ namespace Quirk {
 		return DefWindowProc(hWnd, message, wParam, lParam);
 	}
 
-	OpenGLWindowsContext::~OpenGLWindowsContext() {
+	OpenGLContext::~OpenGLContext() {
 		QK_CORE_ASSERTEX(wglDeleteContext(m_ContextData.GLContext), "Failed to delete context!");
 		QK_CORE_ASSERTEX(ReleaseDC(m_ContextData.WindowHandle, m_ContextData.DeviceContext), "Failed to release DC!");
 	}
 
-	void OpenGLWindowsContext::Init(Window* window) {
+	void OpenGLContext::Init(Window* window) {
 		m_ContextData.WindowHandle = (HWND)window->GetNativeWindow();
 		m_ContextData.DeviceContext = GetDC(m_ContextData.WindowHandle);
 		QK_CORE_ASSERT(m_ContextData.DeviceContext, "Windows failed to provide a device context!");
@@ -49,17 +47,15 @@ namespace Quirk {
 		// Creating a temporary window
 		HWND tempWindowHandle = CreateWindowExW(
 			0,																
-			((WindowsWindow*)window)->GetWindowClassName().c_str(),			// Window class
-			L"Temp Window",													// Window text
-			WS_OVERLAPPEDWINDOW,											// Window style
-
-			CW_USEDEFAULT, CW_USEDEFAULT,
-			800, 600,
-
-			NULL,						// Parent window    
-			NULL,						// Menu
-			GetModuleHandleW(NULL),		// Instance handle
-			NULL						// Additional application data
+			window->GetWindowClassName().c_str(),			// Window class
+			L"Temp Window",									// Window text
+			WS_OVERLAPPEDWINDOW,							// Window style
+			CW_USEDEFAULT, CW_USEDEFAULT,					// Window Position
+			800, 600,										// Window Width and Height
+			NULL,											// Parent window    
+			NULL,											// Menu
+			GetModuleHandleW(NULL),							// Instance handle
+			NULL											// Additional application data
 		);
 
 		QK_CORE_ASSERT(tempWindowHandle, "Failed to create dummy window!");
@@ -163,14 +159,11 @@ namespace Quirk {
 		FreeModule(s_WGL.OpenGL32DLL);
 	}
 
-	void OpenGLWindowsContext::SwapBuffer() {
+	void OpenGLContext::SwapBuffer() {
 		QK_CORE_ASSERTEX(SwapBuffers(m_ContextData.DeviceContext), "Failed to Swap Buffer");
 	}
 
 #endif // QK_PLATFORM_WINDOWS
 
 }
-
-#endif // (QK_RENDERING_API == QK_RENDERER_OPENGL)
-
 

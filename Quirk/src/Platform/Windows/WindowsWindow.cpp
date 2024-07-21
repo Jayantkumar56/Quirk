@@ -11,20 +11,22 @@ extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam
 #include "WindowsWindow.h"
 #include "Platform/OpenGL/OpenGLContext.h"
 
-//#include "windowsx.h"
+#include "Core/Input/Input.h"
+#include "Core/Input/Events.h"
+#include "Core/Input/KeyCodes.h"
+#include "Core/Input/MouseEvents.h"
+#include "Core/Input/KeyboardEvents.h"
+#include "Core/Input/ApplicationEvents.h"
+
 // from windowsx.h :-
 #define GET_X_LPARAM(lp)                        ((float)(short)LOWORD(lp))
 #define GET_Y_LPARAM(lp)                        ((float)(short)HIWORD(lp))
 
 namespace Quirk {
 
-	HINSTANCE WindowsWindow::s_HInstance = nullptr;
+	HINSTANCE Window::s_HInstance = nullptr;
 
-	Window* Window::Create(const WindowProps& props) {
-		return new WindowsWindow(props);
-	}
-
-    void WindowsWindow::Init(HINSTANCE hInstance) {
+    void Window::Init(HINSTANCE hInstance) {
 		QK_CORE_ASSERT(hInstance, "Didn't got initial HINSTANCE from windows api!");
 		s_HInstance = hInstance;
 
@@ -35,14 +37,14 @@ namespace Quirk {
 		);
     }
 
-	WindowsWindow::WindowsWindow(const WindowProps& props) : 
+	Window::Window(const std::wstring title, uint16_t width, uint16_t height) :
 			m_Data({ 
 				nullptr, 
-				props.Width, props.Height, 
-				props.Width, props.Height, 
+				width, height, 
+				width, height,
 				GraphicalContext::CreateContext(), 
 				nullptr,
-				props.Title, 
+				title, 
 				L"Quirk"
 			})
 	{
@@ -76,14 +78,12 @@ namespace Quirk {
 			m_Data.WindClassName.c_str(),			// Window class
 			m_Data.Title.c_str(),					// Window text
 			windowStyle,							// Window style
-
-			windPosX, windPosY,
-			m_Data.WindWidth, m_Data.WindHeight,
-
-			NULL,			// Parent window    
-			NULL,			// Menu
-			s_HInstance,	// Instance handle
-			NULL			// Additional application data
+			windPosX, windPosY,						// Postion of window on the screen
+			m_Data.WindWidth, m_Data.WindHeight,	// height and width of the window
+			NULL,									// Parent window    
+			NULL,									// Menu
+			s_HInstance,							// Instance handle
+			NULL									// Additional application data
 		);
 
 		QK_CORE_ASSERT(m_Data.WindowHandle, "Failed to create Window handle!");
@@ -91,7 +91,7 @@ namespace Quirk {
 		// Creating graphical context for current window
 		m_Data.Context->Init(this);
 
-		// putting this WindowsWindow pointer into created HWND
+		// putting this Window pointer into created HWND
 		SetPropW(m_Data.WindowHandle, L"wndptr", this);
 
 		ShowWindow(m_Data.WindowHandle, SW_SHOWDEFAULT);
@@ -99,11 +99,11 @@ namespace Quirk {
 		SetForegroundWindow(m_Data.WindowHandle);
 	}
 
-	WindowsWindow::~WindowsWindow() {
+	Window::~Window() {
 		delete m_Data.Context;
 	}
 
-	void WindowsWindow::OnUpdate() {
+	void Window::OnUpdate() {
 		MSG msg;
 		while (PeekMessageW(&msg, nullptr, 0, 0, PM_REMOVE) > 0) {
 			TranslateMessage(&msg);
@@ -113,8 +113,8 @@ namespace Quirk {
 		m_Data.Context->SwapBuffer();
 	}
 
-	LRESULT WindowsWindow::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
-		WindowsWindow* window = (WindowsWindow*)GetPropW(hwnd, L"wndptr");
+	LRESULT Window::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+		Window* window = (Window*)GetPropW(hwnd, L"wndptr");
 		if (ImGui_ImplWin32_WndProcHandler(hwnd, uMsg, wParam, lParam))
 			return true;
 
@@ -275,7 +275,7 @@ namespace Quirk {
 		return DefWindowProc(hwnd, uMsg, wParam, lParam);
 	}
 
-	void WindowsWindow::AdjustClientArea(DWORD windowStyle, DWORD windowExStyle) {
+	void Window::AdjustClientArea(DWORD windowStyle, DWORD windowExStyle) {
 		RECT rect = { 0, 0, m_Data.WindWidth, m_Data.WindHeight };
 
 		QK_ASSERTEX(

@@ -2,13 +2,6 @@
 
 #pragma once
 
-#define QK_RENDERER_OPENGL			1
-
-//**************************** Macro to select rendering API ****************************//
-#define QK_RENDERING_API			QK_RENDERER_OPENGL
-//**************************** Macro to select rendering API ****************************//
-
-
 #ifdef QK_DEBUG
 #define QK_ENABLE_ASSERTS
 #define QK_ENABLE_LOG

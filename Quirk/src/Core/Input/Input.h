@@ -31,9 +31,7 @@ namespace Quirk {
 	};	
 
 	class Input {
-#ifdef QK_PLATFORM_WINDOWS
-		friend class WindowsWindow;
-#endif // QK_PLATFORM_WINDOWS
+		friend class Window;
 
 	public:
 		static inline bool IsKeyPressed(int keyCode) { return InputData::KeyPressed[keyCode]; }

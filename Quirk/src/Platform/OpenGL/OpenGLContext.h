@@ -3,6 +3,7 @@
 #pragma once
 
 #include "Core/Core.h"
+
 #ifdef QK_PLATFORM_WINDOWS
 #define WIN32_LEAN_AND_MEAN
 #include<Windows.h>
@@ -10,27 +11,14 @@
 typedef void (*Wglproc)(void);
 #endif // QK_PLATFORM_WINDOWS
 
-
-#if (QK_RENDERING_API == QK_RENDERER_OPENGL)
-
-#include "glad/glad.h"
 #include "wglext.h"
 #include "Core/Renderer/GraphicalContext.h"
 
 namespace Quirk {
 
-	class OpenGLContext : public GraphicalContext {
-	public:
-		OpenGLContext() = default;
-		virtual ~OpenGLContext() {}
-
-		virtual void Init(Window* ContextData) override = 0;
-		virtual void SwapBuffer() override = 0;
-	};
-
 #ifdef QK_PLATFORM_WINDOWS
 
-	class OpenGLWindowsContext : public OpenGLContext {
+	class OpenGLContext : public GraphicalContext {
 	private:
 		struct WGL {
 			HINSTANCE                           OpenGL32DLL;
@@ -54,8 +42,8 @@ namespace Quirk {
 		static WGL s_WGL;
 
 	public:
-		OpenGLWindowsContext() = default;
-		~OpenGLWindowsContext();
+		OpenGLContext() = default;
+		~OpenGLContext();
 
 		virtual void Init(Window* ContextData) override;
 		virtual void SwapBuffer() override;
@@ -74,6 +62,4 @@ namespace Quirk {
 #endif // QK_PLATFORM_WINDOWS
 
 }
-
-#endif // (QK_RENDERING_API == QK_RENDERER_OPENGL)
 
