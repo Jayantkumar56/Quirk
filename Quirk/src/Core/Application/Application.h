@@ -31,7 +31,4 @@ namespace Quirk {
 		static Application* s_Instance;
 	};
 
-	// To be defined in the actual software using Quirk engine
-	Application* CreateApplication();
-
 }

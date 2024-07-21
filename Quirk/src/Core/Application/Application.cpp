@@ -27,7 +27,7 @@ namespace Quirk {
 	}
 
 	Application::~Application() {
-		
+		delete m_ImguiLayer;
 	}
 
 	void Application::Run() {

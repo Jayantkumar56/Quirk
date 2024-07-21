@@ -11,10 +11,13 @@ public:
 	~SandboxApp() {
 
 	}
-
 };
 
-Quirk::Application* Quirk::CreateApplication(){
-	return new SandboxApp();
+
+// Quirk::LaunchApp() must be defined in the application
+// Create app object inside this function and call Run method
+void Quirk::LaunchApp() {
+	SandboxApp app;
+	app.Run();
 }
 

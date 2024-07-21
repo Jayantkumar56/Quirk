@@ -1,7 +1,9 @@
 
 #pragma once
 
-extern Quirk::Application* Quirk::CreateApplication();
+namespace Quirk {
+	extern void LaunchApp();
+}
 
 #ifdef QK_PLATFORM_WINDOWS
 
@@ -13,12 +15,8 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	Quirk::Log::Init();
 #endif // QK_ENABLE_LOG
 
-
 	Quirk::Window::Init(hInstance);
-	Quirk::Application* app = Quirk::CreateApplication();
-
-	app->Run();
-	delete app;
+	Quirk::LaunchApp();
 
 	return 0;
 }
