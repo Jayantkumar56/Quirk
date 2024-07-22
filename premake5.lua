@@ -16,6 +16,7 @@ IncludeDir = {}
 IncludeDir["spdlog"] = "Quirk/vendor/spdlog/include"
 IncludeDir["Glad"] = "Quirk/vendor/Glad/include"
 IncludeDir["Imgui"] = "Quirk/vendor/imgui"
+IncludeDir["Glm"] = "Quirk/vendor/glm"
 
 include "Quirk/vendor/Glad"
 include "Quirk/vendor/imgui"
@@ -47,7 +48,8 @@ project "Quirk"
         "Quirk/src",
         "%{IncludeDir.spdlog}",
         "%{IncludeDir.Glad}",
-        "%{IncludeDir.Imgui}"
+        "%{IncludeDir.Imgui}",
+        "%{IncludeDir.Glm}"
     }
 
     links
@@ -81,7 +83,7 @@ project "Quirk"
     filter "configurations:Dist"
         defines "QK_DIST"
         runtime "Release"
-        symbols "On"
+        symbols "Off"
 
 project "Sandbox"
     location "Sandbox"
@@ -135,4 +137,4 @@ project "Sandbox"
     filter "configurations:Dist"
         defines "QK_DIST"
         runtime "Release"
-        symbols "On"
+        symbols "Off"
