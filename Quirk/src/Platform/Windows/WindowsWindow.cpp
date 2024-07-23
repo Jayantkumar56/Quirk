@@ -11,13 +11,6 @@ extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam
 #include "WindowsWindow.h"
 #include "Platform/OpenGL/OpenGLContext.h"
 
-#include "Core/Input/Input.h"
-#include "Core/Input/Events.h"
-#include "Core/Input/KeyCodes.h"
-#include "Core/Input/MouseEvents.h"
-#include "Core/Input/KeyboardEvents.h"
-#include "Core/Input/ApplicationEvents.h"
-
 // from windowsx.h :-
 #define GET_X_LPARAM(lp)                        ((float)(short)LOWORD(lp))
 #define GET_Y_LPARAM(lp)                        ((float)(short)HIWORD(lp))
@@ -42,7 +35,6 @@ namespace Quirk {
 				nullptr, 
 				width, height, 
 				width, height,
-				GraphicalContext::CreateContext(), 
 				nullptr,
 				title, 
 				L"Quirk"
@@ -89,7 +81,7 @@ namespace Quirk {
 		QK_CORE_ASSERT(m_Data.WindowHandle, "Failed to create Window handle!");
 
 		// Creating graphical context for current window
-		m_Data.Context->Init(this);
+		//m_Data.Context->Init(this);
 
 		// putting this Window pointer into created HWND
 		SetPropW(m_Data.WindowHandle, L"wndptr", this);
@@ -99,18 +91,12 @@ namespace Quirk {
 		SetForegroundWindow(m_Data.WindowHandle);
 	}
 
-	Window::~Window() {
-		delete m_Data.Context;
-	}
-
 	void Window::OnUpdate() {
 		MSG msg;
 		while (PeekMessageW(&msg, nullptr, 0, 0, PM_REMOVE) > 0) {
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		}
-
-		m_Data.Context->SwapBuffer();
 	}
 
 	LRESULT Window::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {

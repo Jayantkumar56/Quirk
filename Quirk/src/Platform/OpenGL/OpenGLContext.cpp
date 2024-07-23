@@ -4,20 +4,16 @@
 #include "Core/Core.h"
 
 #include "OpenGLContext.h"
-#include "Platform/Windows/WindowsWindow.h"
 #include "glad/glad.h"
+
+#include "Core/Application/Window.h"
+#include "Core/Application/Application.h"
 
 namespace Quirk {
 
 #ifdef QK_PLATFORM_WINDOWS
 
 	OpenGLContext::WGL OpenGLContext::s_WGL;
-
-	class WindowsWindow;
-
-	GraphicalContext* GraphicalContext::CreateContext() {
-		return new OpenGLContext();
-	}
 
 	Wglproc OpenGLContext::GetProcAddressWGL(const char* procName) {	
 		if (const Wglproc proc = (Wglproc)wglGetProcAddress(procName); proc) {
@@ -35,13 +31,17 @@ namespace Quirk {
 	}
 
 	OpenGLContext::~OpenGLContext() {
+		Window& window = Application::Get().GetWindow();
+
 		QK_CORE_ASSERTEX(wglDeleteContext(m_ContextData.GLContext), "Failed to delete context!");
-		QK_CORE_ASSERTEX(ReleaseDC(m_ContextData.WindowHandle, m_ContextData.DeviceContext), "Failed to release DC!");
+		QK_CORE_ASSERTEX(ReleaseDC((HWND)window.GetNativeWindow(), m_ContextData.DeviceContext), "Failed to release DC!");
 	}
 
-	void OpenGLContext::Init(Window* window) {
-		m_ContextData.WindowHandle = (HWND)window->GetNativeWindow();
-		m_ContextData.DeviceContext = GetDC(m_ContextData.WindowHandle);
+	void OpenGLContext::Init() {
+		Window* window = &Application::Get().GetWindow();
+		QK_CORE_ASSERT(window, "Cannot Initialize OpenGL Context (Window is not Created Yet)");
+
+		m_ContextData.DeviceContext = GetDC((HWND)window->GetNativeWindow());
 		QK_CORE_ASSERT(m_ContextData.DeviceContext, "Windows failed to provide a device context!");
 
 		// Creating a temporary window

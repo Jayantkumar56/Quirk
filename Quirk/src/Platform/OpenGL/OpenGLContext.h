@@ -7,7 +7,6 @@
 #ifdef QK_PLATFORM_WINDOWS
 #define WIN32_LEAN_AND_MEAN
 #include<Windows.h>
-
 typedef void (*Wglproc)(void);
 #endif // QK_PLATFORM_WINDOWS
 
@@ -45,8 +44,8 @@ namespace Quirk {
 		OpenGLContext() = default;
 		~OpenGLContext();
 
-		virtual void Init(Window* ContextData) override;
-		virtual void SwapBuffer() override;
+		virtual void Init() override;
+		virtual inline void SwapBuffer() override;
 
 		inline HGLRC GetGLContext() const { return m_ContextData.GLContext; }
 		inline HDC GetDeviceContext() const { return m_ContextData.DeviceContext; }

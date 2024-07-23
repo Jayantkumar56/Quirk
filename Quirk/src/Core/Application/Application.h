@@ -4,8 +4,6 @@
 #include "Core/Application/Window.h"
 #include "Core/Application/Layer.h"
 
-#include "Core/Input/ApplicationEvents.h"
-
 namespace Quirk {
 
 	class Application {

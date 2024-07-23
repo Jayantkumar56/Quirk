@@ -1,14 +1,13 @@
 
+
 #include<qkpch.h>
 
 #include "Application.h"
 #include "Core/Core.h"
 
+#include "Core/Renderer/Renderer.h"
 #include "Core/Imgui/ImguiLayer.h"
-#include "Core/Input/MouseEvents.h"
 
-// temporary till we have renderer
-#include "glad/glad.h"
 
 namespace Quirk {
 
@@ -21,9 +20,11 @@ namespace Quirk {
 		s_Instance = this;
 		m_Window.SetEventCallback(QK_BIND_EVENT_FN(Application::OnEvent));
 
+		Renderer::InitRenderer(RendererAPI::API::OpenGL);
+		RenderCommands::SetClearColor({ 0.10156f, 0.17968f, 0.20703f, 1.0f });
+
 		m_ImguiLayer = new ImguiLayer();
 		m_LayerStack.PushLayer(m_ImguiLayer);
-		glClearColor(0.10156f, 0.17968f, 0.20703f, 1.0f);
 	}
 
 	Application::~Application() {
@@ -32,10 +33,12 @@ namespace Quirk {
 
 	void Application::Run() {
 		while (m_Running) {
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			RenderCommands::Clear();
 
-			m_LayerStack.UpdateLayers();
 			m_Window.OnUpdate();
+			m_LayerStack.UpdateLayers();
+
+			RenderCommands::SwapBuffers();
 		}
 	}
 
@@ -44,7 +47,8 @@ namespace Quirk {
 		EventDispatcher::Dispatch<WindowCloseEvent>(QK_BIND_EVENT_FN(Application::OnWindowClose));
 
 		ImGuiIO& io = ImGui::GetIO();
-		if (io.WantCaptureKeyboard || io.WantCaptureMouse) {
+		uint16_t cat = event.GetEventCategory();
+		if ((cat | EventCategory::KeyboardEvent || cat | EventCategory::MouseEvent) && (io.WantCaptureKeyboard || io.WantCaptureMouse)) {
 			return;
 		}
 

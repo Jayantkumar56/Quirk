@@ -5,6 +5,7 @@
 
 #include "Core/Application/Application.h"
 #include "Platform/OpenGL/OpenGLContext.h"
+#include "Core/Renderer/RendererAPI.h"
 
 // From Glad.h
 #define GL_FALSE 0
@@ -93,7 +94,7 @@ namespace Quirk {
 		const char* glsl_version = "#version 410";
 
 		Window& window = Application::Get().GetWindow();
-		OpenGLContext* context = (OpenGLContext*)window.GetGraphicalContext();
+		OpenGLContext* context = (OpenGLContext*)RendererAPI::GetGraphicalContext();
 
 		m_MainWindowContextData.DeviceContext = context->GetDeviceContext();
 		GLContext = context->GetGLContext();

@@ -3,21 +3,24 @@
 
 #ifdef QK_PLATFORM_WINDOWS
 
-namespace Quirk {
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
 
-	// forward declaration of graphical context and event class
-	class GraphicalContext;
-	class Event;
+#include "Core/Input/Input.h"
+#include "Core/Input/Events.h"
+#include "Core/Input/KeyCodes.h"
+#include "Core/Input/MouseEvents.h"
+#include "Core/Input/KeyboardEvents.h"
+#include "Core/Input/ApplicationEvents.h"
+
+namespace Quirk {
 
 	class Window{
 		struct WindowData {
 			HWND WindowHandle;
 			uint16_t WindWidth, WindHeight;
 			uint16_t ClientWidth, ClientHeight;
-
-			GraphicalContext* Context;
 			std::function<void(Event&)> EventCallbackFn;
-
 			std::wstring Title;
 			std::wstring WindClassName;
 		};
@@ -27,7 +30,7 @@ namespace Quirk {
 
 	public:
 		Window(const std::wstring title, uint16_t width, uint16_t height);
-		~Window();
+		~Window() = default;
 
 		void OnUpdate();
 
@@ -39,8 +42,6 @@ namespace Quirk {
 		inline std::wstring GetWindowClassName() const { return m_Data.WindClassName; }
 
 		inline void* GetNativeWindow() { return m_Data.WindowHandle; }
-		inline GraphicalContext* GetGraphicalContext() { return m_Data.Context; }
-
 		inline void SetEventCallback(std::function<void(Event&)> fun) { m_Data.EventCallbackFn = fun; }
 
 	private:
