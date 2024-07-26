@@ -4,7 +4,7 @@
 
 #include <utility>
 #include<functional>
-#include "Core/core.h"
+#include "Core/Core.h"
 
 namespace Quirk {
 

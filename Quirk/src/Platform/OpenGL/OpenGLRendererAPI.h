@@ -15,6 +15,8 @@ namespace Quirk {
 		virtual inline void SetClearColor(const glm::vec4& color) const override;
 		virtual inline void Clear() const override;
 		virtual inline void SwapBuffers() override;
+
+		virtual inline void DrawIndexed(Ref<VertexArray>& vertexArray) override;
 		
 	private:
 		OpenGLContext m_Context;

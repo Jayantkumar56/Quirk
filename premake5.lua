@@ -104,7 +104,9 @@ project "Sandbox"
     includedirs
     {
         "Quirk/src",
-        "%{IncludeDir.spdlog}"
+        "%{IncludeDir.spdlog}",
+        "%{IncludeDir.Imgui}",
+        "%{IncludeDir.Glm}"
     }
 
     links

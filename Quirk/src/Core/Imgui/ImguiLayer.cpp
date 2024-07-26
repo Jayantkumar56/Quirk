@@ -14,10 +14,10 @@
 namespace Quirk {
 
 	HGLRC ImguiLayer::GLContext = nullptr;
+	ImguiLayer::ContextData ImguiLayer::m_MainWindowContextData;
 
 	ImguiLayer::ImguiLayer() :
-			Layer("ImguiLayer"), 
-			m_MainWindowContextData()
+			Layer("ImguiLayer")
 	{
 	}
 
@@ -145,9 +145,7 @@ namespace Quirk {
 		return false;
 	}
 
-	void ImguiLayer::OnUpdate() {
-		Begin();
-
+    void ImguiLayer::OnImguiUiUpdate() {
 		ImGuiIO& io = ImGui::GetIO();
 
 		static bool show = true;
@@ -171,18 +169,19 @@ namespace Quirk {
 			ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
 			ImGui::End();
 		}
+    }
 
-		End();
+	void ImguiLayer::OnUpdate() {
 	}
 
-	void ImguiLayer::Begin() const {
+	void ImguiLayer::Begin() {
 		// Start the Dear ImGui frame
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplWin32_NewFrame();
 		ImGui::NewFrame();
 	}
 
-	void ImguiLayer::End() const {
+	void ImguiLayer::End() {
 		ImGuiIO& io = ImGui::GetIO();
 
 		ImGui::Render();

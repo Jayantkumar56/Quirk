@@ -7,6 +7,7 @@
 #define QK_ENABLE_LOG
 #endif // QK_DEBUG
 #include "Debug/Log.h"
+#include <memory>
 
 // ***********************************  TO DO  *********************************** //
 // Make debug break portable to other compilers
@@ -30,3 +31,13 @@
 // to bind event function with the respective function
 #define QK_BIND_EVENT_FN(x) std::bind(&x, this, std::placeholders::_1)
 
+
+namespace Quirk {
+
+	template<typename T>
+	using Ref = std::shared_ptr<T>;
+
+	template<typename T>
+	using Scope = std::unique_ptr<T>;
+
+}

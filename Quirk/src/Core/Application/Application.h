@@ -4,15 +4,12 @@
 #include "Core/Application/Window.h"
 #include "Core/Application/Layer.h"
 
-#include "Core/Renderer/VertexArray.h"
-#include "Core/Renderer/Shader.h"
-
 namespace Quirk {
 
 	class Application {
 	public:
 		Application();
-		virtual ~Application();
+		virtual ~Application() = default;
 
 		void Run();
 
@@ -22,13 +19,13 @@ namespace Quirk {
 		inline static Application& Get() { return *s_Instance; }
 		inline Window& GetWindow() { return m_Window; }
 
+		inline void PushLayer(Layer* layer) { m_LayerStack.PushLayer(layer); }
+		inline void PushOverlay(Layer* overlay) { m_LayerStack.PushOverlay(overlay); }
+
 	private:
-		Window			m_Window;
-		bool			m_Running;
-		LayerStack		m_LayerStack;
-		Layer*			m_ImguiLayer;
-		VertexArray*	m_SquareVA;
-		Shader*			m_BlueShader;
+		Window		m_Window;
+		bool		m_Running;
+		LayerStack	m_LayerStack;
 
 	private:
 		static Application* s_Instance;

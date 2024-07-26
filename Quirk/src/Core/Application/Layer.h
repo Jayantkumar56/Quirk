@@ -18,6 +18,7 @@ namespace Quirk {
 		virtual void OnDetach() = 0;
 
 		virtual bool OnEvent(Event& event) = 0;
+		virtual void OnImguiUiUpdate() = 0;
 		virtual void OnUpdate() = 0;
 
 	protected:
@@ -31,6 +32,7 @@ namespace Quirk {
 
 		bool HandleEvent(Event& event);
 		void UpdateLayers();
+		void UpdateImguiUiLayers();
 
 		void PushLayer(Layer* layer);
 		void PopLayer();

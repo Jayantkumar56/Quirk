@@ -25,10 +25,11 @@ namespace Quirk {
 		virtual void OnDetach() override;
 
 		virtual bool OnEvent(Event& event) override;
+		virtual void OnImguiUiUpdate() override;
 		virtual void OnUpdate() override;
 
-		void Begin() const;
-		void End() const;
+		static void Begin();
+		static void End();
 
 	private:
 		static void CleanupDeviceWGL(HWND hWnd, ContextData* data);
@@ -40,7 +41,7 @@ namespace Quirk {
 		static void HookPlatformRenderWindow(ImGuiViewport* viewport, void*);
 
 	private:
-		ContextData m_MainWindowContextData;
+		static ContextData m_MainWindowContextData;
 		static HGLRC GLContext;
 	};
 

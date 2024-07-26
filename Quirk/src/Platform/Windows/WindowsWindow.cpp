@@ -7,7 +7,7 @@
 // to provide imgui with the event data
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
-#include "Core/core.h"
+#include "Core/Core.h"
 #include "WindowsWindow.h"
 #include "Platform/OpenGL/OpenGLContext.h"
 

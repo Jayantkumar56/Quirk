@@ -5,6 +5,7 @@
 #include "glm/vec4.hpp"
 
 #include "GraphicalContext.h"
+#include "VertexArray.h"
 
 namespace Quirk {
 
@@ -25,6 +26,8 @@ namespace Quirk {
 		virtual inline void SetClearColor(const glm::vec4& color) const = 0;
 		virtual inline void Clear() const = 0;
 		virtual inline void SwapBuffers() = 0;
+
+		virtual inline void DrawIndexed(Ref<VertexArray>& vertexArray) = 0;
 
 	private:
 		static API s_API;

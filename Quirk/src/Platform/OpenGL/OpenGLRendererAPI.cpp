@@ -25,5 +25,9 @@ namespace Quirk {
 		m_Context.SwapBuffer();
 	}
 
+	inline void OpenGLRendererAPI::DrawIndexed(Ref<VertexArray>& vertexArray) {
+		glDrawElements(GL_TRIANGLES, vertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
+	}
+
 }
 

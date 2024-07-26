@@ -2,6 +2,7 @@
 #pragma once
 
 #include "utility"
+#include "string"
 #include "Core/Core.h"
 
 namespace Quirk {

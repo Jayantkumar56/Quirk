@@ -3,7 +3,7 @@
 #include "Qkpch.h"
 
 #include "RendererAPI.h"
-#include "Core/core.h"
+#include "Core/Core.h"
 
 #include "Core/Application/Application.h"
 #include "Platform/OpenGL/OpenGLRendererAPI.h"

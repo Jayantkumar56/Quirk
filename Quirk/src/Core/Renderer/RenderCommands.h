@@ -1,8 +1,9 @@
 
 #pragma once
 
-
+#include "Core/Core.h"
 #include "RendererAPI.h"
+#include "VertexArray.h"
 
 namespace Quirk {
 
@@ -14,6 +15,8 @@ namespace Quirk {
 		static inline void SetClearColor(const glm::vec4& color) { s_RendererAPI->SetClearColor(color); }
 		static inline void Clear() { s_RendererAPI->Clear(); }
 		static inline void SwapBuffers() { s_RendererAPI->SwapBuffers(); }
+
+		static inline void DrawIndexed(Ref<VertexArray>& vertexArray) { s_RendererAPI->DrawIndexed(vertexArray); }
 
 	private:
 		static RendererAPI* s_RendererAPI;

@@ -6,7 +6,7 @@
 #include "Platform/OpenGL/OpenGLShader.h"
 
 #include "Renderer.h"
-#include "Core/core.h"
+#include "Core/Core.h"
 
 namespace Quirk {
 

@@ -2,6 +2,8 @@
 #include "Qkpch.h"
 #include "Layer.h"
 
+#include "Core/Imgui/ImguiLayer.h"
+
 namespace Quirk {
 
 	Layer::Layer(const std::string& name) :
@@ -34,6 +36,19 @@ namespace Quirk {
 			m_OverLays[i]->OnUpdate();
 		}
 	}
+
+    void LayerStack::UpdateImguiUiLayers() {
+		size_t i = 0, size = m_Layers.size();
+		for (; i < size; ++i) {
+			m_Layers[i]->OnImguiUiUpdate();
+		}
+
+		for (i = 0, size = m_OverLays.size(); i < size; ++i) {
+			ImguiLayer::Begin();
+			m_OverLays[i]->OnImguiUiUpdate();
+			ImguiLayer::End();
+		}
+    }
 
 	void LayerStack::PushLayer(Layer* layer) {
 		m_Layers.push_back(layer);
