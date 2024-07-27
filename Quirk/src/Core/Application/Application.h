@@ -23,9 +23,9 @@ namespace Quirk {
 		inline void PushOverlay(Layer* overlay) { m_LayerStack.PushOverlay(overlay); }
 
 	private:
-		Window		m_Window;
-		bool		m_Running;
-		LayerStack	m_LayerStack;
+		Window m_Window;
+		bool m_Running;
+		LayerStack m_LayerStack;
 
 	private:
 		static Application* s_Instance;

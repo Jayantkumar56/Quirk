@@ -9,6 +9,7 @@
 #include "Core/Renderer/RenderCommands.h"
 
 #include "imgui.h"
+#include "Core/Utility/Time.h"
 
 namespace Quirk {
 
@@ -22,11 +23,12 @@ namespace Quirk {
 		m_Window.SetEventCallback(QK_BIND_EVENT_FN(Application::OnEvent));
 
 		Renderer::InitRenderer(RendererAPI::API::OpenGL);
-		RenderCommands::SetClearColor({ 0.10156f, 0.17968f, 0.20703f, 1.0f });
 	}
 
 	void Application::Run() {
 		while (m_Running) {
+			Time::RefreshTime();
+
 			RenderCommands::Clear();
 
 			m_Window.OnUpdate();

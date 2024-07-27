@@ -26,7 +26,7 @@ public:
 		Quirk::Ref<Quirk::IndexBuffer> squareIB(Quirk::IndexBuffer::Create(squareIndices, sizeof(squareIndices) / sizeof(squareIndices[0])));
 		m_SquareVA->SetIndexBuffer(squareIB);
 
-		std::string blueShaderVertexSrc = R"(
+		std::string shaderVertexSrc = R"(
 			#version 330 core
 			
 			layout(location = 0) in vec4 a_Position;
@@ -37,7 +37,7 @@ public:
 			}
 		)";
 
-		std::string blueShaderFragmentSrc = R"(
+		std::string shaderFragmentSrc = R"(
 			#version 330 core
 			
 			out vec4 color;
@@ -47,7 +47,7 @@ public:
 			}
 		)";
 
-		m_BlueShader.reset(Quirk::Shader::Create(blueShaderVertexSrc, blueShaderFragmentSrc));
+		m_Shader.reset(Quirk::Shader::Create(shaderVertexSrc, shaderFragmentSrc));
 	}
 
 	virtual void OnAttach() override {
@@ -67,29 +67,33 @@ public:
 	}
 
 	virtual void OnUpdate() override {
+		double deltaTime = Quirk::Time::GetDeltaTime();
+		double cameraDisplacement = m_CameraSpeed * deltaTime;
+
 		if(Quirk::Input::IsKeyPressed(QK_Key_W)) {
-			m_OrthoCamera.SetPosition(m_OrthoCamera.GetPosition() + glm::vec3(0.0f, 0.001f, 0.0f));
+			m_OrthoCamera.SetPosition(m_OrthoCamera.GetPosition() + glm::vec3(0.0f, cameraDisplacement, 0.0f));
 		}
 		if (Quirk::Input::IsKeyPressed(QK_Key_S)) {
-			m_OrthoCamera.SetPosition(m_OrthoCamera.GetPosition() - glm::vec3(0.0f, 0.001f, 0.0f));
+			m_OrthoCamera.SetPosition(m_OrthoCamera.GetPosition() - glm::vec3(0.0f, cameraDisplacement, 0.0f));
 		}
 		if (Quirk::Input::IsKeyPressed(QK_Key_A)) {
-			m_OrthoCamera.SetPosition(m_OrthoCamera.GetPosition() + glm::vec3(0.001f, 0.0f, 0.0f));
+			m_OrthoCamera.SetPosition(m_OrthoCamera.GetPosition() + glm::vec3(cameraDisplacement, 0.0f, 0.0f));
 		}
 		if (Quirk::Input::IsKeyPressed(QK_Key_D)) {
-			m_OrthoCamera.SetPosition(m_OrthoCamera.GetPosition() - glm::vec3(0.001f, 0.0f, 0.0f));
+			m_OrthoCamera.SetPosition(m_OrthoCamera.GetPosition() - glm::vec3(cameraDisplacement, 0.0f, 0.0f));
 		}
 
 		Quirk::Renderer::BeginScene(m_OrthoCamera);
-		Quirk::Renderer::Submit(m_BlueShader, m_SquareVA);
+		Quirk::Renderer::Submit(m_Shader, m_SquareVA);
 		Quirk::Renderer::EndScene();
 	}
-
 
 private:
 	Quirk::OrthographicCamera m_OrthoCamera;
 	Quirk::Ref<Quirk::VertexArray> m_SquareVA;
-	Quirk::Ref<Quirk::Shader> m_BlueShader;
+	Quirk::Ref<Quirk::Shader> m_Shader;
+
+	float m_CameraSpeed = 3.0f;
 };
 
 

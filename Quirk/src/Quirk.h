@@ -10,6 +10,7 @@
 // Include all GLM extensions
 #include "glm/ext.hpp" // perspective, translate, rotate
 
+#include "Core/Utility/Time.h"
 #include "Core/Camera/OrthographicCamera.h"
 
 #include "Core/Input/KeyCodes.h"

@@ -10,6 +10,7 @@ namespace Quirk {
 
 	void Renderer::InitRenderer(RendererAPI::API rendererAPI) {
 		RenderCommands::Init(rendererAPI);
+		RenderCommands::SetClearColor({ 0.10156f, 0.17968f, 0.20703f, 1.0f });
 	}
 
 	void Renderer::BeginScene(OrthographicCamera& camera) {

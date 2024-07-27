@@ -11,6 +11,9 @@ namespace Quirk {
 			RendererAPI(&m_Context, RendererAPI::API::OpenGL)
 	{
 		m_Context.Init();
+
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 
 	inline void Quirk::OpenGLRendererAPI::SetClearColor(const glm::vec4& color) const {
