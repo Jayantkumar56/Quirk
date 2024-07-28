@@ -47,7 +47,8 @@ public:
 			}
 		)";
 
-		m_Shader.reset(Quirk::Shader::Create(shaderVertexSrc, shaderFragmentSrc));
+		//m_Shader = m_ShaderLibrary.LoadShader("assets/shader.glsl");
+		m_Shader = m_ShaderLibrary.LoadShader("OrangeSquare", shaderVertexSrc, shaderFragmentSrc);
 	}
 
 	virtual void OnAttach() override {
@@ -91,6 +92,7 @@ public:
 private:
 	Quirk::OrthographicCamera m_OrthoCamera;
 	Quirk::Ref<Quirk::VertexArray> m_SquareVA;
+	Quirk::ShaderLibrary m_ShaderLibrary;
 	Quirk::Ref<Quirk::Shader> m_Shader;
 
 	float m_CameraSpeed = 3.0f;

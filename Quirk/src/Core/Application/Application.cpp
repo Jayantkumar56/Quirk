@@ -2,8 +2,8 @@
 
 #include<qkpch.h>
 
-#include "Application.h"
 #include "Core/Core.h"
+#include "Core/Application/Application.h"
 
 #include "Core/Renderer/Renderer.h"
 #include "Core/Renderer/RenderCommands.h"

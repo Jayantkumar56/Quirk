@@ -19,6 +19,7 @@ IncludeDir["spdlog"] = "Quirk/vendor/spdlog/include"
 IncludeDir["Glad"] = "Quirk/vendor/Glad/include"
 IncludeDir["Imgui"] = "Quirk/vendor/imgui"
 IncludeDir["Glm"] = "Quirk/vendor/glm"
+IncludeDir["Opengl"] = "Quirk/vendor/OpenGL"
 
 include "Quirk/vendor/Glad"
 include "Quirk/vendor/imgui"
@@ -51,7 +52,8 @@ project "Quirk"
         "%{IncludeDir.spdlog}",
         "%{IncludeDir.Glad}",
         "%{IncludeDir.Imgui}",
-        "%{IncludeDir.Glm}"
+        "%{IncludeDir.Glm}",
+        "%{IncludeDir.Opengl}"
     }
 
     links
@@ -108,7 +110,8 @@ project "Sandbox"
         "Quirk/src",
         "%{IncludeDir.spdlog}",
         "%{IncludeDir.Imgui}",
-        "%{IncludeDir.Glm}"
+        "%{IncludeDir.Glm}",
+        "%{IncludeDir.Opengl}"
     }
 
     links
