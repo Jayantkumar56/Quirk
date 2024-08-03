@@ -38,16 +38,18 @@ namespace Quirk {
 	}
 
     void LayerStack::UpdateImguiUiLayers() {
+		ImguiLayer::Begin();
+
 		size_t i = 0, size = m_Layers.size();
 		for (; i < size; ++i) {
 			m_Layers[i]->OnImguiUiUpdate();
 		}
 
 		for (i = 0, size = m_OverLays.size(); i < size; ++i) {
-			ImguiLayer::Begin();
 			m_OverLays[i]->OnImguiUiUpdate();
-			ImguiLayer::End();
 		}
+
+		ImguiLayer::End();
     }
 
 	void LayerStack::PushLayer(Layer* layer) {

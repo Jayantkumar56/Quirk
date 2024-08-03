@@ -18,11 +18,13 @@ namespace Quirk {
 	class Window{
 		struct WindowData {
 			HWND WindowHandle;
-			uint16_t WindWidth, WindHeight;
-			uint16_t ClientWidth, ClientHeight;
+			uint16_t WindWidth,		WindHeight;
+			uint16_t ClientWidth,	ClientHeight;
+			int32_t PosX,			PosY;
 			std::function<void(Event&)> EventCallbackFn;
 			std::wstring Title;
 			std::wstring WindClassName;
+			bool CursorLocked;
 		};
 
 	public:
@@ -38,6 +40,11 @@ namespace Quirk {
 		inline uint16_t GetHeight() const { return m_Data.ClientHeight; }
 		inline uint16_t GetWindWidth() const { return m_Data.WindWidth; }
 		inline uint16_t GetWindHeight() const { return m_Data.WindHeight; }
+		inline int32_t GetWindPosX() const { return m_Data.PosX; }
+		inline int32_t GetWindPosY() const { return m_Data.PosY; }
+
+		inline void SetCursorLocked(bool isLocked) { m_Data.CursorLocked = isLocked; }
+		inline bool GetCursorLocked() const { return m_Data.CursorLocked; }
 
 		inline std::wstring GetWindowClassName() const { return m_Data.WindClassName; }
 

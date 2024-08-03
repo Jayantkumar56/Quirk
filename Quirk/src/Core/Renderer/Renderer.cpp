@@ -4,6 +4,8 @@
 #include "Renderer.h"
 #include "RenderCommands.h"
 
+#include "Core/Camera/PerspectiveCamera.h"
+
 namespace Quirk {
 
 	Renderer::SceneData Renderer::m_SceneData;
@@ -14,6 +16,10 @@ namespace Quirk {
 	}
 
 	void Renderer::BeginScene(OrthographicCamera& camera) {
+		m_SceneData.ViewProjectionMatrix = camera.GetProjectionViewMatrix();
+	}
+
+	void Renderer::BeginScene(PerspectiveCamera& camera) {
 		m_SceneData.ViewProjectionMatrix = camera.GetProjectionViewMatrix();
 	}
 

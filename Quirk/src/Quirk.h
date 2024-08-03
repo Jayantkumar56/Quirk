@@ -11,13 +11,16 @@
 #include "glm/ext.hpp" // perspective, translate, rotate
 
 #include "Core/Utility/Time.h"
-#include "Core/Camera/OrthographicCamera.h"
 
 #include "Core/Input/KeyCodes.h"
 #include "Core/Input/Events.h"
 #include "Core/Input/MouseEvents.h"
 #include "Core/Input/KeyboardEvents.h"
 #include "Core/Input/ApplicationEvents.h"
+
+#include "Core/Camera/OrthographicCamera.h"
+#include "Core/Camera/PerspectiveCamera.h"
+#include "Core/Camera/CameraController.h"
 
 #include "Core/Renderer/Buffers.h"
 #include "Core/Renderer/Shader.h"

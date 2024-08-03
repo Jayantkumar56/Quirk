@@ -9,6 +9,7 @@
 #include "Shader.h"
 
 #include "Core/Camera/OrthographicCamera.h"
+#include "Core/Camera/PerspectiveCamera.h"
 
 namespace Quirk {
 
@@ -17,6 +18,8 @@ namespace Quirk {
 		static void InitRenderer(RendererAPI::API rendererAPI);
 
 		static void BeginScene(OrthographicCamera& camera);
+		static void BeginScene(PerspectiveCamera& camera);
+
 		static void EndScene();
 		static void Submit(Ref<Shader>& shader, Ref<VertexArray>& vertexArray);
 

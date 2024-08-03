@@ -35,9 +35,11 @@ namespace Quirk {
 				nullptr, 
 				width, height, 
 				width, height,
+				0, 0,
 				nullptr,
 				title, 
-				L"Quirk"
+				L"Quirk",
+				false
 			})
 	{
 		DWORD windowStyle = WS_OVERLAPPEDWINDOW | WS_VISIBLE;
@@ -61,16 +63,15 @@ namespace Quirk {
 
 		AdjustClientArea(windowStyle, windowExStyle);
 
-		// to position the window in the center of the display
-		int windPosX = (GetSystemMetrics(SM_CXSCREEN) - m_Data.WindWidth) / 2;
-		int windPosY = (GetSystemMetrics(SM_CYSCREEN) - m_Data.WindHeight) / 2;
+		int posX = ((GetSystemMetrics(SM_CXSCREEN) - m_Data.WindWidth) / 2);
+		int posY = ((GetSystemMetrics(SM_CYSCREEN) - m_Data.WindHeight) / 2);
 		
 		m_Data.WindowHandle = CreateWindowExW(
 			windowExStyle,							// The window accepts drag-drop files.
 			m_Data.WindClassName.c_str(),			// Window class
 			m_Data.Title.c_str(),					// Window text
 			windowStyle,							// Window style
-			windPosX, windPosY,						// Postion of window on the screen
+			posX, posY,								// Postion of window on the screen
 			m_Data.WindWidth, m_Data.WindHeight,	// height and width of the window
 			NULL,									// Parent window    
 			NULL,									// Menu
@@ -80,8 +81,12 @@ namespace Quirk {
 
 		QK_CORE_ASSERT(m_Data.WindowHandle, "Failed to create Window handle!");
 
-		// Creating graphical context for current window
-		//m_Data.Context->Init(this);
+		// Updating window client area pos
+		POINT pos = { 0, 0 };
+		ClientToScreen(m_Data.WindowHandle, &pos);
+
+		m_Data.PosX = pos.x;
+		m_Data.PosY = pos.y;
 
 		// putting this Window pointer into created HWND
 		SetPropW(m_Data.WindowHandle, L"wndptr", this);
@@ -247,13 +252,29 @@ namespace Quirk {
 				return (LRESULT)0;
 			}
 
-			case WM_MOUSEMOVE :{
+			case WM_MOUSEMOVE: {
 				float PosX = GET_X_LPARAM(lParam), PosY = GET_Y_LPARAM(lParam);
-				Input::UpdateMousePos(PosX, PosY);
 
-				MouseMovedEvent event(PosX, PosY);
+				MouseMovedEvent event(Input::MouseCurrentX(), Input::MouseCurrentY(), PosX, PosY);
 				window->m_Data.EventCallbackFn(event);
 
+				if (window->m_Data.CursorLocked) {
+					int x = static_cast<int>(Input::MouseCurrentX());
+					int y = static_cast<int>(Input::MouseCurrentY());
+					SetCursorPos(x, y);
+					return (LRESULT)0;
+				}
+
+				Input::UpdateMousePos(PosX, PosY);
+
+				return (LRESULT)0;
+			}
+
+			case WM_MOVE: {
+				if(!window) return (LRESULT)0;
+
+				window->m_Data.PosX = static_cast<int32_t>GET_X_LPARAM(lParam);
+				window->m_Data.PosY = static_cast<int32_t>(GET_Y_LPARAM(lParam));
 				return (LRESULT)0;
 			}
 		}

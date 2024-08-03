@@ -8,14 +8,21 @@ namespace Quirk {
 
 	class MouseMovedEvent : public Event {
 	public:
-		MouseMovedEvent(float xPos, float yPos) : m_PosX(xPos), m_PosY(yPos) {}
+		MouseMovedEvent(float xPrevPos, float yPrevPos, float xPos, float yPos) : 
+			m_PrevPosX(xPrevPos), m_PrevPosY(yPrevPos),
+			m_PosX(xPos), m_PosY(yPos) 
+		{
+		}
 
+		inline float GetDeltaX() const { return m_PosX - m_PrevPosX; }
+		inline float GetDeltaY() const { return m_PosY - m_PrevPosY; }
 		inline float GetPosX() const { return m_PosX; }
 		inline float GetPosY() const { return m_PosY; }
 
 		CATEGORY_AND_TYPE(EventCategory::InputEvent | EventCategory::MouseEvent, EventType::MouseMovedEvent);
 
 	private:
+		float m_PrevPosX, m_PrevPosY;
 		float m_PosX, m_PosY;
 	};
 

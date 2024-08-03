@@ -5,14 +5,18 @@ class ExampleLayer : public Quirk::Layer {
 public:
 	ExampleLayer() : 
 			Layer("Example Layer"),
-			m_OrthoCamera(1.5, -1.5, 1.0, -1.0),
+			m_CameraController(45.0f, 1200.0f / 800.0f, 0.1f, 100.0f),
 			m_SquareVA(Quirk::VertexArray::Create())
 	{
-		float squareVertices[3 * 4] = {
-			-0.50f, -0.50f, 0.0f,
-			 0.50f, -0.50f, 0.0f,
-			 0.50f,  0.50f, 0.0f,
-			-0.50f,  0.50f, 0.0f
+		float squareVertices[3 * 8] = {
+			/* 0 */		-0.50f, -0.50f,  0.50f,
+			/* 1 */		 0.50f, -0.50f,  0.50f,
+			/* 2 */		 0.50f,  0.50f,  0.50f,
+			/* 3 */		-0.50f,  0.50f,  0.50f,
+			/* 4 */		-0.50f, -0.50f, -0.50f,
+			/* 5 */		 0.50f, -0.50f, -0.50f,
+			/* 6 */		 0.50f,  0.50f, -0.50f,
+			/* 7 */		-0.50f,  0.50f, -0.50f 
 		};
 
 		Quirk::Ref<Quirk::VertexBuffer> squareVB(Quirk::VertexBuffer::Create(squareVertices, sizeof(squareVertices)));
@@ -21,34 +25,20 @@ public:
 		});
 		m_SquareVA->AddVertexBuffer(squareVB);
 
-		uint32_t squareIndices[6] = { 0, 1, 2, 2, 3, 0 };
+		uint32_t squareIndices[3 * 8] = { 
+			0, 1, 2,	4, 5, 6,
+			2, 3, 0,	6, 7, 4,
+
+			0, 1, 4,	2, 3, 6,
+			4, 5, 1,	6, 7, 3,
+
+
+		};
 
 		Quirk::Ref<Quirk::IndexBuffer> squareIB(Quirk::IndexBuffer::Create(squareIndices, sizeof(squareIndices) / sizeof(squareIndices[0])));
 		m_SquareVA->SetIndexBuffer(squareIB);
 
-		std::string shaderVertexSrc = R"(
-			#version 330 core
-			
-			layout(location = 0) in vec4 a_Position;
-			uniform mat4 u_ViewProjection;
-
-			void main() {
-				gl_Position = u_ViewProjection * a_Position;
-			}
-		)";
-
-		std::string shaderFragmentSrc = R"(
-			#version 330 core
-			
-			out vec4 color;
-
-			void main() {
-				color = vec4(0.823, 0.490, 0.176, 1.0);
-			}
-		)";
-
-		//m_Shader = m_ShaderLibrary.LoadShader("assets/shader.glsl");
-		m_Shader = m_ShaderLibrary.LoadShader("OrangeSquare", shaderVertexSrc, shaderFragmentSrc);
+		m_Shader = m_ShaderLibrary.LoadShader("assets/shader.glsl");
 	}
 
 	virtual void OnAttach() override {
@@ -60,37 +50,62 @@ public:
 	}
 
 	virtual bool OnEvent(Quirk::Event& event) override{
+		Quirk::EventDispatcher::Dispatch<Quirk::KeyPressedEvent>([&](Quirk::KeyPressedEvent& e) -> bool {
+			if (e.GetKeyCode() == QK_Key_L) {
+				Quirk::Cursor::PlaceAtCenter();
+				Quirk::Cursor::LockCursor();
+				Quirk::Cursor::HideCursor();
+			}
+
+			if (e.GetKeyCode() == QK_Key_Escape) {
+				Quirk::Cursor::UnlockCursor();
+				Quirk::Cursor::ShowCursor();
+			}
+
+			if (e.GetKeyCode() == QK_Key_T) {
+				Quirk::Cursor::PlaceAtCenter();
+			}
+
+			return false;
+		});
+
 		return false;
 	}
 
 	virtual void OnImguiUiUpdate() override{
+		ImGuiIO& io = ImGui::GetIO();
 
+		{
+			static float f = 0.0f;
+			static int counter = 0;
+
+			ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
+
+			ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
+
+			ImGui::DragFloat3("Camera Position", glm::value_ptr(m_CameraController.GetPosition()), 0.1f);
+
+			if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
+				counter++;
+			ImGui::SameLine();
+			ImGui::Text("counter = %d", counter);
+
+			ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
+			ImGui::End();
+		}
 	}
 
 	virtual void OnUpdate() override {
-		double deltaTime = Quirk::Time::GetDeltaTime();
-		double cameraDisplacement = m_CameraSpeed * deltaTime;
+		m_CameraController.OnUpdate();
 
-		if(Quirk::Input::IsKeyPressed(QK_Key_W)) {
-			m_OrthoCamera.SetPosition(m_OrthoCamera.GetPosition() + glm::vec3(0.0f, cameraDisplacement, 0.0f));
-		}
-		if (Quirk::Input::IsKeyPressed(QK_Key_S)) {
-			m_OrthoCamera.SetPosition(m_OrthoCamera.GetPosition() - glm::vec3(0.0f, cameraDisplacement, 0.0f));
-		}
-		if (Quirk::Input::IsKeyPressed(QK_Key_A)) {
-			m_OrthoCamera.SetPosition(m_OrthoCamera.GetPosition() + glm::vec3(cameraDisplacement, 0.0f, 0.0f));
-		}
-		if (Quirk::Input::IsKeyPressed(QK_Key_D)) {
-			m_OrthoCamera.SetPosition(m_OrthoCamera.GetPosition() - glm::vec3(cameraDisplacement, 0.0f, 0.0f));
-		}
-
-		Quirk::Renderer::BeginScene(m_OrthoCamera);
+		Quirk::Renderer::BeginScene(m_CameraController.GetCamera());
 		Quirk::Renderer::Submit(m_Shader, m_SquareVA);
 		Quirk::Renderer::EndScene();
 	}
 
 private:
-	Quirk::OrthographicCamera m_OrthoCamera;
+	Quirk::PerspectiveCameraController m_CameraController;
+	//Quirk::OrthographicCamera m_OrthoCamera;
 	Quirk::Ref<Quirk::VertexArray> m_SquareVA;
 	Quirk::ShaderLibrary m_ShaderLibrary;
 	Quirk::Ref<Quirk::Shader> m_Shader;

@@ -30,8 +30,22 @@ namespace Quirk {
 		static MouseInfo MouseData;
 	};	
 
+	// The member functions should be defined for each windowing platform
+	class Cursor {
+	public:
+		static void ShowCursor();
+		static void HideCursor();
+			   
+		static void LockCursor();
+		static void UnlockCursor();
+			   
+		static void SetCursorPosition(float x, float y);
+		static void PlaceAtCenter();
+	};
+
 	class Input {
 		friend class Window;
+		friend class Cursor;
 
 	public:
 		static inline bool IsKeyPressed(int keyCode) { return InputData::KeyPressed[keyCode]; }
