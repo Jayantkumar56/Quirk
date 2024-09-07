@@ -5,11 +5,11 @@
 
 namespace Quirk {
 
-	class OpenGLShder : public Shader{
+	class OpenGLShader : public Shader{
 	public:
-		OpenGLShder(const std::string shaderSourcesArray[], uint8_t size);
-		OpenGLShder(const std::string& vertexSrc, const std::string& fragmentSrc);
-		~OpenGLShder();
+		OpenGLShader(const std::string shaderSourcesArray[], uint8_t size);
+		OpenGLShader(const std::string& vertexSrc, const std::string& fragmentSrc);
+		~OpenGLShader();
 
 		virtual void Bind() const override;
 		virtual void Unbind() const override;

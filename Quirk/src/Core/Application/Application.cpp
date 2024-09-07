@@ -49,11 +49,6 @@ namespace Quirk {
 			return;
 		}
 
-		EventDispatcher::Dispatch<MouseButtonPressedEvent>([&](MouseButtonPressedEvent& event) -> bool {
-			QK_CORE_INFO("Mouse Pos {} {}", event.GetPosX(), event.GetPosY());
-			return true;
-		});
-
 		m_LayerStack.HandleEvent(event);
 	}
 

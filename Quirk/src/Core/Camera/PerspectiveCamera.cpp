@@ -5,31 +5,18 @@
 
 namespace Quirk {
 
-	PerspectiveCamera::PerspectiveCamera(float fov, float aspectRatio, float nearPlane, float farPlane) :
-			m_ProjectionMatrix(glm::perspective(fov, aspectRatio, nearPlane, farPlane)),
-			m_ViewMatrix(glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp)),
-			m_ProjectionViewMatrix(m_ProjectionMatrix * m_ViewMatrix)
+	PerspectiveCamera::PerspectiveCamera(float fov, float aspectRatio, float nearPlane, float farPlane, glm::vec3& pos, glm::vec3& front, glm::vec3& up) :
+			m_FOV(fov), 
+			m_AspectRatio(aspectRatio),
+			m_NearPlane(nearPlane), 
+			m_FarPlane(farPlane),
+			m_ProjectionMatrix(glm::perspective(fov, aspectRatio, nearPlane, farPlane))
 	{
-		float Yaw = 90.0f;
-		float Pitch = 0.0f;
-
-		cameraFront.x = cos(glm::radians(Yaw)) * cos(glm::radians(Pitch));
-		cameraFront.y = sin(glm::radians(Pitch));
-		cameraFront.z = sin(glm::radians(Yaw)) * cos(glm::radians(Pitch));
-		cameraFront = glm::normalize(cameraFront);
-
-		m_ViewMatrix = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
-		m_ProjectionViewMatrix = m_ProjectionMatrix * m_ViewMatrix;
+		m_ViewMatrix = glm::lookAt(pos, pos + front, up);
 	}
 
-	void PerspectiveCamera::UpdatePosition(const glm::vec3& newPos, const glm::vec3& prevPos) {
-		m_ViewMatrix = glm::translate(glm::mat4(1.0f), newPos - prevPos) * m_ViewMatrix;
-		m_ProjectionViewMatrix = m_ProjectionMatrix * m_ViewMatrix;
-	}
-
-	void PerspectiveCamera::UpdateRotation(float angle, glm::vec3 axis) {
-		m_ViewMatrix = glm::rotate(glm::mat4(1.0f), angle, axis) * m_ViewMatrix;
-		m_ProjectionViewMatrix = m_ProjectionMatrix * m_ViewMatrix;
+	void PerspectiveCamera::UpdateViewMatrix(glm::vec3& pos, glm::vec3& front, glm::vec3& up) {
+		m_ViewMatrix = glm::lookAt(pos, front + pos, up);
 	}
 
 }

@@ -39,7 +39,7 @@ namespace Quirk {
 		int y = window.GetWindPosY() + window.GetHeight() / 2;
 
 		SetCursorPos(x, y);
-		Input::UpdateMousePos(static_cast<float>(x), static_cast<float>(y));
+		Input::UpdateMousePos(static_cast<float>(window.GetWidth() / 2), static_cast<float>(window.GetHeight() / 2));
 	}
 
 }

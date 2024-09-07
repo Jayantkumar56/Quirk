@@ -25,6 +25,7 @@ namespace Quirk {
 			std::wstring Title;
 			std::wstring WindClassName;
 			bool CursorLocked;
+			bool CursorLeftWindow;
 		};
 
 	public:
@@ -50,6 +51,8 @@ namespace Quirk {
 
 		inline void* GetNativeWindow() { return m_Data.WindowHandle; }
 		inline void SetEventCallback(std::function<void(Event&)> fun) { m_Data.EventCallbackFn = fun; }
+
+		inline bool TrackingCursor() const { return !m_Data.CursorLeftWindow; }
 
 	private:
 		static LRESULT WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);

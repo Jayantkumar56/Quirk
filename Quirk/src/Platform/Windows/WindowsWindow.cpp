@@ -254,19 +254,36 @@ namespace Quirk {
 
 			case WM_MOUSEMOVE: {
 				float PosX = GET_X_LPARAM(lParam), PosY = GET_Y_LPARAM(lParam);
+				float PrevX = Input::MouseCurrentX(), PrevY = Input::MouseCurrentY();
 
-				MouseMovedEvent event(Input::MouseCurrentX(), Input::MouseCurrentY(), PosX, PosY);
+				if (window->m_Data.CursorLeftWindow) {
+					Input::UpdateMousePos(PosX, PosY);
+					window->m_Data.CursorLeftWindow = false;
+					return (LRESULT)0;
+				}
+
+				if (PrevX == PosX && PrevY == PosY)
+					return (LRESULT)0;
+
+				MouseMovedEvent event(PrevX, PrevY, PosX, PosY);
 				window->m_Data.EventCallbackFn(event);
 
 				if (window->m_Data.CursorLocked) {
-					int x = static_cast<int>(Input::MouseCurrentX());
-					int y = static_cast<int>(Input::MouseCurrentY());
-					SetCursorPos(x, y);
+					POINT cursorPos = { static_cast<int>(PrevX), static_cast<int>(PrevY) };
+
+					ClientToScreen(hwnd, &cursorPos);
+					SetCursorPos(cursorPos.x, cursorPos.y);
+
 					return (LRESULT)0;
 				}
 
 				Input::UpdateMousePos(PosX, PosY);
 
+				return (LRESULT)0;
+			}
+
+			case WM_MOUSELEAVE: {
+				window->m_Data.CursorLeftWindow = true;
 				return (LRESULT)0;
 			}
 

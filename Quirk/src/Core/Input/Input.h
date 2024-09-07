@@ -30,8 +30,8 @@ namespace Quirk {
 		static MouseInfo MouseData;
 	};	
 
-	// The member functions should be defined for each windowing platform
 	class Cursor {
+	// The member functions should be defined for each windowing platform
 	public:
 		static void ShowCursor();
 		static void HideCursor();

@@ -9,23 +9,20 @@ namespace Quirk {
 
 	class PerspectiveCamera {
 	public:
-		PerspectiveCamera(float fov, float aspectRatio, float nearPlane, float farPlane);
+		PerspectiveCamera(float fov, float aspectRatio, float nearPlane, float farPlane, glm::vec3& pos, glm::vec3& front, glm::vec3& up);
 
 		glm::mat4& GetProjectionMatrix() { return m_ProjectionMatrix; }
 		glm::mat4& GetViewMatrix() { return m_ViewMatrix; }
-		glm::mat4& GetProjectionViewMatrix() { return m_ProjectionViewMatrix; }
+		glm::mat4 GetProjectionViewMatrix() { return m_ProjectionMatrix * m_ViewMatrix; }
 
-		void UpdatePosition(const glm::vec3& newPos, const glm::vec3& prevPos);
-		void UpdateRotation(float angle, glm::vec3 axis);
+		void UpdateViewMatrix(glm::vec3& pos, glm::vec3& front, glm::vec3& up);
 
 	private:
+		float m_FOV, m_AspectRatio;
+		float m_NearPlane, m_FarPlane;
+
 		glm::mat4 m_ProjectionMatrix;
 		glm::mat4 m_ViewMatrix;
-		glm::mat4 m_ProjectionViewMatrix;
-
-		glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, -3.0f);
-		glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, 1.0f);
-		glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 	};
 
 }

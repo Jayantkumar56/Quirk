@@ -7,7 +7,7 @@
 
 namespace Quirk {
 
-	unsigned int OpenGLShder::ShaderTypeToGLShaderType(uint8_t type) {
+	unsigned int OpenGLShader::ShaderTypeToGLShaderType(uint8_t type) {
 		switch (type) {
 			case Quirk::ShaderLibrary::VertexShader:	return GL_VERTEX_SHADER;
 			case Quirk::ShaderLibrary::FragmentShader:	return GL_FRAGMENT_SHADER;
@@ -17,7 +17,7 @@ namespace Quirk {
 		return 0;
 	}
 
-	unsigned int OpenGLShder::CompileShader(unsigned int glType, const char* source) {
+	unsigned int OpenGLShader::CompileShader(unsigned int glType, const char* source) {
 		unsigned int shader = glCreateShader(glType);
 
 		glShaderSource(shader, 1, &source, 0);
@@ -45,7 +45,7 @@ namespace Quirk {
 		return shader;
 	}
 
-	OpenGLShder::OpenGLShder(const std::string shaderSourcesArray[], uint8_t size) {
+	OpenGLShader::OpenGLShader(const std::string shaderSourcesArray[], uint8_t size) {
 		GLuint shader[ShaderLibrary::SahderType::NoTypesOfShader] = {0};
 
 		for (uint8_t i = 0; i < size; ++i) {
@@ -98,7 +98,7 @@ namespace Quirk {
 		}
 	}
 
-	Quirk::OpenGLShder::OpenGLShder(const std::string& vertexSrc, const std::string& fragmentSrc) {
+	Quirk::OpenGLShader::OpenGLShader(const std::string& vertexSrc, const std::string& fragmentSrc) {
 		GLuint vertexShader = CompileShader(GL_VERTEX_SHADER, vertexSrc.c_str());
 		GLuint fragmentShader = CompileShader(GL_FRAGMENT_SHADER, fragmentSrc.c_str());
 
@@ -143,19 +143,19 @@ namespace Quirk {
 		glDetachShader(program, fragmentShader);
 	}
 
-	Quirk::OpenGLShder::~OpenGLShder() {
+	Quirk::OpenGLShader::~OpenGLShader() {
 		glDeleteProgram(m_RendererId);
 	}
 
-	void Quirk::OpenGLShder::Bind() const {
+	void Quirk::OpenGLShader::Bind() const {
 		glUseProgram(m_RendererId);
 	}
 
-	void Quirk::OpenGLShder::Unbind() const {
+	void Quirk::OpenGLShader::Unbind() const {
 		glUseProgram(0);
 	}
 
-	void OpenGLShder::UploadUniform(const std::string& name, const glm::mat4& matrix) {
+	void OpenGLShader::UploadUniform(const std::string& name, const glm::mat4& matrix) {
 		GLint location = glGetUniformLocation(m_RendererId, name.c_str());
 		glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
 	}

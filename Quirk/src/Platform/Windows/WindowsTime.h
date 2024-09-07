@@ -21,6 +21,8 @@ namespace Quirk {
 
 		inline double GetTimeMillisecond() const { return m_CurrentTime * 1000; }
 		inline double GetTimeSecond() const { return m_CurrentTime; }
+
+		// gives delta time in seconds
 		inline double GetDeltaTime() const { return (m_CurrentTime - m_LastTime); }
 
 	private:
