@@ -20,6 +20,7 @@ IncludeDir["Glad"] = "Quirk/vendor/Glad/include"
 IncludeDir["Imgui"] = "Quirk/vendor/imgui"
 IncludeDir["Glm"] = "Quirk/vendor/glm"
 IncludeDir["Opengl"] = "Quirk/vendor/OpenGL"
+IncludeDir["Stb_Image"] = "Quirk/vendor/stb_image"
 
 include "Quirk/vendor/Glad"
 include "Quirk/vendor/imgui"
@@ -40,7 +41,9 @@ project "Quirk"
         "%{prj.name}/src/**.cpp",
         "%{prj.name}/vendor/**.hpp",
         "%{prj.name}/vendor/**.h",
-        "%{prj.name}/vendor/**.inl"
+        "%{prj.name}/vendor/**.inl",
+        "%{prj.name}/vendor/stb_image/**.cpp",
+        "%{prj.name}/vendor/stb_image/**.h"
     }
 
 	pchheader "Qkpch.h"
@@ -53,7 +56,8 @@ project "Quirk"
         "%{IncludeDir.Glad}",
         "%{IncludeDir.Imgui}",
         "%{IncludeDir.Glm}",
-        "%{IncludeDir.Opengl}"
+        "%{IncludeDir.Opengl}",
+        "%{IncludeDir.Stb_Image}",
     }
 
     links
@@ -111,7 +115,8 @@ project "Sandbox"
         "%{IncludeDir.spdlog}",
         "%{IncludeDir.Imgui}",
         "%{IncludeDir.Glm}",
-        "%{IncludeDir.Opengl}"
+        "%{IncludeDir.Opengl}",
+        "%{IncludeDir.Stb_Image}",
     }
 
     links
