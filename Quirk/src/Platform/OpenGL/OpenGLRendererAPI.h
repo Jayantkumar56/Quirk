@@ -16,7 +16,11 @@ namespace Quirk {
 		virtual inline void Clear() const override;
 		virtual inline void SwapBuffers() override;
 
+		virtual inline void EnableFaceCulling() const override;
+		virtual inline void DisableFaceCulling() const override;
+
 		virtual inline void DrawIndexed(Ref<VertexArray>& vertexArray) override;
+		virtual inline void DrawVertices(Ref<VertexArray>& vertexArray) override;
 		
 	private:
 		OpenGLContext m_Context;

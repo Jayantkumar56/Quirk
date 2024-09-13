@@ -16,7 +16,11 @@ namespace Quirk {
 		static inline void Clear() { s_RendererAPI->Clear(); }
 		static inline void SwapBuffers() { s_RendererAPI->SwapBuffers(); }
 
+		static inline void EnableFaceCulling() { s_RendererAPI->EnableFaceCulling(); }
+		static inline void DisableFaceCulling() { s_RendererAPI->DisableFaceCulling(); }
+
 		static inline void DrawIndexed(Ref<VertexArray>& vertexArray) { s_RendererAPI->DrawIndexed(vertexArray); }
+		static inline void DrawVertices(Ref<VertexArray>& vertexArray) { s_RendererAPI->DrawVertices(vertexArray); }
 
 	private:
 		static RendererAPI* s_RendererAPI;

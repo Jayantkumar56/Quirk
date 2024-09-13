@@ -8,15 +8,49 @@ public:
 			m_CameraController(45.0f, 1200.0f / 800.0f, 0.1f, 100.0f),
 			m_SquareVA(Quirk::VertexArray::Create())
 	{
-		float squareVertices[6 * 8] = {
-			/* 0 */		-0.50f, -0.50f,  0.50f,			1.0f, 0.0f, 0.0f,
-			/* 1 */		 0.50f, -0.50f,  0.50f,			1.0f, 0.0f, 0.0f,
-			/* 2 */		 0.50f,  0.50f,  0.50f,			1.0f, 0.0f, 0.0f,
-			/* 3 */		-0.50f,  0.50f,  0.50f,			1.0f, 0.0f, 0.0f,
-			/* 4 */		-0.50f, -0.50f, -0.50f,			1.0f, 0.0f, 0.0f,
-			/* 5 */		 0.50f, -0.50f, -0.50f,			1.0f, 0.0f, 0.0f,
-			/* 6 */		 0.50f,  0.50f, -0.50f,			1.0f, 0.0f, 0.0f,
-			/* 7 */		-0.50f,  0.50f, -0.50f, 		1.0f, 0.0f, 0.0f
+		float squareVertices[] = {
+			// back face
+			-0.5f, -0.5f, -0.5f,		1.0f, 0.0f, 0.0f, // bottom-left
+			 0.5f,  0.5f, -0.5f,		1.0f, 0.0f, 0.0f, // top-right
+			 0.5f, -0.5f, -0.5f,		1.0f, 0.0f, 0.0f, // bottom-right
+			 0.5f,  0.5f, -0.5f,		1.0f, 0.0f, 0.0f, // top-right
+			-0.5f, -0.5f, -0.5f,		1.0f, 0.0f, 0.0f, // bottom-left
+			-0.5f,  0.5f, -0.5f,		1.0f, 0.0f, 0.0f, // top-left
+			// front face					  			
+			-0.5f, -0.5f, 0.5f,			1.0f, 0.0f, 0.0f, // bottom-left
+			 0.5f, -0.5f, 0.5f,			1.0f, 0.0f, 0.0f, // bottom-right
+			 0.5f,  0.5f, 0.5f,			1.0f, 0.0f, 0.0f, // top-right
+			 0.5f,  0.5f, 0.5f,			1.0f, 0.0f, 0.0f, // top-right
+			-0.5f,  0.5f, 0.5f,			1.0f, 0.0f, 0.0f, // top-left
+			-0.5f, -0.5f, 0.5f,			1.0f, 0.0f, 0.0f, // bottom-left
+			// left face
+			- 0.5f, 0.5f,  0.5f,		1.0f, 0.0f, 0.0f, // top-right
+			-0.5f,  0.5f, -0.5f,		1.0f, 0.0f, 0.0f, // top-left
+			-0.5f, -0.5f, -0.5f,		1.0f, 0.0f, 0.0f, // bottom-left
+			-0.5f, -0.5f, -0.5f,		1.0f, 0.0f, 0.0f, // bottom-left
+			-0.5f, -0.5f,  0.5f,		1.0f, 0.0f, 0.0f, // bottom-right
+			-0.5f,  0.5f,  0.5f,		1.0f, 0.0f, 0.0f, // top-right
+			// right face					  		
+			 0.5f,  0.5f,  0.5f,		1.0f, 0.0f, 0.0f, // top-left
+			 0.5f, -0.5f, -0.5f,		1.0f, 0.0f, 0.0f, // bottom-right
+			 0.5f,  0.5f, -0.5f,		1.0f, 0.0f, 0.0f, // top-right
+			 0.5f, -0.5f, -0.5f,		1.0f, 0.0f, 0.0f, // bottom-right
+			 0.5f,  0.5f,  0.5f,		1.0f, 0.0f, 0.0f, // top-left
+			 0.5f, -0.5f,  0.5f,		1.0f, 0.0f, 0.0f, // bottom-left
+			// bottom face					  	
+			-0.5f, -0.5f, -0.5f,		1.0f, 0.0f, 0.0f, // top-right
+			 0.5f, -0.5f, -0.5f,		1.0f, 0.0f, 0.0f, // top-left
+			 0.5f, -0.5f,  0.5f,		1.0f, 0.0f, 0.0f, // bottom-left
+			 0.5f, -0.5f,  0.5f,		1.0f, 0.0f, 0.0f, // bottom-left
+			-0.5f, -0.5f,  0.5f,		1.0f, 0.0f, 0.0f, // bottom-right
+			-0.5f, -0.5f, -0.5f,		1.0f, 0.0f, 0.0f, // top-right
+			// top face						  	
+			-0.5f,  0.5f, -0.5f,		1.0f, 0.0f, 0.0f, // top-left
+			 0.5f,  0.5f,  0.5f,		1.0f, 0.0f, 0.0f, // bottom-right
+			 0.5f,  0.5f, -0.5f,		1.0f, 0.0f, 0.0f, // top-right
+			 0.5f,  0.5f,  0.5f,		1.0f, 0.0f, 0.0f, // bottom-right
+			-0.5f,  0.5f, -0.5f,		1.0f, 0.0f, 0.0f, // top-left
+			-0.5f,  0.5f,  0.5f,		1.0f, 0.0f, 0.0f  // bottom-left
 		};
 
 		Quirk::Ref<Quirk::VertexBuffer> squareVB(Quirk::VertexBuffer::Create(squareVertices, sizeof(squareVertices)));
@@ -26,15 +60,15 @@ public:
 		});
 		m_SquareVA->AddVertexBuffer(squareVB);
 
-		uint32_t squareIndices[3 * 12] = { 
+		uint32_t squareIndices[] = { 
 			0, 1, 2,	4, 5, 6,
 			2, 3, 0,	6, 7, 4,
 
 			0, 1, 4,	2, 3, 6,
 			4, 5, 1,	6, 7, 3,
 
-			1, 5, 2,	0, 3, 4,
-			5, 2, 6,	3, 4, 7
+			/*1, 5, 2,	0, 3, 4,
+			5, 2, 6,	3, 4, 7*/
 		};
 
 		Quirk::Ref<Quirk::IndexBuffer> squareIB(Quirk::IndexBuffer::Create(squareIndices, sizeof(squareIndices) / sizeof(squareIndices[0])));
