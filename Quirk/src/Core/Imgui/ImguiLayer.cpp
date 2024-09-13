@@ -94,7 +94,7 @@ namespace Quirk {
 		const char* glsl_version = "#version 410";
 
 		Window& window = Application::Get().GetWindow();
-		OpenGLContext* context = (OpenGLContext*)RendererAPI::GetGraphicalContext();
+		OpenGLContext* context = (OpenGLContext*)window.GetGraphicalContext();
 
 		m_MainWindowContextData.DeviceContext = context->GetDeviceContext();
 		GLContext = context->GetGLContext();

@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include "Core/Renderer/RendererAPI.h"
+
 namespace Quirk {
 
 	class Window;
@@ -9,10 +11,15 @@ namespace Quirk {
 	class GraphicalContext {
 	public:
 		GraphicalContext() = default;
-		virtual ~GraphicalContext() {}
+		virtual ~GraphicalContext() = default;
 
-		virtual void Init() = 0;
-		virtual void SwapBuffer() = 0;
+		static GraphicalContext* Create(RendererAPI::API rendererAPI);
+
+	public:
+		virtual void Init(Window& window) = 0;
+		virtual void DestroyContext(Window& window) = 0;
+		virtual inline void SetVSync(int toggle) = 0;
+		virtual inline void SwapBuffer() = 0;
 	};
 
 }

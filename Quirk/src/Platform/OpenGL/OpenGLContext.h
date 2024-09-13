@@ -29,33 +29,34 @@ namespace Quirk {
 			PFNWGLCREATECONTEXTATTRIBSARBPROC   CreateContextAttribsARB;
 		};
 
-		struct ContextData {
-			HWND WindowHandle;
-			HGLRC GLContext;
-			HDC DeviceContext;
-
-			ContextData() : WindowHandle(nullptr), GLContext(nullptr), DeviceContext(nullptr) {}
-		};
-
 	public:
 		static WGL s_WGL;
 
 	public:
 		OpenGLContext() = default;
-		~OpenGLContext();
+		~OpenGLContext() = default;
 
-		virtual void Init() override;
-		virtual inline void SwapBuffer() override;
+		virtual void Init(Window& window) override;
+		virtual void DestroyContext(Window& window) override;
 
-		inline HGLRC GetGLContext() const { return m_ContextData.GLContext; }
-		inline HDC GetDeviceContext() const { return m_ContextData.DeviceContext; }
+		virtual inline void SetVSync(int interval) {
+			QK_CORE_ASSERTEX(s_WGL.SwapIntervalEXT(interval), "Failed to Set VSync!");
+		}
+
+		virtual inline void SwapBuffer() {
+			QK_CORE_ASSERTEX(SwapBuffers(m_DeviceContext), "Failed to Swap Buffer");
+		}
+
+		inline HGLRC GetGLContext() const { return m_GLContext; }
+		inline HDC GetDeviceContext() const { return m_DeviceContext; }
 
 	private:
 		static Wglproc GetProcAddressWGL(const char* procName);
 		static LRESULT CALLBACK WndProcTemp(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 	private:
-		ContextData m_ContextData;
+		HGLRC m_GLContext;
+		HDC m_DeviceContext;
 	};
 
 #endif // QK_PLATFORM_WINDOWS

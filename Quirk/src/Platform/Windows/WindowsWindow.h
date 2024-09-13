@@ -13,27 +13,32 @@
 #include "Core/Input/KeyboardEvents.h"
 #include "Core/Input/ApplicationEvents.h"
 
+#include "Core/Renderer/RendererAPI.h"
+#include "Core/Renderer/GraphicalContext.h"
+
 namespace Quirk {
 
 	class Window{
 		struct WindowData {
-			HWND WindowHandle;
-			uint16_t WindWidth,		WindHeight;
-			uint16_t ClientWidth,	ClientHeight;
-			int32_t PosX,			PosY;
+			HWND		WindowHandle;
+			DWORD		WindowStyle,	WindowExStyle;
+			uint16_t	WindWidth,		WindHeight;
+			uint16_t	ClientWidth,	ClientHeight;
+			int32_t		PosX,			PosY;
 			std::function<void(Event&)> EventCallbackFn;
 			std::wstring Title;
 			std::wstring WindClassName;
 			bool CursorLocked;
 			bool CursorLeftWindow;
+			bool IsVSyncOn;
 		};
 
 	public:
 		static void Init(HINSTANCE hInstance);
 
 	public:
-		Window(const std::wstring title, uint16_t width, uint16_t height);
-		~Window() = default;
+		Window(const std::wstring title, uint16_t width, uint16_t height, RendererAPI::API rendererAPI);
+		~Window();
 
 		void OnUpdate();
 
@@ -52,19 +57,25 @@ namespace Quirk {
 		inline void* GetNativeWindow() { return m_Data.WindowHandle; }
 		inline void SetEventCallback(std::function<void(Event&)> fun) { m_Data.EventCallbackFn = fun; }
 
+		inline GraphicalContext* GetGraphicalContext() { return m_Context; }
+
 		inline bool TrackingCursor() const { return !m_Data.CursorLeftWindow; }
+		inline void SwapBuffers() const { m_Context->SwapBuffer(); }
+
+		void SetVSync(bool toggle);
 
 	private:
 		static LRESULT WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 	private:
-		void AdjustClientArea(DWORD windowStyle, DWORD windowExStyle);
+		void AdjustWindowArea();
 
 	private:
 		static HINSTANCE s_HInstance;
 
 	private:
 		WindowData m_Data;
+		GraphicalContext* m_Context;
 	};
 
 }

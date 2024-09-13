@@ -17,8 +17,6 @@ namespace Quirk {
 		void OnUpdate();
 		void OnEvent(Event& e);
 
-		void OnResize(float width, float height);
-
 		PerspectiveCamera& GetCamera() { return m_Camera; }
 		glm::vec3& GetPosition() { return m_CameraPosition; }
 

@@ -8,10 +8,8 @@
 namespace Quirk {
 
 	OpenGLRendererAPI::OpenGLRendererAPI() : 
-			RendererAPI(&m_Context, RendererAPI::API::OpenGL)
+			RendererAPI(RendererAPI::API::OpenGL)
 	{
-		m_Context.Init();
-
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -36,8 +34,8 @@ namespace Quirk {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
-	inline void OpenGLRendererAPI::SwapBuffers() {
-		m_Context.SwapBuffer();
+	inline void OpenGLRendererAPI::UpdateViewPort(uint32_t width, uint32_t height) const {
+		glViewport(0, 0, width, height);
 	}
 
 	inline void OpenGLRendererAPI::DrawIndexed(Ref<VertexArray>& vertexArray) {

@@ -4,7 +4,6 @@
 #include <utility>
 #include "glm/vec4.hpp"
 
-#include "GraphicalContext.h"
 #include "VertexArray.h"
 
 namespace Quirk {
@@ -16,16 +15,15 @@ namespace Quirk {
 		};
 
 	public:
-		RendererAPI(GraphicalContext* context, API rendererAPI);
+		RendererAPI(API rendererAPI);
 		~RendererAPI() {}
 
 		static inline API GetAPI() { return s_API; }
-		static inline GraphicalContext* GetGraphicalContext() { return s_GraphicalContext; }
 
 	public:
 		virtual inline void SetClearColor(const glm::vec4& color) const = 0;
 		virtual inline void Clear() const = 0;
-		virtual inline void SwapBuffers() = 0;
+		virtual inline void UpdateViewPort(uint32_t width, uint32_t height) const = 0;
 
 		virtual inline void EnableFaceCulling() const = 0;
 		virtual inline void DisableFaceCulling() const = 0;
@@ -35,7 +33,6 @@ namespace Quirk {
 
 	private:
 		static API s_API;
-		static GraphicalContext* s_GraphicalContext;
 	};
 
 }

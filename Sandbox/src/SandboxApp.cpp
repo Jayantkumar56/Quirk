@@ -153,6 +153,8 @@ public:
 	SandboxApp() {
 		PushLayer(&m_ExampleLayer);
 		PushOverlay(&m_ImguiLayer);
+
+		GetWindow().SetVSync(true);
 	}
 
 	~SandboxApp() {

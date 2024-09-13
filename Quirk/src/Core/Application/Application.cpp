@@ -16,7 +16,7 @@ namespace Quirk {
 	Application* Application::s_Instance = nullptr;
 
 	Application::Application() :
-		m_Window(L"Quirk Engine!!!!", 1200, 800),
+		m_Window(L"Quirk Engine!!!!", 1200, 800, RendererAPI::API::OpenGL),
 		m_Running(true)
 	{
 		s_Instance = this;
@@ -35,7 +35,7 @@ namespace Quirk {
 			m_LayerStack.UpdateLayers();
 			m_LayerStack.UpdateImguiUiLayers();
 
-			RenderCommands::SwapBuffers();
+			m_Window.SwapBuffers();
 		}
 	}
 
@@ -43,9 +43,12 @@ namespace Quirk {
 		EventDispatcher::HandleEvent(event);
 		EventDispatcher::Dispatch<WindowCloseEvent>(QK_BIND_EVENT_FN(Application::OnWindowClose));
 
+		EventDispatcher::Dispatch<WindowResizeEvent>(QK_BIND_EVENT_FN(Application::OnWindowResize));
+
 		ImGuiIO& io = ImGui::GetIO();
 		uint16_t cat = event.GetEventCategory();
-		if ((cat | EventCategory::KeyboardEvent || cat | EventCategory::MouseEvent) && (io.WantCaptureKeyboard || io.WantCaptureMouse)) {
+
+		if ((cat & EventCategory::KeyboardEvent || cat & EventCategory::MouseEvent) && (io.WantCaptureKeyboard || io.WantCaptureMouse)) {
 			return;
 		}
 
@@ -55,6 +58,11 @@ namespace Quirk {
 	bool Application::OnWindowClose(WindowCloseEvent& event){
 		m_Running = false;
 		return true;
+	}
+
+	bool Application::OnWindowResize(WindowResizeEvent& event) {
+		RenderCommands::UpdateViewPort(event.GetWidth(), event.GetHeight());
+		return false;
 	}
 
 }

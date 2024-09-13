@@ -16,9 +16,10 @@ namespace Quirk {
 		glm::mat4 GetProjectionViewMatrix() { return m_ProjectionMatrix * m_ViewMatrix; }
 
 		void UpdateViewMatrix(glm::vec3& pos, glm::vec3& front, glm::vec3& up);
+		void UpdateAspectRatio(float aspectRatio);
 
 	private:
-		float m_FOV, m_AspectRatio;
+		float m_FOV;
 		float m_NearPlane, m_FarPlane;
 
 		glm::mat4 m_ProjectionMatrix;

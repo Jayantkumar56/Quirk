@@ -27,15 +27,15 @@ namespace Quirk {
 
 	class WindowMoveEvent : public Event {
 	public:
-		WindowMoveEvent(float xPos, float yPos) : m_PosX(xPos), m_PosY(yPos) {}
+		WindowMoveEvent(uint16_t xPos, uint16_t yPos) : m_PosX(xPos), m_PosY(yPos) {}
 
-		inline float GetPosX() const { return m_PosX; }
-		inline float GetPosY() const { return m_PosY; }
+		inline uint32_t GetPosX() const { return m_PosX; }
+		inline uint32_t GetPosY() const { return m_PosY; }
 
 		CATEGORY_AND_TYPE(EventCategory::WindowEvent, EventType::WindowMoveEvent);
 
 	private:
-		float m_PosX, m_PosY;
+		uint16_t m_PosX, m_PosY;
 	};
 
 	class WindowMinimizeEvent : public Event {

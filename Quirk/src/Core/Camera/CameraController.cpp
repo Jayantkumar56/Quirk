@@ -13,7 +13,7 @@ namespace Quirk {
 	PerspectiveCameraController::PerspectiveCameraController(float fov, float aspectRatio, float nearPlane, float farPlane) :
 			m_ZoomLevel(1.0f),
 			m_CameraTranslationSpeed(5.0f), 
-			m_CameraRotationSpeed(50.0f),
+			m_CameraRotationSpeed(0.03f),
 			m_Pitch				(0.0f),
 			m_Yaw				(-90.0f),
 			m_PrevCameraPosition(0.0f, 0.0f, 3.0f),
@@ -57,15 +57,12 @@ namespace Quirk {
 
 	void PerspectiveCameraController::OnEvent(Event& e) {
 		EventDispatcher::Dispatch<MouseMovedEvent>(QK_BIND_EVENT_FN(PerspectiveCameraController::OnMouseMove));
-	}
-
-	void PerspectiveCameraController::OnResize(float width, float height) {
+		EventDispatcher::Dispatch<WindowResizeEvent>(QK_BIND_EVENT_FN(PerspectiveCameraController::OnWindowResized));
 	}
 
 	bool PerspectiveCameraController::OnMouseMove(MouseMovedEvent& e) {
-		double deltaTime = Quirk::Time::GetDeltaTime();
-		m_Yaw += static_cast<float>(e.GetDeltaX() * m_CameraRotationSpeed * deltaTime);
-		m_Pitch += static_cast<float>(e.GetDeltaY() * m_CameraRotationSpeed * deltaTime);
+		m_Yaw += static_cast<float>(e.GetDeltaX() * m_CameraRotationSpeed);
+		m_Pitch += static_cast<float>(e.GetDeltaY() * m_CameraRotationSpeed);
 
 		if (m_Pitch > 89.0f)
 			m_Pitch = 89.0f;
@@ -95,6 +92,7 @@ namespace Quirk {
 	}
 
 	bool PerspectiveCameraController::OnWindowResized(WindowResizeEvent& e) {
+		m_Camera.UpdateAspectRatio(static_cast<float>(e.GetWidth()) / static_cast<float>(e.GetHeight()));
 		return false;
 	}
 

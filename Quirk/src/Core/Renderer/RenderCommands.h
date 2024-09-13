@@ -14,7 +14,7 @@ namespace Quirk {
 
 		static inline void SetClearColor(const glm::vec4& color) { s_RendererAPI->SetClearColor(color); }
 		static inline void Clear() { s_RendererAPI->Clear(); }
-		static inline void SwapBuffers() { s_RendererAPI->SwapBuffers(); }
+		static inline void UpdateViewPort(uint32_t width, uint32_t height) { s_RendererAPI->UpdateViewPort(width, height); }
 
 		static inline void EnableFaceCulling() { s_RendererAPI->EnableFaceCulling(); }
 		static inline void DisableFaceCulling() { s_RendererAPI->DisableFaceCulling(); }

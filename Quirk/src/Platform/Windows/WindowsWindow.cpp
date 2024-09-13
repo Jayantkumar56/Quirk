@@ -30,21 +30,22 @@ namespace Quirk {
 		);
     }
 
-	Window::Window(const std::wstring title, uint16_t width, uint16_t height) :
+	Window::Window(const std::wstring title, uint16_t width, uint16_t height, RendererAPI::API rendererAPI) :
 			m_Data({ 
 				nullptr, 
+				WS_OVERLAPPEDWINDOW | WS_VISIBLE,
+				WS_EX_ACCEPTFILES,
 				width, height, 
 				width, height,
 				0, 0,
 				nullptr,
 				title, 
 				L"Quirk",
+				false,
 				false
-			})
+			}),
+			m_Context(GraphicalContext::Create(rendererAPI))
 	{
-		DWORD windowStyle = WS_OVERLAPPEDWINDOW | WS_VISIBLE;
-		DWORD windowExStyle = WS_EX_ACCEPTFILES;
-
 		WNDCLASSEXW wc = {};
 		wc.cbSize			= sizeof(WNDCLASSEXW);
 		wc.style			= CS_HREDRAW | CS_VREDRAW | CS_OWNDC | CS_DBLCLKS;
@@ -61,16 +62,16 @@ namespace Quirk {
 
 		QK_CORE_ASSERTEX(RegisterClassExW(&wc), "Failed to Register the window class! {0}", GetLastError());
 
-		AdjustClientArea(windowStyle, windowExStyle);
+		AdjustWindowArea();
 
 		int posX = ((GetSystemMetrics(SM_CXSCREEN) - m_Data.WindWidth) / 2);
 		int posY = ((GetSystemMetrics(SM_CYSCREEN) - m_Data.WindHeight) / 2);
 		
 		m_Data.WindowHandle = CreateWindowExW(
-			windowExStyle,							// The window accepts drag-drop files.
+			m_Data.WindowExStyle,					// The window accepts drag-drop files.
 			m_Data.WindClassName.c_str(),			// Window class
 			m_Data.Title.c_str(),					// Window text
-			windowStyle,							// Window style
+			m_Data.WindowStyle,						// Window style
 			posX, posY,								// Postion of window on the screen
 			m_Data.WindWidth, m_Data.WindHeight,	// height and width of the window
 			NULL,									// Parent window    
@@ -81,6 +82,11 @@ namespace Quirk {
 
 		QK_CORE_ASSERT(m_Data.WindowHandle, "Failed to create Window handle!");
 
+		// putting this Window pointer into created HWND
+		SetPropW(m_Data.WindowHandle, L"wndptr", this);
+
+		m_Context->Init(*this);
+
 		// Updating window client area pos
 		POINT pos = { 0, 0 };
 		ClientToScreen(m_Data.WindowHandle, &pos);
@@ -88,12 +94,15 @@ namespace Quirk {
 		m_Data.PosX = pos.x;
 		m_Data.PosY = pos.y;
 
-		// putting this Window pointer into created HWND
-		SetPropW(m_Data.WindowHandle, L"wndptr", this);
-
 		ShowWindow(m_Data.WindowHandle, SW_SHOWDEFAULT);
 		UpdateWindow(m_Data.WindowHandle);
 		SetForegroundWindow(m_Data.WindowHandle);
+	}
+
+	Window::~Window() {
+		m_Context->DestroyContext(*this);
+		delete m_Context;
+		DestroyWindow(m_Data.WindowHandle);
 	}
 
 	void Window::OnUpdate() {
@@ -104,10 +113,23 @@ namespace Quirk {
 		}
 	}
 
+	void Window::SetVSync(bool toggle) {
+		if (m_Data.IsVSyncOn && !toggle) {
+			m_Context->SetVSync(0);
+		}
+		else if (!m_Data.IsVSyncOn && toggle) {
+			m_Context->SetVSync(1);
+		}
+
+		m_Data.IsVSyncOn = toggle;
+	}
+
 	LRESULT Window::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		Window* window = (Window*)GetPropW(hwnd, L"wndptr");
 		if (ImGui_ImplWin32_WndProcHandler(hwnd, uMsg, wParam, lParam))
 			return true;
+
+		if (!window) return DefWindowProc(hwnd, uMsg, wParam, lParam);
 
 		switch (uMsg) {
 			case WM_CLOSE: {
@@ -286,12 +308,30 @@ namespace Quirk {
 				window->m_Data.CursorLeftWindow = true;
 				return (LRESULT)0;
 			}
+			
+			case WM_SIZE: {
+				uint16_t width = LOWORD(lParam), height = HIWORD(lParam);
+
+				window->m_Data.ClientWidth = width;
+				window->m_Data.ClientHeight = height;
+
+				window->AdjustWindowArea();
+
+				WindowResizeEvent event(width, height);
+				window->m_Data.EventCallbackFn(event);
+
+				return (LRESULT)0;
+			}
 
 			case WM_MOVE: {
 				if(!window) return (LRESULT)0;
 
 				window->m_Data.PosX = static_cast<int32_t>GET_X_LPARAM(lParam);
 				window->m_Data.PosY = static_cast<int32_t>(GET_Y_LPARAM(lParam));
+
+				WindowMoveEvent event(window->m_Data.PosX, window->m_Data.PosY);
+				window->m_Data.EventCallbackFn(event);
+
 				return (LRESULT)0;
 			}
 		}
@@ -299,11 +339,11 @@ namespace Quirk {
 		return DefWindowProc(hwnd, uMsg, wParam, lParam);
 	}
 
-	void Window::AdjustClientArea(DWORD windowStyle, DWORD windowExStyle) {
+	void Window::AdjustWindowArea() {
 		RECT rect = { 0, 0, m_Data.WindWidth, m_Data.WindHeight };
 
 		QK_ASSERTEX(
-			AdjustWindowRectExForDpi(&rect, windowStyle, false, windowExStyle, GetDpiForSystem()),
+			AdjustWindowRectExForDpi(&rect, m_Data.WindowStyle, false, m_Data.WindowExStyle, GetDpiForSystem()),
 			"Failed to Adjust window rectangle for client area in dpi aware window!"
 		);
 
