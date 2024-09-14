@@ -10,6 +10,8 @@
 
 namespace Quirk {
 
+	//////////////////////////////////////////      PerspectiveCameraController      //////////////////////////////////////////////////////////
+
 	PerspectiveCameraController::PerspectiveCameraController(float fov, float aspectRatio, float nearPlane, float farPlane) :
 			m_ZoomLevel(1.0f),
 			m_CameraTranslationSpeed(5.0f), 
@@ -92,8 +94,61 @@ namespace Quirk {
 	}
 
 	bool PerspectiveCameraController::OnWindowResized(WindowResizeEvent& e) {
-		m_Camera.UpdateAspectRatio(static_cast<float>(e.GetWidth()) / static_cast<float>(e.GetHeight()));
+		m_Camera.SetAspectRatio(static_cast<float>(e.GetWidth()) / static_cast<float>(e.GetHeight()));
 		return false;
+	}
+
+	//////////////////////////////////////////      OrthographicCameraController      //////////////////////////////////////////////////////////
+
+	OrthographicCameraController::OrthographicCameraController(float left, float right, float bottom, float top) :
+		m_ZoomLevel(1.0f),
+		m_AspectRatio((right - left)/(top - bottom)),
+		m_CameraTranslationSpeed(5.0f),
+		m_CameraRotationSpeed(0.03f),
+		m_CameraRotation(0.0f),
+		m_PrevCameraPosition(0.0f, 0.0f, 3.0f),
+		m_CameraPosition(0.0f, 0.0f, 3.0f),
+		m_Camera( left,  right,  bottom,  top)
+	{
+	}
+
+	void OrthographicCameraController::OnUpdate() {
+		double deltaTime = Quirk::Time::GetDeltaTime();
+		double cameraDisplacement = m_CameraTranslationSpeed * deltaTime;
+
+		if (Quirk::Input::IsKeyPressed(QK_Key_S)) {
+			m_CameraPosition.x -= static_cast<float>(cameraDisplacement);
+		}
+		if (Quirk::Input::IsKeyPressed(QK_Key_W)) {
+			m_CameraPosition.x += static_cast<float>(cameraDisplacement);
+		}
+		if (Quirk::Input::IsKeyPressed(QK_Key_A)) {
+			m_CameraPosition.y -= static_cast<float>(cameraDisplacement);
+		}
+		if (Quirk::Input::IsKeyPressed(QK_Key_D)) {
+			m_CameraPosition.y += static_cast<float>(cameraDisplacement);
+		}
+
+		if (m_CameraPosition != m_PrevCameraPosition) {
+			m_PrevCameraPosition = m_CameraPosition;
+			m_Camera.SetViewMatrix(m_CameraPosition, m_CameraRotation);
+		}
+	}
+
+	void OrthographicCameraController::OnEvent(Event& e) {
+		EventDispatcher::Dispatch<WindowResizeEvent>(QK_BIND_EVENT_FN(OrthographicCameraController::OnWindowResized));
+	}
+
+	bool OrthographicCameraController::OnMouseScrolled(MouseScrolledEvent& e) {
+		m_ZoomLevel -= e.GetOffset() * 0.25f;
+		m_ZoomLevel = std::max(m_ZoomLevel, 0.25f);
+		m_Camera.SetProjectionMatrix(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel);
+		return false;
+	}
+
+	bool OrthographicCameraController::OnWindowResized(WindowResizeEvent& e) {
+		m_AspectRatio = static_cast<float>(e.GetWidth()) / static_cast<float>(e.GetHeight());
+		m_Camera.SetProjectionMatrix(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel);
 	}
 
 }

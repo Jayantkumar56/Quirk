@@ -4,6 +4,7 @@
 
 #include "glm/glm.hpp"
 #include "glm/ext.hpp"
+#include <glm/gtc/matrix_transform.hpp>
 
 namespace Quirk {
 
@@ -11,21 +12,20 @@ namespace Quirk {
 	public:
 		OrthographicCamera(float left, float right, float top, float bottom);
 
-		inline glm::vec3& GetPosition() { return m_Position; }
-		void SetPosition(const glm::vec3& position);
-
-		inline float GetRotation() const { return m_RotationAngle; }
-		void SetRotationAngle(float angle);
-
+		inline glm::mat4& GetProjectionMatrix()		{ return m_ProjectionMatrix; }
+		inline glm::mat4& GetViewMatrix()			{ return m_ViewMatrix; }
 		inline glm::mat4& GetProjectionViewMatrix() { return m_ProjectionViewMatrix; }
+
+		inline void SetProjectionMatrix(float left, float right, float top, float bottom) {
+			m_ProjectionMatrix = glm::ortho(left, right, bottom, top, -1.0f, 1.0f);
+		}
+
+		void SetViewMatrix(const glm::vec3& position, float angle);
 
 	private:
 		glm::mat4 m_ProjectionMatrix;
 		glm::mat4 m_ViewMatrix;
 		glm::mat4 m_ProjectionViewMatrix;
-
-		glm::vec3 m_Position;
-		float m_RotationAngle;
 	};
 
 }

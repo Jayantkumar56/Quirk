@@ -112,16 +112,15 @@ public:
 
 	virtual void OnImguiUiUpdate() override{
 		float pitch = m_CameraController.GetPitch(), yaw = m_CameraController.GetYaw();
+		glm::vec3 cameraPos = m_CameraController.GetPosition();
 
 		ImGuiIO& io = ImGui::GetIO();
-
 		ImGuiWindowFlags flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoBackground;
 
 		ImGui::Begin("Hello, world!", nullptr, flags);          // Create a window called "Hello, world!" and append into it.
 
-		ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
-
-		ImGui::DragFloat3("Camera Position", glm::value_ptr(m_CameraController.GetPosition()), 0.1f);
+		ImGui::Text("Camera Properties:-");               // Display some text (you can use a format strings too)
+		ImGui::DragFloat3("Camera Position", glm::value_ptr(cameraPos), 0.1f);
 		ImGui::DragFloat("Camera Pitch", &pitch, 0.1f);
 		ImGui::DragFloat("Camera Yaw", &yaw, 0.1f);
 
