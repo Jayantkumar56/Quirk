@@ -160,4 +160,9 @@ namespace Quirk {
 		glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
 	}
 
+    void OpenGLShader::UploadUniform(const std::string& name, const int32_t* data, uint32_t count) {
+		GLint location = glGetUniformLocation(m_RendererId, name.c_str());
+		glUniform1iv(location, count, data);
+    }
+
 }

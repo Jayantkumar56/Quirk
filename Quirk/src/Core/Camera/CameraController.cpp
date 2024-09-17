@@ -100,16 +100,17 @@ namespace Quirk {
 
 	//////////////////////////////////////////      OrthographicCameraController      //////////////////////////////////////////////////////////
 
-	OrthographicCameraController::OrthographicCameraController(float left, float right, float bottom, float top) :
+	OrthographicCameraController::OrthographicCameraController(float aspectRatio) :
 		m_ZoomLevel(1.0f),
-		m_AspectRatio((right - left)/(top - bottom)),
+		m_AspectRatio(aspectRatio),
 		m_CameraTranslationSpeed(5.0f),
 		m_CameraRotationSpeed(0.03f),
 		m_CameraRotation(0.0f),
-		m_PrevCameraPosition(0.0f, 0.0f, 3.0f),
-		m_CameraPosition(0.0f, 0.0f, 3.0f),
-		m_Camera( left,  right,  bottom,  top)
+		m_PrevCameraPosition(0.0f, 0.0f, 0.0f),
+		m_CameraPosition(0.0f, 0.0f, 0.0f),
+		m_Camera(-aspectRatio * m_ZoomLevel, aspectRatio * m_ZoomLevel,  -m_ZoomLevel, m_ZoomLevel)
 	{
+		m_Camera.SetViewMatrix(m_CameraPosition, m_CameraRotation);
 	}
 
 	void OrthographicCameraController::OnUpdate() {
@@ -117,16 +118,16 @@ namespace Quirk {
 		double cameraDisplacement = m_CameraTranslationSpeed * deltaTime;
 
 		if (Quirk::Input::IsKeyPressed(QK_Key_S)) {
-			m_CameraPosition.x -= static_cast<float>(cameraDisplacement);
-		}
-		if (Quirk::Input::IsKeyPressed(QK_Key_W)) {
-			m_CameraPosition.x += static_cast<float>(cameraDisplacement);
-		}
-		if (Quirk::Input::IsKeyPressed(QK_Key_A)) {
 			m_CameraPosition.y -= static_cast<float>(cameraDisplacement);
 		}
-		if (Quirk::Input::IsKeyPressed(QK_Key_D)) {
+		if (Quirk::Input::IsKeyPressed(QK_Key_W)) {
 			m_CameraPosition.y += static_cast<float>(cameraDisplacement);
+		}
+		if (Quirk::Input::IsKeyPressed(QK_Key_A)) {
+			m_CameraPosition.x -= static_cast<float>(cameraDisplacement);
+		}
+		if (Quirk::Input::IsKeyPressed(QK_Key_D)) {
+			m_CameraPosition.x += static_cast<float>(cameraDisplacement);
 		}
 
 		if (m_CameraPosition != m_PrevCameraPosition) {
@@ -149,6 +150,7 @@ namespace Quirk {
 	bool OrthographicCameraController::OnWindowResized(WindowResizeEvent& e) {
 		m_AspectRatio = static_cast<float>(e.GetWidth()) / static_cast<float>(e.GetHeight());
 		m_Camera.SetProjectionMatrix(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel);
+		return false;
 	}
 
 }

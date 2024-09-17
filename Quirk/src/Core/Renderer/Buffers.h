@@ -101,6 +101,8 @@ namespace Quirk {
 	public:
 		virtual ~VertexBuffer() {}
 
+		virtual void UploadData(const void* data, uint32_t size) const = 0;
+
 		virtual void Bind() const = 0;
 		virtual void Unbind() const = 0;
 
@@ -110,7 +112,8 @@ namespace Quirk {
 		virtual uint32_t GetCount() const = 0;
 		virtual uint32_t GetSize() const = 0;
 
-		static VertexBuffer* Create(float* vertices, uint32_t size);
+		static Ref<VertexBuffer> Create(float* vertices, uint32_t size);
+		static Ref<VertexBuffer> Create(uint32_t size);
 	};
 
 	class IndexBuffer {
@@ -122,7 +125,8 @@ namespace Quirk {
 
 		virtual uint32_t GetCount() const = 0;
 
-		static IndexBuffer* Create(uint32_t* indices, uint32_t size);
+		static Ref<IndexBuffer> Create(uint32_t* indices, uint32_t size);
+		static Ref<IndexBuffer> Create(uint32_t size);
 	};
 
 }

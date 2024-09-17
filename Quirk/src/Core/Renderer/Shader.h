@@ -23,6 +23,7 @@ namespace Quirk {
 		virtual void Unbind() const = 0;
 
 		virtual void UploadUniform(const std::string& name, const glm::mat4& matrix) = 0;
+		virtual void UploadUniform(const std::string& name, const int32_t* data, uint32_t count) = 0;
 	};
 
 	class ShaderLibrary {
@@ -36,18 +37,18 @@ namespace Quirk {
 		};
 
 	public:
-		Ref<Shader> LoadShader(const std::string& filePath);
-		Ref<Shader> LoadShader(const std::string& name, const std::string& filePath);
-		Ref<Shader> LoadShader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc);
+		static Ref<Shader> LoadShader(const std::string& filePath);
+		static Ref<Shader> LoadShader(const std::string& name, const std::string& filePath);
+		static Ref<Shader> LoadShader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc);
 
-		Ref<Shader> GetShader(const std::string& name);
-
-	private:
-		Ref<Shader> LoadShaderFromFile(const std::string& filePath);
-		SahderType ShaderTypeFromString(const std::string& type);
+		static Ref<Shader> GetShader(const std::string& name);
 
 	private:
-		std::unordered_map<std::string, Ref<Shader>> m_LoadedShaders;
+		static Ref<Shader> LoadShaderFromFile(const std::string& filePath);
+		static SahderType ShaderTypeFromString(const std::string& type);
+
+	private:
+		static std::unordered_map<std::string, Ref<Shader>> m_LoadedShaders;
 	};
 
 }

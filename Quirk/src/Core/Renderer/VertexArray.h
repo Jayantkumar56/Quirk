@@ -9,7 +9,7 @@ namespace Quirk {
 
 	class VertexArray {
 	public:
-		static VertexArray* Create();
+		static Ref<VertexArray> Create();
 
 	public:
 		VertexArray() = default;

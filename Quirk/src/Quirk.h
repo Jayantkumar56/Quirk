@@ -22,12 +22,16 @@
 #include "Core/Camera/PerspectiveCamera.h"
 #include "Core/Camera/CameraController.h"
 
+#include "Core/Shapes/Quad.h"
+
 #include "Core/Renderer/Buffers.h"
+#include "Core/Renderer/Texture.h"
 #include "Core/Renderer/Shader.h"
 #include "Core/Renderer/VertexArray.h"
 #include "Core/Renderer/RendererAPI.h"
 #include "Core/Renderer/RenderCommands.h"
 #include "Core/Renderer/Renderer.h"
+#include "Core/Renderer/Renderer2D.h"
 
 #include "Core/Application/Window.h"
 #include "Core/Application/Application.h"
@@ -40,8 +44,3 @@
 #include <Windows.h>
 #endif //QK_PLATFORM_WINDOWS
 
-
-//**** Entry Point of the program ****//
-// Must be the last thing in this list
-#include "Core/Application/EntryPoint.h"
-//**** Entry Point of the program ****//

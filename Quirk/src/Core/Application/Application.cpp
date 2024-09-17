@@ -6,6 +6,7 @@
 #include "Core/Application/Application.h"
 
 #include "Core/Renderer/Renderer.h"
+#include "Core/Renderer/Renderer2D.h"
 #include "Core/Renderer/RenderCommands.h"
 
 #include "imgui.h"
@@ -23,6 +24,7 @@ namespace Quirk {
 		m_Window.SetEventCallback(QK_BIND_EVENT_FN(Application::OnEvent));
 
 		Renderer::InitRenderer(RendererAPI::API::OpenGL);
+		Renderer2D::InitRenderer();
 	}
 
 	void Application::Run() {

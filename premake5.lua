@@ -111,6 +111,7 @@ project "Sandbox"
 
     includedirs
     {
+        "Sandbox/src",
         "Quirk/src",
         "%{IncludeDir.spdlog}",
         "%{IncludeDir.Imgui}",

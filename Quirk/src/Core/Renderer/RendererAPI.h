@@ -28,7 +28,7 @@ namespace Quirk {
 		virtual inline void EnableFaceCulling() const = 0;
 		virtual inline void DisableFaceCulling() const = 0;
 
-		virtual inline void DrawIndexed(Ref<VertexArray>& vertexArray) = 0;
+		virtual inline void DrawIndexed(Ref<VertexArray>& vertexArray, uint32_t indicesCount) = 0;
 		virtual inline void DrawVertices(Ref<VertexArray>& vertexArray) = 0;
 
 	private:

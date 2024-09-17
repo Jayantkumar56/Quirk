@@ -38,8 +38,8 @@ namespace Quirk {
 		glViewport(0, 0, width, height);
 	}
 
-	inline void OpenGLRendererAPI::DrawIndexed(Ref<VertexArray>& vertexArray) {
-		glDrawElements(GL_TRIANGLES, vertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr);
+	inline void OpenGLRendererAPI::DrawIndexed(Ref<VertexArray>& vertexArray, uint32_t indicesCount) {
+		glDrawElements(GL_TRIANGLES, indicesCount, GL_UNSIGNED_INT, nullptr);
 		glFlush();
 	}
 

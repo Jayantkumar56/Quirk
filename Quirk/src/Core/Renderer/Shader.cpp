@@ -9,7 +9,7 @@
 #include "Platform/OpenGL/OpenGLShader.h"
 
 namespace Quirk {
-
+	//////////////////////   Shader   ///////////////////////////////////////////////////////////////////////////////////////////////////
 	Ref<Shader> Shader::Create(const std::string& vertexSrc, const std::string& fragmentSrc) {
 		RendererAPI::API currentAPI = Renderer::GetAPI();
 
@@ -33,6 +33,10 @@ namespace Quirk {
 		QK_CORE_ASSERT(false, "Invalid Renderer API Selected!");
 		return nullptr;
 	}
+
+	/////////////   ShaderLibrary   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	std::unordered_map<std::string, Ref<Shader>> ShaderLibrary::m_LoadedShaders;
 
 	Ref<Shader> ShaderLibrary::LoadShader(const std::string& filePath) {
 		// Extract name from file

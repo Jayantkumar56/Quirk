@@ -4,10 +4,10 @@
 
 namespace Quirk {
 
-	OrthographicCamera::OrthographicCamera(float left, float right, float top, float bottom) :
+	OrthographicCamera::OrthographicCamera(float left, float right, float bottom, float top) :
 			m_ProjectionMatrix(glm::ortho(left, right, bottom, top, -1.0f, 1.0f)),
 			m_ViewMatrix(1.0f),
-			m_ProjectionViewMatrix(m_ProjectionMatrix* m_ViewMatrix)
+			m_ProjectionViewMatrix(m_ProjectionMatrix * m_ViewMatrix)
 	{
 	}
 

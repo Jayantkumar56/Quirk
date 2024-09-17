@@ -15,6 +15,7 @@ namespace Quirk {
 		virtual void Unbind() const override;
 
 		virtual void UploadUniform(const std::string& name, const glm::mat4& matrix) override;
+		virtual void UploadUniform(const std::string& name, const int32_t* data, uint32_t count) override;
 
 	private:
 		static unsigned int ShaderTypeToGLShaderType(uint8_t type);

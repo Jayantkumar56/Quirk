@@ -10,14 +10,15 @@ namespace Quirk {
 
 	class OrthographicCamera {
 	public:
-		OrthographicCamera(float left, float right, float top, float bottom);
+		OrthographicCamera(float left, float right, float bottom, float top);
 
 		inline glm::mat4& GetProjectionMatrix()		{ return m_ProjectionMatrix; }
 		inline glm::mat4& GetViewMatrix()			{ return m_ViewMatrix; }
 		inline glm::mat4& GetProjectionViewMatrix() { return m_ProjectionViewMatrix; }
 
-		inline void SetProjectionMatrix(float left, float right, float top, float bottom) {
+		inline void SetProjectionMatrix(float left, float right, float bottom, float top) {
 			m_ProjectionMatrix = glm::ortho(left, right, bottom, top, -1.0f, 1.0f);
+			m_ProjectionViewMatrix = m_ProjectionMatrix * m_ViewMatrix;
 		}
 
 		void SetViewMatrix(const glm::vec3& position, float angle);

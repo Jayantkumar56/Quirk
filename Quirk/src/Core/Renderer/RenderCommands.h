@@ -19,7 +19,7 @@ namespace Quirk {
 		static inline void EnableFaceCulling() { s_RendererAPI->EnableFaceCulling(); }
 		static inline void DisableFaceCulling() { s_RendererAPI->DisableFaceCulling(); }
 
-		static inline void DrawIndexed(Ref<VertexArray>& vertexArray) { s_RendererAPI->DrawIndexed(vertexArray); }
+		static inline void DrawIndexed(Ref<VertexArray>& vertexArray, uint32_t indicesCount) { s_RendererAPI->DrawIndexed(vertexArray, indicesCount); }
 		static inline void DrawVertices(Ref<VertexArray>& vertexArray) { s_RendererAPI->DrawVertices(vertexArray); }
 
 	private:

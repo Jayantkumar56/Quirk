@@ -62,7 +62,8 @@ namespace Quirk {
 	};
 
 	class OrthographicCameraController {
-		OrthographicCameraController(float left, float right, float bottom, float top);
+	public:
+		OrthographicCameraController(float aspectRatio);
 		~OrthographicCameraController() = default;
 
 		inline float GetZoomLevel()							const { return m_ZoomLevel; }
