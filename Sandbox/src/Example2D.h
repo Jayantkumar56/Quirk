@@ -18,6 +18,7 @@ public:
 
 private:
 	Quirk::OrthographicCameraController m_CameraController;
-	Quirk::Ref<Quirk::Quad> m_Rectangle;
+	std::vector< Quirk::Ref<Quirk::Quad> > m_Rectangle;
+	Quirk::RendererStats m_RendererStats;
 	float m_CameraSpeed = 3.0f;
 };

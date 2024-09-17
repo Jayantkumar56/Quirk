@@ -5,6 +5,9 @@
 
 namespace Quirk {
 
+	
+	RendererStats Renderer2D::s_Stats;
+
 	uint32_t Renderer2D::Renderer2DData::MaxNoOfQuads	 = 0;
 	uint32_t Renderer2D::Renderer2DData::MaxNoOfVertices = 0;
 	uint32_t Renderer2D::Renderer2DData::MaxNoOfIndices	 = 0;
@@ -12,10 +15,15 @@ namespace Quirk {
 
 	Renderer2D::Renderer2DData Renderer2D::s_Data;
 
-    void Renderer2D::InitRenderer() {
+	void Renderer2D::ResetStats() {
+		s_Stats.NoOfDrawCalls = 0;
+		s_Stats.QuadsDrawn = 0;
+	}
+
+	void Renderer2D::InitRenderer() {
 		s_Data.MaxNoOfQuads		= 1000;
-		s_Data.MaxNoOfVertices	= 4 * 1000;
-		s_Data.MaxNoOfQuads		= 6 * 1000;
+		s_Data.MaxNoOfVertices	= 4 * s_Data.MaxNoOfQuads;
+		s_Data.MaxNoOfIndices	= 6 * s_Data.MaxNoOfQuads;
 		s_Data.MaxNoOfTextureSlots = 32;
 
 		s_Data.QuadVertexArray = VertexArray::Create();
@@ -104,6 +112,9 @@ namespace Quirk {
 		s_Data.QuadShader->UploadUniform("u_Textures", s_Data.Sampler, s_Data.MaxNoOfTextureSlots);
 
 		RenderCommands::DrawIndexed(s_Data.QuadVertexArray, s_Data.NoOfSubmitedQuads * 6);
+
+		++s_Stats.NoOfDrawCalls;
+		s_Stats.QuadsDrawn += s_Data.NoOfSubmitedQuads;
 	}
 
 	void Renderer2D::Submit(Ref<Quad>& quad) {

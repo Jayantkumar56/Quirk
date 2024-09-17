@@ -11,7 +11,7 @@ public:
 		PushLayer(&m_ExampleLayer);
 		PushOverlay(&m_ImguiLayer);
 
-		GetWindow().SetVSync(true);
+		//GetWindow().SetVSync(true);
 	}
 
 	~SandboxApp() {

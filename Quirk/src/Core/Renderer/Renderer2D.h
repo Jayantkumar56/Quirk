@@ -10,8 +10,16 @@
 
 namespace Quirk {
 
+	struct RendererStats {
+		int QuadsDrawn;
+		int NoOfDrawCalls;
+	};
+
 	class Renderer2D{
 	public:
+		static void ResetStats();
+		static RendererStats GetStats() { return s_Stats; }
+
 		static void InitRenderer();
 
 		static void BeginScene(OrthographicCamera& camera);
@@ -62,6 +70,7 @@ namespace Quirk {
 		};
 
 		static Renderer2D::Renderer2DData s_Data;
+		static RendererStats s_Stats;
 	};
 
 }
