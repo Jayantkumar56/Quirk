@@ -7,8 +7,8 @@ Example2DLayer::Example2DLayer(const std::string& name) :
 {
 	Quirk::QuadFormat format;
 	format.Position = { 0.0f, 0.0f, 0.0f };
-	format.Width = 100;
-	format.Height = 100;
+	format.Width = 500;
+	format.Height = 500;
 	format.Color = { 1.0f, 0.0f, 0.0f, 1.0f };
 	format.Texture2d = Quirk::Texture2D::Create("assets/Images/container.jpg");
 
