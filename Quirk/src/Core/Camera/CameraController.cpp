@@ -138,6 +138,7 @@ namespace Quirk {
 
 	void OrthographicCameraController::OnEvent(Event& e) {
 		EventDispatcher::Dispatch<WindowResizeEvent>(QK_BIND_EVENT_FN(OrthographicCameraController::OnWindowResized));
+		EventDispatcher::Dispatch<MouseScrolledEvent>(QK_BIND_EVENT_FN(OrthographicCameraController::OnMouseScrolled));
 	}
 
 	bool OrthographicCameraController::OnMouseScrolled(MouseScrolledEvent& e) {

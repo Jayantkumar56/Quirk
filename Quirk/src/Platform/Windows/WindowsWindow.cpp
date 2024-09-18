@@ -304,6 +304,12 @@ namespace Quirk {
 				return (LRESULT)0;
 			}
 
+			case WM_MOUSEWHEEL: {
+				MouseScrolledEvent event(GET_WHEEL_DELTA_WPARAM(wParam) / 120.0f, GET_X_LPARAM(lParam), GET_X_LPARAM(lParam));
+				window->m_Data.EventCallbackFn(event);
+				return (LRESULT)0;
+			}
+
 			case WM_MOUSELEAVE: {
 				window->m_Data.CursorLeftWindow = true;
 				return (LRESULT)0;

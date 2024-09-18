@@ -5,7 +5,6 @@
 
 namespace Quirk {
 
-	
 	RendererStats Renderer2D::s_Stats;
 
 	uint32_t Renderer2D::Renderer2DData::MaxNoOfQuads	 = 0;

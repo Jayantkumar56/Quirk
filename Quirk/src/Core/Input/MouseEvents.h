@@ -100,13 +100,17 @@ namespace Quirk {
 
 	class MouseScrolledEvent : public Event {
 	public:
-		MouseScrolledEvent(float offset) : m_Offset(offset) {}
+		MouseScrolledEvent(float offset, float posX, float posY) : m_Offset(offset), m_PosX(posX), m_PosY(posY) {}
+
 		inline float GetOffset() const { return m_Offset; }
+		inline float GetPosX()	 const { return m_PosX; }
+		inline float GetPosY()	 const { return m_PosY; }
 
 		CATEGORY_AND_TYPE(EventCategory::InputEvent | EventCategory::MouseEvent, EventType::MouseScrolledEvent);
 
 	private:
 		float m_Offset;
+		float m_PosX, m_PosY;
 	};
 
 	class MouseScrolledHEvent : public Event {
