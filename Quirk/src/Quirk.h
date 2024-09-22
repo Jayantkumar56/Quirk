@@ -37,7 +37,7 @@
 #include "Core/Application/Application.h"
 #include "Core/Application/Layer.h"
 
-#include "Core/Imgui/ImguiLayer.h"
+#include "Core/Imgui/ImguiUI.h"
 
 #ifdef QK_PLATFORM_WINDOWS
 #define WIN32_LEAN_AND_MEAN

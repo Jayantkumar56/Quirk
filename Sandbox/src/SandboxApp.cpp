@@ -20,7 +20,7 @@ public:
 
 private:
 	Example2DLayer m_ExampleLayer;
-	Quirk::ImguiLayer m_ImguiLayer;
+	Quirk::ImguiUI m_ImguiLayer;
 };
 
 

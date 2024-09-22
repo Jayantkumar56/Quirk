@@ -1,6 +1,6 @@
 workspace "Quirk"
     architecture "x64"
-    startproject "Sandbox"
+    startproject "Quirk-Editor"
 
 configurations
 {
@@ -80,6 +80,65 @@ project "Quirk"
             "QK_DEBUG" 
         }
 
+        runtime "Debug"
+        symbols "On"
+
+    filter "configurations:Release"
+        defines "QK_RELEASE"
+        runtime "Release"
+        symbols "On"
+
+    filter "configurations:Dist"
+        defines "QK_DIST"
+        runtime "Release"
+        symbols "Off"
+
+project "Quirk-Editor"
+    location "Quirk-Editor"
+    kind "ConsoleApp"
+    language "C++"
+    cppdialect "C++20"
+    staticruntime "On"
+    
+    targetdir ("bin/" .. outputdir .. "/%{prj.name}")
+    objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
+
+    files
+    {
+        "%{prj.name}/src/**.h",
+        "%{prj.name}/src/**.cpp"
+    }
+
+    includedirs
+    {
+        "%{prj.name}/src",
+        "Quirk/src",
+        "%{IncludeDir.spdlog}",
+        "%{IncludeDir.Imgui}",
+        "%{IncludeDir.Glm}",
+        "%{IncludeDir.Opengl}",
+        "%{IncludeDir.Stb_Image}",
+    }
+
+    links
+    {
+        "Quirk"
+    }
+
+    filter "system:windows"
+        systemversion "latest"
+        entrypoint "WinMainCRTStartup"
+
+        defines
+        {
+            "QK_PLATFORM_WINDOWS",
+            "_WINDLL"
+        }
+
+    filter "configurations:Debug"
+        defines { 
+            "QK_DEBUG" 
+        }
         runtime "Debug"
         symbols "On"
 
