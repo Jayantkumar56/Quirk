@@ -11,22 +11,18 @@
 
 namespace Quirk {
 
-	class  ImguiLayer : public Layer {
+	class  ImguiUI {
 		struct ContextData {
 			HDC DeviceContext;
 			ContextData() : DeviceContext(nullptr) {}
 		};
 
 	public:
-		ImguiLayer();
-		~ImguiLayer() = default;
+		ImguiUI() = delete;
+		~ImguiUI() = delete;
 
-		virtual void OnAttach() override;
-		virtual void OnDetach() override;
-
-		virtual bool OnEvent(Event& event) override;
-		virtual void OnImguiUiUpdate() override;
-		virtual void OnUpdate() override;
+		static void Init() ;
+		static void Terminate() ;
 
 		static void Begin();
 		static void End();

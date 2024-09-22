@@ -1,6 +1,6 @@
 
 #include "qkpch.h"
-#include "ImGuiLayer.h"
+#include "ImguiUI.h"
 #include "Core/Core.h"
 
 #include "Core/Application/Application.h"
@@ -13,20 +13,15 @@
 
 namespace Quirk {
 
-	HGLRC ImguiLayer::GLContext = nullptr;
-	ImguiLayer::ContextData ImguiLayer::m_MainWindowContextData;
+	HGLRC ImguiUI::GLContext = nullptr;
+	ImguiUI::ContextData ImguiUI::m_MainWindowContextData;
 
-	ImguiLayer::ImguiLayer() :
-			Layer("ImguiLayer")
-	{
-	}
-
-	void ImguiLayer::CleanupDeviceWGL(HWND hWnd, ContextData* data) {
+	void ImguiUI::CleanupDeviceWGL(HWND hWnd, ContextData* data) {
 		wglMakeCurrent(nullptr, nullptr);
 		ReleaseDC(hWnd, data->DeviceContext);
 	}
 
-	bool ImguiLayer::CreateDeviceWGL(HWND hWnd, ContextData* data) {
+	bool ImguiUI::CreateDeviceWGL(HWND hWnd, ContextData* data) {
 		data->DeviceContext = GetDC(hWnd);
 		int pixelFormat = 0;
 		unsigned int numPixelFormat = 0;
@@ -61,7 +56,7 @@ namespace Quirk {
 		return true;
 	}
 
-	void ImguiLayer::HookRendererCreateWindow(ImGuiViewport* viewport) {
+	void ImguiUI::HookRendererCreateWindow(ImGuiViewport* viewport) {
 		QK_CORE_ASSERT(viewport->RendererUserData == NULL, "Non Empty RendererUserData (from imgui)");
 
 		ContextData* data = IM_NEW(ContextData);
@@ -69,7 +64,7 @@ namespace Quirk {
 		viewport->RendererUserData = data;
 	}
 
-	void ImguiLayer::HookRendererDestroyWindow(ImGuiViewport* viewport) {
+	void ImguiUI::HookRendererDestroyWindow(ImGuiViewport* viewport) {
 		if (viewport->RendererUserData != NULL) {
 			ContextData* data = (ContextData*)viewport->RendererUserData;
 			CleanupDeviceWGL((HWND)viewport->PlatformHandle, data);
@@ -78,19 +73,19 @@ namespace Quirk {
 		}
 	}
 
-	void ImguiLayer::HookRendererSwapBuffers(ImGuiViewport* viewport, void*) {
+	void ImguiUI::HookRendererSwapBuffers(ImGuiViewport* viewport, void*) {
 		if (ContextData* data = (ContextData*)viewport->RendererUserData; data) {
 			SwapBuffers(data->DeviceContext);
 		}
 	}
 
-	void ImguiLayer::HookPlatformRenderWindow(ImGuiViewport* viewport, void*) {
+	void ImguiUI::HookPlatformRenderWindow(ImGuiViewport* viewport, void*) {
 		if (ContextData* data = (ContextData*)viewport->RendererUserData; data) {
 			wglMakeCurrent(data->DeviceContext, GLContext);
 		}
 	}
 
-	void ImguiLayer::OnAttach() {
+	void ImguiUI::Init() {
 		const char* glsl_version = "#version 410";
 
 		Window& window = Application::Get().GetWindow();
@@ -134,33 +129,21 @@ namespace Quirk {
 		}
 	}
 
-	void ImguiLayer::OnDetach() {
+	void ImguiUI::Terminate() {
 		// Cleanup
 		ImGui_ImplOpenGL3_Shutdown();
 		ImGui_ImplWin32_Shutdown();
 		ImGui::DestroyContext();
 	}
 
-	bool ImguiLayer::OnEvent(Event& event) {
-		return false;
-	}
-
-    void ImguiLayer::OnImguiUiUpdate() {
-		//static bool show = true;
-		//ImGui::ShowDemoWindow(&show);
-    }
-
-	void ImguiLayer::OnUpdate() {
-	}
-
-	void ImguiLayer::Begin() {
+	void ImguiUI::Begin() {
 		// Start the Dear ImGui frame
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplWin32_NewFrame();
 		ImGui::NewFrame();
 	}
 
-	void ImguiLayer::End() {
+	void ImguiUI::End() {
 		ImGuiIO& io = ImGui::GetIO();
 
 		ImGui::Render();

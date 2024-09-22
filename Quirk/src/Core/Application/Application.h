@@ -18,15 +18,14 @@ namespace Quirk {
 		bool OnWindowResize(WindowResizeEvent& event);
 
 		inline static Application& Get() { return *s_Instance; }
-		inline Window& GetWindow() { return m_Window; }
+		inline Window& GetWindow()		 { return m_Window; }
 
-		inline void PushLayer(Layer* layer) { m_LayerStack.PushLayer(layer); }
-		inline void PushOverlay(Layer* overlay) { m_LayerStack.PushOverlay(overlay); }
+		inline void PushLayer(Layer* layer)		{ LayerStack::PushLayer(layer); }
+		inline void PushOverlay(Layer* overlay) { LayerStack::PushOverlay(overlay); }
 
 	private:
 		Window m_Window;
 		bool m_Running;
-		LayerStack m_LayerStack;
 
 	private:
 		static Application* s_Instance;

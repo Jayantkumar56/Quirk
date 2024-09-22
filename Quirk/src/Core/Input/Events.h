@@ -44,8 +44,6 @@ namespace Quirk {
 		bool m_Handeled = false;
 	};
 
-	// contains only static member functions and static variables
-	// Done in order to have a singleton EventDispatcher
 	class EventDispatcher {
 	public:
 		static inline void HandleEvent(Event& event) { 

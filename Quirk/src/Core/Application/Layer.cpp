@@ -1,15 +1,12 @@
 
 #include "Qkpch.h"
-#include "Layer.h"
-
-#include "Core/Imgui/ImguiLayer.h"
+#include "Core/Application/Layer.h"
+#include "Core/Imgui/ImguiUI.h"
 
 namespace Quirk {
 
-	Layer::Layer(const std::string& name) :
-			m_DebugName(name)
-	{
-	}
+	std::vector<Layer*> LayerStack::m_Layers;
+	std::vector<Layer*> LayerStack::m_OverLays;
 
 	bool LayerStack::HandleEvent(Event& event) {
 		// providing event to overlays first and in the reverse order
@@ -38,7 +35,7 @@ namespace Quirk {
 	}
 
     void LayerStack::UpdateImguiUiLayers() {
-		ImguiLayer::Begin();
+		ImguiUI::Begin();
 
 		size_t i = 0, size = m_Layers.size();
 		for (; i < size; ++i) {
@@ -49,7 +46,7 @@ namespace Quirk {
 			m_OverLays[i]->OnImguiUiUpdate();
 		}
 
-		ImguiLayer::End();
+		ImguiUI::End();
     }
 
 	void LayerStack::PushLayer(Layer* layer) {

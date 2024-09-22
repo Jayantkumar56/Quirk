@@ -34,8 +34,8 @@ namespace Quirk {
 			RenderCommands::Clear();
 
 			m_Window.OnUpdate();
-			m_LayerStack.UpdateLayers();
-			m_LayerStack.UpdateImguiUiLayers();
+			LayerStack::UpdateLayers();
+			LayerStack::UpdateImguiUiLayers();
 
 			m_Window.SwapBuffers();
 		}
@@ -54,7 +54,7 @@ namespace Quirk {
 			return;
 		}
 
-		m_LayerStack.HandleEvent(event);
+		LayerStack::HandleEvent(event);
 	}
 
 	bool Application::OnWindowClose(WindowCloseEvent& event){

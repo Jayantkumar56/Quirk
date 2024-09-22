@@ -2,17 +2,14 @@
 
 #pragma once
 
-#include <string>
-#include <vector>
-
 #include "Core/Input/Events.h"
 
 namespace Quirk {
 
 	class Layer {
 	public:
-		Layer(const std::string& name);
-		virtual ~Layer() {}
+		Layer(const std::string& name): m_DebugName(name) {}
+		virtual ~Layer() = default;
 
 		virtual void OnAttach() = 0;
 		virtual void OnDetach() = 0;
@@ -27,26 +24,26 @@ namespace Quirk {
 
 	class LayerStack {
 	public:
-		LayerStack() = default;
-		~LayerStack() = default;
+		LayerStack() = delete;
+		~LayerStack() = delete;
 
-		bool HandleEvent(Event& event);
-		void UpdateLayers();
-		void UpdateImguiUiLayers();
+		static bool HandleEvent(Event& event);
+		static void UpdateLayers();
+		static void UpdateImguiUiLayers();
 
-		void PushLayer(Layer* layer);
-		void PopLayer();
-		void AddLayer(Layer* layer, int position);
-		void RemoveLayer(Layer* layer);
+		static void PushLayer(Layer* layer);
+		static void PopLayer();
+		static void AddLayer(Layer* layer, int position);
+		static void RemoveLayer(Layer* layer);
 
-		void PushOverlay(Layer* overlay);
-		void PopOverlay();
-		void AddOverlay(Layer* overlay, int position);
-		void RemoveOverlay(Layer* overlay);
+		static void PushOverlay(Layer* overlay);
+		static void PopOverlay();
+		static void AddOverlay(Layer* overlay, int position);
+		static void RemoveOverlay(Layer* overlay);
 
 	private:
-		std::vector<Layer*> m_Layers;
-		std::vector<Layer*> m_OverLays;
+		static std::vector<Layer*> m_Layers;
+		static std::vector<Layer*> m_OverLays;
 	};
 
 }
