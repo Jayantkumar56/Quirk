@@ -16,8 +16,9 @@ namespace Quirk {
 
 	Application* Application::s_Instance = nullptr;
 
-	Application::Application() :
-		m_Window(L"Quirk Engine!!!!", 1200, 800, RendererAPI::API::OpenGL),
+	Application::Application(const std::wstring& appName) :
+		m_AppName(appName),
+		m_Window(appName, 1200, 800, RendererAPI::API::OpenGL),
 		m_Running(true)
 	{
 		s_Instance = this;

@@ -30,7 +30,7 @@ namespace Quirk {
 		);
     }
 
-	Window::Window(const std::wstring title, uint16_t width, uint16_t height, RendererAPI::API rendererAPI) :
+	Window::Window(const std::wstring& title, uint16_t width, uint16_t height, RendererAPI::API rendererAPI) :
 			m_Data({ 
 				nullptr, 
 				WS_OVERLAPPEDWINDOW | WS_VISIBLE,

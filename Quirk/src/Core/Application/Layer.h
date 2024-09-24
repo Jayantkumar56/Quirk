@@ -15,8 +15,8 @@ namespace Quirk {
 		virtual void OnDetach() = 0;
 
 		virtual bool OnEvent(Event& event) = 0;
-		virtual void OnImguiUiUpdate() = 0;
 		virtual void OnUpdate() = 0;
+		virtual void OnImguiUiUpdate() = 0;
 
 	protected:
 		std::string m_DebugName;

@@ -29,25 +29,25 @@ namespace Quirk {
 	}
 
 	void PerspectiveCameraController::OnUpdate() {
-		double deltaTime = Quirk::Time::GetDeltaTime();
+		double deltaTime = Time::GetDeltaTime();
 		double cameraDisplacement = m_CameraTranslationSpeed * deltaTime;
 
-		if (Quirk::Input::IsKeyPressed(QK_Key_S)) {
+		if (Input::IsKeyPressed(QK_Key_S)) {
 			m_CameraPosition -= static_cast<float>(cameraDisplacement) * m_MovementFront;
 		}
-		if (Quirk::Input::IsKeyPressed(QK_Key_W)) {
+		if (Input::IsKeyPressed(QK_Key_W)) {
 			m_CameraPosition += static_cast<float>(cameraDisplacement) * m_MovementFront;
 		}
-		if (Quirk::Input::IsKeyPressed(QK_Key_A)) {
+		if (Input::IsKeyPressed(QK_Key_A)) {
 			m_CameraPosition -= static_cast<float>(cameraDisplacement) * m_MovementRight;
 		}
-		if (Quirk::Input::IsKeyPressed(QK_Key_D)) {
+		if (Input::IsKeyPressed(QK_Key_D)) {
 			m_CameraPosition += static_cast<float>(cameraDisplacement) * m_MovementRight;
 		}
-		if (Quirk::Input::IsKeyPressed(QK_Key_LeftCtrl)) {
+		if (Input::IsKeyPressed(QK_Key_LeftCtrl)) {
 			m_CameraPosition -= static_cast<float>(cameraDisplacement) * m_ViewUp;
 		}
-		if (Quirk::Input::IsKeyPressed(QK_Key_Space)) {
+		if (Input::IsKeyPressed(QK_Key_Space)) {
 			m_CameraPosition += static_cast<float>(cameraDisplacement) * m_ViewUp;
 		}
 
@@ -114,19 +114,19 @@ namespace Quirk {
 	}
 
 	void OrthographicCameraController::OnUpdate() {
-		double deltaTime = Quirk::Time::GetDeltaTime();
+		double deltaTime = Time::GetDeltaTime();
 		double cameraDisplacement = m_CameraTranslationSpeed * deltaTime;
 
-		if (Quirk::Input::IsKeyPressed(QK_Key_S)) {
+		if (Input::IsKeyPressed(QK_Key_S)) {
 			m_CameraPosition.y -= static_cast<float>(cameraDisplacement);
 		}
-		if (Quirk::Input::IsKeyPressed(QK_Key_W)) {
+		if (Input::IsKeyPressed(QK_Key_W)) {
 			m_CameraPosition.y += static_cast<float>(cameraDisplacement);
 		}
-		if (Quirk::Input::IsKeyPressed(QK_Key_A)) {
+		if (Input::IsKeyPressed(QK_Key_A)) {
 			m_CameraPosition.x -= static_cast<float>(cameraDisplacement);
 		}
-		if (Quirk::Input::IsKeyPressed(QK_Key_D)) {
+		if (Input::IsKeyPressed(QK_Key_D)) {
 			m_CameraPosition.x += static_cast<float>(cameraDisplacement);
 		}
 

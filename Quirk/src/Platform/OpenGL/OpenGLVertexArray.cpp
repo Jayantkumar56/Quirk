@@ -34,15 +34,15 @@ namespace Quirk {
 		glDeleteVertexArrays(1, &m_RendererId);
 	}
 
-	void Quirk::OpenGLVertexArray::Bind() const {
+	void OpenGLVertexArray::Bind() const {
 		glBindVertexArray(m_RendererId);
 	}
 
-	void Quirk::OpenGLVertexArray::Unbind() const {
+	void OpenGLVertexArray::Unbind() const {
 		glBindVertexArray(0);
 	}
 
-	void Quirk::OpenGLVertexArray::AddVertexBuffer(Ref<VertexBuffer>& vertexBuffer) {
+	void OpenGLVertexArray::AddVertexBuffer(Ref<VertexBuffer>& vertexBuffer) {
 		QK_CORE_ASSERT(vertexBuffer->GetLayout().GetElements().size(), "Vertex Buffer has no layout!");
 
 		glBindVertexArray(m_RendererId);
@@ -69,7 +69,7 @@ namespace Quirk {
 		m_VertexBuffers.push_back(vertexBuffer);
 	}
 
-	void Quirk::OpenGLVertexArray::SetIndexBuffer(Ref<IndexBuffer>& indexBuffer) {
+	void OpenGLVertexArray::SetIndexBuffer(Ref<IndexBuffer>& indexBuffer) {
 		glBindVertexArray(m_RendererId);
 		indexBuffer->Bind();
 		m_IndexBuffer = indexBuffer;

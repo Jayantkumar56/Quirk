@@ -1,7 +1,7 @@
 
 #include "qkpch.h"
-#include "ImguiUI.h"
 #include "Core/Core.h"
+#include "Core/Imgui/ImguiUI.h"
 
 #include "Core/Application/Application.h"
 #include "Platform/OpenGL/OpenGLContext.h"
@@ -14,7 +14,8 @@
 namespace Quirk {
 
 	HGLRC ImguiUI::GLContext = nullptr;
-	ImguiUI::ContextData ImguiUI::m_MainWindowContextData;
+	ImguiUI::ContextData ImguiUI::s_MainWindowContextData;
+	bool ImguiUI::s_DockingEnabled;
 
 	void ImguiUI::CleanupDeviceWGL(HWND hWnd, ContextData* data) {
 		wglMakeCurrent(nullptr, nullptr);
@@ -86,12 +87,13 @@ namespace Quirk {
 	}
 
 	void ImguiUI::Init() {
+		s_DockingEnabled = false;
 		const char* glsl_version = "#version 410";
 
 		Window& window = Application::Get().GetWindow();
 		OpenGLContext* context = (OpenGLContext*)window.GetGraphicalContext();
 
-		m_MainWindowContextData.DeviceContext = context->GetDeviceContext();
+		s_MainWindowContextData.DeviceContext = context->GetDeviceContext();
 		GLContext = context->GetGLContext();
 
 		// Setup Dear ImGui context
@@ -141,6 +143,10 @@ namespace Quirk {
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplWin32_NewFrame();
 		ImGui::NewFrame();
+
+		if (s_DockingEnabled) {
+			ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport());
+		}
 	}
 
 	void ImguiUI::End() {
@@ -155,7 +161,8 @@ namespace Quirk {
 			ImGui::RenderPlatformWindowsDefault();
 
 			// Restore the OpenGL rendering context to the main window DC, since platform windows might have changed it.
-			wglMakeCurrent(m_MainWindowContextData.DeviceContext, GLContext);
+			wglMakeCurrent(s_MainWindowContextData.DeviceContext, GLContext);
 		}
 	}
+
 }

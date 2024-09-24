@@ -9,8 +9,8 @@ namespace Quirk {
 
 	unsigned int OpenGLShader::ShaderTypeToGLShaderType(uint8_t type) {
 		switch (type) {
-			case Quirk::ShaderLibrary::VertexShader:	return GL_VERTEX_SHADER;
-			case Quirk::ShaderLibrary::FragmentShader:	return GL_FRAGMENT_SHADER;
+			case ShaderLibrary::VertexShader:	return GL_VERTEX_SHADER;
+			case ShaderLibrary::FragmentShader:	return GL_FRAGMENT_SHADER;
 		}
 
 		QK_CORE_ASSERT(false, "Invalid Shader type");
@@ -98,7 +98,7 @@ namespace Quirk {
 		}
 	}
 
-	Quirk::OpenGLShader::OpenGLShader(const std::string& vertexSrc, const std::string& fragmentSrc) {
+	OpenGLShader::OpenGLShader(const std::string& vertexSrc, const std::string& fragmentSrc) {
 		GLuint vertexShader = CompileShader(GL_VERTEX_SHADER, vertexSrc.c_str());
 		GLuint fragmentShader = CompileShader(GL_FRAGMENT_SHADER, fragmentSrc.c_str());
 
@@ -143,15 +143,15 @@ namespace Quirk {
 		glDetachShader(program, fragmentShader);
 	}
 
-	Quirk::OpenGLShader::~OpenGLShader() {
+	OpenGLShader::~OpenGLShader() {
 		glDeleteProgram(m_RendererId);
 	}
 
-	void Quirk::OpenGLShader::Bind() const {
+	void OpenGLShader::Bind() const {
 		glUseProgram(m_RendererId);
 	}
 
-	void Quirk::OpenGLShader::Unbind() const {
+	void OpenGLShader::Unbind() const {
 		glUseProgram(0);
 	}
 

@@ -14,8 +14,8 @@ namespace Quirk {
 		RendererAPI::API currentAPI = Renderer::GetAPI();
 
 		switch (currentAPI) {
-			case Quirk::RendererAPI::API::None:		QK_CORE_ASSERT(false, "RendererAPI::API::None is not supported right now!"); return nullptr;
-			case Quirk::RendererAPI::API::OpenGL:	return std::make_shared<OpenGLShader>(vertexSrc, fragmentSrc);
+			case RendererAPI::API::None:		QK_CORE_ASSERT(false, "RendererAPI::API::None is not supported right now!"); return nullptr;
+			case RendererAPI::API::OpenGL:	return std::make_shared<OpenGLShader>(vertexSrc, fragmentSrc);
 		}
 
 		QK_CORE_ASSERT(false, "Invalid Renderer API Selected!");
@@ -26,8 +26,8 @@ namespace Quirk {
 		RendererAPI::API currentAPI = Renderer::GetAPI();
 
 		switch (currentAPI) {
-			case Quirk::RendererAPI::API::None:		QK_CORE_ASSERT(false, "RendererAPI::API::None is not supported right now!"); return nullptr;
-			case Quirk::RendererAPI::API::OpenGL:	return std::make_shared<OpenGLShader>(shaderSourcesArray, size);
+			case RendererAPI::API::None:		QK_CORE_ASSERT(false, "RendererAPI::API::None is not supported right now!"); return nullptr;
+			case RendererAPI::API::OpenGL:	return std::make_shared<OpenGLShader>(shaderSourcesArray, size);
 		}
 
 		QK_CORE_ASSERT(false, "Invalid Renderer API Selected!");

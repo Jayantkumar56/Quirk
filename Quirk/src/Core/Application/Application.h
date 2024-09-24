@@ -8,7 +8,7 @@ namespace Quirk {
 
 	class Application {
 	public:
-		Application();
+		Application(const std::wstring& appName);
 		virtual ~Application() = default;
 
 		void Run();
@@ -24,8 +24,9 @@ namespace Quirk {
 		inline void PushOverlay(Layer* overlay) { LayerStack::PushOverlay(overlay); }
 
 	private:
-		Window m_Window;
-		bool m_Running;
+		std::wstring m_AppName;
+		Window		m_Window;
+		bool		m_Running;
 
 	private:
 		static Application* s_Instance;

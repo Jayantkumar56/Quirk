@@ -1,24 +1,31 @@
+
+
 #pragma once
 
 #include "Quirk.h"
 
 
-class Example2DLayer : public Quirk::Layer {
-public:
-	Example2DLayer(const std::string& name = "Example2D");
+namespace Quirk {
 
-	virtual ~Example2DLayer() = default;
+	class Example2DLayer : public Layer {
+	public:
+		Example2DLayer(const std::string& name = "Example2D");
 
-	virtual void OnAttach() override;
-	virtual void OnDetach() override;
+		virtual ~Example2DLayer() = default;
 
-	virtual bool OnEvent(Quirk::Event& event) override;
-	virtual void OnImguiUiUpdate() override;
-	virtual void OnUpdate() override;
+		virtual void OnAttach() override;
+		virtual void OnDetach() override;
 
-private:
-	Quirk::OrthographicCameraController m_CameraController;
-	std::vector< Quirk::Ref<Quirk::Quad> > m_Rectangle;
-	Quirk::RendererStats m_RendererStats;
-	float m_CameraSpeed = 3.0f;
-};
+		virtual bool OnEvent(Event& event) override;
+		virtual void OnImguiUiUpdate() override;
+		virtual void OnUpdate() override;
+
+	private:
+		OrthographicCameraController m_CameraController;
+		std::vector< Ref<Quad> > m_Rectangle;
+		RendererStats m_RendererStats;
+		float m_CameraSpeed = 3.0f;
+	};
+
+}
+

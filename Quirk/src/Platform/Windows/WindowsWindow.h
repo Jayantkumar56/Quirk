@@ -37,7 +37,7 @@ namespace Quirk {
 		static void Init(HINSTANCE hInstance);
 
 	public:
-		Window(const std::wstring title, uint16_t width, uint16_t height, RendererAPI::API rendererAPI);
+		Window(const std::wstring& title, uint16_t width, uint16_t height, RendererAPI::API rendererAPI);
 		~Window();
 
 		void OnUpdate();

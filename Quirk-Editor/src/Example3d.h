@@ -4,12 +4,12 @@
 
 #include "Quirk.h"
 
-class Example3DLayer : public Quirk::Layer {
+class Example3DLayer : public Layer {
 public:
 	Example3DLayer() :
 		Layer("Example Layer"),
 		m_CameraController(45.0f, 1200.0f / 800.0f, 0.1f, 100.0f),
-		m_SquareVA(Quirk::VertexArray::Create())
+		m_SquareVA(VertexArray::Create())
 	{
 		float squareVertices[] = {
 			// back face
@@ -56,10 +56,10 @@ public:
 			 -0.5f,  0.5f,  0.5f,		1.0f, 0.0f, 0.0f  // bottom-left
 		};
 
-		Quirk::Ref<Quirk::VertexBuffer> squareVB(Quirk::VertexBuffer::Create(squareVertices, sizeof(squareVertices)));
+		Ref<VertexBuffer> squareVB(VertexBuffer::Create(squareVertices, sizeof(squareVertices)));
 		squareVB->SetLayout({
-			{ Quirk::ShaderDataType::Float3, "a_Position" },
-			{ Quirk::ShaderDataType::Float3, "a_Color" }
+			{ ShaderDataType::Float3, "a_Position" },
+			{ ShaderDataType::Float3, "a_Color" }
 			});
 		m_SquareVA->AddVertexBuffer(squareVB);
 
@@ -74,10 +74,10 @@ public:
 			5, 2, 6,	3, 4, 7*/
 		};
 
-		Quirk::Ref<Quirk::IndexBuffer> squareIB(Quirk::IndexBuffer::Create(squareIndices, sizeof(squareIndices) / sizeof(squareIndices[0])));
+		Ref<IndexBuffer> squareIB(IndexBuffer::Create(squareIndices, sizeof(squareIndices) / sizeof(squareIndices[0])));
 		m_SquareVA->SetIndexBuffer(squareIB);
 
-		m_Shader = Quirk::ShaderLibrary::LoadShader("assets/shader.glsl");
+		m_Shader = ShaderLibrary::LoadShader("assets/shader.glsl");
 	}
 
 	virtual void OnAttach() override {
@@ -88,21 +88,21 @@ public:
 
 	}
 
-	virtual bool OnEvent(Quirk::Event& event) override {
-		Quirk::EventDispatcher::Dispatch<Quirk::KeyPressedEvent>([&](Quirk::KeyPressedEvent& e) -> bool {
+	virtual bool OnEvent(Event& event) override {
+		EventDispatcher::Dispatch<KeyPressedEvent>([&](KeyPressedEvent& e) -> bool {
 			if (e.GetKeyCode() == QK_Key_L) {
-				Quirk::Cursor::HideCursor();
-				Quirk::Cursor::PlaceAtCenter();
-				Quirk::Cursor::LockCursor();
+				Cursor::HideCursor();
+				Cursor::PlaceAtCenter();
+				Cursor::LockCursor();
 			}
 
 			if (e.GetKeyCode() == QK_Key_Escape) {
-				Quirk::Cursor::UnlockCursor();
-				Quirk::Cursor::ShowCursor();
+				Cursor::UnlockCursor();
+				Cursor::ShowCursor();
 			}
 
 			if (e.GetKeyCode() == QK_Key_T) {
-				Quirk::Cursor::PlaceAtCenter();
+				Cursor::PlaceAtCenter();
 			}
 
 			return false;
@@ -134,16 +134,16 @@ public:
 	virtual void OnUpdate() override {
 		m_CameraController.OnUpdate();
 
-		Quirk::Renderer::BeginScene(m_CameraController.GetCamera());
-		Quirk::Renderer::Submit(m_Shader, m_SquareVA);
-		Quirk::Renderer::EndScene();
+		Renderer::BeginScene(m_CameraController.GetCamera());
+		Renderer::Submit(m_Shader, m_SquareVA);
+		Renderer::EndScene();
 	}
 
 private:
-	Quirk::PerspectiveCameraController m_CameraController;
+	PerspectiveCameraController m_CameraController;
 
-	Quirk::Ref<Quirk::VertexArray> m_SquareVA;
-	Quirk::Ref<Quirk::Shader> m_Shader;
+	Ref<VertexArray> m_SquareVA;
+	Ref<Shader> m_Shader;
 
 	float m_CameraSpeed = 3.0f;
 };

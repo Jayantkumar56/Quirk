@@ -27,6 +27,9 @@ namespace Quirk {
 		static void Begin();
 		static void End();
 
+		static inline void EnableDocking() { s_DockingEnabled = true; }
+		static inline void DisableDocking() { s_DockingEnabled = false; }
+
 	private:
 		static void CleanupDeviceWGL(HWND hWnd, ContextData* data);
 		static bool CreateDeviceWGL(HWND hWnd, ContextData* data);
@@ -37,8 +40,9 @@ namespace Quirk {
 		static void HookPlatformRenderWindow(ImGuiViewport* viewport, void*);
 
 	private:
-		static ContextData m_MainWindowContextData;
+		static ContextData s_MainWindowContextData;
 		static HGLRC GLContext;
+		static bool s_DockingEnabled;
 	};
 
 }
