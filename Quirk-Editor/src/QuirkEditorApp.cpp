@@ -1,20 +1,25 @@
 
 #include "Quirk.h"
 #include "Core/Application/EntryPoint.h"
-#include "Core/Imgui/ImguiUI.h"
-#include "Example2D.h"
 #include "SceneViewport.h"
+#include "SceneProperties.h"
+
 
 namespace Quirk {
 
 	class QuirkEditorApp : public Application {
 	public:
-		QuirkEditorApp(): Application(L"Quirk Engine Editor") {
+		QuirkEditorApp(): 
+				Application(L"Quirk Engine Editor"),
+				m_SceneProperties(m_SceneViewport)
+		{
 			PushLayer(&m_SceneViewport);
+			PushLayer(&m_SceneProperties);
+
 			ImguiUI::Init();
 			ImguiUI::EnableDocking();
 
-			//GetWindow().SetVSync(true);
+			GetWindow().SetVSync(false);
 		}
 
 		~QuirkEditorApp() {
@@ -23,6 +28,7 @@ namespace Quirk {
 
 	private:
 		SceneViewport m_SceneViewport;
+		SceneProperties m_SceneProperties;
 	};
 
 

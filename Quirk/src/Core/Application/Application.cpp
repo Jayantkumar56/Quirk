@@ -17,9 +17,9 @@ namespace Quirk {
 	Application* Application::s_Instance = nullptr;
 
 	Application::Application(const std::wstring& appName) :
-		m_AppName(appName),
-		m_Window(appName, 1200, 800, RendererAPI::API::OpenGL),
-		m_Running(true)
+			m_AppName(appName),
+			m_Window(appName, 1502, 835, RendererAPI::API::OpenGL),
+			m_Running(true)
 	{
 		s_Instance = this;
 		m_Window.SetEventCallback(QK_BIND_EVENT_FN(Application::OnEvent));
@@ -50,10 +50,6 @@ namespace Quirk {
 
 		ImGuiIO& io = ImGui::GetIO();
 		uint16_t cat = event.GetEventCategory();
-
-		if ((cat & EventCategory::KeyboardEvent || cat & EventCategory::MouseEvent) && (io.WantCaptureKeyboard || io.WantCaptureMouse)) {
-			return;
-		}
 
 		LayerStack::HandleEvent(event);
 	}

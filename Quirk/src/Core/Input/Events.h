@@ -61,6 +61,8 @@ namespace Quirk {
 			return false;
 		}
 
+		static inline EventType GetCurrentEventType() { return m_EventType; }
+
 	private:
 		static Event* m_Event;
 		static EventType m_EventType;

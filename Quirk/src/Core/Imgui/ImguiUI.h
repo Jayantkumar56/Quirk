@@ -8,6 +8,11 @@
 #include "backends/imgui_impl_win32.h"
 #include "backends/imgui_impl_opengl3.h"
 
+#ifdef QK_PLATFORM_WINDOWS
+#define WIN32_LEAN_AND_MEAN
+#include<Windows.h>
+#endif // QK_PLATFORM_WINDOWS
+
 
 namespace Quirk {
 

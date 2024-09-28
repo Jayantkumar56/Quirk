@@ -141,6 +141,11 @@ namespace Quirk {
 		EventDispatcher::Dispatch<MouseScrolledEvent>(QK_BIND_EVENT_FN(OrthographicCameraController::OnMouseScrolled));
 	}
 
+	void OrthographicCameraController::HandleWindowResize(uint16_t width, uint16_t height) {
+		m_AspectRatio = static_cast<float>(width) / static_cast<float>(height);
+		m_Camera.SetProjectionMatrix(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel);
+	}
+
 	bool OrthographicCameraController::OnMouseScrolled(MouseScrolledEvent& e) {
 		m_ZoomLevel -= e.GetOffset() * 0.25f;
 		m_ZoomLevel = std::max(m_ZoomLevel, 0.25f);

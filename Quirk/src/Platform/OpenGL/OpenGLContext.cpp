@@ -7,7 +7,6 @@
 #include "glad/glad.h"
 
 #include "Core/Application/Window.h"
-//#include "Core/Application/Application.h"
 
 namespace Quirk {
 

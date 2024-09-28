@@ -23,6 +23,7 @@ namespace Quirk {
 		virtual inline const uint32_t GetColorBuffer()						const = 0;
 		virtual inline const uint32_t GetRenderBufferObject()				const = 0;
 		virtual inline const FrameBufferSpecification& GetSpecification()	const = 0;
+		virtual void Resize(uint16_t width, uint16_t height)					  = 0;
 	};
 
 }

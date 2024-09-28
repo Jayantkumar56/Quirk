@@ -2,21 +2,22 @@
 
 
 #include "SceneViewport.h"
-#include "Core/Application/Application.h"
-#include "Core/Imgui/ImguiUI.h"
-#include "Core/Renderer/RenderCommands.h"
 
 namespace Quirk {
 
 	SceneViewport::SceneViewport(const std::string& name):
+			m_ViewportWidth(890),
+			m_ViewportHeight(800),
 			Layer(name),
-			m_Frame(FrameBuffer::Create({ 890, 800})),
+			m_Frame(FrameBuffer::Create({ m_ViewportWidth, m_ViewportHeight})),
 			m_CameraSpeed(8.0f),
-			m_CameraController(890 / 800),
-			m_RendererStats({ 0, 0 })
+			m_CameraController(m_ViewportWidth / m_ViewportHeight),
+			m_RendererStats({ 0, 0 }),
+			m_IsInFocus(false)
+
 	{
 		m_CameraController.SetTranslationSpeed(m_CameraSpeed);
-		RenderCommands::UpdateViewPort(890, 800);
+		RenderCommands::UpdateViewPort(m_ViewportWidth, m_ViewportHeight);
 
 		m_QuadTexture = Texture2D::Create("assets/Images/container.jpg");
 
@@ -24,7 +25,7 @@ namespace Quirk {
 		format.Width = 500;
 		format.Height = 500;
 		format.Position = { 0.0f, 0.0f, 0.0f };
-		format.Color = { 0.0f, 0.0f, 1.0f, 1.0f };
+		//format.Color = { 0.0f, 0.0f, 1.0f, 1.0f };
 		format.Texture2d = m_QuadTexture;
 
 		m_Rectangle.push_back(std::make_shared<Quad>(format));
@@ -46,6 +47,9 @@ namespace Quirk {
 	}
 
 	bool SceneViewport::OnEvent(Event& event) {
+		if (!m_IsInFocus)
+			return false;
+
 		EventDispatcher::Dispatch<KeyPressedEvent>([&](KeyPressedEvent& e) -> bool {
 			if (e.GetKeyCode() == QK_Key_L) {
 				Cursor::HideCursor();
@@ -65,15 +69,19 @@ namespace Quirk {
 			return false;
 		});
 
-		m_CameraController.OnEvent(event);
+		if(EventDispatcher::GetCurrentEventType() != EventType::WindowResizeEvent)
+			m_CameraController.OnEvent(event);
 
 		return false;
 	}
 
 	void SceneViewport::OnUpdate() {
-		m_CameraController.OnUpdate();
+		if (m_IsInFocus) {
+			m_CameraController.OnUpdate();
+		}
 
 		m_Frame->Bind();
+		RenderCommands::Clear();
 		Renderer2D::ResetStats();
 		Renderer2D::BeginScene(m_CameraController.GetCamera());
 
@@ -88,17 +96,36 @@ namespace Quirk {
 
 	void SceneViewport::OnImguiUiUpdate() {
 		ImGuiIO& io = ImGui::GetIO();
-		ImGuiWindowFlags flags = ImGuiWindowFlags_NoDecoration;
+		ImGuiWindowFlags flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoTitleBar;
 
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
 		ImGui::Begin("Scene Viewport");
 
+		m_IsInFocus = ImGui::IsWindowFocused();
+		CheckAndHandleResize();
+
 		uint32_t color = m_Frame->GetColorBuffer();
-		ImGui::Image((void*)color, ImVec2(890.0f, 800.0f));
+		ImGui::Image((void*)color, ImVec2(m_ViewportWidth, m_ViewportHeight), { 0, 1 }, { 1, 0 });
 
 		ImGui::End();
+		ImGui::PopStyleVar(1);
+	}
 
-		bool showdemo = true;
-		ImGui::ShowDemoWindow(&showdemo);
+	void SceneViewport::CheckAndHandleResize() {
+		ImVec2 windowSize = ImGui::GetContentRegionAvail();
+
+		if (windowSize.x < 0 || windowSize.y < 0) {
+			return;
+		}
+
+		if (m_ViewportWidth != (int)windowSize.x || m_ViewportHeight != (int)windowSize.y) {
+			m_ViewportWidth  = (int)windowSize.x;
+			m_ViewportHeight = (int)windowSize.y;
+
+			m_Frame->Resize(m_ViewportWidth, m_ViewportHeight);
+			m_CameraController.HandleWindowResize(m_ViewportWidth, m_ViewportHeight);
+			RenderCommands::UpdateViewPort(m_ViewportWidth, m_ViewportHeight);
+		}
 	}
 
 }

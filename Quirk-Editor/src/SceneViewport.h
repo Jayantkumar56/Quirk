@@ -2,11 +2,7 @@
 
 #pragma once
 
-#include "Core/Application/Layer.h"
-#include "Core/Renderer/FrameBuffer.h"
-#include "Core/Camera/CameraController.h"
-#include "Core/Shapes/Quad.h"
-#include "Core/Renderer/Renderer2D.h"
+#include "Quirk.h"
 
 namespace Quirk {
 
@@ -22,7 +18,15 @@ namespace Quirk {
 		virtual void OnUpdate() override;
 		virtual void OnImguiUiUpdate() override;
 
+		const RendererStats& GetRendererStats()					  const { return m_RendererStats; }
+		const OrthographicCameraController& GetCameraController() const { return m_CameraController; }
+		const bool IsInFocus()									  const { return m_IsInFocus; }
+
+		void CheckAndHandleResize();
+
 	private:
+		uint16_t						m_ViewportWidth,	m_ViewportHeight;
+		bool							m_IsInFocus;
 		Ref<Texture2D>					m_QuadTexture;
 		Ref<FrameBuffer>				m_Frame;
 		float							m_CameraSpeed;

@@ -3,6 +3,7 @@
 #pragma once
 
 #include "Core/Input/Events.h"
+#include <string>
 
 namespace Quirk {
 

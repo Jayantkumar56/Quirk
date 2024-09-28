@@ -2,8 +2,14 @@
 
 #pragma once
 
+
 #include "Core/Core.h"
 #include "Debug/Log.h"
+
+#ifdef QK_PLATFORM_WINDOWS
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
+#endif //QK_PLATFORM_WINDOWS
 
 // Include all GLM core / GLSL features
 #include "glm/glm.hpp" // vec2, vec3, mat4, radians
@@ -28,6 +34,7 @@
 #include "Core/Renderer/Texture.h"
 #include "Core/Renderer/Shader.h"
 #include "Core/Renderer/VertexArray.h"
+#include "Core/Renderer/FrameBuffer.h"
 #include "Core/Renderer/RendererAPI.h"
 #include "Core/Renderer/RenderCommands.h"
 #include "Core/Renderer/Renderer.h"
@@ -38,9 +45,4 @@
 #include "Core/Application/Layer.h"
 
 #include "Core/Imgui/ImguiUI.h"
-
-#ifdef QK_PLATFORM_WINDOWS
-#define WIN32_LEAN_AND_MEAN
-#include <Windows.h>
-#endif //QK_PLATFORM_WINDOWS
 

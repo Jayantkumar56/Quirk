@@ -87,6 +87,7 @@ namespace Quirk {
 
 		void OnUpdate();
 		void OnEvent(Event& e);
+		void HandleWindowResize(uint16_t width, uint16_t height);
 
 	private:
 		bool OnMouseScrolled(MouseScrolledEvent& e);
