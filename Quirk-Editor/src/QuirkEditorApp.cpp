@@ -19,7 +19,7 @@ namespace Quirk {
 			ImguiUI::Init();
 			ImguiUI::EnableDocking();
 
-			GetWindow().SetVSync(false);
+			GetWindow().SetVSync(true);
 		}
 
 		~QuirkEditorApp() {

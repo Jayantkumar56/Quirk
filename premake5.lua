@@ -15,12 +15,13 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 -- Include directories relative to root folder (solution directory)
 IncludeDir = {}
-IncludeDir["spdlog"] = "Quirk/vendor/spdlog/include"
-IncludeDir["Glad"] = "Quirk/vendor/Glad/include"
-IncludeDir["Imgui"] = "Quirk/vendor/imgui"
-IncludeDir["Glm"] = "Quirk/vendor/glm"
-IncludeDir["Opengl"] = "Quirk/vendor/OpenGL"
+IncludeDir["spdlog"]    = "Quirk/vendor/spdlog/include"
+IncludeDir["Glad"]      = "Quirk/vendor/Glad/include"
+IncludeDir["Imgui"]     = "Quirk/vendor/imgui"
+IncludeDir["Glm"]       = "Quirk/vendor/glm"
+IncludeDir["Opengl"]    = "Quirk/vendor/OpenGL"
 IncludeDir["Stb_Image"] = "Quirk/vendor/stb_image"
+IncludeDir["Entt"]      = "Quirk/vendor/entt/include"
 
 include "Quirk/vendor/Glad"
 include "Quirk/vendor/imgui"
@@ -58,6 +59,7 @@ project "Quirk"
         "%{IncludeDir.Glm}",
         "%{IncludeDir.Opengl}",
         "%{IncludeDir.Stb_Image}",
+        "%{IncludeDir.Entt}"
     }
 
     links
@@ -118,6 +120,7 @@ project "Quirk-Editor"
         "%{IncludeDir.Glm}",
         "%{IncludeDir.Opengl}",
         "%{IncludeDir.Stb_Image}",
+        "%{IncludeDir.Entt}"
     }
 
     links
@@ -177,6 +180,7 @@ project "Sandbox"
         "%{IncludeDir.Glm}",
         "%{IncludeDir.Opengl}",
         "%{IncludeDir.Stb_Image}",
+        "%{IncludeDir.Entt}"
     }
 
     links

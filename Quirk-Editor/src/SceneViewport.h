@@ -22,7 +22,9 @@ namespace Quirk {
 		const OrthographicCameraController& GetCameraController() const { return m_CameraController; }
 		const bool IsInFocus()									  const { return m_IsInFocus; }
 
+	private:
 		void CheckAndHandleResize();
+		void RenderViewport();
 
 	private:
 		uint16_t						m_ViewportWidth,	m_ViewportHeight;

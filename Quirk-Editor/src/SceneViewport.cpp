@@ -76,39 +76,29 @@ namespace Quirk {
 	}
 
 	void SceneViewport::OnUpdate() {
-		if (m_IsInFocus) {
-			m_CameraController.OnUpdate();
+		if (!m_IsInFocus) {
+			return;
 		}
 
-		m_Frame->Bind();
-		RenderCommands::Clear();
-		Renderer2D::ResetStats();
-		Renderer2D::BeginScene(m_CameraController.GetCamera());
-
-		for (int i = 0; i < m_Rectangle.size(); ++i) {
-			Renderer2D::Submit(m_Rectangle[i]);
-		}
-
-		Renderer2D::EndScene();
-		m_Frame->Unbind();
-		m_RendererStats = Renderer2D::GetStats();
+		m_CameraController.OnUpdate();
 	}
 
 	void SceneViewport::OnImguiUiUpdate() {
 		ImGuiIO& io = ImGui::GetIO();
 		ImGuiWindowFlags flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoTitleBar;
 
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 		ImGui::Begin("Scene Viewport");
 
 		m_IsInFocus = ImGui::IsWindowFocused();
 		CheckAndHandleResize();
+		RenderViewport();
 
 		uint32_t color = m_Frame->GetColorBuffer();
 		ImGui::Image((void*)color, ImVec2(m_ViewportWidth, m_ViewportHeight), { 0, 1 }, { 1, 0 });
 
 		ImGui::End();
-		ImGui::PopStyleVar(1);
+		ImGui::PopStyleVar();
 	}
 
 	void SceneViewport::CheckAndHandleResize() {
@@ -123,9 +113,24 @@ namespace Quirk {
 			m_ViewportHeight = (int)windowSize.y;
 
 			m_Frame->Resize(m_ViewportWidth, m_ViewportHeight);
-			m_CameraController.HandleWindowResize(m_ViewportWidth, m_ViewportHeight);
 			RenderCommands::UpdateViewPort(m_ViewportWidth, m_ViewportHeight);
+			m_CameraController.HandleWindowResize(m_ViewportWidth, m_ViewportHeight);
 		}
+	}
+
+	void SceneViewport::RenderViewport() {
+		m_Frame->Bind();
+		RenderCommands::Clear();
+		Renderer2D::ResetStats();
+		Renderer2D::BeginScene(m_CameraController.GetCamera());
+
+		for (int i = 0; i < m_Rectangle.size(); ++i) {
+			Renderer2D::Submit(m_Rectangle[i]);
+		}
+
+		Renderer2D::EndScene();
+		m_Frame->Unbind();
+		m_RendererStats = Renderer2D::GetStats();
 	}
 
 }
