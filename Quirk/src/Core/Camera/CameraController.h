@@ -2,8 +2,7 @@
 
 #pragma once
 
-#include "Core/Camera/PerspectiveCamera.h"
-#include "Core/Camera/OrthographicCamera.h"
+#include "Core/Camera/Camera.h"
 #include "Core/Input/Events.h"
 
 #include "Core/Input/MouseEvents.h"
@@ -21,20 +20,22 @@ namespace Quirk {
 		inline float GetRotationSpeed()						const { return m_CameraRotationSpeed; }
 		inline float GetPitch()								const { return m_Pitch; }
 		inline float GetYaw()								const { return m_Yaw; }
-		inline const glm::vec3& GetPosition()				{ return m_CameraPosition; }
-		inline const glm::vec3& GetPreviousCameraPosition() { return m_PrevCameraPosition; }
-		inline PerspectiveCamera& GetCamera()				{ return m_Camera; }
+		inline const glm::vec3& GetPosition()				const { return m_CameraPosition; }
+		inline const glm::vec3& GetPreviousCameraPosition() const { return m_PrevCameraPosition; }
+		inline const glm::mat4& GetViewMatrix()				const { return m_ViewMatrix; }
+		inline const glm::mat4& GetProjectionViewMatrix()   const { return m_ProjectionViewMatrix; }
+		inline const PerspectiveCamera& GetCamera()			const { return m_Camera; }
 
 		inline void SetZoomLevel(float level)		 { m_ZoomLevel = level; }
 		inline void SetTranslationSpeed(float speed) { m_CameraTranslationSpeed = speed; }
 		inline void SetRotationSpeed(float speed)	 { m_CameraRotationSpeed = speed; }
-		inline void SetPitch(float pitch)	  { m_Pitch = pitch;	m_Camera.UpdateViewMatrix(m_CameraPosition, m_ViewFront, m_ViewUp); }
-		inline void SetYaw(float yaw)		  { m_Yaw = yaw;		m_Camera.UpdateViewMatrix(m_CameraPosition, m_ViewFront, m_ViewUp); }
+		inline void SetPitch(float pitch)			 { m_Pitch = pitch;		RecalculateViewMatrix(); }
+		inline void SetYaw(float yaw)				 { m_Yaw = yaw;			RecalculateViewMatrix(); }
 
 		inline void SetPosition(glm::vec3 pos){ 
 			m_PrevCameraPosition = m_CameraPosition;
 			m_CameraPosition = pos;
-			m_Camera.UpdateViewMatrix(m_CameraPosition, m_ViewFront, m_ViewUp);
+			RecalculateViewMatrix();
 		}
 
 		void OnUpdate();
@@ -43,6 +44,11 @@ namespace Quirk {
 	private:
 		bool OnMouseMove(MouseMovedEvent& e);
 		bool OnWindowResized(WindowResizeEvent& e);
+
+		inline void RecalculateViewMatrix() { 
+			m_ViewMatrix = glm::lookAt(m_CameraPosition, m_ViewFront + m_CameraPosition, m_ViewUp);
+			m_ProjectionViewMatrix = m_Camera.GetProjection() * m_ViewMatrix;
+		}
 
 	private:
 		float m_ZoomLevel;
@@ -58,6 +64,8 @@ namespace Quirk {
 		glm::vec3 m_MovementFront;
 		glm::vec3 m_MovementRight;
 
+		glm::mat4 m_ViewMatrix;
+		glm::mat4 m_ProjectionViewMatrix;
 		PerspectiveCamera m_Camera;
 	};
 
@@ -72,17 +80,19 @@ namespace Quirk {
 		inline float GetRotation()							const { return m_CameraRotation; }
 		inline const glm::vec3& GetPosition()				const { return m_CameraPosition; }
 		inline const glm::vec3& GetPreviousCameraPosition() const { return m_PrevCameraPosition; }
-		inline OrthographicCamera& GetCamera()				{ return m_Camera; }
+		inline const glm::mat4& GetViewMatrix()				const { return m_View; }
+		inline const glm::mat4& GetProjectionViewMatrix()	const { return m_ProjectionView; }
+		inline const OrthographicCamera& GetCamera()		const { return m_Camera; }
 
 		inline void SetZoomLevel(float level)		 { m_ZoomLevel = level; }
 		inline void SetTranslationSpeed(float speed) { m_CameraTranslationSpeed = speed; }
 		inline void SetRotationSpeed(float speed)	 { m_CameraRotationSpeed = speed; }
-		inline void SetRotation(float angle)		 { m_CameraRotation = angle;	m_Camera.SetViewMatrix(m_CameraPosition, m_CameraRotation); }
+		inline void SetRotation(float angle)		 { m_CameraRotation = angle;	RecalculateViewMatrix(); }
 
 		inline void SetPosition(glm::vec3 pos) {
 			m_PrevCameraPosition = m_CameraPosition;
 			m_CameraPosition = pos;
-			m_Camera.SetViewMatrix(m_CameraPosition, m_CameraRotation);
+			RecalculateViewMatrix();
 		}
 
 		void OnUpdate();
@@ -93,6 +103,8 @@ namespace Quirk {
 		bool OnMouseScrolled(MouseScrolledEvent& e);
 		bool OnWindowResized(WindowResizeEvent& e);
 
+		void RecalculateViewMatrix();
+
 	private:
 		float m_ZoomLevel;
 		float m_AspectRatio;
@@ -102,6 +114,8 @@ namespace Quirk {
 		glm::vec3 m_PrevCameraPosition;
 		glm::vec3 m_CameraPosition;
 
+		glm::mat4 m_View;
+		glm::mat4 m_ProjectionView;
 		OrthographicCamera m_Camera;
 	};
 

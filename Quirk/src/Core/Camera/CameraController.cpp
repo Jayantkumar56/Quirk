@@ -26,6 +26,7 @@ namespace Quirk {
 			m_MovementRight		(1.0f, 0.0f, 0.0f),
 			m_Camera			(glm::radians(fov), aspectRatio, nearPlane, farPlane, m_CameraPosition, m_ViewFront, m_ViewUp)
 	{
+		RecalculateViewMatrix();
 	}
 
 	void PerspectiveCameraController::OnUpdate() {
@@ -52,7 +53,7 @@ namespace Quirk {
 		}
 
 		if (m_CameraPosition != m_PrevCameraPosition) {
-			m_Camera.UpdateViewMatrix(m_CameraPosition, m_ViewFront, m_ViewUp);
+			RecalculateViewMatrix();
 			m_PrevCameraPosition = m_CameraPosition;
 		}
 	}
@@ -88,7 +89,7 @@ namespace Quirk {
 		front.z = sin(glm::radians(m_Yaw)) * cos(glm::radians(m_Pitch));
 		m_ViewFront = glm::normalize(front);
 
-		m_Camera.UpdateViewMatrix(m_CameraPosition, m_ViewFront, m_ViewUp);
+		RecalculateViewMatrix();
 
 		return false;
 	}
@@ -110,7 +111,7 @@ namespace Quirk {
 		m_CameraPosition(0.0f, 0.0f, 0.0f),
 		m_Camera(-aspectRatio * m_ZoomLevel, aspectRatio * m_ZoomLevel,  -m_ZoomLevel, m_ZoomLevel)
 	{
-		m_Camera.SetViewMatrix(m_CameraPosition, m_CameraRotation);
+		RecalculateViewMatrix();
 	}
 
 	void OrthographicCameraController::OnUpdate() {
@@ -132,7 +133,7 @@ namespace Quirk {
 
 		if (m_CameraPosition != m_PrevCameraPosition) {
 			m_PrevCameraPosition = m_CameraPosition;
-			m_Camera.SetViewMatrix(m_CameraPosition, m_CameraRotation);
+			RecalculateViewMatrix();
 		}
 	}
 
@@ -144,19 +145,30 @@ namespace Quirk {
 	void OrthographicCameraController::HandleWindowResize(uint16_t width, uint16_t height) {
 		m_AspectRatio = static_cast<float>(width) / static_cast<float>(height);
 		m_Camera.SetProjectionMatrix(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel);
+		m_ProjectionView = m_Camera.GetProjection() * m_View;
 	}
 
 	bool OrthographicCameraController::OnMouseScrolled(MouseScrolledEvent& e) {
 		m_ZoomLevel -= e.GetOffset() * 0.25f;
 		m_ZoomLevel = std::max(m_ZoomLevel, 0.25f);
 		m_Camera.SetProjectionMatrix(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel);
+		m_ProjectionView = m_Camera.GetProjection() * m_View;
 		return false;
 	}
 
 	bool OrthographicCameraController::OnWindowResized(WindowResizeEvent& e) {
 		m_AspectRatio = static_cast<float>(e.GetWidth()) / static_cast<float>(e.GetHeight());
 		m_Camera.SetProjectionMatrix(-m_AspectRatio * m_ZoomLevel, m_AspectRatio * m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel);
+		m_ProjectionView = m_Camera.GetProjection() * m_View;
 		return false;
+	}
+
+	void OrthographicCameraController::RecalculateViewMatrix() {
+		glm::mat4 transform = glm::translate(glm::mat4(1.0f), m_CameraPosition) *
+			glm::rotate(glm::mat4(1.0f), glm::radians(m_CameraRotation), glm::vec3(0, 0, 1));
+
+		m_View = glm::inverse(transform);
+		m_ProjectionView = m_Camera.GetProjection() * m_View;
 	}
 
 }
