@@ -3,8 +3,6 @@
 #pragma once
 
 #include "Core/Shapes/Quad.h"
-#include "Core/Camera/OrthographicCamera.h"
-#include "Core/Camera/PerspectiveCamera.h"
 #include "Core/Renderer/RendererAPI.h"
 #include "Core/Renderer/Shader.h"
 
@@ -22,11 +20,11 @@ namespace Quirk {
 
 		static void InitRenderer();
 
-		static void BeginScene(OrthographicCamera& camera);
-		static void BeginScene(PerspectiveCamera& camera);
+		static void BeginScene(const glm::mat4& projectionView);
 		static void EndScene();
 
-		static void Submit(Ref<Quad>& quad);
+		static void SubmitQuad(Ref<Quad>& quad);
+		static void SubmitQuad(const glm::vec3& position, const glm::mat4& transform, const glm::vec4& color);
 
 	private:
 		static void ResetQuadBatch();

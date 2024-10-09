@@ -9,7 +9,6 @@
 #include "Core/Renderer/Renderer2D.h"
 #include "Core/Renderer/RenderCommands.h"
 
-#include "imgui.h"
 #include "Core/Utility/Time.h"
 
 namespace Quirk {
@@ -44,12 +43,9 @@ namespace Quirk {
 
 	void Application::OnEvent(Event& event) {
 		EventDispatcher::HandleEvent(event);
+
 		EventDispatcher::Dispatch<WindowCloseEvent>(QK_BIND_EVENT_FN(Application::OnWindowClose));
-
 		EventDispatcher::Dispatch<WindowResizeEvent>(QK_BIND_EVENT_FN(Application::OnWindowResize));
-
-		ImGuiIO& io = ImGui::GetIO();
-		uint16_t cat = event.GetEventCategory();
 
 		LayerStack::HandleEvent(event);
 	}

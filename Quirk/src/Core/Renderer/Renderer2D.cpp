@@ -71,13 +71,8 @@ namespace Quirk {
 			s_Data.Sampler[i] = i;
     }
 
-    void Renderer2D::BeginScene(OrthographicCamera& camera) {
-		s_Data.ProjectionViewMatrix = camera.GetProjectionViewMatrix();
-		ResetQuadBatch();
-    }
-
-	void Renderer2D::BeginScene(PerspectiveCamera& camera) {
-		s_Data.ProjectionViewMatrix = camera.GetProjectionViewMatrix();
+	void Renderer2D::BeginScene(const glm::mat4& projectionView) {
+		s_Data.ProjectionViewMatrix = projectionView;
 		ResetQuadBatch();
 	}
 
@@ -116,7 +111,7 @@ namespace Quirk {
 		s_Stats.QuadsDrawn += s_Data.NoOfSubmitedQuads;
 	}
 
-	void Renderer2D::Submit(Ref<Quad>& quad) {
+	void Renderer2D::SubmitQuad(Ref<Quad>& quad) {
 		if (s_Data.NoOfSubmitedQuads >= s_Data.MaxNoOfQuads) {
 			DrawQuadBatch();
 			ResetQuadBatch();
@@ -177,5 +172,48 @@ namespace Quirk {
 
 		++s_Data.NoOfSubmitedQuads;
     }
+
+	void Renderer2D::SubmitQuad(const glm::vec3& position, const glm::mat4& transform, const glm::vec4& color) {
+		if (s_Data.NoOfSubmitedQuads >= s_Data.MaxNoOfQuads) {
+			DrawQuadBatch();
+			ResetQuadBatch();
+		}
+
+		float texSlot = 0;
+
+		s_Data.QuadVerticesCurrentPtr->Position		= transform * glm::vec4(-0.5, -0.5, 0.0f, 1.0f);
+		s_Data.QuadVerticesCurrentPtr->Color		= color;
+		s_Data.QuadVerticesCurrentPtr->TextureCoord = { 0.0f, 0.0f };
+		s_Data.QuadVerticesCurrentPtr->TextureSlot	= texSlot;
+		s_Data.QuadVerticesCurrentPtr->TilingFactor = 1;
+
+		++s_Data.QuadVerticesCurrentPtr;
+
+		s_Data.QuadVerticesCurrentPtr->Position		= transform * glm::vec4(0.5, -0.5, 0.0f, 1.0f);
+		s_Data.QuadVerticesCurrentPtr->Color		= color;
+		s_Data.QuadVerticesCurrentPtr->TextureCoord = { 1.0f, 0.0f };
+		s_Data.QuadVerticesCurrentPtr->TextureSlot	= texSlot;
+		s_Data.QuadVerticesCurrentPtr->TilingFactor = 1;
+
+		++s_Data.QuadVerticesCurrentPtr;
+
+		s_Data.QuadVerticesCurrentPtr->Position		= transform * glm::vec4(0.5, 0.5, 0.0f, 1.0f);
+		s_Data.QuadVerticesCurrentPtr->Color		= color;
+		s_Data.QuadVerticesCurrentPtr->TextureCoord = { 1.0f, 1.0f };
+		s_Data.QuadVerticesCurrentPtr->TextureSlot	= texSlot;
+		s_Data.QuadVerticesCurrentPtr->TilingFactor = 1;
+
+		++s_Data.QuadVerticesCurrentPtr;
+
+		s_Data.QuadVerticesCurrentPtr->Position		= transform * glm::vec4(-0.5, 0.5, 0.0f, 1.0f);
+		s_Data.QuadVerticesCurrentPtr->Color		= color;
+		s_Data.QuadVerticesCurrentPtr->TextureCoord = { 0.0f, 1.0f };
+		s_Data.QuadVerticesCurrentPtr->TextureSlot	= texSlot;
+		s_Data.QuadVerticesCurrentPtr->TilingFactor = 1;
+
+		++s_Data.QuadVerticesCurrentPtr;
+
+		++s_Data.NoOfSubmitedQuads;
+	}
 
 }

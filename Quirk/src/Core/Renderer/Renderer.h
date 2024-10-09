@@ -8,8 +8,7 @@
 #include "VertexArray.h"
 #include "Shader.h"
 
-#include "Core/Camera/OrthographicCamera.h"
-#include "Core/Camera/PerspectiveCamera.h"
+#include "Core/Camera/Camera.h"
 
 namespace Quirk {
 
@@ -17,8 +16,7 @@ namespace Quirk {
 	public:
 		static void InitRenderer(RendererAPI::API rendererAPI);
 
-		static void BeginScene(OrthographicCamera& camera);
-		static void BeginScene(PerspectiveCamera& camera);
+		static void BeginScene(const glm::mat4& projectionView);
 
 		static void EndScene();
 		static void Submit(Ref<Shader>& shader, Ref<VertexArray>& vertexArray);

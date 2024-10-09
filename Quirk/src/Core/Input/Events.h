@@ -27,7 +27,7 @@ namespace Quirk {
 	};
 
 #define CATEGORY_AND_TYPE(category, type)	virtual inline uint16_t GetEventCategory() override { return category; }\
-											static inline EventType GetStaticEventType() { return type; }\
+											static inline  EventType GetStaticEventType() { return type; }\
 											virtual inline EventType GetEventType() override { return type; }
 
 	class Event {

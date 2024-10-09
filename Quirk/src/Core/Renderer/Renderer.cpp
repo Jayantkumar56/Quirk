@@ -4,7 +4,7 @@
 #include "Renderer.h"
 #include "RenderCommands.h"
 
-#include "Core/Camera/PerspectiveCamera.h"
+#include "Core/Camera/Camera.h"
 
 namespace Quirk {
 
@@ -16,12 +16,8 @@ namespace Quirk {
 		RenderCommands::EnableFaceCulling();
 	}
 
-	void Renderer::BeginScene(OrthographicCamera& camera) {
-		m_SceneData.ViewProjectionMatrix = camera.GetProjectionViewMatrix();
-	}
-
-	void Renderer::BeginScene(PerspectiveCamera& camera) {
-		m_SceneData.ViewProjectionMatrix = camera.GetProjectionViewMatrix();
+	void Renderer::BeginScene(const glm::mat4& projectionView) {
+		m_SceneData.ViewProjectionMatrix = projectionView;
 	}
 
 	void Renderer::EndScene() {
