@@ -18,6 +18,7 @@ namespace Quirk {
 	HGLRC ImguiUI::GLContext = nullptr;
 	ImguiUI::ContextData ImguiUI::s_MainWindowContextData;
 	bool ImguiUI::s_DockingEnabled;
+	PFNWGLCHOOSEPIXELFORMATARBPROC ImguiUI::ChoosePixelFormatARB;
 
 	void ImguiUI::CleanupDeviceWGL(HWND hWnd, ContextData* data) {
 		wglMakeCurrent(nullptr, nullptr);
@@ -30,31 +31,27 @@ namespace Quirk {
 		unsigned int numPixelFormat = 0;
 
 		const int pixelAttribs[] = {
-			WGL_DRAW_TO_WINDOW_ARB, GL_TRUE,
-			WGL_SUPPORT_OPENGL_ARB, GL_TRUE,
-			WGL_DOUBLE_BUFFER_ARB,	GL_TRUE,
-			WGL_ACCELERATION_ARB,	WGL_FULL_ACCELERATION_ARB,
-			WGL_PIXEL_TYPE_ARB,		WGL_TYPE_RGBA_ARB,
-			WGL_COLOR_BITS_ARB,		32,
-			WGL_DEPTH_BITS_ARB,		24,
-			WGL_STENCIL_BITS_ARB,	8,
-			/*WGL_SAMPLE_BUFFERS_ARB,	GL_TRUE,
-			WGL_SAMPLES_ARB, 4,*/
+			WGL_DRAW_TO_WINDOW_ARB,		GL_TRUE,
+			WGL_SUPPORT_OPENGL_ARB,		GL_TRUE,
+			WGL_DOUBLE_BUFFER_ARB,		GL_TRUE,
+			WGL_ACCELERATION_ARB,		WGL_FULL_ACCELERATION_ARB,
+			WGL_PIXEL_TYPE_ARB,			WGL_TYPE_RGBA_ARB,
+			WGL_COLOR_BITS_ARB,			32,
+			WGL_DEPTH_BITS_ARB,			24,
+			WGL_STENCIL_BITS_ARB,		8,
+			WGL_SAMPLE_BUFFERS_ARB,		GL_TRUE,
+			WGL_SAMPLES_ARB,			4,
 			0, // End
 		};
 
-		PFNWGLCHOOSEPIXELFORMATARBPROC ChoosePixelFormatARB = (PFNWGLCHOOSEPIXELFORMATARBPROC)wglGetProcAddress("wglChoosePixelFormatARB");
 		QK_CORE_ASSERTEX(
 			ChoosePixelFormatARB(data->DeviceContext, pixelAttribs, NULL, 1, &pixelFormat, &numPixelFormat),
 			"Failed to choose pixel format!"
 		);
 
 		PIXELFORMATDESCRIPTOR PFD;
-		QK_CORE_ASSERTEX(
-			DescribePixelFormat(data->DeviceContext, pixelFormat, sizeof(PFD), &PFD),
-			"Failed to describe pixel format!"
-		);
-		QK_CORE_ASSERTEX(SetPixelFormat(data->DeviceContext, pixelFormat, &PFD), "Unable to set pixel format!");
+		QK_CORE_ASSERTEX(DescribePixelFormat(data->DeviceContext, pixelFormat, sizeof(PFD), &PFD),	"Failed to describe pixel format!");
+		QK_CORE_ASSERTEX(SetPixelFormat(data->DeviceContext, pixelFormat, &PFD),					"Unable to set pixel format!");
 
 		return true;
 	}
@@ -89,6 +86,8 @@ namespace Quirk {
 	}
 
 	void ImguiUI::Init() {
+		ChoosePixelFormatARB = (PFNWGLCHOOSEPIXELFORMATARBPROC)wglGetProcAddress("wglChoosePixelFormatARB");
+
 		s_DockingEnabled = false;
 		const char* glsl_version = "#version 410";
 

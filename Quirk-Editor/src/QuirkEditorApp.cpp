@@ -1,20 +1,16 @@
 
 #include "Quirk.h"
 #include "Core/Application/EntryPoint.h"
-#include "SceneViewport.h"
-#include "SceneProperties.h"
-
+#include "EditorLayer.h"
 
 namespace Quirk {
 
 	class QuirkEditorApp : public Application {
 	public:
 		QuirkEditorApp(): 
-				Application(L"Quirk Engine Editor"),
-				m_SceneProperties(m_SceneViewport)
+				Application(L"Quirk Engine Editor")
 		{
-			PushLayer(&m_SceneViewport);
-			PushLayer(&m_SceneProperties);
+			PushLayer(&m_EditorLayer);
 
 			ImguiUI::Init();
 			ImguiUI::EnableDocking();
@@ -27,8 +23,7 @@ namespace Quirk {
 		}
 
 	private:
-		SceneViewport m_SceneViewport;
-		SceneProperties m_SceneProperties;
+		EditorLayer m_EditorLayer;
 	};
 
 

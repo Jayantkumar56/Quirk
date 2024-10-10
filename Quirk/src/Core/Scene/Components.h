@@ -60,7 +60,7 @@ namespace Quirk {
 
 	struct CameraComponent {
 		SceneCamera Camera;
-		bool Primary = true;
+		bool Primary = false;
 		bool FixedAspectRatio = false;
 
 		CameraComponent() = default;

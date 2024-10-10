@@ -5,6 +5,7 @@
 #include "imgui.h"
 #include "backends/imgui_impl_win32.h"
 #include "backends/imgui_impl_opengl3.h"
+#include "wglext.h"
 
 #ifdef QK_PLATFORM_WINDOWS
 #define WIN32_LEAN_AND_MEAN
@@ -46,6 +47,7 @@ namespace Quirk {
 		static ContextData s_MainWindowContextData;
 		static HGLRC GLContext;
 		static bool s_DockingEnabled;
+		static PFNWGLCHOOSEPIXELFORMATARBPROC ChoosePixelFormatARB;
 	};
 
 }

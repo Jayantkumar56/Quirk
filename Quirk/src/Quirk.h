@@ -24,8 +24,7 @@
 #include "Core/Input/KeyboardEvents.h"
 #include "Core/Input/ApplicationEvents.h"
 
-#include "Core/Camera/OrthographicCamera.h"
-#include "Core/Camera/PerspectiveCamera.h"
+#include "Core/Camera/Camera.h"
 #include "Core/Camera/CameraController.h"
 
 #include "Core/Shapes/Quad.h"
@@ -39,6 +38,12 @@
 #include "Core/Renderer/RenderCommands.h"
 #include "Core/Renderer/Renderer.h"
 #include "Core/Renderer/Renderer2D.h"
+
+#include "Core/Scene/Components.h"
+#include "Core/Scene/Entity.h"
+#include "Core/Scene/ScriptableEntity.h"
+#include "Core/Scene/SceneCamera.h"
+#include "Core/Scene/Scene.h"
 
 #include "Core/Application/Window.h"
 #include "Core/Application/Application.h"

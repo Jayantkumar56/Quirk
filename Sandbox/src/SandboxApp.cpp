@@ -7,9 +7,9 @@
 
 class SandboxApp : public Quirk::Application {
 public:
-	SandboxApp() {
+	SandboxApp(): Application(L"Sandbox App") {
 		PushLayer(&m_ExampleLayer);
-		PushOverlay(&m_ImguiLayer);
+		//PushOverlay(&m_ImguiLayer);
 
 		//GetWindow().SetVSync(true);
 	}
@@ -20,7 +20,7 @@ public:
 
 private:
 	Example2DLayer m_ExampleLayer;
-	Quirk::ImguiUI m_ImguiLayer;
+	//Quirk::ImguiUI m_ImguiLayer;
 };
 
 
