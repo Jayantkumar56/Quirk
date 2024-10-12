@@ -1,10 +1,14 @@
 
 
 #include "EditorLayer.h"
+#include "FontManager.h"
 
 namespace Quirk {
 
 	void EditorLayer::OnAttach(){
+		ImGuiIO& io = ImGui::GetIO();
+		io.FontDefault = FontManager::GetFont(FontWeight::Regular, 22);
+
 		auto square = m_MainScene->CreateEntity("Orange Square");
 		square.AddComponent<SpriteRendererComponent>(glm::vec4{ 1.0f, 0.14f, 0.1f, 1.0f });
 
@@ -60,11 +64,11 @@ namespace Quirk {
 	}
 
 	void EditorLayer::OnUpdate(){
-		m_SceneViewport.OnUpdate();
+		m_SceneViewport.OnUpdate(m_MainScene);
 	}
 
 	void EditorLayer::OnImguiUiUpdate(){
-		m_SceneViewport.OnImguiUiUpdate();
+		m_SceneViewport.OnImguiUiUpdate(m_MainScene);
 		m_SceneHierarcy.OnImguiUiUpdate(m_MainScene, m_SelectedEntity);
 		m_InspectorPanel.OnImguiUiUpdate(m_SelectedEntity);
 	}

@@ -2,15 +2,15 @@
 
 
 #include "SceneViewportPanel.h"
+#include "FontManager.h"
 
 namespace Quirk {
 
-	SceneViewportPanel::SceneViewportPanel(const Ref<Scene>& scene, uint16_t width, uint16_t height) :
+	SceneViewportPanel::SceneViewportPanel(uint16_t width, uint16_t height) :
 			m_PanelWidth	  (width),
 			m_PanelHeight	  (height),
 			m_Frame			  (FrameBuffer::Create({ m_PanelWidth, m_PanelHeight })),
 			m_RendererStats	  ({ 0, 0 }),
-			m_MainScene		  (scene),
 			m_IsInFocus		  (false)
 	{
 		RenderCommands::UpdateViewPort(m_PanelWidth, m_PanelHeight);
@@ -20,15 +20,15 @@ namespace Quirk {
 		return false;
 	}
 
-	void SceneViewportPanel::OnUpdate() {
+	void SceneViewportPanel::OnUpdate(const Ref<Scene>& scene) {
 		if (!m_IsInFocus) {
 			return;
 		}
 
-		m_MainScene->OnUpdate();
+		scene->OnUpdate();
 	}
 
-	void SceneViewportPanel::OnImguiUiUpdate() {
+	void SceneViewportPanel::OnImguiUiUpdate(const Ref<Scene>& scene) {
 		ImGuiIO& io = ImGui::GetIO();
 		ImGuiWindowFlags flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoTitleBar;
 
@@ -36,8 +36,8 @@ namespace Quirk {
 		ImGui::Begin("Scene Viewport");
 
 		m_IsInFocus = ImGui::IsWindowFocused();
-		CheckAndHandleResize();
-		RenderViewport();
+		CheckAndHandleResize(scene);
+		RenderViewport(scene);
 
 		uint32_t color = m_Frame->GetColorBuffer();
 		ImGui::Image((void*)color, ImVec2(m_PanelWidth, m_PanelHeight), { 0, 1 }, { 1, 0 });
@@ -46,7 +46,7 @@ namespace Quirk {
 		ImGui::PopStyleVar();
 	}
 
-	void SceneViewportPanel::CheckAndHandleResize() {
+	void SceneViewportPanel::CheckAndHandleResize(const Ref<Scene>& scene) {
 		ImVec2 windowSize = ImGui::GetContentRegionAvail();
 
 		if (windowSize.x < 0 || windowSize.y < 0) {
@@ -59,16 +59,16 @@ namespace Quirk {
 
 			m_Frame->Resize(m_PanelWidth, m_PanelHeight);
 			RenderCommands::UpdateViewPort(m_PanelWidth, m_PanelHeight);
-			m_MainScene->OnViewportResize(m_PanelWidth, m_PanelHeight);
+			scene->OnViewportResize(m_PanelWidth, m_PanelHeight);
 		}
 	}
 
-	void SceneViewportPanel::RenderViewport() {
+	void SceneViewportPanel::RenderViewport(const Ref<Scene>& scene) {
 		m_Frame->Bind();
 		RenderCommands::Clear();
 		Renderer2D::ResetStats();
 		
-		m_MainScene->RenderScene();
+		scene->RenderScene();
 
 		m_Frame->Unbind();
 		m_RendererStats = Renderer2D::GetStats();

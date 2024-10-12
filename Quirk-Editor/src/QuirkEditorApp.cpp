@@ -2,6 +2,7 @@
 #include "Quirk.h"
 #include "Core/Application/EntryPoint.h"
 #include "EditorLayer.h"
+#include "FontManager.h"
 
 namespace Quirk {
 
@@ -10,12 +11,13 @@ namespace Quirk {
 		QuirkEditorApp(): 
 				Application(L"Quirk Engine Editor")
 		{
-			PushLayer(&m_EditorLayer);
-
 			ImguiUI::Init();
 			ImguiUI::EnableDocking();
+			FontManager::LoadFonts();
 
 			GetWindow().SetVSync(true);
+
+			PushLayer(&m_EditorLayer);
 		}
 
 		~QuirkEditorApp() {

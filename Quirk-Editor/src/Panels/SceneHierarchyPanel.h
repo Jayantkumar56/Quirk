@@ -12,6 +12,9 @@ namespace Quirk {
 		~SceneHierarchyPanel() = default;
 
 		void OnImguiUiUpdate(const Ref<Scene>& scene, Entity& selectedEntity);
+
+	private:
+		void DrawEntityNode(Entity entity, Entity& selectedEntity);
 	};
 
 }

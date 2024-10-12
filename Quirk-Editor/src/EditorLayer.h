@@ -15,7 +15,7 @@ namespace Quirk {
 				Layer(name),
 				m_MainScene(std::make_shared<Scene>(890, 800)),
 				m_SelectedEntity({}),
-				m_SceneViewport(m_MainScene, 890, 800)
+				m_SceneViewport(890, 800)
 		{}
 
 		~EditorLayer() = default;
