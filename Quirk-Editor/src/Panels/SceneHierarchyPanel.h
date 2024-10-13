@@ -15,6 +15,9 @@ namespace Quirk {
 
 	private:
 		void DrawEntityNode(Entity entity, Entity& selectedEntity);
+
+	private:
+		bool m_PopupOpened = false;
 	};
 
 }

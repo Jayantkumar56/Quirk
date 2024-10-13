@@ -3,6 +3,7 @@
 #include "Core/Application/EntryPoint.h"
 #include "EditorLayer.h"
 #include "FontManager.h"
+#include "Theme.h"
 
 namespace Quirk {
 
@@ -13,7 +14,9 @@ namespace Quirk {
 		{
 			ImguiUI::Init();
 			ImguiUI::EnableDocking();
+
 			FontManager::LoadFonts();
+			Theme::SetTheme(ThemeName::DarkTheme);
 
 			GetWindow().SetVSync(true);
 

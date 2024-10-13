@@ -9,22 +9,44 @@ namespace Quirk {
 
 	template<typename T, typename function>
 	static void DrawComponentNode(const std::string& label, Entity& entity, function uiFunction) {
-		ImGuiTreeNodeFlags treeNodeFlags = ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_SpanAvailWidth;
+		bool shouldDeleteComponent = false;
+		float windowPadding = GImGui->Style.WindowPadding.x;
+
+		ImGuiTreeNodeFlags treeNodeFlags = ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_DefaultOpen;
+		treeNodeFlags |= ImGuiTreeNodeFlags_AllowItemOverlap;
 
 		if (entity.HasComponent<T>()) {
-			float lineHeight = GImGui->Font->FontSize;
-			ImGui::Dummy(ImVec2(0.0f, lineHeight / 5));
+			float lineHeight = GImGui->Font->FontSize + 2 * GImGui->Style.FramePadding.y;
 
+			ImGui::PushStyleColor(ImGuiCol_Text, ImVec4{ 0.075f, 0.18f, 0.196f, 1.0f });
 			ImGui::PushFont(FontManager::GetFont("ComponentTreeNode"));
 			bool treeNodeOpened = ImGui::TreeNodeEx((void*)typeid(T).hash_code(), treeNodeFlags, label.c_str());
 			ImGui::PopFont();
+
+			ImGui::SameLine(ImGui::GetWindowWidth() - lineHeight - windowPadding / 2);
+			if (ImGui::Button("x", { lineHeight, lineHeight })) {
+				ImGui::OpenPopup("ComponentSettings");	
+			}
+			ImGui::PopStyleColor();
+
+			if (ImGui::BeginPopup("ComponentSettings")) {
+				if(ImGui::MenuItem("Remove Component"))
+					shouldDeleteComponent = true;
+
+				ImGui::EndPopup();
+			}
 
 			if (treeNodeOpened) {
 				T& component = entity.GetComponent<T>();
 				uiFunction(component);
 				ImGui::TreePop();
+
+				ImGui::Dummy(ImVec2(0.0f, lineHeight / 4));
 			}
 		}
+
+		if(shouldDeleteComponent)
+			entity.RemoveComponent<T>();
 	}
 
 	void InspectorPanel::OnImguiUiUpdate(Entity& entity) {
@@ -54,6 +76,8 @@ namespace Quirk {
 				tag = std::string(entityName);
 			}
 			ImGui::PopStyleVar();
+
+			ImGui::Dummy(ImVec2(0.0f, 0.0f));
 		}
 
 		DrawComponentNode<SpriteRendererComponent>("Sprite Renderer", entity, [](SpriteRendererComponent& component) {
@@ -99,36 +123,49 @@ namespace Quirk {
 				ImGui::EndTable();
 			}
 
-			ImGui::AlignTextToFramePadding();
-			ImGui::Text("Projection Type");
+			if (ImGui::BeginTable("ProjectionType", 2)) {
+				ImGui::TableNextColumn();
 
-			ImGui::SameLine(0.0f, 15.0f);
-			ImGui::PushItemWidth(ImGui::CalcTextSize("xxxOrthographicxxx").x);
-			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(10, ImGui::GetStyle().FramePadding.y));
+				ImGui::AlignTextToFramePadding();
+				ImGui::Text("Projection Type");
 
-			if (ImGui::Combo("##projectionTypeSelection", &currentProjection, projectionTypes, IM_ARRAYSIZE(projectionTypes))) {
-				auto projectionType = (currentProjection == 1) ? SceneCamera::ProjectionType::Orthographic : SceneCamera::ProjectionType::Perspective;
-				component.Camera.SetProjectionType(projectionType);
+				ImGui::TableNextColumn();
+
+				ImGui::PushItemWidth(ImGui::CalcTextSize("xxxOrthographicxxx").x);
+				ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(10, ImGui::GetStyle().FramePadding.y));
+				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.192f, 0.337f, 0.349f, 1.0f });
+				if (ImGui::Combo("##projectionTypeSelection", &currentProjection, projectionTypes, IM_ARRAYSIZE(projectionTypes))) {
+					auto projectionType = (currentProjection == 1) ? SceneCamera::ProjectionType::Orthographic : SceneCamera::ProjectionType::Perspective;
+					component.Camera.SetProjectionType(projectionType);
+				}
+				ImGui::PopStyleColor();
+				ImGui::PopStyleVar();
+				ImGui::PopItemWidth();
+
+				ImGui::EndTable();
 			}
-
-			ImGui::PopStyleVar();
-			ImGui::PopItemWidth();
 
 			if (currentProjection == 0 && ImGui::BeginTable("Perspective Properties", 2)) {
 				ImGui::TableNextColumn();
 
 				float nearPlane = component.Camera.GetPerspectiveNearClip();
 				ImGui::AlignTextToFramePadding();
+				ImGui::PushFont(FontManager::GetFont("PropertyLabel"));
 				ImGui::Text("Near Plane");
+				ImGui::PopFont();
 
 				float farPlane = component.Camera.GetPerspectiveFarClip();
 				ImGui::AlignTextToFramePadding();
+				ImGui::PushFont(FontManager::GetFont("PropertyLabel"));
 				ImGui::Text("Far Plane");
+				ImGui::PopFont();
 
 				float fov = glm::degrees(component.Camera.GetPerspectiveVerticalFOV());
 				ImGui::AlignTextToFramePadding();
+				ImGui::PushFont(FontManager::GetFont("PropertyLabel"));
 				ImGui::Text("Field Of View (FOV)");
-				
+				ImGui::PopFont();
+
 				ImGui::TableNextColumn();
 
 				if (ImGui::DragFloat("##nearPlane", &nearPlane, 0.1f, 0.0f, 0.0f, "%.2f")) {
@@ -150,15 +187,21 @@ namespace Quirk {
 
 				float orthographicNear = component.Camera.GetOrthographicNearClip();
 				ImGui::AlignTextToFramePadding();
+				ImGui::PushFont(FontManager::GetFont("PropertyLabel"));
 				ImGui::Text("Near Plane");
+				ImGui::PopFont();
 
 				float orthographicFar = component.Camera.GetOrthographicFarClip();
 				ImGui::AlignTextToFramePadding();
+				ImGui::PushFont(FontManager::GetFont("PropertyLabel"));
 				ImGui::Text("Far Plane");
+				ImGui::PopFont();
 
 				float orthographicSize = component.Camera.GetOrthographicSize();
 				ImGui::AlignTextToFramePadding();
+				ImGui::PushFont(FontManager::GetFont("PropertyLabel"));
 				ImGui::Text("Orthographic Size");
+				ImGui::PopFont();
 
 				ImGui::TableNextColumn();
 

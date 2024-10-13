@@ -17,7 +17,7 @@ namespace Quirk {
 
 	Application::Application(const std::wstring& appName) :
 			m_AppName(appName),
-			m_Window(appName, 1502, 835, RendererAPI::API::OpenGL),
+			m_Window(appName, 1600, 900, RendererAPI::API::OpenGL),
 			m_Running(true)
 	{
 		s_Instance = this;
