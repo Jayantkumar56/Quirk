@@ -3,6 +3,8 @@
 #include "EditorLayer.h"
 #include "FontManager.h"
 
+#include "Core/Serializer/SceneSerializer.h"
+
 namespace Quirk {
 
 	void EditorLayer::OnAttach(){
@@ -52,6 +54,8 @@ namespace Quirk {
 
 		camera.AddComponent<NativeScriptComponent>().Bind<CameraController>();
 		camera2.AddComponent<NativeScriptComponent>().Bind<CameraController>();
+
+		SceneSerializer::Serialize(m_MainScene, "assets/Scenes/main_scene.yaml");
 	}
 
 	void EditorLayer::OnDetach(){

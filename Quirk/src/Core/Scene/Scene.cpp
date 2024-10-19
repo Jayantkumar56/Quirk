@@ -51,7 +51,7 @@ namespace Quirk {
 		auto renderables = m_Registry.view<TransformComponent, SpriteRendererComponent>();
 		for (auto entity : renderables) {
 			auto [transform, quad] = renderables.get<TransformComponent, SpriteRendererComponent>(entity);
-			Renderer2D::SubmitQuad(transform.Translation, transform.GetTransform(), quad.Color);
+			Renderer2D::SubmitQuad(transform.GetTransform(), quad.Color);
 		}
 
 		Renderer2D::EndScene();

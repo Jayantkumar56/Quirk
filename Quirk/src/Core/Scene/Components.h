@@ -51,7 +51,7 @@ namespace Quirk {
 	struct SpriteRendererComponent {
 		glm::vec4 Color{ 1.0f, 1.0f, 1.0f, 1.0f };
 		Ref<Texture2D> Texture;
-		float TilingFactor = 1.0f;
+		float TillingFactor = 1.0f;
 
 		SpriteRendererComponent() = default;
 		SpriteRendererComponent(const SpriteRendererComponent&) = default;
@@ -100,5 +100,16 @@ namespace Quirk {
 		}
 	};
 
+	class ComponentsIterator {
+	public:
+		template<typename function>
+		static inline void Iterate(function fun) {	
+			fun.operator() < TagComponent > ("Tag");
+			fun.operator() < TransformComponent > ("Transform");
+			fun.operator() < SpriteRendererComponent > ("Sprite Renderer");
+			fun.operator() < CameraComponent > ("Camera");
+			fun.operator() < NativeScriptComponent > ("Native Script");
+		}
+	};
 
 }

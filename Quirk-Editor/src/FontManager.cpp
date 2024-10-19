@@ -11,12 +11,12 @@ namespace Quirk {
 
 	std::string_view FontManager::GetFontPathWithWeight(FontWeight weight){
 		switch (weight) {
-			case Quirk::Regular:	return "assets/Fonts/Schibsted_Grotesk/static/SchibstedGrotesk-Regular.ttf";
-			case Quirk::Medium:		return "assets/Fonts/Schibsted_Grotesk/static/SchibstedGrotesk-Medium.ttf";
-			case Quirk::SemiBold:	return "assets/Fonts/Schibsted_Grotesk/static/SchibstedGrotesk-SemiBold.ttf";
-			case Quirk::Bold:		return "assets/Fonts/Schibsted_Grotesk/static/SchibstedGrotesk-Bold.ttf";
-			case Quirk::ExtraBold:	return "assets/Fonts/Schibsted_Grotesk/static/SchibstedGrotesk-ExtraBold.ttf";
-			case Quirk::Black:		return "assets/Fonts/Schibsted_Grotesk/static/SchibstedGrotesk-Black.ttf";
+			case FontWeight::Regular:	return "assets/Fonts/Schibsted_Grotesk/static/SchibstedGrotesk-Regular.ttf";
+			case FontWeight::Medium:		return "assets/Fonts/Schibsted_Grotesk/static/SchibstedGrotesk-Medium.ttf";
+			case FontWeight::SemiBold:	return "assets/Fonts/Schibsted_Grotesk/static/SchibstedGrotesk-SemiBold.ttf";
+			case FontWeight::Bold:		return "assets/Fonts/Schibsted_Grotesk/static/SchibstedGrotesk-Bold.ttf";
+			case FontWeight::ExtraBold:	return "assets/Fonts/Schibsted_Grotesk/static/SchibstedGrotesk-ExtraBold.ttf";
+			case FontWeight::Black:		return "assets/Fonts/Schibsted_Grotesk/static/SchibstedGrotesk-Black.ttf";
 		}
 
 		QK_ASSERT(false, "Invalid Font Weight specified!");

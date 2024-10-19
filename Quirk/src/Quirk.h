@@ -45,6 +45,8 @@
 #include "Core/Scene/SceneCamera.h"
 #include "Core/Scene/Scene.h"
 
+#include "Core/Serializer/SceneSerializer.h"
+
 #include "Core/Application/Window.h"
 #include "Core/Application/Application.h"
 #include "Core/Application/Layer.h"

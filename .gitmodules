@@ -8,3 +8,6 @@
 [submodule "Quirk/vendor/glm"]
 	path = Quirk/vendor/glm
 	url = https://github.com/g-truc/glm
+[submodule "Quirk/vendor/yaml-cpp"]
+	path = Quirk/vendor/yaml-cpp
+	url = https://github.com/Jayantkumar56/yaml-cpp

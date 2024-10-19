@@ -24,7 +24,7 @@ namespace Quirk {
 		static void EndScene();
 
 		static void SubmitQuad(Ref<Quad>& quad);
-		static void SubmitQuad(const glm::vec3& position, const glm::mat4& transform, const glm::vec4& color);
+		static void SubmitQuad(const glm::mat4& transform, const glm::vec4& color);
 
 	private:
 		static void ResetQuadBatch();

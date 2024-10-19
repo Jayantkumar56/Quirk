@@ -2,6 +2,7 @@
 
 #include "SceneHierarchyPanel.h"
 #include "FontManager.h"
+#include "Theme.h"
 
 #include <imgui_internal.h>
 
@@ -9,6 +10,7 @@ namespace Quirk {
 
 	void SceneHierarchyPanel::OnImguiUiUpdate(const Ref<Scene>& scene, Entity& selectedEntity){
 		ImGui::Begin("Scene Hierarcy");
+		ImGui::PushStyleColor(ImGuiCol_Border, Theme::GetColor(ColorName::PopupBorder));
 
 		for (auto entity : scene->m_Registry.view<entt::entity>()) {
 			Entity entityToShow = { entity, scene.get()};
@@ -16,7 +18,6 @@ namespace Quirk {
 		}
 
 		if (ImGui::BeginPopupContextWindow(0, ImGuiPopupFlags_MouseButtonRight | ImGuiPopupFlags_NoOpenOverItems)) {
-			m_PopupOpened = true;
 
 			if (ImGui::MenuItem("Add Empty Entity")) {
 				scene->CreateEntity();
@@ -26,13 +27,13 @@ namespace Quirk {
 		}
 
 		if (ImGui::IsMouseClicked(0) && ImGui::IsWindowHovered()) { selectedEntity = {}; }
-		m_PopupOpened = false;
 
 		ImGui::Dummy({0.0f, 10.0f});
 		ImGuiIO& io = ImGui::GetIO();
 		ImGui::Text("Per frame %.3f ms/frame", 1000.0f / io.Framerate);
 		ImGui::Text("FPS :- %.1f", io.Framerate);
 
+		ImGui::PopStyleColor();
 		ImGui::End();
 	}
 
@@ -41,6 +42,7 @@ namespace Quirk {
 		float windowPadding		= GImGui->Style.WindowPadding.x;
 		const std::string& tag	= entity.GetComponent<TagComponent>().Tag;
 		uint64_t uuid			= entity.GetComponent<UUIDComponent>().Uuid;
+		ImGui::PushID((int)uuid);
 
 		ImGuiTreeNodeFlags flags = 0;
 		flags |= ImGuiTreeNodeFlags_SpanAvailWidth	| ImGuiTreeNodeFlags_AllowItemOverlap;
@@ -63,10 +65,10 @@ namespace Quirk {
 		float lineHeight = GImGui->Font->FontSize + 2 * GImGui->Style.FramePadding.y;
 		ImGui::SameLine(ImGui::GetWindowWidth() - lineHeight - windowPadding);
 
+		bool openAddComponentMenu = false;
 		if (ImGui::BeginPopupContextItem(0)) {
-			m_PopupOpened = true;
 			if (ImGui::MenuItem("Add Component")) {
-				
+				openAddComponentMenu = true;
 			}
 
 			if (ImGui::MenuItem("Delete Entity"))
@@ -75,8 +77,18 @@ namespace Quirk {
 			ImGui::EndPopup();
 		}
 
-		ImGui::PushID((int)uuid);
-		if (entity == selectedEntity) { ImGui::PushStyleColor(ImGuiCol_Text, ImVec4{ 0.0f, 0.0f, 0.0f, 1.0f }); }
+		if (openAddComponentMenu) { ImGui::OpenPopup("AddComponentsMenu"); }
+		if (ImGui::BeginPopup("AddComponentsMenu")) {
+			ComponentsIterator::Iterate([&entity] <typename T> (const std::string& componentName) -> void {
+				if (ImGui::MenuItem(componentName.c_str()) && !entity.HasComponent<T>()) {
+					entity.AddComponent<T>();
+				}
+			});
+
+			ImGui::EndPopup();
+		}
+
+		if (entity == selectedEntity) { ImGui::PushStyleColor(ImGuiCol_Text, Theme::GetColor(ColorName::DarkText)); }
 		if (ImGui::Button("x", { lineHeight, lineHeight })) {
 			ImGui::OpenPopup("RemoveEntityOption");
 		}
@@ -89,10 +101,10 @@ namespace Quirk {
 
 			ImGui::EndPopup();
 		}
-		ImGui::PopID();
 
 		if (!buttonClicked && !treeToggledOpen && treeNodeClicked) { selectedEntity = entity; }
 
+		ImGui::PopID();
 		ImGui::PopStyleVar();
 		if (treeNodeOpened) {
 			ImGui::TreePop();

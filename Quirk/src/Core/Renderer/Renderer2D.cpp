@@ -121,19 +121,19 @@ namespace Quirk {
 		glm::vec3 quadPos = quad->GetPosition();
 
 		Ref<Texture> quadTexture = quad->GetTexture();
-		float texSlot = (quadTexture == nullptr) ? 0 : -1;
+		float texSlot = (quadTexture == nullptr) ? 0.0f : -1.0f;
 
 		if (texSlot == -1) {
 			for (uint32_t i = 1; i < s_Data.NextTextureSlotToBind; ++i) {
 				if (*s_Data.TextureSlots[i].get() == *quadTexture.get()) {
-					texSlot = i;
+					texSlot = (float)i;
 					break;
 				}
 			}
 
 			if (texSlot == -1) {
 				s_Data.TextureSlots[s_Data.NextTextureSlotToBind] = quadTexture;
-				texSlot = s_Data.NextTextureSlotToBind;
+				texSlot = (float)s_Data.NextTextureSlotToBind;
 				++s_Data.NextTextureSlotToBind;
 			}
 		}
@@ -173,7 +173,7 @@ namespace Quirk {
 		++s_Data.NoOfSubmitedQuads;
     }
 
-	void Renderer2D::SubmitQuad(const glm::vec3& position, const glm::mat4& transform, const glm::vec4& color) {
+	void Renderer2D::SubmitQuad(const glm::mat4& transform, const glm::vec4& color) {
 		if (s_Data.NoOfSubmitedQuads >= s_Data.MaxNoOfQuads) {
 			DrawQuadBatch();
 			ResetQuadBatch();

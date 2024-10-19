@@ -40,7 +40,7 @@ namespace Quirk {
 		RenderViewport(scene);
 
 		uint32_t color = m_Frame->GetColorBuffer();
-		ImGui::Image((void*)color, ImVec2(m_PanelWidth, m_PanelHeight), { 0, 1 }, { 1, 0 });
+		ImGui::Image((ImTextureID)(intptr_t)color, ImVec2(m_PanelWidth, m_PanelHeight), { 0, 1 }, { 1, 0 });
 
 		ImGui::End();
 		ImGui::PopStyleVar();
