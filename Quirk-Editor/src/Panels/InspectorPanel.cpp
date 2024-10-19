@@ -18,13 +18,14 @@ namespace Quirk {
 
 		if (entity.HasComponent<T>()) {
 			float lineHeight = GImGui->Font->FontSize + 2 * GImGui->Style.FramePadding.y;
+			float treeNodeWidth = ImGui::GetContentRegionAvail().x;
 
 			ImGui::PushStyleColor(ImGuiCol_Text, Theme::GetColor(ColorName::DarkText));
 			ImGui::PushFont(FontManager::GetFont("ComponentTreeNode"));
 			bool treeNodeOpened = ImGui::TreeNodeEx((void*)typeid(T).hash_code(), treeNodeFlags, label.c_str());
 			ImGui::PopFont();
 
-			ImGui::SameLine(ImGui::GetWindowWidth() - lineHeight - windowPadding / 2);
+			ImGui::SameLine(treeNodeWidth - (lineHeight / 2));
 			if (ImGui::Button("x", { lineHeight, lineHeight })) {
 				ImGui::OpenPopup("ComponentSettings");	
 			}
@@ -83,14 +84,6 @@ namespace Quirk {
 			ImGui::Dummy(ImVec2(0.0f, 0.0f));
 		}
 
-		DrawComponentNode<SpriteRendererComponent>("Sprite Renderer", entity, [](SpriteRendererComponent& component) {
-			ImGui::Text("Color");
-			ImGui::SameLine();
-			ImGui::PushFont(FontManager::GetFont("DragFloatValue"));
-			ImGui::ColorEdit4("##color", glm::value_ptr(component.Color));
-			ImGui::PopFont();
-		});
-
 		DrawComponentNode<TransformComponent>("Transforms", entity, [](TransformComponent& component) {
 			// width of word "Position" is largest among the three also took extra 3 letters space as "xxx" for padding 
 			auto size = ImGui::CalcTextSize("Positionxxx");
@@ -103,6 +96,14 @@ namespace Quirk {
 			}
 
 			DrawFloat3("Scale", glm::value_ptr(component.Scale), 1.0f, size.x);
+		});
+
+		DrawComponentNode<SpriteRendererComponent>("Sprite Renderer", entity, [](SpriteRendererComponent& component) {
+			ImGui::Text("Color");
+			ImGui::SameLine();
+			ImGui::PushFont(FontManager::GetFont("DragFloatValue"));
+			ImGui::ColorEdit4("##color", glm::value_ptr(component.Color));
+			ImGui::PopFont();
 		});
 
 		DrawComponentNode<CameraComponent>("Camera", entity, [] (CameraComponent& component) {
