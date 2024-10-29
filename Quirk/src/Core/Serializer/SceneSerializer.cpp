@@ -8,23 +8,69 @@
 
 namespace YAML {
 
-	Emitter& operator << (Emitter& out, const glm::vec3& v) {
+	static Emitter& operator << (Emitter& out, const glm::vec3& v) {
 		out << Flow;
 		out << BeginSeq << v.x << v.y << v.z << EndSeq;
 		return out;
 	}
 
-	Emitter& operator << (Emitter& out, const glm::vec4& v) {
+	static Emitter& operator << (Emitter& out, const glm::vec4& v) {
 		out << Flow;
 		out << BeginSeq << v.x << v.y << v.z << v.w << EndSeq;
 		return out;
 	}
 
+	template<>
+	struct convert<glm::vec3> {
+		static Node encode(const glm::vec3& vec) {
+			Node node;
+			node.push_back(vec.x);
+			node.push_back(vec.y);
+			node.push_back(vec.z);
+			return node;
+		}
+
+		static bool decode(const Node& node, glm::vec3& vec) {
+			if (!node.IsSequence() || node.size() != 3)
+				return false;
+
+			vec[0] = node[0].as<float>();
+			vec[1] = node[1].as<float>();
+			vec[2] = node[2].as<float>();
+
+			return true;
+		}
+	};
+
+	template<>
+	struct convert<glm::vec4> {
+		static Node encode(const glm::vec4& vec) {
+			Node node;
+			node.push_back(vec.x);
+			node.push_back(vec.y);
+			node.push_back(vec.z);
+			node.push_back(vec.w);
+			return node;
+		}
+
+		static bool decode(const Node& node, glm::vec4& vec) {
+			if (!node.IsSequence() || node.size() != 4)
+				return false;
+
+			vec[0] = node[0].as<float>();
+			vec[1] = node[1].as<float>();
+			vec[2] = node[2].as<float>();
+			vec[3] = node[3].as<float>();
+
+			return true;
+		}
+	};
+
 }
 
 namespace Quirk {
 
-	void SceneSerializer::Serialize(const Ref<Scene>& scene, const std::string& filePath) {
+	void SceneSerializer::Serialize(const Ref<Scene>& scene, const std::wstring& filePath) {
 		YAML::Emitter out;
 
 		out << YAML::BeginMap;
@@ -52,8 +98,25 @@ namespace Quirk {
 		outFile << out.c_str();
 	}
 
-	bool SceneSerializer::Deserialize(const Ref<Scene>& scene, const std::string& filePath) {
-		return false;
+	bool SceneSerializer::Deserialize(const Ref<Scene>& scene, const std::wstring& filePath) {
+		std::ifstream fileStream(filePath);
+		std::stringstream strStream;
+
+		strStream << fileStream.rdbuf();
+
+		YAML::Node data = YAML::Load(strStream);
+		if (!data["Scene"])
+			return false;
+
+		std::string sceneName = data["Scene"].as<std::string>();
+
+		auto entities = data["Entities"];
+		for (auto entity : entities) {
+			Entity createdEntity = scene->CreateEntity(entity["TagComponent"]["Tag"].as<std::string>(), entity["Entity"].as<uint64_t>());
+			DeserializeEntity(entity, createdEntity);
+		}
+
+		return true;
 	}
 
 	void SceneSerializer::SerializeEntity(YAML::Emitter& emitter, Entity entity) {
@@ -114,7 +177,7 @@ namespace Quirk {
 			emitter << YAML::Key << "PerspectiveNear" << YAML::Value << component.Camera.GetPerspectiveNearClip();
 			emitter << YAML::Key << "PerspectiveFar" << YAML::Value << component.Camera.GetPerspectiveFarClip();
 
-			emitter << YAML::Key << "m_OrthographicSize" << YAML::Value << component.Camera.GetOrthographicSize();
+			emitter << YAML::Key << "OrthographicSize" << YAML::Value << component.Camera.GetOrthographicSize();
 			emitter << YAML::Key << "OrthographicNear" << YAML::Value << component.Camera.GetOrthographicNearClip();
 			emitter << YAML::Key << "OrthographicFar" << YAML::Value << component.Camera.GetOrthographicFarClip();
 
@@ -127,6 +190,46 @@ namespace Quirk {
 		}
 
 		emitter << YAML::EndMap;
+	}
+
+	void SceneSerializer::DeserializeEntity(YAML::Node entityNode, Entity entity) {
+		// Transform component already exists for any created entity
+		{
+			auto& transform = entity.GetComponent<TransformComponent>();
+			auto deserializedComponent = entityNode["TransformComponent"];
+
+			transform.Translation = deserializedComponent["Translation"].as<glm::vec3>();
+			transform.Rotation = deserializedComponent["Rotation"].as<glm::vec3>();
+			transform.Scale = deserializedComponent["Scale"].as<glm::vec3>();
+		}
+
+		if(auto deserializedComponent = entityNode["SpriteRendererComponent"];  deserializedComponent) {
+			auto& component = entity.AddComponent<SpriteRendererComponent>(deserializedComponent["Color"].as<glm::vec4>());
+		}
+
+		if (auto deserializedComponent = entityNode["CameraComponent"];			deserializedComponent) {
+			auto& component = entity.AddComponent<CameraComponent>();
+
+			//		Camera Deserialization
+			auto deserializedCamera = deserializedComponent["Camera"];
+
+			if(deserializedCamera["ProjectionType"].as<std::string>() == "Perspective")
+				component.Camera.SetProjectionType(SceneCamera::ProjectionType::Perspective);
+			if (deserializedCamera["ProjectionType"].as<std::string>() == "Orthographic")
+				component.Camera.SetProjectionType(SceneCamera::ProjectionType::Orthographic);
+
+			component.Camera.SetPerspectiveVerticalFOV(deserializedCamera["PerspectiveFOV"].as<float>());
+			component.Camera.SetPerspectiveNearClip(deserializedCamera["PerspectiveNear"].as<float>());
+			component.Camera.SetPerspectiveFarClip(deserializedCamera["PerspectiveFar"].as<float>());
+
+			component.Camera.SetOrthographicSize(deserializedCamera["OrthographicSize"].as<float>());
+			component.Camera.SetOrthographicNearClip(deserializedCamera["OrthographicNear"].as<float>());
+			component.Camera.SetOrthographicFarClip(deserializedCamera["OrthographicFar"].as<float>());
+			//		Camera Deserialization
+
+			component.Primary = deserializedComponent["Primary"].as<bool>();
+			component.FixedAspectRatio = deserializedComponent["FixedAspectRatio"].as<bool>();
+		}
 	}
 
 }

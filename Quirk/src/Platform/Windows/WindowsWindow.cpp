@@ -11,9 +11,9 @@ extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam
 #include "WindowsWindow.h"
 #include "Platform/OpenGL/OpenGLContext.h"
 
-// from windowsx.h :-
-#define GET_X_LPARAM(lp)                        ((float)(short)LOWORD(lp))
-#define GET_Y_LPARAM(lp)                        ((float)(short)HIWORD(lp))
+#include <objbase.h>      // For COM headers
+#include <shobjidl.h>     // for IFileDialogEvents and IFileDialogControlEvents
+#include <WindowsX.h>
 
 namespace Quirk {
 
@@ -94,12 +94,15 @@ namespace Quirk {
 		m_Data.PosX = pos.x;
 		m_Data.PosY = pos.y;
 
-		ShowWindow(m_Data.WindowHandle, SW_SHOWDEFAULT);
-		UpdateWindow(m_Data.WindowHandle);
-		SetForegroundWindow(m_Data.WindowHandle);
+		SetActiveWindow(m_Data.WindowHandle);
+
+		HRESULT hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
+		QK_CORE_ASSERT(SUCCEEDED(hr), "Unable to Initialize COM!");
 	}
 
 	Window::~Window() {
+		CoUninitialize();
+
 		m_Context->DestroyContext(*this);
 		delete m_Context;
 		DestroyWindow(m_Data.WindowHandle);
@@ -198,7 +201,7 @@ namespace Quirk {
 			case WM_MBUTTONUP:
 			case WM_XBUTTONUP: {
 				int button, buttonState;
-				float PosX = GET_X_LPARAM(lParam), PosY = GET_Y_LPARAM(lParam);
+				float PosX = (float)GET_X_LPARAM(lParam), PosY = (float)GET_Y_LPARAM(lParam);
 
 				if (uMsg == WM_LBUTTONDOWN || uMsg == WM_LBUTTONUP) {
 					button = QK_Key_LeftMouseBtn;
@@ -256,7 +259,7 @@ namespace Quirk {
 			case WM_MBUTTONDBLCLK: 
 			case WM_XBUTTONDBLCLK: {
 				int button;
-				float PosX = GET_X_LPARAM(lParam), PosY = GET_Y_LPARAM(lParam);
+				float PosX = (float)GET_X_LPARAM(lParam), PosY = (float)GET_Y_LPARAM(lParam);
 
 				switch (uMsg) {
 					case WM_LBUTTONDBLCLK: button = QK_Key_LeftMouseBtn;	break;
@@ -275,7 +278,7 @@ namespace Quirk {
 			}
 
 			case WM_MOUSEMOVE: {
-				float PosX = GET_X_LPARAM(lParam), PosY = GET_Y_LPARAM(lParam);
+				float PosX = (float)GET_X_LPARAM(lParam), PosY = (float)GET_Y_LPARAM(lParam);
 				float PrevX = Input::MouseCurrentX(), PrevY = Input::MouseCurrentY();
 
 				if (window->m_Data.CursorLeftWindow) {
@@ -305,7 +308,7 @@ namespace Quirk {
 			}
 
 			case WM_MOUSEWHEEL: {
-				MouseScrolledEvent event(GET_WHEEL_DELTA_WPARAM(wParam) / 120.0f, GET_X_LPARAM(lParam), GET_X_LPARAM(lParam));
+				MouseScrolledEvent event(GET_WHEEL_DELTA_WPARAM(wParam) / 120.0f, (float)GET_X_LPARAM(lParam), (float)GET_Y_LPARAM(lParam));
 				window->m_Data.EventCallbackFn(event);
 				return (LRESULT)0;
 			}

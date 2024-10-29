@@ -17,6 +17,7 @@
 #include "glm/ext.hpp" // perspective, translate, rotate
 
 #include "Core/Utility/Time.h"
+#include "Core/Utility/DialogBox.h"
 
 #include "Core/Input/KeyCodes.h"
 #include "Core/Input/Events.h"

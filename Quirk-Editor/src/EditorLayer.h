@@ -3,6 +3,7 @@
 #pragma once
 
 #include "Quirk.h"
+#include "TitleBar.h"
 #include "Panels/SceneViewportPanel.h"
 #include "Panels/SceneHierarchyPanel.h"
 #include "Panels/InspectorPanel.h"
@@ -31,6 +32,7 @@ namespace Quirk {
 		Ref<Scene> m_MainScene;
 		Entity m_SelectedEntity;
 
+		TitleBar m_TitleBar;
 		SceneViewportPanel m_SceneViewport;
 		SceneHierarchyPanel m_SceneHierarcy;
 		InspectorPanel m_InspectorPanel;

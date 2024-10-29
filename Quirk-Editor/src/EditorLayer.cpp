@@ -2,13 +2,14 @@
 
 #include "EditorLayer.h"
 #include "FontManager.h"
+#include "Theme.h"
 
 #include "Core/Serializer/SceneSerializer.h"
 
 namespace Quirk {
 
 	void EditorLayer::OnAttach(){
-		ImGuiIO& io = ImGui::GetIO();
+		/*ImGuiIO& io = ImGui::GetIO();
 		io.FontDefault = FontManager::GetFont(FontWeight::Regular, 22);
 
 		auto square = m_MainScene->CreateEntity("Orange Square");
@@ -55,7 +56,9 @@ namespace Quirk {
 		camera.AddComponent<NativeScriptComponent>().Bind<CameraController>();
 		camera2.AddComponent<NativeScriptComponent>().Bind<CameraController>();
 
-		SceneSerializer::Serialize(m_MainScene, "assets/Scenes/main_scene.yaml");
+		SceneSerializer::Serialize(m_MainScene, L"assets/Scenes/main_scene.yaml");*/
+
+		SceneSerializer::Deserialize(m_MainScene, L"assets/Scenes/main_scene.yaml");
 	}
 
 	void EditorLayer::OnDetach(){
@@ -72,6 +75,7 @@ namespace Quirk {
 	}
 
 	void EditorLayer::OnImguiUiUpdate(){
+		m_TitleBar.OnImguiUiUpdate(m_MainScene);
 		m_SceneViewport.OnImguiUiUpdate(m_MainScene);
 		m_SceneHierarcy.OnImguiUiUpdate(m_MainScene, m_SelectedEntity);
 		m_InspectorPanel.OnImguiUiUpdate(m_SelectedEntity);
