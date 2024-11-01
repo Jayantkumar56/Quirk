@@ -22,9 +22,11 @@ IncludeDir["Glm"]       = "Quirk/vendor/glm"
 IncludeDir["Opengl"]    = "Quirk/vendor/OpenGL"
 IncludeDir["Stb_Image"] = "Quirk/vendor/stb_image"
 IncludeDir["Entt"]      = "Quirk/vendor/entt/include"
+IncludeDir["Yaml_CPP"]  = "Quirk/vendor/yaml-cpp/include"
 
 include "Quirk/vendor/Glad"
 include "Quirk/vendor/imgui"
+include "Quirk/vendor/yaml-cpp"
 
 project "Quirk"
     location "Quirk"
@@ -59,14 +61,16 @@ project "Quirk"
         "%{IncludeDir.Glm}",
         "%{IncludeDir.Opengl}",
         "%{IncludeDir.Stb_Image}",
-        "%{IncludeDir.Entt}"
+        "%{IncludeDir.Entt}",
+        "%{IncludeDir.Yaml_CPP}"
     }
 
     links
     {
         "Glad",
         "imgui",
-        "opengl32.lib"
+        "opengl32.lib",
+        "yaml-cpp"
     }
 
     filter "system:windows"
@@ -120,7 +124,8 @@ project "Quirk-Editor"
         "%{IncludeDir.Glm}",
         "%{IncludeDir.Opengl}",
         "%{IncludeDir.Stb_Image}",
-        "%{IncludeDir.Entt}"
+        "%{IncludeDir.Entt}",
+        "%{IncludeDir.Yaml_CPP}"
     }
 
     links

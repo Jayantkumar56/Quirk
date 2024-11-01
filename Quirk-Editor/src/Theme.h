@@ -10,6 +10,10 @@ namespace Quirk {
 		DarkTheme = 0, LightTheme = 1
 	};
 
+	enum  class ColorName {
+		PopupBorder, DarkText, DropdownButton
+	};
+
 	class Theme {
 	public:
 		Theme() = delete;
@@ -21,6 +25,8 @@ namespace Quirk {
 				case Quirk::ThemeName::LightTheme:		SetLightTheme();		return;
 			}
 		}
+
+		static ImVec4 GetColor(ColorName color);
 
 	private:
 		static void SetDarkTheme();

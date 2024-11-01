@@ -2,6 +2,7 @@
 
 #include "InspectorPanel.h"
 #include "FontManager.h"
+#include "Theme.h"
 
 #include <imgui_internal.h>
 
@@ -17,13 +18,14 @@ namespace Quirk {
 
 		if (entity.HasComponent<T>()) {
 			float lineHeight = GImGui->Font->FontSize + 2 * GImGui->Style.FramePadding.y;
+			float treeNodeWidth = ImGui::GetContentRegionAvail().x;
 
-			ImGui::PushStyleColor(ImGuiCol_Text, ImVec4{ 0.075f, 0.18f, 0.196f, 1.0f });
+			ImGui::PushStyleColor(ImGuiCol_Text, Theme::GetColor(ColorName::DarkText));
 			ImGui::PushFont(FontManager::GetFont("ComponentTreeNode"));
 			bool treeNodeOpened = ImGui::TreeNodeEx((void*)typeid(T).hash_code(), treeNodeFlags, label.c_str());
 			ImGui::PopFont();
 
-			ImGui::SameLine(ImGui::GetWindowWidth() - lineHeight - windowPadding / 2);
+			ImGui::SameLine(treeNodeWidth - (lineHeight / 2));
 			if (ImGui::Button("x", { lineHeight, lineHeight })) {
 				ImGui::OpenPopup("ComponentSettings");	
 			}
@@ -51,9 +53,11 @@ namespace Quirk {
 
 	void InspectorPanel::OnImguiUiUpdate(Entity& entity) {
 		ImGui::Begin("Inspector");
+		ImGui::PushStyleColor(ImGuiCol_Border, Theme::GetColor(ColorName::PopupBorder));
 
 		// stopping further processing if no entity is selected in scene hierarcy
 		if (!(Scene*)entity) {
+			ImGui::PopStyleColor();
 			ImGui::End();
 			return;
 		}
@@ -80,14 +84,6 @@ namespace Quirk {
 			ImGui::Dummy(ImVec2(0.0f, 0.0f));
 		}
 
-		DrawComponentNode<SpriteRendererComponent>("Sprite Renderer", entity, [](SpriteRendererComponent& component) {
-			ImGui::Text("Color");
-			ImGui::SameLine();
-			ImGui::PushFont(FontManager::GetFont("DragFloatValue"));
-			ImGui::ColorEdit4("##color", glm::value_ptr(component.Color));
-			ImGui::PopFont();
-		});
-
 		DrawComponentNode<TransformComponent>("Transforms", entity, [](TransformComponent& component) {
 			// width of word "Position" is largest among the three also took extra 3 letters space as "xxx" for padding 
 			auto size = ImGui::CalcTextSize("Positionxxx");
@@ -100,6 +96,14 @@ namespace Quirk {
 			}
 
 			DrawFloat3("Scale", glm::value_ptr(component.Scale), 1.0f, size.x);
+		});
+
+		DrawComponentNode<SpriteRendererComponent>("Sprite Renderer", entity, [](SpriteRendererComponent& component) {
+			ImGui::Text("Color");
+			ImGui::SameLine();
+			ImGui::PushFont(FontManager::GetFont("DragFloatValue"));
+			ImGui::ColorEdit4("##color", glm::value_ptr(component.Color));
+			ImGui::PopFont();
 		});
 
 		DrawComponentNode<CameraComponent>("Camera", entity, [] (CameraComponent& component) {
@@ -133,7 +137,7 @@ namespace Quirk {
 
 				ImGui::PushItemWidth(ImGui::CalcTextSize("xxxOrthographicxxx").x);
 				ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(10, ImGui::GetStyle().FramePadding.y));
-				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.192f, 0.337f, 0.349f, 1.0f });
+				ImGui::PushStyleColor(ImGuiCol_Button, Theme::GetColor(ColorName::DropdownButton));
 				if (ImGui::Combo("##projectionTypeSelection", &currentProjection, projectionTypes, IM_ARRAYSIZE(projectionTypes))) {
 					auto projectionType = (currentProjection == 1) ? SceneCamera::ProjectionType::Orthographic : SceneCamera::ProjectionType::Perspective;
 					component.Camera.SetProjectionType(projectionType);
@@ -221,6 +225,7 @@ namespace Quirk {
 			}
 		});
 
+		ImGui::PopStyleColor();
 		ImGui::End();
 	}
 

@@ -25,8 +25,8 @@ namespace Quirk {
 
 	private:
 		std::wstring m_AppName;
-		Window		m_Window;
-		bool		m_Running;
+		Window		 m_Window;
+		bool		 m_Running;
 
 	private:
 		static Application* s_Instance;

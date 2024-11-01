@@ -14,10 +14,10 @@ namespace Quirk {
 	Scene::~Scene() {
 	}
 
-	Entity Scene::CreateEntity(const std::string& name) {
+	Entity Scene::CreateEntity(const std::string& name, const uint64_t uuid) {
 		Entity entity = { m_Registry.create(), this };
 
-		entity.AddComponent<UUIDComponent>();
+		entity.AddComponent<UUIDComponent>(uuid);
 		entity.AddComponent<TransformComponent>();
 
 		auto& tag = entity.AddComponent<TagComponent>();
@@ -51,7 +51,7 @@ namespace Quirk {
 		auto renderables = m_Registry.view<TransformComponent, SpriteRendererComponent>();
 		for (auto entity : renderables) {
 			auto [transform, quad] = renderables.get<TransformComponent, SpriteRendererComponent>(entity);
-			Renderer2D::SubmitQuad(transform.Translation, transform.GetTransform(), quad.Color);
+			Renderer2D::SubmitQuad(transform.GetTransform(), quad.Color);
 		}
 
 		Renderer2D::EndScene();

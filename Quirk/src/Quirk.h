@@ -17,6 +17,7 @@
 #include "glm/ext.hpp" // perspective, translate, rotate
 
 #include "Core/Utility/Time.h"
+#include "Core/Utility/DialogBox.h"
 
 #include "Core/Input/KeyCodes.h"
 #include "Core/Input/Events.h"
@@ -44,6 +45,8 @@
 #include "Core/Scene/ScriptableEntity.h"
 #include "Core/Scene/SceneCamera.h"
 #include "Core/Scene/Scene.h"
+
+#include "Core/Serializer/SceneSerializer.h"
 
 #include "Core/Application/Window.h"
 #include "Core/Application/Application.h"
