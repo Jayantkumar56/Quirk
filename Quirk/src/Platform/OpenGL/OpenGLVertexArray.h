@@ -14,7 +14,8 @@ namespace Quirk {
 		virtual void Bind() const override;
 		virtual void Unbind() const override;
 
-		virtual void AddVertexBuffer(Ref<VertexBuffer>& vertexBuffer) override;
+		virtual void AddVertexBuffer(Ref<VertexBuffer>& vertexBuffer, bool instanced = false) override;
+		virtual void AddInstancedVertexBuffer(Ref<VertexBuffer>& vertexBuffer) override;
 		virtual void SetIndexBuffer(Ref<IndexBuffer>& indexBuffer) override;
 
 		virtual const std::vector< Ref<VertexBuffer> >& GetVertexBuffers() const override { return m_VertexBuffers; }
@@ -22,6 +23,7 @@ namespace Quirk {
 
 	private:
 		uint32_t m_RendererId;
+		uint32_t m_Index = 0;
 		std::vector<Ref<VertexBuffer>> m_VertexBuffers;
 		Ref<IndexBuffer> m_IndexBuffer;
 	};

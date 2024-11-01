@@ -43,6 +43,11 @@ namespace Quirk {
 		glFlush();
 	}
 
+	inline void OpenGLRendererAPI::DrawIndexedInstanced(Ref<VertexArray>& vertexArray, uint32_t noOfInstances) {
+		glDrawElementsInstanced(GL_TRIANGLES, vertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr, noOfInstances);
+		glFlush();
+	}
+
 	inline void OpenGLRendererAPI::DrawVertices(Ref<VertexArray>& vertexArray) {
 		glDrawArrays(GL_TRIANGLES, 0, vertexArray->GetVertexBuffers()[0]->GetCount());
 		glFlush();

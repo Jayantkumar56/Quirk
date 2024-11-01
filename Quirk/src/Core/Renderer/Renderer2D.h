@@ -23,8 +23,8 @@ namespace Quirk {
 		static void BeginScene(const glm::mat4& projectionView);
 		static void EndScene();
 
-		static void SubmitQuad(Ref<Quad>& quad);
-		static void SubmitQuad(const glm::vec3& position, const glm::mat4& transform, const glm::vec4& color);
+		//static void SubmitQuad(Ref<Quad>& quad);
+		static void SubmitQuad(const glm::mat4& transform, const glm::vec4& color);
 
 	private:
 		static void ResetQuadBatch();
@@ -32,19 +32,16 @@ namespace Quirk {
 
 	private:
 
-		struct QuadVertex {
-			glm::vec3 Position;
+		struct QuadInstance {
 			glm::vec4 Color;
-			glm::vec2 TextureCoord;
 			float TextureSlot;
 			float TilingFactor;
+			glm::mat4 Transform;
 		};
 
 	public:
 		struct Renderer2DData {
 			static uint32_t MaxNoOfQuads;
-			static uint32_t MaxNoOfVertices;
-			static uint32_t MaxNoOfIndices;
 			static uint32_t MaxNoOfTextureSlots;
 
 			uint32_t NextTextureSlotToBind;
@@ -59,11 +56,12 @@ namespace Quirk {
 			// Quad related data
 			uint32_t NoOfSubmitedQuads;
 
-			QuadVertex* QuadVerticesBasePtr;
-			QuadVertex* QuadVerticesCurrentPtr;
+			QuadInstance* QuadBasePtr;
+			QuadInstance* QuadCurrentPtr;
 
 			Ref<VertexArray> QuadVertexArray;
 			Ref<VertexBuffer> QuadVertexBuffer;
+			Ref<VertexBuffer> QuadInstanceBuffer;
 			Ref<Shader> QuadShader;
 		};
 

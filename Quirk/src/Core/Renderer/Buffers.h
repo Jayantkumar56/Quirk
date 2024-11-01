@@ -35,10 +35,9 @@ namespace Quirk {
 		ShaderDataType Type;
 		uint32_t Size;
 		uint32_t Offset;
-		bool Normalized;
 
 		BufferElement(ShaderDataType type, const std::string& name, bool normalized = false)
-			: Name(name), Type(type), Size(ShaderDataTypeSize(type)), Offset(0), Normalized(normalized)
+			: Name(name), Type(type), Size(ShaderDataTypeSize(type)), Offset(0)
 		{
 		}
 
@@ -59,6 +58,13 @@ namespace Quirk {
 
 			QK_CORE_ASSERT(false, "Unknown ShaderDataType!");
 			return 0;
+		}
+
+		inline bool IsIntType() const {
+			return Type == ShaderDataType::Int || Type == ShaderDataType::Int2 || Type == ShaderDataType::Int3 || Type == ShaderDataType::Int4;
+		}
+		inline bool IsFloatType() const {
+			return Type == ShaderDataType::Float || Type == ShaderDataType::Float2 || Type == ShaderDataType::Float3 || Type == ShaderDataType::Float4;
 		}
 	};
 
@@ -126,7 +132,6 @@ namespace Quirk {
 		virtual uint32_t GetCount() const = 0;
 
 		static Ref<IndexBuffer> Create(uint32_t* indices, uint32_t size);
-		static Ref<IndexBuffer> Create(uint32_t size);
 	};
 
 }
