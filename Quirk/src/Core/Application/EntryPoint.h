@@ -18,7 +18,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	Quirk::Log::Init();
 #endif // QK_ENABLE_LOG
 
-	Quirk::Window::Init(hInstance);
+	Quirk::WindowsWindow::Init(hInstance);
 	Quirk::LaunchApp();
 
 	return 0;

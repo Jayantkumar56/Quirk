@@ -1,7 +1,6 @@
 
 
 #pragma once
-
 #include "Core/Renderer/RendererAPI.h"
 
 namespace Quirk {
@@ -13,13 +12,15 @@ namespace Quirk {
 		GraphicalContext() = default;
 		virtual ~GraphicalContext() = default;
 
-		static GraphicalContext* Create(RendererAPI::API rendererAPI);
+		static Ref<GraphicalContext> Create();
+		static Ref<GraphicalContext> Create(RendererAPI::API rendererAPI);
 
 	public:
-		virtual void Init(Window& window) = 0;
+		virtual void Init(Window& window)			= 0;
 		virtual void DestroyContext(Window& window) = 0;
-		virtual inline void SetVSync(int toggle) = 0;
-		virtual inline void SwapBuffer() = 0;
+		virtual inline void MakeContextCurrent()	= 0;
+		virtual inline void SetVSync(int toggle)	= 0;
+		virtual inline void SwapBuffer()			= 0;
 	};
 
 }

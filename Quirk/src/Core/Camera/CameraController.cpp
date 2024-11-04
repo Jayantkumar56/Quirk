@@ -59,8 +59,8 @@ namespace Quirk {
 	}
 
 	void PerspectiveCameraController::OnEvent(Event& e) {
-		EventDispatcher::Dispatch<MouseMovedEvent>(QK_BIND_EVENT_FN(PerspectiveCameraController::OnMouseMove));
-		EventDispatcher::Dispatch<WindowResizeEvent>(QK_BIND_EVENT_FN(PerspectiveCameraController::OnWindowResized));
+		EventDispatcher::HandleEvent<MouseMovedEvent>(QK_BIND_EVENT_FN(PerspectiveCameraController::OnMouseMove));
+		EventDispatcher::HandleEvent<WindowResizeEvent>(QK_BIND_EVENT_FN(PerspectiveCameraController::OnWindowResized));
 	}
 
 	bool PerspectiveCameraController::OnMouseMove(MouseMovedEvent& e) {
@@ -138,8 +138,8 @@ namespace Quirk {
 	}
 
 	void OrthographicCameraController::OnEvent(Event& e) {
-		EventDispatcher::Dispatch<WindowResizeEvent>(QK_BIND_EVENT_FN(OrthographicCameraController::OnWindowResized));
-		EventDispatcher::Dispatch<MouseScrolledEvent>(QK_BIND_EVENT_FN(OrthographicCameraController::OnMouseScrolled));
+		EventDispatcher::HandleEvent<WindowResizeEvent>(QK_BIND_EVENT_FN(OrthographicCameraController::OnWindowResized));
+		EventDispatcher::HandleEvent<MouseScrolledEvent>(QK_BIND_EVENT_FN(OrthographicCameraController::OnMouseScrolled));
 	}
 
 	void OrthographicCameraController::HandleWindowResize(uint16_t width, uint16_t height) {

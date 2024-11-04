@@ -30,13 +30,15 @@ namespace Quirk {
 	}
 
 	void OpenGLContext::Init(Window& window) {
-		m_DeviceContext = GetDC((HWND)window.GetNativeWindow());
+		WindowsWindow* nativeWndObj = (WindowsWindow*)window.GetNativeWindowObject();
+
+		m_DeviceContext = GetDC((HWND)nativeWndObj->GetNativeHandle());
 		QK_CORE_ASSERT(m_DeviceContext, "Windows failed to provide a device context!");
 
 		// Creating a temporary window
 		HWND tempWindowHandle = CreateWindowExW(
 			0,
-			window.GetWindowClassName().c_str(),			// Window class
+			nativeWndObj->GetWindowClassName().c_str(),		// Window class
 			L"Temp Window",									// Window text
 			WS_OVERLAPPEDWINDOW,							// Window style
 			CW_USEDEFAULT, CW_USEDEFAULT,					// Window Position
@@ -150,7 +152,7 @@ namespace Quirk {
 
 	void OpenGLContext::DestroyContext(Window& window) {
 		QK_CORE_ASSERTEX(wglDeleteContext(m_GLContext), "Failed to delete context!");
-		QK_CORE_ASSERTEX(ReleaseDC((HWND)window.GetNativeWindow(), m_DeviceContext), "Failed to release DC!");
+		QK_CORE_ASSERTEX(ReleaseDC((HWND)window.GetNativeHandle(), m_DeviceContext), "Failed to release DC!");
 	}
 
 #endif // QK_PLATFORM_WINDOWS

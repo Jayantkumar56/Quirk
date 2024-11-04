@@ -38,16 +38,15 @@ namespace Quirk {
 		s_Data.QuadVertexBuffer->SetLayout({
 			{ ShaderDataType::Float3,  "a_Position" },
 			{ ShaderDataType::Float2,  "a_TexCoord" }
-			});
+		});
 		s_Data.QuadVertexArray->AddVertexBuffer(s_Data.QuadVertexBuffer);
 
 		s_Data.QuadInstanceBuffer = VertexBuffer::Create(s_Data.MaxNoOfQuads * sizeof(QuadInstance));
 		s_Data.QuadInstanceBuffer->SetLayout({
 			{ ShaderDataType::Float4,	"a_Color"		  },
-			{ ShaderDataType::Float,	"a_TextureSlot"   },
-			{ ShaderDataType::Float,	"a_TilingFactor"  },
-			{ ShaderDataType::Mat4,		"a_Transform" }
-			});
+			{ ShaderDataType::Int,		"a_TextureSlot"   },
+			{ ShaderDataType::Mat4,		"a_Transform"	  }
+		});
 		s_Data.QuadVertexArray->AddInstancedVertexBuffer(s_Data.QuadInstanceBuffer);
 
 		uint32_t quadIndices[] = {
@@ -119,12 +118,10 @@ namespace Quirk {
 			ResetQuadBatch();
 		}
 
-		float texSlot = 0;
+		int texSlot = 0;
 
 		s_Data.QuadCurrentPtr->Color = color;
-
 		s_Data.QuadCurrentPtr->TextureSlot = texSlot;
-		s_Data.QuadCurrentPtr->TilingFactor = 1;
 		s_Data.QuadCurrentPtr->Transform = transform;
 
 		++s_Data.QuadCurrentPtr;

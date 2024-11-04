@@ -20,11 +20,11 @@ namespace Quirk {
 	}
 
 	void Cursor::LockCursor() {
-		Application::Get().GetWindow().SetCursorLocked(true);
+		Application::Get().GetWindow().LockCursor();
 	}
 
 	void Cursor::UnlockCursor() {
-		Application::Get().GetWindow().SetCursorLocked(false);
+		Application::Get().GetWindow().UnlockCursor();
 	}
 
 	void Cursor::SetCursorPosition(float x, float y){
@@ -35,8 +35,8 @@ namespace Quirk {
 	void Cursor::PlaceAtCenter() {
 		auto& window = Application::Get().GetWindow();
 
-		int x = window.GetWindPosX() + window.GetWidth() / 2;
-		int y = window.GetWindPosY() + window.GetHeight() / 2;
+		int x = window.GetPosX() + window.GetWidth() / 2;
+		int y = window.GetPosY() + window.GetHeight() / 2;
 
 		SetCursorPos(x, y);
 		Input::UpdateMousePos(static_cast<float>(window.GetWidth() / 2), static_cast<float>(window.GetHeight() / 2));

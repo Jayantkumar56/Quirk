@@ -11,14 +11,17 @@ namespace Quirk {
 	class RendererAPI {
 	public:
 		enum class API : int8_t {
-			None = 0, OpenGL = 1
+			Invalid = -1, None = 0, OpenGL = 1
 		};
 
 	public:
 		RendererAPI(API rendererAPI);
 		~RendererAPI() {}
 
-		static inline API GetAPI() { return s_API; }
+		static inline API GetAPI() { 
+			QK_CORE_ASSERT(s_API != API::Invalid, "RendererAPI is not Initialized yet!");
+			return s_API; 
+		}
 
 	public:
 		virtual inline void SetClearColor(const glm::vec4& color) const = 0;

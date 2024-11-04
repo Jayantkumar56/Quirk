@@ -3,11 +3,14 @@
 #include<qkpch.h>
 
 #include "Core/Core.h"
+#include "Core/Input/Events.h"
+#include "Core/Input/MouseEvents.h"
 #include "Core/Application/Application.h"
 
 #include "Core/Renderer/Renderer.h"
 #include "Core/Renderer/Renderer2D.h"
 #include "Core/Renderer/RenderCommands.h"
+
 
 #include "Core/Utility/Time.h"
 
@@ -17,11 +20,13 @@ namespace Quirk {
 
 	Application::Application(const std::wstring& appName) :
 			m_AppName(appName),
-			m_Window(appName, 1600, 900, RendererAPI::API::OpenGL),
-			m_Running(true)
+			m_Window({ appName, 1600, 900, 200, 200, true })
 	{
+		m_Window.CreateGraphicalContext(RendererAPI::API::OpenGL);
+		//m_Window.SetAsCurrentContext();
+
 		s_Instance = this;
-		m_Window.SetEventCallback(QK_BIND_EVENT_FN(Application::OnEvent));
+		EventDispatcher::RegisterEventCallback(QK_BIND_EVENT_FN(Application::OnEvent));
 
 		Renderer::InitRenderer(RendererAPI::API::OpenGL);
 		Renderer2D::InitRenderer();
@@ -42,10 +47,8 @@ namespace Quirk {
 	}
 
 	void Application::OnEvent(Event& event) {
-		EventDispatcher::HandleEvent(event);
-
-		EventDispatcher::Dispatch<WindowCloseEvent>(QK_BIND_EVENT_FN(Application::OnWindowClose));
-		EventDispatcher::Dispatch<WindowResizeEvent>(QK_BIND_EVENT_FN(Application::OnWindowResize));
+		EventDispatcher::HandleEvent<WindowCloseEvent>(QK_BIND_EVENT_FN(Application::OnWindowClose));
+		EventDispatcher::HandleEvent<WindowResizeEvent>(QK_BIND_EVENT_FN(Application::OnWindowResize));
 
 		LayerStack::HandleEvent(event);
 	}

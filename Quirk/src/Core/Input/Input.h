@@ -44,7 +44,7 @@ namespace Quirk {
 	};
 
 	class Input {
-		friend class Window;
+		friend class WindowsWindow;
 		friend class Cursor;
 
 	public:

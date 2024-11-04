@@ -34,8 +34,7 @@ namespace Quirk {
 
 		struct QuadInstance {
 			glm::vec4 Color;
-			float TextureSlot;
-			float TilingFactor;
+			int TextureSlot;
 			glm::mat4 Transform;
 		};
 

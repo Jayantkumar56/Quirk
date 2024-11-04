@@ -46,14 +46,20 @@ namespace Quirk {
 
 	class EventDispatcher {
 	public:
-		static inline void HandleEvent(Event& event) { 
-			m_Event = &event;
-			m_EventType = m_Event->GetEventType();
+		static inline void RegisterEventCallback(std::function<void(Event&)> callback) {
+			m_EventCallbackFn = callback;
 		}
 
+		// should be called to propagate an event
+		static void DispatchEvent(Event& event) {
+			m_Event = &event;
+			m_EventCallbackFn(event);
+		}
+
+		// to handle event of certain type
 		template<typename T>
-		static bool Dispatch(std::function<bool(T&)> fun) {
-			if (T::GetStaticEventType() == m_EventType) {
+		static inline bool HandleEvent(std::function<bool(T&)> fun) {
+			if (T::GetStaticEventType() == m_Event->GetEventType()) {
 				m_Event->m_Handeled = fun(*(T*)m_Event);
 				return true;
 			}
@@ -61,11 +67,10 @@ namespace Quirk {
 			return false;
 		}
 
-		static inline EventType GetCurrentEventType() { return m_EventType; }
-
 	private:
+		// (for memory allocation) m_Event, m_EventCallbackFn are declared in Input.cpp
 		static Event* m_Event;
-		static EventType m_EventType;
+		static std::function<void(Event&)> m_EventCallbackFn;
 	};
 
 

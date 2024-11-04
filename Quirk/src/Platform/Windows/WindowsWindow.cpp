@@ -4,22 +4,81 @@
 
 #ifdef QK_PLATFORM_WINDOWS
 
-// to provide imgui with the event data
-extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-
 #include "Core/Core.h"
+#include "Core/Input/Input.h"
+#include "Core/Input/Events.h"
+#include "Core/Input/KeyCodes.h"
+#include "Core/Input/MouseEvents.h"
+#include "Core/Input/KeyboardEvents.h"
+#include "Core/Input/ApplicationEvents.h"
+#include "Core/Application/Window.h"
 #include "WindowsWindow.h"
-#include "Platform/OpenGL/OpenGLContext.h"
 
 #include <objbase.h>      // For COM headers
 #include <shobjidl.h>     // for IFileDialogEvents and IFileDialogControlEvents
 #include <WindowsX.h>
 
+// to provide imgui with the event data
+extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
 namespace Quirk {
 
-	HINSTANCE Window::s_HInstance = nullptr;
+	HINSTANCE WindowsWindow::s_HInstance = nullptr;
 
-    void Window::Init(HINSTANCE hInstance) {
+	WindowsWindow::WindowsWindow(const WindowSpecification& spec, Window* window) {
+		m_WindowStyle = WS_OVERLAPPEDWINDOW | WS_THICKFRAME | WS_SYSMENU | WS_MAXIMIZEBOX | WS_MINIMIZEBOX | WS_VISIBLE;
+		m_WindowExStyle = WS_EX_ACCEPTFILES;
+		m_WindClassName = L"Quirk";
+
+		WNDCLASSEXW wc	 = {};
+		wc.cbSize		 = sizeof(WNDCLASSEXW);
+		wc.style		 = CS_HREDRAW | CS_VREDRAW | CS_OWNDC | CS_DBLCLKS;
+		wc.lpfnWndProc	 = WindowProc;
+		wc.cbClsExtra	 = 0;
+		wc.cbWndExtra	 = 0;
+		wc.hInstance	 = s_HInstance;
+		wc.hIcon		 = 0;
+		wc.hCursor		 = LoadCursorW(NULL, IDC_ARROW);
+		wc.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
+		wc.lpszMenuName	 = 0;
+		wc.lpszClassName = m_WindClassName.c_str();
+		wc.hIconSm		 = 0;
+
+		QK_CORE_ASSERTEX(RegisterClassExW(&wc), "Failed to Register the window class! {0}", GetLastError());
+
+		uint16_t WindWidth  = spec.Width;
+		uint16_t WindHeight = spec.Height;
+		AdjustWindowSizeForDPI(WindWidth, WindHeight);
+
+		m_WindowHandle = CreateWindowExW(
+			m_WindowExStyle,							// The window accepts drag-drop files.
+			m_WindClassName.c_str(),						// Window class
+			spec.Title.c_str(),							// Window text
+			m_WindowStyle,								// Window style
+			spec.PosX,			spec.PosY,				// Postion of window on the screen
+			WindWidth,			WindHeight,				// height and width of the window
+			NULL,										// Parent window    
+			NULL,										// Menu
+			s_HInstance,								// Instance handle
+			NULL										// Additional application data
+		);
+
+		QK_CORE_ASSERT(m_WindowHandle, "Failed to create Window handle!");
+
+		// putting this Window pointer into created HWND
+		SetPropW(m_WindowHandle, L"wndptr", window);
+		SetActiveWindow(m_WindowHandle);
+
+		HRESULT hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
+		QK_CORE_ASSERT(SUCCEEDED(hr), "Unable to Initialize COM!");
+	}
+
+	WindowsWindow::~WindowsWindow() {
+		CoUninitialize();
+		DestroyWindow(m_WindowHandle);
+	}
+
+    void WindowsWindow::Init(HINSTANCE hInstance) {
 		QK_CORE_ASSERT(hInstance, "Didn't got initial HINSTANCE from windows api!");
 		s_HInstance = hInstance;
 
@@ -30,85 +89,7 @@ namespace Quirk {
 		);
     }
 
-	Window::Window(const std::wstring& title, uint16_t width, uint16_t height, RendererAPI::API rendererAPI) :
-			m_Data({ 
-				nullptr, 
-				WS_OVERLAPPEDWINDOW | WS_THICKFRAME | WS_SYSMENU | WS_MAXIMIZEBOX | WS_MINIMIZEBOX | WS_VISIBLE,
-				WS_EX_ACCEPTFILES,
-				width, height, 
-				width, height,
-				0, 0,
-				nullptr,
-				title, 
-				L"Quirk",
-				false,
-				false
-			}),
-			m_Context(GraphicalContext::Create(rendererAPI))
-	{
-		WNDCLASSEXW wc = {};
-		wc.cbSize			= sizeof(WNDCLASSEXW);
-		wc.style			= CS_HREDRAW | CS_VREDRAW | CS_OWNDC | CS_DBLCLKS;
-		wc.lpfnWndProc		= WindowProc;		
-		wc.cbClsExtra		= 0;
-		wc.cbWndExtra		= 0;
-		wc.hInstance		= s_HInstance;
-		wc.hIcon			= 0;
-		wc.hCursor			= LoadCursorW(NULL, IDC_ARROW);
-		wc.hbrBackground	= (HBRUSH)GetStockObject(BLACK_BRUSH);
-		wc.lpszMenuName		= 0;
-		wc.lpszClassName	= m_Data.WindClassName.c_str();
-		wc.hIconSm			= 0;
-
-		QK_CORE_ASSERTEX(RegisterClassExW(&wc), "Failed to Register the window class! {0}", GetLastError());
-
-		AdjustWindowArea();
-
-		int posX = ((GetSystemMetrics(SM_CXSCREEN) - m_Data.WindWidth) / 2);
-		int posY = ((GetSystemMetrics(SM_CYSCREEN) - m_Data.WindHeight) / 2);
-		
-		m_Data.WindowHandle = CreateWindowExW(
-			m_Data.WindowExStyle,					// The window accepts drag-drop files.
-			m_Data.WindClassName.c_str(),			// Window class
-			m_Data.Title.c_str(),					// Window text
-			m_Data.WindowStyle,						// Window style
-			posX, posY,								// Postion of window on the screen
-			m_Data.WindWidth, m_Data.WindHeight,	// height and width of the window
-			NULL,									// Parent window    
-			NULL,									// Menu
-			s_HInstance,							// Instance handle
-			NULL									// Additional application data
-		);
-
-		QK_CORE_ASSERT(m_Data.WindowHandle, "Failed to create Window handle!");
-
-		// putting this Window pointer into created HWND
-		SetPropW(m_Data.WindowHandle, L"wndptr", this);
-
-		m_Context->Init(*this);
-
-		// Updating window client area pos
-		POINT pos = { 0, 0 };
-		ClientToScreen(m_Data.WindowHandle, &pos);
-
-		m_Data.PosX = pos.x;
-		m_Data.PosY = pos.y;
-
-		SetActiveWindow(m_Data.WindowHandle);
-
-		HRESULT hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
-		QK_CORE_ASSERT(SUCCEEDED(hr), "Unable to Initialize COM!");
-	}
-
-	Window::~Window() {
-		CoUninitialize();
-
-		m_Context->DestroyContext(*this);
-		delete m_Context;
-		DestroyWindow(m_Data.WindowHandle);
-	}
-
-	void Window::OnUpdate() {
+	void WindowsWindow::OnUpdate() {
 		MSG msg;
 		while (PeekMessageW(&msg, nullptr, 0, 0, PM_REMOVE) > 0) {
 			TranslateMessage(&msg);
@@ -116,19 +97,10 @@ namespace Quirk {
 		}
 	}
 
-	void Window::SetVSync(bool toggle) {
-		if (m_Data.IsVSyncOn && !toggle) {
-			m_Context->SetVSync(0);
-		}
-		else if (!m_Data.IsVSyncOn && toggle) {
-			m_Context->SetVSync(1);
-		}
-
-		m_Data.IsVSyncOn = toggle;
-	}
-
-	LRESULT Window::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+	LRESULT WindowsWindow::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		Window* window = (Window*)GetPropW(hwnd, L"wndptr");
+		WindowsWindow* windowNative = (WindowsWindow*)window->GetNativeWindowObject();
+
 		if (ImGui_ImplWin32_WndProcHandler(hwnd, uMsg, wParam, lParam))
 			return true;
 
@@ -137,7 +109,7 @@ namespace Quirk {
 		switch (uMsg) {
 			case WM_CLOSE: {
 				WindowCloseEvent event;
-				window->m_Data.EventCallbackFn(event);
+				EventDispatcher::DispatchEvent(event);
 				return (LRESULT)0;
 			}
 
@@ -172,19 +144,19 @@ namespace Quirk {
 				switch (keyState) {
 					case QK_KEY_PRESSED: {
 						KeyPressedEvent event(keyCode);
-						window->m_Data.EventCallbackFn(event);
+						EventDispatcher::DispatchEvent(event);
 						break;
 					}
 
 					case QK_KEY_REPEAT: {
 						KeyRepeatEvent event(keyCode);
-						window->m_Data.EventCallbackFn(event);
+						EventDispatcher::DispatchEvent(event);
 						break;
 					}
 
 					case QK_KEY_RELEASED: {
 						KeyReleaseEvent event(keyCode);
-						window->m_Data.EventCallbackFn(event);
+						EventDispatcher::DispatchEvent(event);
 						break;
 					}
 				}
@@ -234,19 +206,19 @@ namespace Quirk {
 				switch (buttonState) {
 					case QK_KEY_PRESSED: {
 						MouseButtonPressedEvent event(button, PosX, PosY);
-						window->m_Data.EventCallbackFn(event);
+						EventDispatcher::DispatchEvent(event);
 						break;
 					}
 
 					case QK_KEY_REPEAT: {
 						MouseButtonRepeatEvent event(button, PosX, PosY);
-						window->m_Data.EventCallbackFn(event);
+						EventDispatcher::DispatchEvent(event);
 						break;
 					}
 
 					case QK_KEY_RELEASED: {
 						MouseButtonReleasedEvent event(button, PosX, PosY);
-						window->m_Data.EventCallbackFn(event);
+						EventDispatcher::DispatchEvent(event);
 						break;
 					}
 				}
@@ -272,7 +244,7 @@ namespace Quirk {
 
 				Input::UpdateMousePos(PosX, PosY);
 				MouseButtonDblClickEvent event(button, PosX, PosY);
-				window->m_Data.EventCallbackFn(event);
+				EventDispatcher::DispatchEvent(event);
 
 				return (LRESULT)0;
 			}
@@ -281,9 +253,9 @@ namespace Quirk {
 				float PosX = (float)GET_X_LPARAM(lParam), PosY = (float)GET_Y_LPARAM(lParam);
 				float PrevX = Input::MouseCurrentX(), PrevY = Input::MouseCurrentY();
 
-				if (window->m_Data.CursorLeftWindow) {
+				if (windowNative->m_CursorLeftWindow) {
 					Input::UpdateMousePos(PosX, PosY);
-					window->m_Data.CursorLeftWindow = false;
+					windowNative->m_CursorLeftWindow = false;
 					return (LRESULT)0;
 				}
 
@@ -291,9 +263,9 @@ namespace Quirk {
 					return (LRESULT)0;
 
 				MouseMovedEvent event(PrevX, PrevY, PosX, PosY);
-				window->m_Data.EventCallbackFn(event);
+				EventDispatcher::DispatchEvent(event);
 
-				if (window->m_Data.CursorLocked) {
+				if (windowNative->m_CursorLocked) {
 					POINT cursorPos = { static_cast<int>(PrevX), static_cast<int>(PrevY) };
 
 					ClientToScreen(hwnd, &cursorPos);
@@ -309,37 +281,33 @@ namespace Quirk {
 
 			case WM_MOUSEWHEEL: {
 				MouseScrolledEvent event(GET_WHEEL_DELTA_WPARAM(wParam) / 120.0f, (float)GET_X_LPARAM(lParam), (float)GET_Y_LPARAM(lParam));
-				window->m_Data.EventCallbackFn(event);
+				EventDispatcher::DispatchEvent(event);
 				return (LRESULT)0;
 			}
 
 			case WM_MOUSELEAVE: {
-				window->m_Data.CursorLeftWindow = true;
+				windowNative->m_CursorLeftWindow = true;
 				return (LRESULT)0;
 			}
 			
 			case WM_SIZE: {
 				uint16_t width = LOWORD(lParam), height = HIWORD(lParam);
 
-				window->m_Data.ClientWidth = width;
-				window->m_Data.ClientHeight = height;
-
-				window->AdjustWindowArea();
+				window->m_Width = width;
+				window->m_Height = height;
 
 				WindowResizeEvent event(width, height);
-				window->m_Data.EventCallbackFn(event);
+				EventDispatcher::DispatchEvent(event);
 
 				return (LRESULT)0;
 			}
 
 			case WM_MOVE: {
-				if(!window) return (LRESULT)0;
+				window->m_PosX = GET_X_LPARAM(lParam);
+				window->m_PosY = GET_Y_LPARAM(lParam);
 
-				window->m_Data.PosX = static_cast<int32_t>GET_X_LPARAM(lParam);
-				window->m_Data.PosY = static_cast<int32_t>(GET_Y_LPARAM(lParam));
-
-				WindowMoveEvent event(window->m_Data.PosX, window->m_Data.PosY);
-				window->m_Data.EventCallbackFn(event);
+				WindowMoveEvent event(window->m_PosX, window->m_PosY);
+				EventDispatcher::DispatchEvent(event);
 
 				return (LRESULT)0;
 			}
@@ -348,16 +316,16 @@ namespace Quirk {
 		return DefWindowProc(hwnd, uMsg, wParam, lParam);
 	}
 
-	void Window::AdjustWindowArea() {
-		RECT rect = { 0, 0, m_Data.WindWidth, m_Data.WindHeight };
+	void WindowsWindow::AdjustWindowSizeForDPI(uint16_t& width, uint16_t& height) const {
+		RECT rect = { 0, 0, width, height };
 
 		QK_ASSERTEX(
-			AdjustWindowRectExForDpi(&rect, m_Data.WindowStyle, false, m_Data.WindowExStyle, GetDpiForSystem()),
+			AdjustWindowRectExForDpi(&rect, m_WindowStyle, false, m_WindowExStyle, GetDpiForSystem()),
 			"Failed to Adjust window rectangle for client area in dpi aware window!"
 		);
 
-		m_Data.WindWidth = static_cast<uint16_t>(rect.right - rect.left);
-		m_Data.WindHeight = static_cast<uint16_t>(rect.bottom - rect.top);
+		width  = static_cast<uint16_t>(rect.right  - rect.left);
+		height = static_cast<uint16_t>(rect.bottom - rect.top);
 	}
 
 }

@@ -92,7 +92,7 @@ namespace Quirk {
 		const char* glsl_version = "#version 410";
 
 		Window& window = Application::Get().GetWindow();
-		OpenGLContext* context = (OpenGLContext*)window.GetGraphicalContext();
+		OpenGLContext* context = (OpenGLContext*)window.GetGraphicalContext().get();
 
 		s_MainWindowContextData.DeviceContext = context->GetDeviceContext();
 		GLContext = context->GetGLContext();
@@ -120,7 +120,7 @@ namespace Quirk {
 		}
 
 		// Setup Platform/Renderer backends
-		ImGui_ImplWin32_InitForOpenGL((HWND)window.GetNativeWindow());
+		ImGui_ImplWin32_InitForOpenGL((HWND)window.GetNativeHandle());
 		ImGui_ImplOpenGL3_Init(glsl_version);
 
 		// Win32+GL needs specific hooks for viewport, as there are specific things needed to tie Win32 and GL api.

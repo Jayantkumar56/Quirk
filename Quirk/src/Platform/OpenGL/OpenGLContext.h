@@ -36,8 +36,13 @@ namespace Quirk {
 		OpenGLContext() = default;
 		~OpenGLContext() = default;
 
+
 		virtual void Init(Window& window) override;
 		virtual void DestroyContext(Window& window) override;
+
+		virtual inline void MakeContextCurrent() override {
+			QK_CORE_ASSERTEX(wglMakeCurrent(m_DeviceContext, m_GLContext), "Failed to make GL context current!");
+		}
 
 		virtual inline void SetVSync(int interval) {
 			QK_CORE_ASSERTEX(s_WGL.SwapIntervalEXT(interval), "Failed to Set VSync!");

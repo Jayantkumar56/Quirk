@@ -9,7 +9,7 @@ namespace Quirk {
 
 	// Initializing static variables of event dispatcher
 	Event* EventDispatcher::m_Event = nullptr;
-	EventType EventDispatcher::m_EventType = EventType::None;
+	std::function<void(Event&)> EventDispatcher::m_EventCallbackFn;
 
 	// Initializing static variables of input data
 	std::bitset<256> InputData::KeyPressed;

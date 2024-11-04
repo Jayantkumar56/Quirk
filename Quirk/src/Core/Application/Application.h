@@ -3,6 +3,7 @@
 
 #include "Core/Application/Window.h"
 #include "Core/Application/Layer.h"
+#include "Core/Input/ApplicationEvents.h"
 
 namespace Quirk {
 
@@ -26,7 +27,8 @@ namespace Quirk {
 	private:
 		std::wstring m_AppName;
 		Window		 m_Window;
-		bool		 m_Running;
+		bool		 m_Running		  = true;
+		bool		 m_InguiUiEnabled = false;
 
 	private:
 		static Application* s_Instance;
