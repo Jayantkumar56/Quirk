@@ -66,6 +66,9 @@ namespace Quirk {
 		void CreateGraphicalContext(RendererAPI::API api) {
 			m_Context = GraphicalContext::Create(api);
 			m_Context->Init(*this);
+
+			if (m_VSyncOn)	m_Context->SetVSync(1);
+			else			m_Context->SetVSync(0);
 		}
 
 		// Call this only after Rendering API is set
@@ -73,6 +76,9 @@ namespace Quirk {
 			if (m_Context.get() == nullptr) {
 				m_Context = GraphicalContext::Create();
 				m_Context->Init(*this);
+
+				if (m_VSyncOn)
+					m_Context->SetVSync(1);
 			}
 
 			m_Context->MakeContextCurrent();

@@ -18,13 +18,6 @@ namespace Quirk {
 		RefreshTime();
 	}
 
-	inline void NativeTime::RefreshTime() {
-		QueryPerformanceCounter((LARGE_INTEGER*)&m_CurrentPerfCounter);
-
-		m_LastTime = m_CurrentTime;
-		m_CurrentTime = (double)(m_CurrentPerfCounter - m_PerfCounterOffset) / m_Frequency;
-	}
-
 }
 
 #endif // QK_PLATFORM_WINDOWS

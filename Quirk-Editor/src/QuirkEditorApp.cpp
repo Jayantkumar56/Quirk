@@ -5,6 +5,8 @@
 #include "FontManager.h"
 #include "Theme.h"
 
+#include "glm/glm.hpp"
+
 namespace Quirk {
 
 	class QuirkEditorApp : public Application {
@@ -18,7 +20,7 @@ namespace Quirk {
 			FontManager::LoadFonts();
 			Theme::SetTheme(ThemeName::DarkTheme);
 
-			GetWindow().SetVSync(true);
+			//GetWindow().SetVSync(true);
 
 			PushLayer(&m_EditorLayer);
 		}

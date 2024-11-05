@@ -11,7 +11,6 @@
 #include "Core/Renderer/Renderer2D.h"
 #include "Core/Renderer/RenderCommands.h"
 
-
 #include "Core/Utility/Time.h"
 
 namespace Quirk {
@@ -20,7 +19,7 @@ namespace Quirk {
 
 	Application::Application(const std::wstring& appName) :
 			m_AppName(appName),
-			m_Window({ appName, 1600, 900, 200, 200, true })
+			m_Window({ appName, 1600, 900, 200, 50, false })
 	{
 		m_Window.CreateGraphicalContext(RendererAPI::API::OpenGL);
 		//m_Window.SetAsCurrentContext();

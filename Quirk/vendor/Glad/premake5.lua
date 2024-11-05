@@ -24,12 +24,20 @@ project "Glad"
 
 	filter { "system:windows" , "configurations:Release"}
 		buildoptions "/MT"
-
-		
+	
 	filter "configurations:Debug"
-		runtime "Debug"
-		symbols "on"
+        defines "QK_DEBUG"
+        runtime "Debug"
+        symbols "On"
 
-	filter "configurations:Release"
-		runtime "Release"
-		optimize "speed"
+    filter "configurations:Release"
+        defines "QK_RELEASE"
+        runtime "Release"
+        symbols "On"
+        optimize "On"
+
+    filter "configurations:Dist"
+        defines "QK_DIST"
+        runtime "Release"
+        symbols "Off"
+        optimize "Full"

@@ -4,12 +4,6 @@
 
 #ifdef QK_PLATFORM_WINDOWS
 
-#define WIN32_LEAN_AND_MEAN
-#include <Windows.h>
-
-#include <utility>
-
-
 namespace Quirk {
 
 	class NativeTime {
@@ -17,7 +11,11 @@ namespace Quirk {
 		NativeTime();
 		~NativeTime() = default;
 
-		inline void RefreshTime();
+		inline void RefreshTime() {
+			QueryPerformanceCounter((LARGE_INTEGER*)&m_CurrentPerfCounter);
+			m_LastTime = m_CurrentTime;
+			m_CurrentTime = (double)(m_CurrentPerfCounter - m_PerfCounterOffset) / m_Frequency;
+		}
 
 		inline double GetTimeMillisecond() const { return m_CurrentTime * 1000; }
 		inline double GetTimeSecond() const { return m_CurrentTime; }
