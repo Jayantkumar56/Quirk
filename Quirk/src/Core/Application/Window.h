@@ -97,9 +97,9 @@ namespace Quirk {
 		inline Ref<GraphicalContext> GetGraphicalContext() { return m_Context;		  }
 
 	private:
-#if QK_PLATFORM_WINDOWS
 		// made native window-object friend, 
 		// so the data could be modified right from the native object
+#if QK_PLATFORM_WINDOWS
 		friend class WindowsWindow;
 		WindowsWindow m_Window;
 #endif // QK_PLATFORM_WINDOWS

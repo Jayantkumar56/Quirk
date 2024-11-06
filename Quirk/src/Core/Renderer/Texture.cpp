@@ -28,4 +28,22 @@ namespace Quirk {
 		return nullptr;
 	}
 
+	SubTexture2D::SubTexture2D(const std::string& filePath, int indexX, int indexY, int width, int height) {
+		m_Texture = Texture2D::Create(filePath);
+
+		m_CoordX = indexX;
+		m_CoordY = indexY;
+		m_TileWidth  = width;
+		m_TileHeight = height;
+	}
+
+	SubTexture2D::SubTexture2D(const TextureSpecification& spec, int indexX, int indexY, int width, int height) {
+		m_Texture = Texture2D::Create(spec);
+
+		m_CoordX = indexX;
+		m_CoordY = indexY;
+		m_TileWidth = width;
+		m_TileHeight = height;
+	}
+
 }

@@ -43,4 +43,31 @@ namespace Quirk{
 		static Ref<Texture2D> Create(const std::string& filePath);
 	};
 
+	class SubTexture2D : public Texture {
+	public:
+		// indexX, indexY represents the index at which subtexture lie in the original texture
+		// indexes are 0 based (i.e. index starts with 0)
+		// sizeX, sizeY represent the size of the subtexture
+		SubTexture2D(const std::string& filePath, int indexX, int indexY, int width, int height);
+		SubTexture2D(const TextureSpecification& spec, int indexX, int indexY, int width, int height);
+
+		virtual std::string GetPath()	 { return m_Texture->GetPath(); }
+		virtual uint32_t GetRendererId() { return m_Texture->GetRendererId(); }
+		virtual uint32_t GetWidth()		 { return m_Texture->GetWidth(); }
+		virtual uint32_t GetHeight()	 { return m_Texture->GetHeight(); }
+
+		inline uint16_t GetTextureCoordX() const { return m_CoordX; }
+		inline uint16_t GetTextureCoordY() const { return m_CoordY; }
+		inline uint16_t GetTileWidth()	   const { return m_CoordX; }
+		inline uint16_t GetTileHeight()    const { return m_CoordY; }
+
+		virtual void Bind(uint32_t slot = 0)			{ m_Texture->Bind(); }
+		virtual void SetData(void* data, uint32_t size) { m_Texture->SetData(data, size); }
+
+	private:
+		Ref<Texture2D> m_Texture;
+		uint16_t m_CoordX, m_CoordY;
+		uint16_t m_TileWidth, m_TileHeight;
+	};
+
 }
