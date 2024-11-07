@@ -43,25 +43,23 @@ namespace Quirk {
 			static uint32_t MaxNoOfQuads;
 			static uint32_t MaxNoOfTextureSlots;
 
-			uint32_t NextTextureSlotToBind;
-			Ref<Texture>* TextureSlots;
+			// Textures relate data
+			uint32_t	   NextTextureSlotToBind;
+			int32_t*	   Sampler;
+			Ref<Texture>*  TextureSlots;
 			Ref<Texture2D> WhiteTexture;
 
-			int32_t* Sampler;
+			// Quad related data
+			uint32_t		  NoOfSubmitedQuads;
+			QuadInstance*	  QuadBasePtr;
+			QuadInstance*	  QuadCurrentPtr;
+			Ref<Shader>		  QuadShader;
+			Ref<VertexArray>  QuadVertexArray;
+			Ref<VertexBuffer> QuadVertexBuffer;
+			Ref<VertexBuffer> QuadInstanceBuffer;
 
 			// Camera related data
 			glm::mat4 ProjectionViewMatrix;
-
-			// Quad related data
-			uint32_t NoOfSubmitedQuads;
-
-			QuadInstance* QuadBasePtr;
-			QuadInstance* QuadCurrentPtr;
-
-			Ref<VertexArray> QuadVertexArray;
-			Ref<VertexBuffer> QuadVertexBuffer;
-			Ref<VertexBuffer> QuadInstanceBuffer;
-			Ref<Shader> QuadShader;
 		};
 
 		static Renderer2D::Renderer2DData s_Data;

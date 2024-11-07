@@ -28,9 +28,9 @@ namespace Quirk {
 		glDeleteBuffers(1, &m_RendererID);
 	}
 
-    void OpenGLVertexBuffer::UploadData(const void* data, uint32_t size) const {
+    void OpenGLVertexBuffer::UploadData(const void* data, uint32_t size, uint32_t offset) const {
 		Bind();
-		glBufferSubData(GL_ARRAY_BUFFER, 0, size, data);
+		glBufferSubData(GL_ARRAY_BUFFER, offset, size, data);
     }
 
 	void OpenGLVertexBuffer::Bind() const {

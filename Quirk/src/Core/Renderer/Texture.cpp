@@ -28,21 +28,27 @@ namespace Quirk {
 		return nullptr;
 	}
 
-	SubTexture2D::SubTexture2D(const std::string& filePath, int indexX, int indexY, int width, int height) {
-		m_Texture = Texture2D::Create(filePath);
-
-		m_CoordX = indexX;
-		m_CoordY = indexY;
+	SubTexture2D::SubTexture2D(Ref<Texture2D>& texture, uint16_t coordX, uint16_t coordY, uint16_t width, uint16_t height) {
+		m_Texture	 = texture;
+		m_CoordX	 = coordX;
+		m_CoordY	 = coordY;
 		m_TileWidth  = width;
 		m_TileHeight = height;
 	}
 
-	SubTexture2D::SubTexture2D(const TextureSpecification& spec, int indexX, int indexY, int width, int height) {
-		m_Texture = Texture2D::Create(spec);
+	SubTexture2D::SubTexture2D(const std::string& filePath, uint16_t coordX, uint16_t coordY, uint16_t width, uint16_t height) {
+		m_Texture	 = Texture2D::Create(filePath);
+		m_CoordX	 = coordX;
+		m_CoordY	 = coordY;
+		m_TileWidth  = width;
+		m_TileHeight = height;
+	}
 
-		m_CoordX = indexX;
-		m_CoordY = indexY;
-		m_TileWidth = width;
+	SubTexture2D::SubTexture2D(const TextureSpecification& spec, uint16_t coordX, uint16_t coordY, uint16_t width, uint16_t height) {
+		m_Texture	 = Texture2D::Create(spec);
+		m_CoordX	 = coordX;
+		m_CoordY	 = coordY;
+		m_TileWidth  = width;
 		m_TileHeight = height;
 	}
 

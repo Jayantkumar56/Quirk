@@ -48,21 +48,26 @@ namespace Quirk{
 		// indexX, indexY represents the index at which subtexture lie in the original texture
 		// indexes are 0 based (i.e. index starts with 0)
 		// sizeX, sizeY represent the size of the subtexture
-		SubTexture2D(const std::string& filePath, int indexX, int indexY, int width, int height);
-		SubTexture2D(const TextureSpecification& spec, int indexX, int indexY, int width, int height);
+		SubTexture2D(Ref<Texture2D>& texture, uint16_t coordX, uint16_t coordY, uint16_t width, uint16_t height);
+		SubTexture2D(const std::string& filePath, uint16_t coordX, uint16_t coordY, uint16_t width, uint16_t height);
+		SubTexture2D(const TextureSpecification& spec, uint16_t coordX, uint16_t coordY, uint16_t width, uint16_t height);
 
-		virtual std::string GetPath()	 { return m_Texture->GetPath(); }
-		virtual uint32_t GetRendererId() { return m_Texture->GetRendererId(); }
-		virtual uint32_t GetWidth()		 { return m_Texture->GetWidth(); }
-		virtual uint32_t GetHeight()	 { return m_Texture->GetHeight(); }
+		virtual bool operator ==(const Texture& other) const override { 
+			return m_Texture->GetRendererId() == other.GetRendererId();
+		}
+
+		virtual std::string GetPath()	 const override { return m_Texture->GetPath(); }
+		virtual uint32_t GetRendererId() const override { return m_Texture->GetRendererId(); }
+		virtual uint32_t GetWidth()		 const override { return m_Texture->GetWidth(); }
+		virtual uint32_t GetHeight()	 const override { return m_Texture->GetHeight(); }
 
 		inline uint16_t GetTextureCoordX() const { return m_CoordX; }
 		inline uint16_t GetTextureCoordY() const { return m_CoordY; }
 		inline uint16_t GetTileWidth()	   const { return m_CoordX; }
 		inline uint16_t GetTileHeight()    const { return m_CoordY; }
 
-		virtual void Bind(uint32_t slot = 0)			{ m_Texture->Bind(); }
-		virtual void SetData(void* data, uint32_t size) { m_Texture->SetData(data, size); }
+		virtual void Bind(uint32_t slot = 0)			const override { m_Texture->Bind(); }
+		virtual void SetData(void* data, uint32_t size) const override { m_Texture->SetData(data, size); }
 
 	private:
 		Ref<Texture2D> m_Texture;

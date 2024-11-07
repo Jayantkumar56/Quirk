@@ -107,7 +107,7 @@ namespace Quirk {
 	public:
 		virtual ~VertexBuffer() {}
 
-		virtual void UploadData(const void* data, uint32_t size) const = 0;
+		virtual void UploadData(const void* data, uint32_t size, uint32_t offset = 0) const = 0;
 
 		virtual void Bind() const = 0;
 		virtual void Unbind() const = 0;
