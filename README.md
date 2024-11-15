@@ -12,7 +12,7 @@ Visual Studio 2022 is recommended, Quirk is not tested on other development envi
 
 If the repository was cloned non-recursively, clone the necessary submodules with ```git submodule update --init```
 
-<u>**2. Configuring the dependencies:**</u>
+<ins>**2. Configuring the dependencies:**</ins>
 
 To generate project files for Visual Studio 2022 run the [GenerateProject.bat](https://github.com/Jayantkumar56/Quirk/blob/master/GenerateProject.bat) file found in the main workspace directory.
 
