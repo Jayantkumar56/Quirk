@@ -19,6 +19,8 @@ namespace Quirk {
 		RenderCommands::SetClearColor({ 0.10156f, 0.17968f, 0.20703f, 1.0f });
 		RenderCommands::EnableFaceCulling();
 
+#ifdef _EXPERIMENTAL_3D_CODE_
+
 		m_SceneData.QuadMeshVA = VertexArray::Create();
 
 		m_SceneData.QuadMeshVB = VertexBuffer::Create(m_SceneData.MaxNoOfQuads * 4 * (uint32_t)sizeof(QuadVertex));
@@ -55,6 +57,8 @@ namespace Quirk {
 		m_SceneData.Sampler = new int32_t[m_SceneData.MaxNoOfTextureSlots];
 		for (uint32_t i = 0; i < m_SceneData.MaxNoOfTextureSlots; ++i)
 			m_SceneData.Sampler[i] = i;
+
+#endif // _EXPERIMENTAL_3D_CODE_
 	}
 
 	void Renderer::BeginScene(const glm::mat4& projectionView) {
@@ -62,14 +66,18 @@ namespace Quirk {
 	}
 
 	void Renderer::EndScene() {
+#ifdef _EXPERIMENTAL_3D_CODE_
 		if (m_SceneData.SubmitedQuadCount > 0) {
 			// draw mesh and reset submited quads
 			DrawQuadMesh();
 			m_SceneData.SubmitedQuadCount = 0;
 		}
+#endif // _EXPERIMENTAL_3D_CODE_
 	}
 
 	void Renderer::SubmitQuadMesh(QuadVertex* vertices, uint32_t count) {
+#ifdef _EXPERIMENTAL_3D_CODE_
+
 		QuadVertex* vertexToSubmit = vertices;
 		uint32_t	vertexCount = count;
 
@@ -100,9 +108,13 @@ namespace Quirk {
 
 			m_SceneData.SubmitedQuadCount += vertexCount;
 		}
+
+#endif // _EXPERIMENTAL_3D_CODE_
 	}
 
 	void Renderer::DrawQuadMesh() {
+#ifdef _EXPERIMENTAL_3D_CODE_
+
 		if (m_SceneData.SubmitedQuadCount == 0) {
 			return;
 		}
@@ -118,6 +130,7 @@ namespace Quirk {
 		m_SceneData.QuadShader->UploadUniform("u_Textures", m_SceneData.Sampler, m_SceneData.MaxNoOfTextureSlots);
 
 		RenderCommands::DrawIndexed(m_SceneData.QuadMeshVA, m_SceneData.SubmitedQuadCount);
+#endif // _EXPERIMENTAL_3D_CODE_
 	}
 
 }

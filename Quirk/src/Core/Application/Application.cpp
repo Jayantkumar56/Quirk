@@ -28,7 +28,7 @@ namespace Quirk {
 		EventDispatcher::RegisterEventCallback(QK_BIND_EVENT_FN(Application::OnEvent));
 
 		Renderer::InitRenderer(RendererAPI::API::OpenGL);
-		//Renderer2D::InitRenderer();
+		Renderer2D::InitRenderer();
 	}
 
 	void Application::Run() {

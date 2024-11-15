@@ -29,8 +29,8 @@ namespace Quirk {
 
 	private:
 		struct SceneData {
-			static uint32_t MaxNoOfQuads;
-			static uint32_t MaxNoOfTextureSlots;
+			uint32_t MaxNoOfQuads;
+			uint32_t MaxNoOfTextureSlots;
 
 			// Textures relate data
 			int32_t*		Sampler;
