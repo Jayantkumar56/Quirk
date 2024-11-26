@@ -12,6 +12,7 @@
 #include<Windows.h>
 #endif // QK_PLATFORM_WINDOWS
 
+#include "imgui_internal.h"
 
 namespace Quirk {
 

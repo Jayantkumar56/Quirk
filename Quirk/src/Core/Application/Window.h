@@ -107,8 +107,8 @@ namespace Quirk {
 		std::wstring m_Title;
 		uint16_t	 m_Width;
 		uint16_t	 m_Height;
-		int32_t		 m_PosX;
-		int32_t		 m_PosY;
+		int32_t		 m_PosX;						// TO DO: make it represent client area pos from begining. these are set to the 
+		int32_t		 m_PosY;						// position of windowframe at the start and remains that till window is moved
 		bool		 m_VSyncOn;
 		Ref<GraphicalContext> m_Context;
 	};

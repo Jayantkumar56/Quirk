@@ -9,9 +9,7 @@
 namespace Quirk {
 
 	void EditorLayer::OnAttach(){
-		/*ImGuiIO& io = ImGui::GetIO();
-		io.FontDefault = FontManager::GetFont(FontWeight::Regular, 22);
-
+#ifdef _EXAMPLE_SCENE_CREATON_
 		auto square = m_MainScene->CreateEntity("Orange Square");
 		square.AddComponent<SpriteRendererComponent>(glm::vec4{ 1.0f, 0.14f, 0.1f, 1.0f });
 
@@ -56,7 +54,8 @@ namespace Quirk {
 		camera.AddComponent<NativeScriptComponent>().Bind<CameraController>();
 		camera2.AddComponent<NativeScriptComponent>().Bind<CameraController>();
 
-		SceneSerializer::Serialize(m_MainScene, L"assets/Scenes/main_scene.yaml");*/
+		SceneSerializer::Serialize(m_MainScene, L"assets/Scenes/main_scene.yaml");
+#endif // _EXAMPLE_SCENE_CREATON_
 
 		SceneSerializer::Deserialize(m_MainScene, L"assets/Scenes/main_scene.yaml");
 	}
@@ -75,6 +74,9 @@ namespace Quirk {
 	}
 
 	void EditorLayer::OnImguiUiUpdate(){
+		// Disabling alt key for imgui to prevent navigation with alt key (problems when using editor cotrols)
+		ImGui::SetKeyOwner(ImGuiKey_LeftAlt, ImGuiKeyOwner_Any, ImGuiInputFlags_LockThisFrame);
+
 		m_TitleBar.OnImguiUiUpdate(m_MainScene);
 		m_SceneViewport.OnImguiUiUpdate(m_MainScene, m_SelectedEntity);
 		m_SceneHierarcy.OnImguiUiUpdate(m_MainScene, m_SelectedEntity);
