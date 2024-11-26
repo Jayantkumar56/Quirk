@@ -1,7 +1,7 @@
 
 #include "Qkpch.h"
 
-#include "Core/Renderer/FrameBuffer.h"
+#include "Core/Renderer/Buffers/FrameBuffer.h"
 #include "Core/Renderer/Renderer.h"
 #include "Platform/OpenGL/OpenGLFrameBuffer.h"
 

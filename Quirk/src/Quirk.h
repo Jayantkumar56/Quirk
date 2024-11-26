@@ -28,13 +28,11 @@
 #include "Core/Camera/Camera.h"
 #include "Core/Camera/CameraController.h"
 
-#include "Core/Shapes/Quad.h"
-
-#include "Core/Renderer/Buffers.h"
+#include "Core/Renderer/Buffers/Buffers.h"
 #include "Core/Renderer/Texture.h"
 #include "Core/Renderer/Shader.h"
 #include "Core/Renderer/VertexArray.h"
-#include "Core/Renderer/FrameBuffer.h"
+#include "Core/Renderer/Buffers/FrameBuffer.h"
 #include "Core/Renderer/RendererAPI.h"
 #include "Core/Renderer/RenderCommands.h"
 #include "Core/Renderer/Renderer.h"

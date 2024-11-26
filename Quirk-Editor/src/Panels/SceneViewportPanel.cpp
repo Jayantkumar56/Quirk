@@ -3,20 +3,30 @@
 
 #include "SceneViewportPanel.h"
 #include "FontManager.h"
+#include "Core/Input/Input.h"
 
 namespace Quirk {
 
 	SceneViewportPanel::SceneViewportPanel(uint16_t width, uint16_t height) :
-			m_PanelWidth	  (width),
-			m_PanelHeight	  (height),
-			m_Frame			  (FrameBuffer::Create({ m_PanelWidth, m_PanelHeight })),
-			m_RendererStats	  ({ 0, 0 }),
-			m_IsInFocus		  (false)
+			m_PanelWidth	   (width),
+			m_PanelHeight	   (height),
+			m_Frame			   (FrameBuffer::Create({ m_PanelWidth, m_PanelHeight })),
+			m_RendererStats	   ({ 0, 0 }),
+			m_IsInFocus		   (false),
+			m_ControllingCamera(false),
+			m_Camera		   (45.0f, (float)width / (float)height, 1.0f, 100.0f)
 	{
 		RenderCommands::UpdateViewPort(m_PanelWidth, m_PanelHeight);
+		m_Frame->SetAttachments({
+			{ FrameBufferTextureType::RGBA_8,			  { .RGBA = {0.10156f, 0.17968f, 0.20703f, 1.0f} } },
+			{ FrameBufferTextureType::RED_INTEGER,        { .RedInteger = -1   }						   },
+			{ FrameBufferTextureType::DEPTH_24_STENCIL_8, { .DepthValue = 1.0f }						   }
+		});
 	}
 
 	bool SceneViewportPanel::OnEvent(Event& event) {
+		m_Camera.OnEvent(event);
+
 		return false;
 	}
 
@@ -25,10 +35,11 @@ namespace Quirk {
 			return;
 		}
 
+		m_ControllingCamera = m_Camera.OnUpdate();
 		scene->OnUpdate();
 	}
 
-	void SceneViewportPanel::OnImguiUiUpdate(const Ref<Scene>& scene) {
+	void SceneViewportPanel::OnImguiUiUpdate(const Ref<Scene>& scene, Entity& selectedEntity) {
 		ImGuiIO& io = ImGui::GetIO();
 		ImGuiWindowFlags flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoTitleBar;
 
@@ -39,8 +50,33 @@ namespace Quirk {
 		CheckAndHandleResize(scene);
 		RenderViewport(scene);
 
-		uint32_t color = m_Frame->GetColorBuffer();
-		ImGui::Image((ImTextureID)(intptr_t)color, ImVec2(m_PanelWidth, m_PanelHeight), { 0, 1 }, { 1, 0 });
+		uint32_t colorBuffer = m_Frame->GetColorAttachment(0);
+
+		ImVec2 imagePos = ImGui::GetCursorPos();
+		bool clickedOnImage = ImGui::ImageButton(
+			(ImTextureID)(intptr_t)colorBuffer,
+			ImVec2((float)m_PanelWidth, (float)m_PanelHeight),
+			{ 0, 1 },
+			{ 1, 0 },
+			0
+		);
+
+		if (clickedOnImage && !m_ControllingCamera) {
+			Window& window = Application::Get().GetWindow();
+			ImVec2 windowPos = ImGui::GetWindowPos();
+			windowPos		 = { windowPos.x - window.GetPosX(), windowPos.y - window.GetPosY()};
+			ImVec2 mousePos  = { Input::MouseCurrentX() - windowPos.x, Input::MouseCurrentY() - windowPos.y };
+
+			// mouse position on the image button
+			mousePos = { mousePos.x - imagePos.x, mousePos.y - imagePos.y };
+			// inverting the y axis for mouse coords
+			// 2 added because of slight visual error		TO DO: find this error
+			mousePos.y = m_PanelHeight - mousePos.y - 2;
+
+			int entityId = 0;
+			m_Frame->GetColorPixelData(1, (int)mousePos.x, (int)mousePos.y, &entityId, 1);
+			selectedEntity = (entityId == -1) ? Entity() : Entity((entt::entity)entityId, scene.get());
+		}
 
 		ImGui::End();
 		ImGui::PopStyleVar();
@@ -54,8 +90,10 @@ namespace Quirk {
 		}
 
 		if (m_PanelWidth != (int)windowSize.x || m_PanelHeight != (int)windowSize.y) {
-			m_PanelWidth = (int)windowSize.x;
+			m_PanelWidth  = (int)windowSize.x;
 			m_PanelHeight = (int)windowSize.y;
+
+			m_Camera.SetViewportSize(m_PanelWidth, m_PanelHeight);
 
 			m_Frame->Resize(m_PanelWidth, m_PanelHeight);
 			RenderCommands::UpdateViewPort(m_PanelWidth, m_PanelHeight);
@@ -65,10 +103,10 @@ namespace Quirk {
 
 	void SceneViewportPanel::RenderViewport(const Ref<Scene>& scene) {
 		m_Frame->Bind();
-		RenderCommands::Clear();
+		m_Frame->ClearAttachments();
+
 		Renderer2D::ResetStats();
-		
-		scene->RenderScene();
+		scene->RenderScene(m_Camera.GetProjectionView());
 
 		m_Frame->Unbind();
 		m_RendererStats = Renderer2D::GetStats();

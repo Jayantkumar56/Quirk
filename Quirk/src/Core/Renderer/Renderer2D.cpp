@@ -43,9 +43,10 @@ namespace Quirk {
 
 		s_Data.QuadInstanceBuffer = VertexBuffer::Create(s_Data.MaxNoOfQuads * sizeof(QuadInstance));
 		s_Data.QuadInstanceBuffer->SetLayout({
-			{ ShaderDataType::Float4,	"a_Color"		  },
-			{ ShaderDataType::Int,		"a_TextureSlot"   },
-			{ ShaderDataType::Mat4,		"a_Transform"	  }
+			{ ShaderDataType::Float4,	"a_Color"		},
+			{ ShaderDataType::Int,		"a_TextureSlot" },
+			{ ShaderDataType::Mat4,		"a_Transform"	},
+			{ ShaderDataType::Int,		"a_EntityId"	}
 		});
 		s_Data.QuadVertexArray->AddInstancedVertexBuffer(s_Data.QuadInstanceBuffer);
 
@@ -123,6 +124,23 @@ namespace Quirk {
 		s_Data.QuadCurrentPtr->Color = color;
 		s_Data.QuadCurrentPtr->TextureSlot = texSlot;
 		s_Data.QuadCurrentPtr->Transform = transform;
+
+		++s_Data.QuadCurrentPtr;
+		++s_Data.NoOfSubmitedQuads;
+	}
+
+	void Renderer2D::SubmitQuadEntity(Entity entity) {
+		if (s_Data.NoOfSubmitedQuads >= s_Data.MaxNoOfQuads) {
+			DrawQuadBatch();
+			ResetQuadBatch();
+		}
+
+		int texSlot = 0;
+
+		s_Data.QuadCurrentPtr->Color = entity.GetComponent<SpriteRendererComponent>().Color;
+		s_Data.QuadCurrentPtr->TextureSlot = texSlot;
+		s_Data.QuadCurrentPtr->Transform = entity.GetComponent<TransformComponent>().GetTransform();
+		s_Data.QuadCurrentPtr->EntityId = (int)(uint32_t)entity;
 
 		++s_Data.QuadCurrentPtr;
 		++s_Data.NoOfSubmitedQuads;

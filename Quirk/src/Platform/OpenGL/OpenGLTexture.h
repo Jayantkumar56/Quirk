@@ -6,6 +6,9 @@
 
 namespace Quirk {
 
+	GLint TextureWrapToOpenglWrap(TextureWrap wrap);
+	GLint TexutureFilterToOpenglFilter(TextureFilter filter);
+
 	class OpenGLTexture2D : public Texture2D{
 	public:
 		OpenGLTexture2D(const TextureSpecification& specification);

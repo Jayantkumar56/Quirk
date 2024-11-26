@@ -55,7 +55,7 @@ namespace Quirk {
 		return speed;
 	}
 
-	void EditorCamera::OnUpdate() {
+	bool EditorCamera::OnUpdate() {
 		if (Input::IsKeyPressed(QK_Key_LeftAlt)) {
 			const glm::vec2& mouse{ Input::MouseCurrentX(), Input::MouseCurrentY() };
 			glm::vec2 delta = (mouse - m_InitialMousePosition) * 0.003f;
@@ -67,13 +67,16 @@ namespace Quirk {
 				MouseRotate(delta);
 			else if (Input::IsKeyPressed(QK_Key_RightMouseBtn))
 				MouseZoom(delta.y);
+
+			UpdateView();
+			return true;
 		}
 
-		UpdateView();
+		return false;
 	}
 
-	void EditorCamera::OnEvent(Event& e) {
-		EventDispatcher::HandleEvent<MouseScrolledEvent>(QK_BIND_EVENT_FN(EditorCamera::OnMouseScroll));
+	bool EditorCamera::OnEvent(Event& e) {
+		return EventDispatcher::HandleEvent<MouseScrolledEvent>(QK_BIND_EVENT_FN(EditorCamera::OnMouseScroll));
 	}
 
 	bool EditorCamera::OnMouseScroll(MouseScrolledEvent& e) {

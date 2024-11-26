@@ -10,7 +10,7 @@ namespace Quirk {
 
 		// 0000 0000  0000 0000  0000 0000  0000 0000
 		// |<- r ->|  |<- g ->|  |<- b ->|  |<- a ->|
-		// uset SetColor to assign value
+		// use SetColor to assign value
 		int Color = 0xFFFFFFFF;
 
 		int		  TextureSlot;

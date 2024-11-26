@@ -6,6 +6,28 @@
 
 namespace Quirk {
 
+	GLint TextureWrapToOpenglWrap(TextureWrap wrap) {
+		switch (wrap) {
+			case TextureWrap::Repeat:		  return GL_REPEAT;
+			case TextureWrap::MirroredRepeat: return GL_MIRRORED_REPEAT;
+			case TextureWrap::ClampToEdge:	  return GL_CLAMP_TO_EDGE;
+			case TextureWrap::ClampToBorder:  return GL_CLAMP_TO_BORDER;
+		}
+
+		QK_CORE_ASSERT(false, "Invalid TextureWrap type choosen!");
+		return -1;
+	}
+
+	GLint TexutureFilterToOpenglFilter(TextureFilter filter) {
+		switch (filter) {
+			case TextureFilter::Linear:  return GL_LINEAR;
+			case TextureFilter::Nearest: return GL_NEAREST;
+		}
+
+		QK_CORE_ASSERT(false, "Invalid TexutureFilter type choosen!");
+		return -1;
+	}
+
 	static GLenum ImageFormatToGLDataFormat(ImageFormat format) {
 		switch (format) {
 			case ImageFormat::RGB8:  return GL_RGB;

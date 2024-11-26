@@ -76,7 +76,7 @@ namespace Quirk {
 
 	void EditorLayer::OnImguiUiUpdate(){
 		m_TitleBar.OnImguiUiUpdate(m_MainScene);
-		m_SceneViewport.OnImguiUiUpdate(m_MainScene);
+		m_SceneViewport.OnImguiUiUpdate(m_MainScene, m_SelectedEntity);
 		m_SceneHierarcy.OnImguiUiUpdate(m_MainScene, m_SelectedEntity);
 		m_InspectorPanel.OnImguiUiUpdate(m_SelectedEntity);
 	}

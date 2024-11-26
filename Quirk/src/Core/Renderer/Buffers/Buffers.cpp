@@ -3,7 +3,7 @@
 #include "qkpch.h"
 #include "Buffers.h"
 
-#include "Renderer.h"
+#include "Core/Renderer/Renderer.h"
 #include "Platform/OpenGL/OpenGLBuffers.h"
 
 namespace Quirk {

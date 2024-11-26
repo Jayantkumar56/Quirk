@@ -8,7 +8,7 @@
 
 namespace Quirk{
 
-	enum class ImageFormat {
+	enum class ImageFormat : uint8_t{
 		None = 0,
 		R8,
 		RGB8,
@@ -16,11 +16,20 @@ namespace Quirk{
 		RGBA32F
 	};
 
+	enum class TextureFilter : uint8_t {
+		Linear,				Nearest
+	};
+
+	enum class TextureWrap : uint8_t {
+		Repeat,				MirroredRepeat,
+		ClampToEdge,		ClampToBorder
+	};
+
 	struct TextureSpecification {
-		uint32_t Width = 1;
-		uint32_t Height = 1;
+		uint32_t	Width  = 1;
+		uint32_t	Height = 1;
 		ImageFormat Format = ImageFormat::RGBA8;
-		bool GenerateMips = true;
+		bool GenerateMips  = true;
 	};
 	
 	class Texture {

@@ -42,16 +42,12 @@ namespace Quirk {
 		});
 	}
 
-	void Scene::RenderScene() {
-		const glm::mat4& projection = GetPrimaryCameraEntity().GetComponent<CameraComponent>().Camera.GetProjection();
-		const glm::mat4& cameraTransform = GetPrimaryCameraEntity().GetComponent<TransformComponent>().GetTransform();
-
-		Renderer2D::BeginScene(projection * glm::inverse(cameraTransform));
+	void Scene::RenderScene(const glm::mat4& projectionView) {
+		Renderer2D::BeginScene(projectionView);
 
 		auto renderables = m_Registry.view<TransformComponent, SpriteRendererComponent>();
 		for (auto entity : renderables) {
-			auto [transform, quad] = renderables.get<TransformComponent, SpriteRendererComponent>(entity);
-			Renderer2D::SubmitQuad(transform.GetTransform(), quad.Color);
+			Renderer2D::SubmitQuadEntity({ entity, this });
 		}
 
 		Renderer2D::EndScene();

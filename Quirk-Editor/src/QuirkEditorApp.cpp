@@ -20,7 +20,7 @@ namespace Quirk {
 			FontManager::LoadFonts();
 			Theme::SetTheme(ThemeName::DarkTheme);
 
-			//GetWindow().SetVSync(true);
+			GetWindow().SetVSync(true);
 
 			PushLayer(&m_EditorLayer);
 		}

@@ -2,9 +2,10 @@
 
 #pragma once
 
-#include "Core/Shapes/Quad.h"
 #include "Core/Renderer/RendererAPI.h"
 #include "Core/Renderer/Shader.h"
+#include "Texture.h"
+#include "Core/Scene/Entity.h"
 
 namespace Quirk {
 
@@ -23,8 +24,8 @@ namespace Quirk {
 		static void BeginScene(const glm::mat4& projectionView);
 		static void EndScene();
 
-		//static void SubmitQuad(Ref<Quad>& quad);
 		static void SubmitQuad(const glm::mat4& transform, const glm::vec4& color);
+		static void SubmitQuadEntity(Entity entity);
 
 	private:
 		static void ResetQuadBatch();
@@ -36,6 +37,9 @@ namespace Quirk {
 			glm::vec4 Color;
 			int TextureSlot;
 			glm::mat4 Transform;
+
+			// editor-only parameter
+			int EntityId;
 		};
 
 	public:

@@ -24,7 +24,7 @@ namespace Quirk {
 		void DestroyEntity(Entity entity);
 
 		void OnUpdate();
-		void RenderScene();
+		void RenderScene(const glm::mat4& projectionView);
 		void OnViewportResize(uint32_t width, uint32_t height);
 
 		Entity FindEntityByName(std::string_view name);
