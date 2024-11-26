@@ -16,6 +16,10 @@ If the repository was cloned non-recursively, clone the necessary submodules wit
 
 To generate project files for Visual Studio 2022 run the [GenerateProject.bat](https://github.com/Jayantkumar56/Quirk/blob/master/GenerateProject.bat) file found in the main workspace directory.
 
+<ins>**3. Ready to Go!**</ins>
+
+Project files are generated now you can open Quirk in your IDE.
+
 # Main features to come:
 
 * Fast 2D rendering (UI, particles, sprites, etc.).
