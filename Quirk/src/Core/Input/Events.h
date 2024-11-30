@@ -51,7 +51,7 @@ namespace Quirk {
 		}
 
 		// should be called to propagate an event
-		static void DispatchEvent(Event& event) {
+		static inline void DispatchEvent(Event& event) {
 			m_Event = &event;
 			m_EventCallbackFn(event);
 		}

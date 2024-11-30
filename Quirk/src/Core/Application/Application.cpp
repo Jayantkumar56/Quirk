@@ -17,17 +17,17 @@ namespace Quirk {
 
 	Application* Application::s_Instance = nullptr;
 
-	Application::Application(const std::wstring& appName) :
+	Application::Application(const std::wstring& appName, RendererAPI::API renderingAPI) :
 			m_AppName(appName),
-			m_Window({ appName, 1600, 900, 200, 50, false })
+			m_Window({ appName, 1600, 900, 200, 50, false, true })
 	{
-		m_Window.CreateGraphicalContext(RendererAPI::API::OpenGL);
-		//m_Window.SetAsCurrentContext();
-
 		s_Instance = this;
 		EventDispatcher::RegisterEventCallback(QK_BIND_EVENT_FN(Application::OnEvent));
 
-		Renderer::InitRenderer(RendererAPI::API::OpenGL);
+		RenderCommands::Init(renderingAPI);
+		m_Window.SetAsCurrentContext();
+
+		Renderer::InitRenderer(renderingAPI);
 		Renderer2D::InitRenderer();
 	}
 

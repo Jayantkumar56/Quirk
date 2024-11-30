@@ -3,8 +3,7 @@
 #include "InspectorPanel.h"
 #include "FontManager.h"
 #include "Theme.h"
-
-#include <imgui_internal.h>
+#include "Core/Imgui/ImguiUIUtility.h"
 
 namespace Quirk {
 
@@ -85,17 +84,21 @@ namespace Quirk {
 		}
 
 		DrawComponentNode<TransformComponent>("Transforms", entity, [](TransformComponent& component) {
+			ImFont* lableFont  = FontManager::GetFont("PropertyLabel");
+			ImFont* buttonFont = FontManager::GetFont(FontWeight::Bold, 18);
+			ImFont* valuesFont = FontManager::GetFont("DragFloatValue");
+
 			// width of word "Position" is largest among the three also took extra 3 letters space as "xxx" for padding 
 			auto size = ImGui::CalcTextSize("Positionxxx");
 
-			DrawFloat3("Position", glm::value_ptr(component.Translation), 0.0f, size.x);
+			ImguiUI::Utility::DrawFloat3("Position", glm::value_ptr(component.Translation), 0.0f, 0.1f, size.x, lableFont, buttonFont, valuesFont);
 
 			glm::vec3 rotation = glm::degrees(component.Rotation);
-			if (DrawFloat3("Rotation", glm::value_ptr(rotation), 0.0f, size.x)) {
+			if (ImguiUI::Utility::DrawFloat3("Rotation", glm::value_ptr(rotation), 0.0f, 0.1f, size.x, lableFont, buttonFont, valuesFont)) {
 				component.Rotation = glm::radians(rotation);
 			}
 
-			DrawFloat3("Scale", glm::value_ptr(component.Scale), 1.0f, size.x);
+			ImguiUI::Utility::DrawFloat3("Scale", glm::value_ptr(component.Scale), 1.0f, 0.1f, size.x, lableFont, buttonFont, valuesFont);
 		});
 
 		DrawComponentNode<SpriteRendererComponent>("Sprite Renderer", entity, [](SpriteRendererComponent& component) {
@@ -227,75 +230,6 @@ namespace Quirk {
 
 		ImGui::PopStyleColor();
 		ImGui::End();
-	}
-
-	bool InspectorPanel::DrawFloat3(const char* label, float* data, float resetValue, float labelColumnWidth, float speed) {
-		float min = 0.0f, max = 0.0f;
-		bool valueChanged = false;
-		float lineHeight = GImGui->Font->FontSize + GImGui->Style.FramePadding.y;
-
-		if (ImGui::BeginTable("transform", 4)) {
-
-			ImGui::TableNextColumn();
-			ImGui::PushFont(FontManager::GetFont("PropertyLabel"));
-			ImGui::AlignTextToFramePadding();
-			ImGui::Text(label);
-			ImGui::PopFont();
-
-			ImGui::TableNextColumn();
-
-			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.769f, 0.125f, 0.129f, 1.0f });
-			ImGui::PushFont(FontManager::GetFont(FontWeight::Bold, 18));
-			if (ImGui::Button("X", { lineHeight, lineHeight })) {
-				valueChanged = true;
-				data[0] = resetValue;
-			}
-			ImGui::PopFont();
-			ImGui::PopStyleColor();
-
-			ImGui::SameLine(0.0f, 0.0f);
-
-			ImGui::PushFont(FontManager::GetFont("DragFloatValue"));
-			valueChanged |= ImGui::DragFloat("##X", data, speed, min, max, "%.2f");
-			ImGui::PopFont();
-
-			ImGui::TableNextColumn();
-
-			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.596f, 0.808f, 0.0f, 1.0f });
-			ImGui::PushFont(FontManager::GetFont(FontWeight::Bold, 18));
-			if (ImGui::Button("Y", { lineHeight, lineHeight })) {
-				valueChanged = true;
-				data[1] = resetValue;
-			}
-			ImGui::PopFont();
-			ImGui::PopStyleColor();
-
-			ImGui::SameLine(0.0f, 0.0f);
-
-			ImGui::PushFont(FontManager::GetFont("DragFloatValue"));
-			valueChanged |= ImGui::DragFloat("##Y", data + 1, speed, min, max, "%.2f");
-			ImGui::PopFont();
-
-			ImGui::TableNextColumn();
-
-			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.031f, 0.239f, 0.467f, 1.0f });
-			ImGui::PushFont(FontManager::GetFont(FontWeight::Bold, 18));
-			if (ImGui::Button("Z", { lineHeight, lineHeight })) {
-				valueChanged = true;
-				data[2] = resetValue;
-			}
-			ImGui::PopFont();
-			ImGui::PopStyleColor();
-
-			ImGui::SameLine(0.0f, 0.0f);
-
-			ImGui::PushFont(FontManager::GetFont("DragFloatValue"));
-			valueChanged |= ImGui::DragFloat("##Z", data + 2, speed, min, max, "%.2f");
-			ImGui::PopFont();
-
-			ImGui::EndTable();
-		}
-		return valueChanged;
 	}
 
 }

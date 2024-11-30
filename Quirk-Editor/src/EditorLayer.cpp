@@ -55,9 +55,8 @@ namespace Quirk {
 		camera2.AddComponent<NativeScriptComponent>().Bind<CameraController>();
 
 		SceneSerializer::Serialize(m_MainScene, L"assets/Scenes/main_scene.yaml");
-#endif // _EXAMPLE_SCENE_CREATON_
-
 		SceneSerializer::Deserialize(m_MainScene, L"assets/Scenes/main_scene.yaml");
+#endif // _EXAMPLE_SCENE_CREATON_
 	}
 
 	void EditorLayer::OnDetach(){
@@ -81,6 +80,7 @@ namespace Quirk {
 		m_SceneViewport.OnImguiUiUpdate(m_MainScene, m_SelectedEntity);
 		m_SceneHierarcy.OnImguiUiUpdate(m_MainScene, m_SelectedEntity);
 		m_InspectorPanel.OnImguiUiUpdate(m_SelectedEntity);
+		m_ContentBrowser.OnImguiUiUpdate();
 	}
 
 }

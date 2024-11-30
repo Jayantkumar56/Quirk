@@ -21,7 +21,9 @@ project "Quirk"
         "vendor/**.h",
         "vendor/**.inl",
         "vendor/stb_image/**.cpp",
-        "vendor/stb_image/**.h"
+        "vendor/stb_image/**.h",
+        "vendor/ImGuizmo/*.cpp",
+        "vendor/ImGuizmo/*.h"
     }
 
 	pchheader "Qkpch.h"
@@ -37,7 +39,8 @@ project "Quirk"
         "vendor/OpenGL",
         "vendor/stb_image",
         "vendor/entt/include",
-        "vendor/yaml-cpp/include"
+        "vendor/yaml-cpp/include",
+        "vendor/ImGuizmo"
     }
 
     links
@@ -47,6 +50,9 @@ project "Quirk"
         "opengl32.lib",
         "yaml-cpp"
     }
+
+    filter "files:vendor/ImGuizmo/**.cpp"
+    flags {"NoPCH"}
 
     filter "system:windows"
         systemversion "latest"

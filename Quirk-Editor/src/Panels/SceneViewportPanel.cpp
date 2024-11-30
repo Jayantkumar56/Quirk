@@ -4,6 +4,7 @@
 #include "SceneViewportPanel.h"
 #include "FontManager.h"
 #include "Core/Input/Input.h"
+#include <filesystem>
 
 namespace Quirk {
 
@@ -25,6 +26,10 @@ namespace Quirk {
 	}
 
 	bool SceneViewportPanel::OnEvent(Event& event) {
+		if (!m_IsInFocus) {
+			return false;
+		}
+
 		m_Camera.OnEvent(event);
 
 		return false;
@@ -39,9 +44,10 @@ namespace Quirk {
 		scene->OnUpdate();
 	}
 
-	void SceneViewportPanel::OnImguiUiUpdate(const Ref<Scene>& scene, Entity& selectedEntity) {
-		ImGuiIO& io = ImGui::GetIO();
-		ImGuiWindowFlags flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoTitleBar;
+	void SceneViewportPanel::OnImguiUiUpdate(Ref<Scene>& scene, Entity& selectedEntity) {
+		ImGuiWindowClass window_class;
+		window_class.DockNodeFlagsOverrideSet = ImGuiDockNodeFlags_NoTabBar;
+		ImGui::SetNextWindowClass(&window_class);
 
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 		ImGui::Begin("Scene Viewport");
@@ -50,16 +56,26 @@ namespace Quirk {
 		CheckAndHandleResize(scene);
 		RenderViewport(scene);
 
-		uint32_t colorBuffer = m_Frame->GetColorAttachment(0);
-
 		ImVec2 imagePos = ImGui::GetCursorPos();
+		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 0.0f, 0.0f });
 		bool clickedOnImage = ImGui::ImageButton(
-			(ImTextureID)(intptr_t)colorBuffer,
+			"viewportimage",
+			(ImTextureID)(intptr_t)m_Frame->GetColorAttachment(0),
 			ImVec2((float)m_PanelWidth, (float)m_PanelHeight),
 			{ 0, 1 },
-			{ 1, 0 },
-			0
+			{ 1, 0 }
 		);
+		ImGui::PopStyleVar();
+
+		if (ImGui::BeginDragDropTarget()) {
+			const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SCENE_PATH");
+			if (payload) {
+				scene->DestroyAllEntities();
+				SceneSerializer::Deserialize(scene, **(std::filesystem::path**)payload->Data);
+			}
+
+			ImGui::EndDragDropTarget();
+		}
 
 		if (clickedOnImage && !m_ControllingCamera) {
 			Window& window = Application::Get().GetWindow();
@@ -97,6 +113,7 @@ namespace Quirk {
 
 			m_Frame->Resize(m_PanelWidth, m_PanelHeight);
 			RenderCommands::UpdateViewPort(m_PanelWidth, m_PanelHeight);
+
 			scene->OnViewportResize(m_PanelWidth, m_PanelHeight);
 		}
 	}

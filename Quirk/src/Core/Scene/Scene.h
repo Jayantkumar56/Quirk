@@ -22,6 +22,7 @@ namespace Quirk {
 
 		Entity CreateEntity(const std::string& name = std::string(), const uint64_t uuid = UUID());
 		void DestroyEntity(Entity entity);
+		inline void DestroyAllEntities() { m_Registry.clear(); }
 
 		void OnUpdate();
 		void RenderScene(const glm::mat4& projectionView);

@@ -9,16 +9,16 @@ namespace Quirk {
 
 	class SceneViewportPanel {
 	public:
-		SceneViewportPanel(uint16_t width = 890, uint16_t height = 800);
+		SceneViewportPanel(uint16_t width = 1, uint16_t height = 1);
 		~SceneViewportPanel() = default;
 
 		bool OnEvent(Event& event);
 		void OnUpdate(const Ref<Scene>& scene);
-		void OnImguiUiUpdate(const Ref<Scene>& scene, Entity& selectedEntity);
+		void OnImguiUiUpdate(Ref<Scene>& scene, Entity& selectedEntity);
 
-		uint16_t GetWidth()						const { return m_PanelWidth; }
-		uint16_t GetHeight()					const { return m_PanelHeight; }
-		bool IsInFocus()						const { return m_IsInFocus; }
+		uint16_t GetWidth()						const { return m_PanelWidth;    }
+		uint16_t GetHeight()					const { return m_PanelHeight;   }
+		bool     IsInFocus()					const { return m_IsInFocus;     }
 		const RendererStats& GetRendererStats()	const { return m_RendererStats; }
 
 	private:

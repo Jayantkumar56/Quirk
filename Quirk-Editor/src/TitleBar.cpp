@@ -5,6 +5,7 @@
 #include "TitleBar.h"
 #include "Theme.h"
 
+
 namespace Quirk {
 
 	void TitleBar::OnImguiUiUpdate(Ref<Scene>& scene) {
@@ -17,35 +18,41 @@ namespace Quirk {
 					Application::Get().OnWindowClose(event);
 				}
 
-				if (ImGui::MenuItem("Open")) {
+				if (ImGui::MenuItem("Open Scene")) {
 					FileFilter filters[] = {
 						{L"Scene",		L"*.yaml"},
 						{L"All",		L"*.*"}
 					};
 
 					FileDialogSpecification fileDialogSpec;
-					fileDialogSpec.Title			= L"Open Scene";
-					fileDialogSpec.FileNameLabel	= L"Scene Name";
-					fileDialogSpec.Filters			= filters;
-					fileDialogSpec.NoOfFilters		= sizeof(filters) / sizeof(FileFilter);
+					fileDialogSpec.Title		 = L"Open Scene";
+					fileDialogSpec.FileNameLabel = L"Scene Name";
+					fileDialogSpec.Filters		 = filters;
+					fileDialogSpec.NoOfFilters	 = sizeof(filters) / sizeof(FileFilter);
 
-					std::wstring filePath = FileDialog::OpenFile(fileDialogSpec);
+					std::filesystem::path filePath;
+					if (FileDialog::OpenFile(fileDialogSpec, filePath)) {
+						scene->DestroyAllEntities();
+						SceneSerializer::Deserialize(scene, filePath);
+					}
 				}
 
-				if (ImGui::MenuItem("Save")) {
+				if (ImGui::MenuItem("Save Scene") && scene != nullptr) {
 					FileFilter filters[] = {
 						{L"Scene",		L"*.yaml"},
 						{L"All",		L"*.*"}
 					};
 
 					FileDialogSpecification fileDialogSpec;
-					fileDialogSpec.Title			= L"Save Scene";
-					fileDialogSpec.FileNameLabel	= L"Scene Name";
-					fileDialogSpec.Filters			= filters;
-					fileDialogSpec.NoOfFilters		= sizeof(filters) / sizeof(FileFilter);
+					fileDialogSpec.Title		 = L"Save Scene";
+					fileDialogSpec.FileNameLabel = L"Scene Name";
+					fileDialogSpec.Filters		 = filters;
+					fileDialogSpec.NoOfFilters	 = sizeof(filters) / sizeof(FileFilter);
 
-					std::wstring filePath = FileDialog::SaveFile(fileDialogSpec);
-					SceneSerializer::Serialize(scene, filePath);
+					std::filesystem::path filePath;
+					if (FileDialog::SaveFile(fileDialogSpec, filePath)) {
+						SceneSerializer::Serialize(scene, filePath);
+					}
 				}
 
 				ImGui::EndMenu();

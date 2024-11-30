@@ -25,15 +25,15 @@ namespace Quirk {
 	class FileDialog {
 	public:
 
-		static inline std::wstring OpenFile(const FileDialogSpecification& dialogSpec) {
+		static inline bool OpenFile(const FileDialogSpecification& dialogSpec, std::filesystem::path& pathOutput) {
 #ifdef QK_PLATFORM_WINDOWS
-			return WindowsFileDialog::OpenFile(dialogSpec);
+			return WindowsFileDialog::OpenFile(dialogSpec, pathOutput);
 #endif // QK_PLATFORM_WINDOWS
 		}
 
-		static inline std::wstring SaveFile(const FileDialogSpecification& dialogSpec) {
+		static inline bool SaveFile(const FileDialogSpecification& dialogSpec, std::filesystem::path& pathOutput) {
 #ifdef QK_PLATFORM_WINDOWS
-			return WindowsFileDialog::SaveFile(dialogSpec);
+			return WindowsFileDialog::SaveFile(dialogSpec, pathOutput);
 #endif // QK_PLATFORM_WINDOWS
 		}
 

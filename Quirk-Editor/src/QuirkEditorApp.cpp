@@ -12,15 +12,13 @@ namespace Quirk {
 	class QuirkEditorApp : public Application {
 	public:
 		QuirkEditorApp(): 
-				Application(L"Quirk Engine Editor")
+				Application(L"Quirk Engine Editor", RendererAPI::API::OpenGL)
 		{
-			ImguiUI::Init();
-			ImguiUI::EnableDocking();
+			EnableImguiUI(true);
+			GetWindow().SetVSync(true);
 
 			FontManager::LoadFonts();
 			Theme::SetTheme(ThemeName::DarkTheme);
-
-			GetWindow().SetVSync(true);
 
 			PushLayer(&m_EditorLayer);
 		}
@@ -37,8 +35,8 @@ namespace Quirk {
 	// LaunchApp() must be defined in the application
 	// Create app object inside this function and call Run method
 	void LaunchApp() {
-		QuirkEditorApp app;
-		app.Run();
+		QuirkEditorApp* app = new QuirkEditorApp();
+		app->Run();
 	}
 
 }

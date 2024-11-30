@@ -2,30 +2,36 @@
 #include "qkpch.h"
 
 #include "Core/Core.h"
-
-#include "Core/Application/Application.h"
-#include "Platform/OpenGL/OpenGLContext.h"
 #include "Core/Renderer/RendererAPI.h"
-
+#include "Platform/OpenGL/OpenGLContext.h"
 #include "Core/Imgui/ImguiUI.h"
 
 // From Glad.h
 #define GL_FALSE 0
 #define GL_TRUE 1
 
-namespace Quirk {
+namespace Quirk { namespace ImguiUI {
+	static bool  DockingEnabled;
 
-	HGLRC ImguiUI::GLContext = nullptr;
-	ImguiUI::ContextData ImguiUI::s_MainWindowContextData;
-	bool ImguiUI::s_DockingEnabled;
-	PFNWGLCHOOSEPIXELFORMATARBPROC ImguiUI::ChoosePixelFormatARB;
+	void EnableDocking() {
+		DockingEnabled = true;
+	}
 
-	void ImguiUI::CleanupDeviceWGL(HWND hWnd, ContextData* data) {
+	void DisableDocking() {
+		DockingEnabled = false;
+	}
+
+#ifdef QK_PLATFORM_WINDOWS
+	static HGLRC GLContext = nullptr;
+	static ContextData MainWindowContextData;
+	static PFNWGLCHOOSEPIXELFORMATARBPROC ChoosePixelFormatARB;
+
+	static void CleanupDeviceWGL(HWND hWnd, ContextData* data) {
 		wglMakeCurrent(nullptr, nullptr);
 		ReleaseDC(hWnd, data->DeviceContext);
 	}
 
-	bool ImguiUI::CreateDeviceWGL(HWND hWnd, ContextData* data) {
+	static bool CreateDeviceWGL(HWND hWnd, ContextData* data) {
 		data->DeviceContext = GetDC(hWnd);
 		int pixelFormat = 0;
 		unsigned int numPixelFormat = 0;
@@ -56,7 +62,7 @@ namespace Quirk {
 		return true;
 	}
 
-	void ImguiUI::HookRendererCreateWindow(ImGuiViewport* viewport) {
+	static void HookRendererCreateWindow(ImGuiViewport* viewport) {
 		QK_CORE_ASSERT(viewport->RendererUserData == NULL, "Non Empty RendererUserData (from imgui)");
 
 		ContextData* data = IM_NEW(ContextData);
@@ -64,7 +70,7 @@ namespace Quirk {
 		viewport->RendererUserData = data;
 	}
 
-	void ImguiUI::HookRendererDestroyWindow(ImGuiViewport* viewport) {
+	static void HookRendererDestroyWindow(ImGuiViewport* viewport) {
 		if (viewport->RendererUserData != NULL) {
 			ContextData* data = (ContextData*)viewport->RendererUserData;
 			CleanupDeviceWGL((HWND)viewport->PlatformHandle, data);
@@ -73,28 +79,26 @@ namespace Quirk {
 		}
 	}
 
-	void ImguiUI::HookRendererSwapBuffers(ImGuiViewport* viewport, void*) {
+	static void HookRendererSwapBuffers(ImGuiViewport* viewport, void*) {
 		if (ContextData* data = (ContextData*)viewport->RendererUserData; data) {
 			SwapBuffers(data->DeviceContext);
 		}
 	}
 
-	void ImguiUI::HookPlatformRenderWindow(ImGuiViewport* viewport, void*) {
+	static void HookPlatformRenderWindow(ImGuiViewport* viewport, void*) {
 		if (ContextData* data = (ContextData*)viewport->RendererUserData; data) {
 			wglMakeCurrent(data->DeviceContext, GLContext);
 		}
 	}
 
-	void ImguiUI::Init() {
+	void Init(Window& window) {
 		ChoosePixelFormatARB = (PFNWGLCHOOSEPIXELFORMATARBPROC)wglGetProcAddress("wglChoosePixelFormatARB");
 
-		s_DockingEnabled = false;
+		DockingEnabled = false;
 		const char* glsl_version = "#version 410";
+		OpenGLContext* context = (OpenGLContext*)(window.GetGraphicalContext().get());
 
-		Window& window = Application::Get().GetWindow();
-		OpenGLContext* context = (OpenGLContext*)window.GetGraphicalContext().get();
-
-		s_MainWindowContextData.DeviceContext = context->GetDeviceContext();
+		MainWindowContextData.DeviceContext = context->GetDeviceContext();
 		GLContext = context->GetGLContext();
 
 		// Setup Dear ImGui context
@@ -115,7 +119,7 @@ namespace Quirk {
 		ImGuiStyle& style = ImGui::GetStyle();
 		style.WindowMinSize.x = 400.0f;
 		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
-			style.WindowRounding = 1.0f;
+			style.WindowRounding = 10.0f;
 			style.Colors[ImGuiCol_WindowBg].w = 1.0f;
 		}
 
@@ -133,25 +137,25 @@ namespace Quirk {
 		}
 	}
 
-	void ImguiUI::Terminate() {
+	void Terminate() {
 		// Cleanup
 		ImGui_ImplOpenGL3_Shutdown();
 		ImGui_ImplWin32_Shutdown();
 		ImGui::DestroyContext();
 	}
 
-	void ImguiUI::Begin() {
+	void Begin() {
 		// Start the Dear ImGui frame
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplWin32_NewFrame();
 		ImGui::NewFrame();
 
-		if (s_DockingEnabled) {
+		if (DockingEnabled) {
 			ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport());
 		}
 	}
 
-	void ImguiUI::End() {
+	void End() {
 		ImGuiIO& io = ImGui::GetIO();
 
 		ImGui::Render();
@@ -163,8 +167,9 @@ namespace Quirk {
 			ImGui::RenderPlatformWindowsDefault();
 
 			// Restore the OpenGL rendering context to the main window DC, since platform windows might have changed it.
-			wglMakeCurrent(s_MainWindowContextData.DeviceContext, GLContext);
+			wglMakeCurrent(MainWindowContextData.DeviceContext, GLContext);
 		}
 	}
+#endif // QK_PLATFORM_WINDOWS
+}}
 
-}

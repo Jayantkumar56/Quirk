@@ -11,3 +11,6 @@
 [submodule "Quirk/vendor/yaml-cpp"]
 	path = Quirk/vendor/yaml-cpp
 	url = https://github.com/Jayantkumar56/yaml-cpp
+[submodule "Quirk/vendor/ImGuizmo"]
+	path = Quirk/vendor/ImGuizmo
+	url = https://github.com/Jayantkumar56/ImGuizmo

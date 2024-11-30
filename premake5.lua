@@ -16,6 +16,7 @@ IncludeDir["Opengl"]    = "Quirk/vendor/OpenGL"
 IncludeDir["Stb_Image"] = "Quirk/vendor/stb_image"
 IncludeDir["Entt"]      = "Quirk/vendor/entt/include"
 IncludeDir["Yaml_CPP"]  = "Quirk/vendor/yaml-cpp/include"
+IncludeDir["ImGuizmo"]  = "Quirk/vendor/ImGuizmo"
 
 include "Quirk"
 include "Quirk-Editor"

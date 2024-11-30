@@ -26,7 +26,12 @@ namespace Quirk {
 	HINSTANCE WindowsWindow::s_HInstance = nullptr;
 
 	WindowsWindow::WindowsWindow(const WindowSpecification& spec, Window* window) {
-		m_WindowStyle = WS_OVERLAPPEDWINDOW | WS_THICKFRAME | WS_SYSMENU | WS_MAXIMIZEBOX | WS_MINIMIZEBOX | WS_VISIBLE;
+		// setting the callback temporarily to handle events occured in this constructor
+		EventDispatcher::RegisterEventCallback( [](Event& event) { return false; } );
+
+		m_WindowStyle   = WS_OVERLAPPEDWINDOW | WS_THICKFRAME | WS_SYSMENU | WS_MAXIMIZEBOX | WS_MINIMIZEBOX | WS_VISIBLE;
+		if (spec.Maximized) m_WindowStyle |= WS_MAXIMIZE;
+
 		m_WindowExStyle = WS_EX_ACCEPTFILES;
 		m_WindClassName = L"Quirk";
 
@@ -52,7 +57,7 @@ namespace Quirk {
 
 		m_WindowHandle = CreateWindowExW(
 			m_WindowExStyle,							// The window accepts drag-drop files.
-			m_WindClassName.c_str(),						// Window class
+			m_WindClassName.c_str(),					// Window class
 			spec.Title.c_str(),							// Window text
 			m_WindowStyle,								// Window style
 			spec.PosX,			spec.PosY,				// Postion of window on the screen
@@ -64,6 +69,13 @@ namespace Quirk {
 		);
 
 		QK_CORE_ASSERT(m_WindowHandle, "Failed to create Window handle!");
+
+		// in the spec PosX and PosY contains windowframe position 
+		// calculating client area position and updating in the window object
+		POINT clientOrigin = { 0, 0 };
+		ClientToScreen(m_WindowHandle, &clientOrigin);
+		window->m_PosX = clientOrigin.x;
+		window->m_PosY = clientOrigin.y;
 
 		// putting this Window pointer into created HWND
 		SetPropW(m_WindowHandle, L"wndptr", window);

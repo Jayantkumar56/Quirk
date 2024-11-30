@@ -23,7 +23,8 @@ project "Quirk-Editor"
         "../%{IncludeDir.Opengl}",
         "../%{IncludeDir.Stb_Image}",
         "../%{IncludeDir.Entt}",
-        "../%{IncludeDir.Yaml_CPP}"
+        "../%{IncludeDir.Yaml_CPP}",
+        "../%{IncludeDir.ImGuizmo}"
     }
 
     links { "Quirk" }

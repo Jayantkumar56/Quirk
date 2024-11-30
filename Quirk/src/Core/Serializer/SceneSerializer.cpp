@@ -70,7 +70,7 @@ namespace YAML {
 
 namespace Quirk {
 
-	void SceneSerializer::Serialize(const Ref<Scene>& scene, const std::wstring& filePath) {
+	void SceneSerializer::Serialize(const Ref<Scene>& scene, const std::filesystem::path& filePath) {
 		YAML::Emitter out;
 
 		out << YAML::BeginMap;
@@ -98,7 +98,7 @@ namespace Quirk {
 		outFile << out.c_str();
 	}
 
-	bool SceneSerializer::Deserialize(const Ref<Scene>& scene, const std::wstring& filePath) {
+	bool SceneSerializer::Deserialize(const Ref<Scene>& scene, const std::filesystem::path& filePath) {
 		std::ifstream fileStream(filePath);
 		std::stringstream strStream;
 

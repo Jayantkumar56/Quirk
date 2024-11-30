@@ -15,7 +15,6 @@ namespace Quirk {
 		m_SceneData.MaxNoOfTextureSlots = 32;
 		m_SceneData.SubmitedQuadCount	= 0;
 
-		RenderCommands::Init(rendererAPI);
 		RenderCommands::SetClearColor({ 0.10156f, 0.17968f, 0.20703f, 1.0f });
 		//RenderCommands::EnableFaceCulling();
 

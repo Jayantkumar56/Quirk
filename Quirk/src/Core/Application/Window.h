@@ -5,7 +5,7 @@
 #include "Platform/Windows/WindowsWindow.h"
 #endif // QK_PLATFORM_WINDOWS
 
-#include "Core/core.h"
+#include "Core/Core.h"
 #include "Core/Renderer/RendererAPI.h"
 #include "Core/Renderer/GraphicalContext.h"
 
@@ -15,21 +15,25 @@ namespace Quirk {
 		std::wstring Title = L"Untitled";
 		uint16_t	 Width; 
 		uint16_t	 Height;
-		int32_t		 PosX  = 0;
-		int32_t		 PosY  = 0;
-		bool		 VSyncOn;
+
+		// signifies position of window frame or position of client area when having custom titlebar
+		int32_t	PosX  = 0;
+		int32_t	PosY  = 0;
+		bool	VSyncOn;
+		bool	Maximized;
 	};
 
 	class Window {
 	public:
 		Window(const WindowSpecification& spec) : 
-			m_Window (spec, this ),
-			m_Title	 (spec.Title ),
-			m_Width	 (spec.Width ),
-			m_Height (spec.Height),
-			m_PosX	 (spec.PosX	 ),
-			m_PosY	 (spec.PosY	 ),
-			m_VSyncOn(spec.VSyncOn)
+			m_Title	   (spec.Title  ),
+			m_Width	   (spec.Width  ),
+			m_Height   (spec.Height ),
+			m_PosX	   (spec.PosX   ),
+			m_PosY	   (spec.PosX   ),
+			m_VSyncOn  (spec.VSyncOn),
+			m_Maximized(spec.Maximized),
+			m_Window   (spec, this    )
 		{
 		}
 
@@ -62,15 +66,6 @@ namespace Quirk {
 
 		// Getters for local member varialbes ***************
 
-		// temporary function 
-		void CreateGraphicalContext(RendererAPI::API api) {
-			m_Context = GraphicalContext::Create(api);
-			m_Context->Init(*this);
-
-			if (m_VSyncOn)	m_Context->SetVSync(1);
-			else			m_Context->SetVSync(0);
-		}
-
 		// Call this only after Rendering API is set
 		inline void SetAsCurrentContext() {
 			if (m_Context.get() == nullptr) {
@@ -97,20 +92,23 @@ namespace Quirk {
 		inline Ref<GraphicalContext> GetGraphicalContext() { return m_Context;		  }
 
 	private:
+		std::wstring m_Title;
+		uint16_t	 m_Width;
+		uint16_t	 m_Height;
+
+		// position of the client area
+		int32_t	m_PosX;						
+		int32_t	m_PosY;						
+		bool	m_VSyncOn;
+		bool	m_Maximized;
+		Ref<GraphicalContext> m_Context;
+
 		// made native window-object friend, 
 		// so the data could be modified right from the native object
 #if QK_PLATFORM_WINDOWS
 		friend class WindowsWindow;
 		WindowsWindow m_Window;
 #endif // QK_PLATFORM_WINDOWS
-
-		std::wstring m_Title;
-		uint16_t	 m_Width;
-		uint16_t	 m_Height;
-		int32_t		 m_PosX;						// TO DO: make it represent client area pos from begining. these are set to the 
-		int32_t		 m_PosY;						// position of windowframe at the start and remains that till window is moved
-		bool		 m_VSyncOn;
-		Ref<GraphicalContext> m_Context;
 	};
 
 }
