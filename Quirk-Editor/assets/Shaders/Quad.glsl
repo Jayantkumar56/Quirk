@@ -57,6 +57,41 @@ uniform sampler2D u_Textures[32];
 void main()
 {
 	o_Color = Input.Color;
-	o_Color *= texture(u_Textures[v_TextureSlot], Input.TexCoord);
+
+	switch (v_TextureSlot){
+		case 0 : o_Color  *= texture(u_Textures[0],  Input.TexCoord); break;
+		case 1 : o_Color  *= texture(u_Textures[1],  Input.TexCoord); break;
+		case 2 : o_Color  *= texture(u_Textures[2],  Input.TexCoord); break;
+		case 3 : o_Color  *= texture(u_Textures[3],  Input.TexCoord); break;
+		case 4 : o_Color  *= texture(u_Textures[4],  Input.TexCoord); break;
+		case 5 : o_Color  *= texture(u_Textures[5],  Input.TexCoord); break;
+		case 6 : o_Color  *= texture(u_Textures[6],  Input.TexCoord); break;
+		case 7 : o_Color  *= texture(u_Textures[7],  Input.TexCoord); break;
+		case 8 : o_Color  *= texture(u_Textures[8],  Input.TexCoord); break;
+		case 9 : o_Color  *= texture(u_Textures[9],  Input.TexCoord); break;
+		case 10 : o_Color *= texture(u_Textures[10], Input.TexCoord); break;
+		case 11 : o_Color *= texture(u_Textures[11], Input.TexCoord); break;
+		case 12 : o_Color *= texture(u_Textures[12], Input.TexCoord); break;
+		case 13 : o_Color *= texture(u_Textures[13], Input.TexCoord); break;
+		case 14 : o_Color *= texture(u_Textures[14], Input.TexCoord); break;
+		case 15 : o_Color *= texture(u_Textures[15], Input.TexCoord); break;
+		case 16 : o_Color *= texture(u_Textures[16], Input.TexCoord); break;
+		case 17 : o_Color *= texture(u_Textures[17], Input.TexCoord); break;
+		case 18 : o_Color *= texture(u_Textures[18], Input.TexCoord); break;
+		case 19 : o_Color *= texture(u_Textures[19], Input.TexCoord); break;
+		case 20 : o_Color *= texture(u_Textures[20], Input.TexCoord); break;
+		case 21 : o_Color *= texture(u_Textures[21], Input.TexCoord); break;
+		case 22 : o_Color *= texture(u_Textures[22], Input.TexCoord); break;
+		case 23 : o_Color *= texture(u_Textures[23], Input.TexCoord); break;
+		case 24 : o_Color *= texture(u_Textures[24], Input.TexCoord); break;
+		case 25 : o_Color *= texture(u_Textures[25], Input.TexCoord); break;
+		case 26 : o_Color *= texture(u_Textures[26], Input.TexCoord); break;
+		case 27 : o_Color *= texture(u_Textures[27], Input.TexCoord); break;
+		case 28 : o_Color *= texture(u_Textures[28], Input.TexCoord); break;
+		case 29 : o_Color *= texture(u_Textures[29], Input.TexCoord); break;
+		case 30 : o_Color *= texture(u_Textures[30], Input.TexCoord); break;
+		case 31 : o_Color *= texture(u_Textures[31], Input.TexCoord); break;
+	}
+
 	o_EntityId = v_EntityId;
 }
