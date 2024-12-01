@@ -56,8 +56,11 @@ namespace Quirk {
 		CheckAndHandleResize(scene);
 		RenderViewport(scene);
 
-		ImVec2 imagePos = ImGui::GetCursorPos();
 		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 0.0f, 0.0f });
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.0f, 0.0f, 0.0f, 0.0f)); 
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));  
+
+		ImVec2 imagePos = ImGui::GetCursorPos();
 		bool clickedOnImage = ImGui::ImageButton(
 			"viewportimage",
 			(ImTextureID)(intptr_t)m_Frame->GetColorAttachment(0),
@@ -65,6 +68,8 @@ namespace Quirk {
 			{ 0, 1 },
 			{ 1, 0 }
 		);
+
+		ImGui::PopStyleColor(2);
 		ImGui::PopStyleVar();
 
 		if (ImGui::BeginDragDropTarget()) {

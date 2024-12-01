@@ -152,7 +152,10 @@ namespace Quirk {
 			emitter << YAML::BeginMap;
 
 			emitter << YAML::Key << "Color" << YAML::Value << component.Color;
-			emitter << YAML::Key << "Texture" << YAML::Value << "";
+
+			std::string filePath = (component.Texture != nullptr) ? component.Texture->GetPath().string() : "";
+			emitter << YAML::Key << "Texture" << YAML::Value << filePath;
+
 			emitter << YAML::Key << "TillingFactor" << YAML::Value << component.TillingFactor;
 
 			emitter << YAML::EndMap;
@@ -205,6 +208,10 @@ namespace Quirk {
 
 		if(auto deserializedComponent = entityNode["SpriteRendererComponent"];  deserializedComponent) {
 			auto& component = entity.AddComponent<SpriteRendererComponent>(deserializedComponent["Color"].as<glm::vec4>());
+
+			std::filesystem::path texturefilePath = deserializedComponent["Texture"].as<std::string>();
+			if (std::filesystem::exists(texturefilePath))
+				component.Texture = Texture2D::Create(texturefilePath);
 		}
 
 		if (auto deserializedComponent = entityNode["CameraComponent"];			deserializedComponent) {

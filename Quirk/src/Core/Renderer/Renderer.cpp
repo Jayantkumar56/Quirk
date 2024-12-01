@@ -16,6 +16,7 @@ namespace Quirk {
 		m_SceneData.SubmitedQuadCount	= 0;
 
 		RenderCommands::SetClearColor({ 0.10156f, 0.17968f, 0.20703f, 1.0f });
+		RenderCommands::EnableBlending();
 		//RenderCommands::EnableFaceCulling();
 
 #ifdef _EXPERIMENTAL_3D_CODE_

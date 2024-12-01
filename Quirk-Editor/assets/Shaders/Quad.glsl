@@ -3,12 +3,14 @@
 #type Vertex
 #version 450 core
 
-layout(location = 0) in vec4 a_Position;
-layout(location = 1) in vec2 a_TextureCoord;
-layout(location = 2) in vec4 a_Color;
-layout(location = 3) in int  a_TextureSlot;
-layout(location = 4) in mat4 a_Transform;
-layout(location = 8) in int  a_EntityId;
+layout(location = 0) in vec4  a_Position;
+layout(location = 1) in float a_VertexNo;
+layout(location = 2) in vec4  a_Color;
+layout(location = 3) in int   a_TextureSlot;
+layout(location = 4) in vec4  a_TexCoordX;
+layout(location = 5) in vec4  a_TexCoordY;
+layout(location = 6) in mat4  a_Transform;
+layout(location = 10) in int  a_EntityId;
 
 uniform mat4 u_ViewProjection;
 
@@ -16,22 +18,22 @@ struct VertexOutput
 {
 	vec4 Color;
 	vec2 TexCoord;
-	int  EntityId;
 };
 
-layout (location = 0) out flat VertexOutput Output;
-layout (location = 3) out flat int v_TextureSlot;
+layout (location = 0) out VertexOutput Output;
+layout (location = 2) out flat int v_TextureSlot;
+layout (location = 3) out flat int v_EntityId;
 
 void main()
 {
 	Output.Color    = a_Color;
-	Output.TexCoord = a_TextureCoord;
-	Output.EntityId = a_EntityId;
-	v_TextureSlot   = a_TextureSlot;
+	Output.TexCoord = vec2(a_TexCoordX[int(a_VertexNo)], a_TexCoordY[int(a_VertexNo)]);
+
+	v_TextureSlot = a_TextureSlot;
+	v_EntityId    = a_EntityId;
 
 	mat4 transform = a_Transform;
-	
-	gl_Position = u_ViewProjection * transform * a_Position;
+	gl_Position    = u_ViewProjection * transform * a_Position;
 }
 
 #type Fragment
@@ -44,18 +46,17 @@ struct VertexOutput
 {
 	vec4 Color;
 	vec2 TexCoord;
-	int  EntityId;
 };
 
-layout (location = 0) in flat VertexOutput Input;
-layout (location = 3) in flat int v_TextureSlot;
+layout (location = 0) in VertexOutput Input;
+layout (location = 2) in flat int v_TextureSlot;
+layout (location = 3) in flat int v_EntityId;
 
 uniform sampler2D u_Textures[32];
 
 void main()
 {
-	vec4 texColor = Input.Color;
-	texColor  *= texture(u_Textures[v_TextureSlot], Input.TexCoord);
-	o_Color    = texColor;
-	o_EntityId = Input.EntityId;
+	o_Color = Input.Color;
+	o_Color *= texture(u_Textures[v_TextureSlot], Input.TexCoord);
+	o_EntityId = v_EntityId;
 }

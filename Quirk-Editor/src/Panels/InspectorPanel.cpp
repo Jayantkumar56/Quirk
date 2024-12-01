@@ -102,11 +102,57 @@ namespace Quirk {
 		});
 
 		DrawComponentNode<SpriteRendererComponent>("Sprite Renderer", entity, [](SpriteRendererComponent& component) {
-			ImGui::Text("Color");
-			ImGui::SameLine();
-			ImGui::PushFont(FontManager::GetFont("DragFloatValue"));
-			ImGui::ColorEdit4("##color", glm::value_ptr(component.Color));
-			ImGui::PopFont();
+			std::string texturePathStr = "No Texture";
+			if (component.Texture != nullptr) {
+				texturePathStr = component.Texture->GetPath().filename().string();
+			}
+
+			ImVec2 cellPadding = ImGui::GetStyle().CellPadding;
+			ImGui::GetStyle().CellPadding = ImVec2(10.0f, 6.0f);
+
+			if (ImGui::BeginTable("spriteproperties", 2)) {
+				ImGui::TableSetupColumn("propertiesLable", ImGuiTableColumnFlags_WidthFixed);
+				ImGui::TableSetupColumn("propertiesValue", ImGuiTableColumnFlags_NoResize);
+
+				ImGui::TableNextColumn();
+				ImGui::Text("Color");
+
+				ImGui::TableNextColumn();
+				ImGui::PushFont(FontManager::GetFont("DragFloatValue"));
+				ImGui::ColorEdit4("##color", glm::value_ptr(component.Color));
+				ImGui::PopFont();
+
+				ImGui::TableNextColumn();
+				ImGui::Text("Texture");
+
+				ImGui::TableNextColumn();
+				ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(10, ImGui::GetStyle().FramePadding.y));
+				ImGui::InputText("##texture0", (char*)texturePathStr.c_str(), texturePathStr.size(), ImGuiInputTextFlags_ReadOnly);
+				ImGui::PopStyleVar();
+
+				ImGui::SameLine();
+				if (ImGui::Button("open")) {
+					FileFilter filters[] = {
+						{L"Scene",		L"*.png"},
+						{L"All",		L"*.*"}
+					};
+
+					FileDialogSpecification fileDialogSpec;
+					fileDialogSpec.Title = L"Select Texture";
+					fileDialogSpec.FileNameLabel = L"Scene Name";
+					fileDialogSpec.Filters = filters;
+					fileDialogSpec.NoOfFilters = sizeof(filters) / sizeof(FileFilter);
+
+					std::filesystem::path filePath;
+					if (FileDialog::OpenFile(fileDialogSpec, filePath)) {
+						component.Texture = Texture2D::Create(filePath);
+					}
+				}
+
+				ImGui::EndTable();
+			}
+
+			ImGui::GetStyle().CellPadding = cellPadding;
 		});
 
 		DrawComponentNode<CameraComponent>("Camera", entity, [] (CameraComponent& component) {

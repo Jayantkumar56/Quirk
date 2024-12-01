@@ -28,6 +28,8 @@ namespace Quirk {
 		virtual inline void Clear() const = 0;
 		virtual inline void UpdateViewPort(uint32_t width, uint32_t height) const = 0;
 
+		virtual inline void EnableBlending() const = 0;
+
 		virtual inline void EnableFaceCulling() const = 0;
 		virtual inline void DisableFaceCulling() const = 0;
 

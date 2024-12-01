@@ -67,13 +67,14 @@ namespace Quirk {
 		glTextureParameteri(m_RendererId, GL_TEXTURE_WRAP_T, GL_REPEAT);
     }
 
-    OpenGLTexture2D::OpenGLTexture2D(const std::string& filePath) :
+    OpenGLTexture2D::OpenGLTexture2D(const std::filesystem::path& filePath) :
 			m_Path(filePath)
 	{
 		int width, height, channels;
+		std::string file = filePath.string();
 
 		stbi_set_flip_vertically_on_load(1);
-		stbi_uc* data = stbi_load(filePath.c_str(), &width, &height, &channels, 0);
+		stbi_uc* data = stbi_load(file.c_str(), &width, &height, &channels, 0);
 		QK_CORE_ASSERT(data, "Failed to load image!");
 		m_Width = width;
 		m_Height = height;

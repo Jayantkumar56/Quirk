@@ -36,6 +36,8 @@ namespace Quirk {
 		struct QuadInstance {
 			glm::vec4 Color;
 			int TextureSlot;
+			glm::vec4 TexCoordX;
+			glm::vec4 TexCoordY;
 			glm::mat4 Transform;
 
 			// editor-only parameter

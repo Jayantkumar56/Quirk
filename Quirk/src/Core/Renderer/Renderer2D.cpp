@@ -27,17 +27,17 @@ namespace Quirk {
 		s_Data.QuadVertexArray = VertexArray::Create();
 
 		float quadVertex[] = {
-			// Position						// Texture Coordinates
-			-0.5f, -0.5f, 0.0f,					0.0f, 0.0f,
-			 0.5f, -0.5f, 0.0f,					1.0f, 0.0f,
-			 0.5f,  0.5f, 0.0f,					1.0f, 1.0f,
-			-0.5f,  0.5f, 0.0f,					0.0f, 1.0f
+			// Position						// Vertex sl no
+			-0.5f, -0.5f, 0.0f,					0.0f,
+			 0.5f, -0.5f, 0.0f,					1.0f,
+			 0.5f,  0.5f, 0.0f,					2.0f,
+			-0.5f,  0.5f, 0.0f,					3.0f
 		};
 
 		s_Data.QuadVertexBuffer = VertexBuffer::Create(quadVertex, sizeof(quadVertex));
 		s_Data.QuadVertexBuffer->SetLayout({
 			{ ShaderDataType::Float3,  "a_Position" },
-			{ ShaderDataType::Float2,  "a_TexCoord" }
+			{ ShaderDataType::Float,   "a_VertexNo" }
 		});
 		s_Data.QuadVertexArray->AddVertexBuffer(s_Data.QuadVertexBuffer);
 
@@ -45,6 +45,8 @@ namespace Quirk {
 		s_Data.QuadInstanceBuffer->SetLayout({
 			{ ShaderDataType::Float4,	"a_Color"		},
 			{ ShaderDataType::Int,		"a_TextureSlot" },
+			{ ShaderDataType::Float4,	"a_TexCoordX"   },
+			{ ShaderDataType::Float4,	"a_TexCoordY"   },
 			{ ShaderDataType::Mat4,		"a_Transform"	},
 			{ ShaderDataType::Int,		"a_EntityId"	}
 		});
@@ -135,12 +137,38 @@ namespace Quirk {
 			ResetQuadBatch();
 		}
 
+		const SpriteRendererComponent& sprite = entity.GetComponent<SpriteRendererComponent>();
 		int texSlot = 0;
 
-		s_Data.QuadCurrentPtr->Color = entity.GetComponent<SpriteRendererComponent>().Color;
+		const Ref<Texture>& texture = sprite.Texture;
+
+		if (texture != nullptr) {
+			// iterating from texslot[1] since texslot[0] is already reserved for default white texture
+			for (uint32_t i = 1; i < s_Data.NextTextureSlotToBind; ++i) {
+				if (*texture.get() == *s_Data.TextureSlots[i].get()) {
+					texSlot = i;
+					break;
+				}
+			}
+
+			if (texSlot == 0) {
+				if (s_Data.NextTextureSlotToBind >= s_Data.MaxNoOfTextureSlots) {
+					DrawQuadBatch();
+					ResetQuadBatch();
+				}
+
+				texSlot = s_Data.NextTextureSlotToBind;
+				s_Data.TextureSlots[s_Data.NextTextureSlotToBind] = texture;
+				++s_Data.NextTextureSlotToBind;
+			}
+		}
+
+		s_Data.QuadCurrentPtr->Color = sprite.Color;
 		s_Data.QuadCurrentPtr->TextureSlot = texSlot;
+		s_Data.QuadCurrentPtr->TexCoordX = { 0.0f, 1.0f, 1.0f, 0.0f };
+		s_Data.QuadCurrentPtr->TexCoordY = { 0.0f, 0.0f, 1.0f, 1.0f };
 		s_Data.QuadCurrentPtr->Transform = entity.GetComponent<TransformComponent>().GetTransform();
-		s_Data.QuadCurrentPtr->EntityId = (int)(uint32_t)entity;
+		s_Data.QuadCurrentPtr->EntityId  = (int)(uint32_t)entity;
 
 		++s_Data.QuadCurrentPtr;
 		++s_Data.NoOfSubmitedQuads;

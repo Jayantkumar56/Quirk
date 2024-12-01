@@ -51,7 +51,9 @@ namespace Quirk {
 		ImVec2 windowSize = ImGui::GetWindowSize();
 		int noOfColumns = (int)((windowSize.x) / 112);
 
+		ImVec2 cellPadding = ImGui::GetStyle().CellPadding;
 		ImGui::GetStyle().CellPadding = ImVec2(10.0f, 8.0f);
+
 		if (ImGui::BeginTable("Propertycheckbox", noOfColumns)) {
 			for (size_t i = 0; i < m_CurrentDirectoryContent.size(); ++i) {
 				ImGui::TableNextColumn();
@@ -87,6 +89,7 @@ namespace Quirk {
 
 			ImGui::EndTable();
 		}
+		ImGui::GetStyle().CellPadding = cellPadding;
 
 		ImGui::End();
 		if (updatedCurrentDirectory) FetchCurrentDirectoryContent();

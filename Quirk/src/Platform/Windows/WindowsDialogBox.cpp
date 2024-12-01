@@ -21,7 +21,7 @@ namespace Quirk {
 			return false;
 		}
 
-		// can directly cas from FileFilter* to COMDLG_FILTERSPEC* as both are the same datatypes
+		// can directly convert from FileFilter* to COMDLG_FILTERSPEC* as both are the same datatypes
 		hr = pFileOpen->SetFileTypes(dialogSpec.NoOfFilters, (COMDLG_FILTERSPEC*)dialogSpec.Filters);
 		hr = pFileOpen->SetFileTypeIndex(0);															// Set the default filter index
 
@@ -58,7 +58,6 @@ namespace Quirk {
 			return false;
 		
 		pathOutput.assign(pszFilePath);
-		//pathOutput = std::filesystem::path(pszFilePath);
 		CoTaskMemFree(pszFilePath);
 
 		pItem->Release();
@@ -67,7 +66,6 @@ namespace Quirk {
 	}
 
 	bool WindowsFileDialog::SaveFile(const FileDialogSpecification& dialogSpec, std::filesystem::path& pathOutput) {
-		std::filesystem::path filePath;
 		IFileSaveDialog* pFileSave = NULL;
 		HRESULT hr = CoCreateInstance(CLSID_FileSaveDialog, NULL, CLSCTX_ALL, IID_IFileSaveDialog, reinterpret_cast<void**>(&pFileSave));
 
@@ -76,7 +74,7 @@ namespace Quirk {
 			return false;
 		}
 	
-		// can directly cas from FileFilter* to COMDLG_FILTERSPEC* as both are the same datatypes
+		// can directly convert from FileFilter* to COMDLG_FILTERSPEC* as both are the same datatypes
 		hr = pFileSave->SetFileTypes(dialogSpec.NoOfFilters, (COMDLG_FILTERSPEC*)dialogSpec.Filters);		
 		hr = pFileSave->SetFileTypeIndex(0);																// Set the default filter index
 
@@ -103,16 +101,16 @@ namespace Quirk {
 		IShellItem* pItem = nullptr;
 		hr = pFileSave->GetResult(&pItem);
 
-		if (SUCCEEDED(hr))
+		if (!SUCCEEDED(hr))
 			return false;
 
 		PWSTR pszFilePath;
 		hr = pItem->GetDisplayName(SIGDN_FILESYSPATH, &pszFilePath);
 
-		if (SUCCEEDED(hr))
+		if (!SUCCEEDED(hr))
 			return false;
 
-		filePath = std::filesystem::path(pszFilePath);
+		pathOutput.assign(pszFilePath);
 		CoTaskMemFree(pszFilePath);
 
 		pItem->Release();

@@ -10,12 +10,6 @@ namespace Quirk {
 	OpenGLRendererAPI::OpenGLRendererAPI() : 
 			RendererAPI(RendererAPI::API::OpenGL)
 	{
-		// TO DO: put it in a seperate function
-
-		/*glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-		glEnable(GL_DEPTH_TEST);*/
 	}
 
 	inline void OpenGLRendererAPI::SetClearColor(const glm::vec4& color) const {
@@ -38,6 +32,13 @@ namespace Quirk {
 
 	inline void OpenGLRendererAPI::UpdateViewPort(uint32_t width, uint32_t height) const {
 		glViewport(0, 0, width, height);
+	}
+
+	inline void OpenGLRendererAPI::EnableBlending() const {
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+		glEnable(GL_DEPTH_TEST);
 	}
 
 	inline void OpenGLRendererAPI::DrawIndexed(Ref<VertexArray>& vertexArray, uint32_t indicesCount) {

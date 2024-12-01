@@ -37,7 +37,7 @@ namespace Quirk{
 		~Texture() = default;
 		virtual bool operator ==(const Texture& other) const = 0;
 
-		virtual std::string GetPath() const = 0;
+		virtual std::filesystem::path GetPath() const = 0;
 		virtual uint32_t GetRendererId() const = 0;
 		virtual uint32_t GetWidth() const = 0;
 		virtual uint32_t GetHeight() const = 0;
@@ -49,7 +49,7 @@ namespace Quirk{
 	class Texture2D : public Texture{
 	public :
 		static Ref<Texture2D> Create(const TextureSpecification& spec);
-		static Ref<Texture2D> Create(const std::string& filePath);
+		static Ref<Texture2D> Create(const std::filesystem::path& filePath);
 	};
 
 	class SubTexture2D : public Texture {
@@ -65,7 +65,7 @@ namespace Quirk{
 			return m_Texture->GetRendererId() == other.GetRendererId();
 		}
 
-		virtual std::string GetPath()	 const override { return m_Texture->GetPath(); }
+		virtual std::filesystem::path GetPath()	 const override { return m_Texture->GetPath(); }
 		virtual uint32_t GetRendererId() const override { return m_Texture->GetRendererId(); }
 		virtual uint32_t GetWidth()		 const override { return m_Texture->GetWidth(); }
 		virtual uint32_t GetHeight()	 const override { return m_Texture->GetHeight(); }
