@@ -22,6 +22,7 @@ namespace Quirk {
 		const RendererStats& GetRendererStats()	const { return m_RendererStats; }
 
 	private:
+		void MenuBar(const Ref<Scene>& scene);
 		void CheckAndHandleResize(const Ref<Scene>& scene);
 		void RenderViewport(const Ref<Scene>& scene);
 		int  GetEntityIdOnClick(const ImVec2& imagePos);

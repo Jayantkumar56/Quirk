@@ -93,6 +93,10 @@ namespace Quirk {
 						if(IsImagePath(extension))
 							ImGui::SetDragDropPayload("IMAGE_PATH", &dragDropFilePathPtr, sizeof(dragDropFilePathPtr), ImGuiCond_Once);
 
+						ImGui::BeginTooltip();
+						ImGui::Image(fileIconId, { 100.0f, 100.0f }, { 0, 1 }, { 1, 0 });
+						ImGui::EndTooltip();
+
 						ImGui::EndDragDropSource();
 					}
 				}

@@ -52,13 +52,15 @@ namespace Quirk {
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 		ImGui::Begin("Scene Viewport");
 
+		MenuBar(scene);
+
 		m_IsInFocus = ImGui::IsWindowFocused();
 		CheckAndHandleResize(scene);
 		RenderViewport(scene);
 
 		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 0.0f, 0.0f });
-		ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.0f, 0.0f, 0.0f, 0.0f)); 
-		ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));  
+		ImGui::PushStyleColor(ImGuiCol_ButtonHovered,   ImVec4(0.0f, 0.0f, 0.0f, 0.0f)); 
+		ImGui::PushStyleColor(ImGuiCol_ButtonActive,    ImVec4(0.0f, 0.0f, 0.0f, 0.0f));  
 
 		ImVec2 imagePos = ImGui::GetCursorPos();
 		bool clickedOnImage = ImGui::ImageButton(
@@ -101,6 +103,10 @@ namespace Quirk {
 		ImGui::PopStyleVar();
 	}
 
+	void SceneViewportPanel::MenuBar(const Ref<Scene>& scene) {
+
+	}
+
 	void SceneViewportPanel::CheckAndHandleResize(const Ref<Scene>& scene) {
 		ImVec2 windowSize = ImGui::GetContentRegionAvail();
 
@@ -133,13 +139,13 @@ namespace Quirk {
 	}
 
 	int SceneViewportPanel::GetEntityIdOnClick(const ImVec2& imagePos) {
-		Window& window = Application::Get().GetWindow();
+		Window& window   = Application::Get().GetWindow();
 		ImVec2 windowPos = ImGui::GetWindowPos();
-		windowPos = { windowPos.x - window.GetPosX(), windowPos.y - window.GetPosY() };
-		ImVec2 mousePos = { Input::MouseCurrentX() - windowPos.x, Input::MouseCurrentY() - windowPos.y };
+		windowPos        = { windowPos.x - window.GetPosX(), windowPos.y - window.GetPosY() };
+		ImVec2 mousePos  = { Input::MouseCurrentX() - windowPos.x, Input::MouseCurrentY() - windowPos.y };
 
 		// mouse position on the image button
-		mousePos = { mousePos.x - imagePos.x, mousePos.y - imagePos.y };
+		mousePos   = { mousePos.x - imagePos.x, mousePos.y - imagePos.y };
 		// inverting the y axis for mouse coords
 		// 2 added because of slight visual error		TO DO: find this error
 		mousePos.y = m_PanelHeight - mousePos.y - 2;
