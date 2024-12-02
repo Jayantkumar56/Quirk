@@ -73,29 +73,27 @@ namespace Quirk {
 		ImGui::PopStyleVar();
 
 		if (ImGui::BeginDragDropTarget()) {
-			const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("SCENE_PATH");
-			if (payload) {
+			const ImGuiPayload* scenePayload = ImGui::AcceptDragDropPayload("SCENE_PATH");
+			if (scenePayload) {
 				scene->DestroyAllEntities();
-				SceneSerializer::Deserialize(scene, **(std::filesystem::path**)payload->Data);
+				SceneSerializer::Deserialize(scene, **(std::filesystem::path**)scenePayload->Data);
+			}
+
+			const ImGuiPayload* imagePayload = ImGui::AcceptDragDropPayload("IMAGE_PATH");
+			if (imagePayload) {
+				int entityId =GetEntityIdOnClick(imagePos);
+
+				if (entityId != -1) {
+					Entity entity((entt::entity)entityId, scene.get());
+					entity.GetComponent<SpriteRendererComponent>().Texture = Texture2D::Create(**(std::filesystem::path**)imagePayload->Data);
+				}
 			}
 
 			ImGui::EndDragDropTarget();
 		}
 
 		if (clickedOnImage && !m_ControllingCamera) {
-			Window& window = Application::Get().GetWindow();
-			ImVec2 windowPos = ImGui::GetWindowPos();
-			windowPos		 = { windowPos.x - window.GetPosX(), windowPos.y - window.GetPosY()};
-			ImVec2 mousePos  = { Input::MouseCurrentX() - windowPos.x, Input::MouseCurrentY() - windowPos.y };
-
-			// mouse position on the image button
-			mousePos = { mousePos.x - imagePos.x, mousePos.y - imagePos.y };
-			// inverting the y axis for mouse coords
-			// 2 added because of slight visual error		TO DO: find this error
-			mousePos.y = m_PanelHeight - mousePos.y - 2;
-
-			int entityId = 0;
-			m_Frame->GetColorPixelData(1, (int)mousePos.x, (int)mousePos.y, &entityId, 1);
+			int entityId = GetEntityIdOnClick(imagePos);
 			selectedEntity = (entityId == -1) ? Entity() : Entity((entt::entity)entityId, scene.get());
 		}
 
@@ -132,6 +130,23 @@ namespace Quirk {
 
 		m_Frame->Unbind();
 		m_RendererStats = Renderer2D::GetStats();
+	}
+
+	int SceneViewportPanel::GetEntityIdOnClick(const ImVec2& imagePos) {
+		Window& window = Application::Get().GetWindow();
+		ImVec2 windowPos = ImGui::GetWindowPos();
+		windowPos = { windowPos.x - window.GetPosX(), windowPos.y - window.GetPosY() };
+		ImVec2 mousePos = { Input::MouseCurrentX() - windowPos.x, Input::MouseCurrentY() - windowPos.y };
+
+		// mouse position on the image button
+		mousePos = { mousePos.x - imagePos.x, mousePos.y - imagePos.y };
+		// inverting the y axis for mouse coords
+		// 2 added because of slight visual error		TO DO: find this error
+		mousePos.y = m_PanelHeight - mousePos.y - 2;
+
+		int entityId = 0;
+		m_Frame->GetColorPixelData(1, (int)mousePos.x, (int)mousePos.y, &entityId, 1);
+		return entityId;
 	}
 
 }

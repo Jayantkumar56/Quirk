@@ -4,12 +4,12 @@ Entities:
     TagComponent:
       Tag: White Square
     TransformComponent:
-      Translation: [0, 0, 3]
+      Translation: [0, 0, 2.79999995]
       Rotation: [0, 0, 0]
       Scale: [2, 2, 1]
     SpriteRendererComponent:
       Color: [1, 1, 1, 1]
-      Texture: D:\Dev\Quirk\Quirk-Editor\assets\Images\file.png
+      Texture: assets\Images\file.png
       TillingFactor: 1
   - Entity: 7340421662027447164
     TagComponent:
@@ -20,7 +20,7 @@ Entities:
       Scale: [5.69999981, 3.5, 1]
     SpriteRendererComponent:
       Color: [1, 1, 1, 1]
-      Texture: D:\Dev\Quirk\Quirk-Editor\assets\Images\wallpaperflare.com_wallpaper.jpg
+      Texture: assets\Images\wallpaperflare.com_wallpaper.jpg
       TillingFactor: 1
   - Entity: 13239927022092756028
     TagComponent:
@@ -32,7 +32,7 @@ Entities:
     CameraComponent:
       Camera:
         ProjectionType: Orthographic
-        PerspectiveFOV: 1.71569026e+19
+        PerspectiveFOV: 1.84896826e+26
         PerspectiveNear: 0.00999999978
         PerspectiveFar: 1000
         OrthographicSize: 10
@@ -50,7 +50,7 @@ Entities:
     CameraComponent:
       Camera:
         ProjectionType: Orthographic
-        PerspectiveFOV: 1.71569026e+19
+        PerspectiveFOV: 1.84896826e+26
         PerspectiveNear: 0.00999999978
         PerspectiveFar: 1000
         OrthographicSize: 10

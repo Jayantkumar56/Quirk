@@ -24,6 +24,7 @@ namespace Quirk {
 	private:
 		void CheckAndHandleResize(const Ref<Scene>& scene);
 		void RenderViewport(const Ref<Scene>& scene);
+		int  GetEntityIdOnClick(const ImVec2& imagePos);
 
 	private:
 		uint16_t		 m_PanelWidth, m_PanelHeight;

@@ -6,6 +6,13 @@
 
 namespace Quirk {
 
+	static bool IsImagePath(const std::string& extension) {
+		bool isImage = false;
+		isImage = isImage || extension == ".png" || extension == ".Png";
+		isImage = isImage || extension == ".JPG" || extension == ".jpg" || extension == ".JPEG" || extension == ".jpeg";
+		return isImage;
+	}
+
 	void ContentBrowserPanel::OnImguiUiUpdate() {
 		bool updatedCurrentDirectory = false;
 
@@ -79,7 +86,13 @@ namespace Quirk {
 						const std::filesystem::path* dragDropFilePathPtr = &m_CurrentDirectoryContent[i];
 						uint32_t dummydata = 3;
 
-						ImGui::SetDragDropPayload("SCENE_PATH", &dragDropFilePathPtr, sizeof(dragDropFilePathPtr), ImGuiCond_Once);
+						std::string extension = m_CurrentDirectoryContent[i].extension().string();
+
+						if(extension == ".yaml")
+							ImGui::SetDragDropPayload("SCENE_PATH", &dragDropFilePathPtr, sizeof(dragDropFilePathPtr), ImGuiCond_Once);
+						if(IsImagePath(extension))
+							ImGui::SetDragDropPayload("IMAGE_PATH", &dragDropFilePathPtr, sizeof(dragDropFilePathPtr), ImGuiCond_Once);
+
 						ImGui::EndDragDropSource();
 					}
 				}

@@ -101,7 +101,7 @@ namespace Quirk {
 			ImguiUI::Utility::DrawFloat3("Scale", glm::value_ptr(component.Scale), 1.0f, 0.1f, size.x, lableFont, buttonFont, valuesFont);
 		});
 
-		DrawComponentNode<SpriteRendererComponent>("Sprite Renderer", entity, [](SpriteRendererComponent& component) {
+		DrawComponentNode<SpriteRendererComponent>("Sprite Renderer", entity, [&](SpriteRendererComponent& component) {
 			std::string texturePathStr = "No Texture";
 			if (component.Texture != nullptr) {
 				texturePathStr = component.Texture->GetPath().filename().string();
@@ -115,7 +115,9 @@ namespace Quirk {
 				ImGui::TableSetupColumn("propertiesValue", ImGuiTableColumnFlags_NoResize);
 
 				ImGui::TableNextColumn();
+				ImGui::PushFont(FontManager::GetFont("PropertyLabel"));
 				ImGui::Text("Color");
+				ImGui::PopFont();
 
 				ImGui::TableNextColumn();
 				ImGui::PushFont(FontManager::GetFont("DragFloatValue"));
@@ -123,23 +125,38 @@ namespace Quirk {
 				ImGui::PopFont();
 
 				ImGui::TableNextColumn();
+				float columnHeight = 28.0f;
+				float textHeight = ImGui::CalcTextSize("Tp").y;
+				float offset = (columnHeight - textHeight) * 0.5f;
+				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + offset);
+				ImGui::PushFont(FontManager::GetFont("PropertyLabel"));
 				ImGui::Text("Texture");
+				ImGui::PopFont();
 
 				ImGui::TableNextColumn();
-				ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(10, ImGui::GetStyle().FramePadding.y));
+				ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(10, offset));
 				ImGui::InputText("##texture0", (char*)texturePathStr.c_str(), texturePathStr.size(), ImGuiInputTextFlags_ReadOnly);
 				ImGui::PopStyleVar();
 
-				ImGui::SameLine();
-				if (ImGui::Button("open")) {
+				if (ImGui::BeginDragDropTarget()) {
+					const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("IMAGE_PATH");
+					if (payload) {
+						component.Texture = Texture2D::Create(**(std::filesystem::path**)payload->Data);
+					}
+
+					ImGui::EndDragDropTarget();
+				}
+
+				ImGui::SameLine(0.0f, 0.0f);
+				ImTextureID uploadImageIconId = (ImTextureID)(intptr_t)m_UploadImage->GetRendererId();
+				if (ImGui::ImageButton("uploadImageButton", uploadImageIconId, { columnHeight -6.0f, columnHeight -6.0f }, { 0, 1 }, { 1, 0 })) {
 					FileFilter filters[] = {
-						{L"Scene",		L"*.png"},
-						{L"All",		L"*.*"}
+						{L"image",		L"*.png;*.JPG;*.JPEG*.jpg;*.jpeg"}
 					};
 
 					FileDialogSpecification fileDialogSpec;
 					fileDialogSpec.Title = L"Select Texture";
-					fileDialogSpec.FileNameLabel = L"Scene Name";
+					fileDialogSpec.FileNameLabel = L"Texture Name";
 					fileDialogSpec.Filters = filters;
 					fileDialogSpec.NoOfFilters = sizeof(filters) / sizeof(FileFilter);
 
@@ -147,6 +164,25 @@ namespace Quirk {
 					if (FileDialog::OpenFile(fileDialogSpec, filePath)) {
 						component.Texture = Texture2D::Create(filePath);
 					}
+				}
+				if (ImGui::IsItemHovered()) {
+					ImGui::SetTooltip("Select Image");
+				}
+
+				ImGui::SameLine(0.0f, 0.0f);
+				ImTextureID removeImageIconId = (ImTextureID)(intptr_t)m_RemoveImage->GetRendererId();
+				ImGui::ImageButton("removeImageButton", removeImageIconId, { columnHeight - 6.0f, columnHeight - 6.0f }, { 0, 1 }, { 1, 0 });
+				if (ImGui::IsItemHovered()) {
+					ImGui::SetTooltip("Remove Image");
+				}
+
+				if (ImGui::BeginPopupContextItem(NULL, ImGuiPopupFlags_MouseButtonLeft)) {
+					ImGui::Text("Remove Image?");
+
+					if (ImGui::Button("Yes")) { component.Texture = nullptr; ImGui::CloseCurrentPopup(); }
+					if (ImGui::Button("No")) ImGui::CloseCurrentPopup();
+
+					ImGui::EndPopup();
 				}
 
 				ImGui::EndTable();

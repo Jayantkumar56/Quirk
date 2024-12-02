@@ -7,8 +7,8 @@ namespace Quirk { namespace ImguiUI { namespace Utility {
 
 	void TextCentered(const char* text) {
 		float cell_width = ImGui::GetContentRegionAvail().x;
-		ImVec2 text_size = ImGui::CalcTextSize(text);
-		float offset	 = (cell_width - text_size.x) * 0.5f;
+		ImVec2 textSize  = ImGui::CalcTextSize(text);
+		float offset	 = (cell_width - textSize.x) * 0.5f;
 
 		ImGui::SetCursorPosX(ImGui::GetCursorPosX() + offset);
 		ImGui::Text(text);
@@ -16,8 +16,8 @@ namespace Quirk { namespace ImguiUI { namespace Utility {
 
 	void TextWrappedCentered(const char* text) {
 		float cell_width = ImGui::GetContentRegionAvail().x;
-		ImVec2 text_size = ImGui::CalcTextSize(text);
-		float offset     = (cell_width - text_size.x) * 0.5f;
+		ImVec2 textSize  = ImGui::CalcTextSize(text);
+		float offset     = (cell_width - textSize.x) * 0.5f;
 
 		if(offset > 0) ImGui::SetCursorPosX(ImGui::GetCursorPosX() + offset);
 		ImGui::TextWrapped(text);
