@@ -51,8 +51,6 @@ namespace Quirk {
 		operator uint32_t()		const { return (uint32_t)m_EntityHandle; }
 		operator Scene* ()		const { return m_Scene; }
 
-		const std::string& GetName() { return GetComponent<TagComponent>().Tag; }
-
 		bool operator==(const Entity& other) const {
 			return m_EntityHandle == other.m_EntityHandle && m_Scene == other.m_Scene;
 		}
@@ -61,9 +59,12 @@ namespace Quirk {
 			return !(*this == other);
 		}
 
+		inline std::string& GetName() { return GetComponent<TagComponent>().Tag; }
+		inline bool IsInvalidEntity() { return m_Scene != NULL || m_EntityHandle == entt::null; }
+
 	private:
-		entt::entity m_EntityHandle;
-		Scene* m_Scene = NULL;
+		entt::entity m_EntityHandle = entt::null;
+		Scene* m_Scene = nullptr;
 	};
 
 }

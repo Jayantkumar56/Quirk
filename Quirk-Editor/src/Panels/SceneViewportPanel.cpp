@@ -9,13 +9,16 @@
 namespace Quirk {
 
 	SceneViewportPanel::SceneViewportPanel(uint16_t width, uint16_t height) :
+			m_PlayButtonIcon   (Texture2D::Create("assets/Images/play.png")),
+			m_PauseButtonIcon  (Texture2D::Create("assets/Images/pause.png")),
 			m_PanelWidth	   (width),
 			m_PanelHeight	   (height),
 			m_Frame			   (FrameBuffer::Create({ m_PanelWidth, m_PanelHeight })),
 			m_RendererStats	   ({ 0, 0 }),
 			m_IsInFocus		   (false),
 			m_ControllingCamera(false),
-			m_Camera		   (45.0f, (float)width / (float)height, 1.0f, 100.0f)
+			m_Camera		   (45.0f, (float)width / (float)height, 1.0f, 100.0f),
+		    m_SceneState	   (SceneState::Edit)
 	{
 		RenderCommands::UpdateViewPort(m_PanelWidth, m_PanelHeight);
 		m_Frame->SetAttachments({
@@ -26,33 +29,30 @@ namespace Quirk {
 	}
 
 	bool SceneViewportPanel::OnEvent(Event& event) {
-		if (!m_IsInFocus) {
-			return false;
+		if (m_IsInFocus && m_SceneState == SceneState::Edit) {
+			return m_Camera.OnEvent(event);
 		}
-
-		m_Camera.OnEvent(event);
 
 		return false;
 	}
 
 	void SceneViewportPanel::OnUpdate(const Ref<Scene>& scene) {
-		if (!m_IsInFocus) {
-			return;
-		}
+		if (m_IsInFocus && m_SceneState == SceneState::Edit)
+			m_ControllingCamera = m_Camera.OnUpdate();
 
-		m_ControllingCamera = m_Camera.OnUpdate();
-		scene->OnUpdate();
+		if(m_SceneState == SceneState::Play)
+			scene->OnUpdate();
 	}
 
 	void SceneViewportPanel::OnImguiUiUpdate(Ref<Scene>& scene, Entity& selectedEntity) {
+		MenuBar(scene);
+
 		ImGuiWindowClass window_class;
 		window_class.DockNodeFlagsOverrideSet = ImGuiDockNodeFlags_NoTabBar;
 		ImGui::SetNextWindowClass(&window_class);
 
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 		ImGui::Begin("Scene Viewport");
-
-		MenuBar(scene);
 
 		m_IsInFocus = ImGui::IsWindowFocused();
 		CheckAndHandleResize(scene);
@@ -74,29 +74,31 @@ namespace Quirk {
 		ImGui::PopStyleColor(2);
 		ImGui::PopStyleVar();
 
-		if (ImGui::BeginDragDropTarget()) {
-			const ImGuiPayload* scenePayload = ImGui::AcceptDragDropPayload("SCENE_PATH");
-			if (scenePayload) {
-				scene->DestroyAllEntities();
-				SceneSerializer::Deserialize(scene, **(std::filesystem::path**)scenePayload->Data);
-			}
-
-			const ImGuiPayload* imagePayload = ImGui::AcceptDragDropPayload("IMAGE_PATH");
-			if (imagePayload) {
-				int entityId =GetEntityIdOnClick(imagePos);
-
-				if (entityId != -1) {
-					Entity entity((entt::entity)entityId, scene.get());
-					entity.GetComponent<SpriteRendererComponent>().Texture = Texture2D::Create(**(std::filesystem::path**)imagePayload->Data);
+		if (m_SceneState == SceneState::Edit) {
+			if (ImGui::BeginDragDropTarget()) {
+				const ImGuiPayload* scenePayload = ImGui::AcceptDragDropPayload("SCENE_PATH");
+				if (scenePayload) {
+					scene->DestroyAllEntities();
+					SceneSerializer::Deserialize(scene, **(std::filesystem::path**)scenePayload->Data);
 				}
+
+				const ImGuiPayload* imagePayload = ImGui::AcceptDragDropPayload("IMAGE_PATH");
+				if (imagePayload) {
+					int entityId =GetEntityIdOnClick(imagePos);
+
+					if (entityId != -1) {
+						Entity entity((entt::entity)entityId, scene.get());
+						entity.GetComponent<SpriteRendererComponent>().Texture = Texture2D::Create(**(std::filesystem::path**)imagePayload->Data);
+					}
+				}
+
+				ImGui::EndDragDropTarget();
 			}
 
-			ImGui::EndDragDropTarget();
-		}
-
-		if (clickedOnImage && !m_ControllingCamera) {
-			int entityId = GetEntityIdOnClick(imagePos);
-			selectedEntity = (entityId == -1) ? Entity() : Entity((entt::entity)entityId, scene.get());
+			if (clickedOnImage && !m_ControllingCamera) {
+				int entityId   = GetEntityIdOnClick(imagePos);
+				selectedEntity = (entityId == -1) ? Entity() : Entity((entt::entity)entityId, scene.get());
+			}
 		}
 
 		ImGui::End();
@@ -104,7 +106,29 @@ namespace Quirk {
 	}
 
 	void SceneViewportPanel::MenuBar(const Ref<Scene>& scene) {
+		ImGuiWindowClass window_class;
+		window_class.DockNodeFlagsOverrideSet = ImGuiDockNodeFlags_NoTabBar;
+		ImGui::SetNextWindowClass(&window_class);
 
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+		ImGuiWindowFlags flags = ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoDecoration;
+		ImGui::Begin("Scene Viewport MenuBar", NULL, flags);
+
+		ImTextureID playButtonIconId = (ImTextureID)(intptr_t)m_PlayButtonIcon->GetRendererId();
+		if (m_SceneState == SceneState::Play)
+			playButtonIconId = (ImTextureID)(intptr_t)m_PauseButtonIcon->GetRendererId();
+
+		float buttonHeight = ImGui::GetContentRegionAvail().y - 4.0f;
+		if (ImGui::ImageButton("playButton", playButtonIconId, { buttonHeight, buttonHeight }, { 0, 1 }, { 1, 0 })) {
+			// on click transition from one state to other (from edit to play)
+			switch (m_SceneState) {
+				case Quirk::SceneState::Edit: OnScenePlay(); break;
+				case Quirk::SceneState::Play: OnSceneEdit(); break;
+			}
+		}
+
+		ImGui::End();
+		ImGui::PopStyleVar();
 	}
 
 	void SceneViewportPanel::CheckAndHandleResize(const Ref<Scene>& scene) {
@@ -132,7 +156,11 @@ namespace Quirk {
 		m_Frame->ClearAttachments();
 
 		Renderer2D::ResetStats();
-		scene->RenderScene(m_Camera.GetProjectionView());
+
+		switch (m_SceneState) {
+			case Quirk::SceneState::Edit: scene->RenderSceneEditor(m_Camera.GetProjectionView()); break;
+			case Quirk::SceneState::Play: scene->RenderSceneRuntime(); break;
+		}
 
 		m_Frame->Unbind();
 		m_RendererStats = Renderer2D::GetStats();
@@ -153,6 +181,14 @@ namespace Quirk {
 		int entityId = 0;
 		m_Frame->GetColorPixelData(1, (int)mousePos.x, (int)mousePos.y, &entityId, 1);
 		return entityId;
+	}
+
+	void SceneViewportPanel::OnSceneEdit() {
+		m_SceneState = SceneState::Edit;
+	}
+
+	void SceneViewportPanel::OnScenePlay() {
+		m_SceneState = SceneState::Play;
 	}
 
 }

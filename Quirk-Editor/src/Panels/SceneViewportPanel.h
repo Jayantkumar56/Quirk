@@ -7,6 +7,10 @@
 
 namespace Quirk {
 
+	enum class SceneState {
+		Edit = 0, Play
+	};
+
 	class SceneViewportPanel {
 	public:
 		SceneViewportPanel(uint16_t width = 1, uint16_t height = 1);
@@ -27,13 +31,19 @@ namespace Quirk {
 		void RenderViewport(const Ref<Scene>& scene);
 		int  GetEntityIdOnClick(const ImVec2& imagePos);
 
+		void OnSceneEdit();
+		void OnScenePlay();
+
 	private:
+		Ref<Texture2D>   m_PlayButtonIcon;
+		Ref<Texture2D>   m_PauseButtonIcon;
 		uint16_t		 m_PanelWidth, m_PanelHeight;
 		bool			 m_IsInFocus;
 		Ref<FrameBuffer> m_Frame;
 		RendererStats	 m_RendererStats;
 		bool			 m_ControllingCamera;
 		EditorCamera	 m_Camera;
+		SceneState		 m_SceneState;
 	};
 
 }

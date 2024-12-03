@@ -206,7 +206,7 @@ namespace Quirk {
 
 				ImGui::TableNextColumn();
 
-				ImGui::Checkbox("##isPrimaryCamera", &component.Primary);
+				ImGui::Checkbox("##isPrimaryCamera", &component.IsPrimary);
 				ImGui::Checkbox("##isFixedRatio", &component.FixedAspectRatio);
 
 				ImGui::EndTable();

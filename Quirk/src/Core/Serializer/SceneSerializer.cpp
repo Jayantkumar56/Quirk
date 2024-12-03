@@ -186,7 +186,7 @@ namespace Quirk {
 
 			emitter << YAML::EndMap;			// Camera
 
-			emitter << YAML::Key << "Primary" << YAML::Value << component.Primary;
+			emitter << YAML::Key << "Primary" << YAML::Value << component.IsPrimary;
 			emitter << YAML::Key << "FixedAspectRatio" << YAML::Value << component.FixedAspectRatio;
 
 			emitter << YAML::EndMap;
@@ -225,7 +225,8 @@ namespace Quirk {
 			if (deserializedCamera["ProjectionType"].as<std::string>() == "Orthographic")
 				component.Camera.SetProjectionType(SceneCamera::ProjectionType::Orthographic);
 
-			component.Camera.SetPerspectiveVerticalFOV(deserializedCamera["PerspectiveFOV"].as<float>());
+			float fov = glm::radians(deserializedCamera["PerspectiveFOV"].as<float>());
+			component.Camera.SetPerspectiveVerticalFOV(fov);
 			component.Camera.SetPerspectiveNearClip(deserializedCamera["PerspectiveNear"].as<float>());
 			component.Camera.SetPerspectiveFarClip(deserializedCamera["PerspectiveFar"].as<float>());
 
@@ -234,7 +235,7 @@ namespace Quirk {
 			component.Camera.SetOrthographicFarClip(deserializedCamera["OrthographicFar"].as<float>());
 			//		Camera Deserialization
 
-			component.Primary = deserializedComponent["Primary"].as<bool>();
+			component.IsPrimary = deserializedComponent["Primary"].as<bool>();
 			component.FixedAspectRatio = deserializedComponent["FixedAspectRatio"].as<bool>();
 		}
 	}

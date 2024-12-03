@@ -35,8 +35,8 @@ namespace Quirk {
 	// LaunchApp() must be defined in the application
 	// Create app object inside this function and call Run method
 	void LaunchApp() {
-		QuirkEditorApp* app = new QuirkEditorApp();
-		app->Run();
+		QuirkEditorApp app;
+		app.Run();
 	}
 
 }

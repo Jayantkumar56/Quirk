@@ -42,8 +42,30 @@ namespace Quirk {
 		});
 	}
 
-	void Scene::RenderScene(const glm::mat4& projectionView) {
+	void Scene::RenderSceneEditor(const glm::mat4& projectionView) {
 		Renderer2D::BeginScene(projectionView);
+
+		auto renderables = m_Registry.view<TransformComponent, SpriteRendererComponent>();
+		for (auto entity : renderables) {
+			Renderer2D::SubmitQuadEntity({ entity, this });
+		}
+
+		Renderer2D::EndScene();
+	}
+
+	void Scene::RenderSceneRuntime() {
+		Entity primaryCamera = GetPrimaryCameraEntity();
+
+		if (!primaryCamera.IsInvalidEntity()) {
+			QK_CORE_WARN("No primary camera exist in the scene");
+			return;
+		}
+
+
+		const auto& projection	   = primaryCamera.GetComponent<CameraComponent>().Camera.GetProjection();
+		const auto cameraTransform = glm::inverse(primaryCamera.GetComponent<TransformComponent>().GetTransform());
+
+		Renderer2D::BeginScene(projection * cameraTransform);
 
 		auto renderables = m_Registry.view<TransformComponent, SpriteRendererComponent>();
 		for (auto entity : renderables) {
@@ -74,7 +96,7 @@ namespace Quirk {
 
 		for (auto entity : view) {
 			const auto& camera = view.get<CameraComponent>(entity);
-			if (camera.Primary)
+			if (camera.IsPrimary)
 				return Entity{ entity, this };
 		}
 

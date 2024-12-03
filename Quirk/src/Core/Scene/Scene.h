@@ -25,7 +25,10 @@ namespace Quirk {
 		inline void DestroyAllEntities() { m_Registry.clear(); }
 
 		void OnUpdate();
-		void RenderScene(const glm::mat4& projectionView);
+
+		void RenderSceneEditor(const glm::mat4& projectionView);
+		void RenderSceneRuntime();
+
 		void OnViewportResize(uint32_t width, uint32_t height);
 
 		Entity FindEntityByName(std::string_view name);
