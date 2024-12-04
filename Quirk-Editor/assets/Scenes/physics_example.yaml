@@ -1,0 +1,95 @@
+Scene: New Scene
+Entities:
+  - Entity: 2586070166929164501
+    TagComponent:
+      Tag: Square2
+    TransformComponent:
+      Translation: [2.90275621, 5, 0]
+      Rotation: [0, 0, 0.52883476]
+      Scale: [1, 1, 1]
+    SpriteRendererComponent:
+      Color: [1, 0.379746795, 0, 1]
+      Texture: ""
+      TillingFactor: 1
+    RigidBody2DComponent:
+      BodyType: Dynamic
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Offset: [0, 0]
+      Size: [0.5, 0.5]
+      Density: 1
+      Friction: 0.5
+      Restitution: 0.5
+      RestitutionThreshold: 0.5
+    SpriteRendererComponent:
+      Color: [1, 0.379746795, 0, 1]
+      Texture: ""
+      TillingFactor: 1
+  - Entity: 4708473991130777913
+    TagComponent:
+      Tag: Ground
+    TransformComponent:
+      Translation: [0, -1.89999998, 0]
+      Rotation: [0, 0, 0]
+      Scale: [16.2999992, 1, 1]
+    SpriteRendererComponent:
+      Color: [0.528938591, 0.856540084, 0.0722818747, 1]
+      Texture: ""
+      TillingFactor: 1
+    RigidBody2DComponent:
+      BodyType: Static
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Offset: [0, 0]
+      Size: [0.5, 0.5]
+      Density: 1
+      Friction: 0.5
+      Restitution: 0
+      RestitutionThreshold: 0.5
+    SpriteRendererComponent:
+      Color: [0.528938591, 0.856540084, 0.0722818747, 1]
+      Texture: ""
+      TillingFactor: 1
+  - Entity: 12903024316024072331
+    TagComponent:
+      Tag: Square
+    TransformComponent:
+      Translation: [0, 5.30000019, 0]
+      Rotation: [0, 0, 0.146607652]
+      Scale: [1, 1, 1]
+    SpriteRendererComponent:
+      Color: [0.991561174, 0.502056301, 0, 1]
+      Texture: ""
+      TillingFactor: 1
+    RigidBody2DComponent:
+      BodyType: Dynamic
+      FixedRotation: false
+    BoxCollider2DComponent:
+      Offset: [0, 0]
+      Size: [0.5, 0.5]
+      Density: 1
+      Friction: 0.5
+      Restitution: 0.400000006
+      RestitutionThreshold: 0.5
+    SpriteRendererComponent:
+      Color: [0.991561174, 0.502056301, 0, 1]
+      Texture: ""
+      TillingFactor: 1
+  - Entity: 8944925420813429458
+    TagComponent:
+      Tag: Camera
+    TransformComponent:
+      Translation: [0, 0, 27.7000008]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    CameraComponent:
+      Camera:
+        ProjectionType: Perspective
+        PerspectiveFOV: 45
+        PerspectiveNear: 0.00999999978
+        PerspectiveFar: 1000
+        OrthographicSize: 10
+        OrthographicNear: -1
+        OrthographicFar: 100
+      Primary: true
+      FixedAspectRatio: false

@@ -60,7 +60,7 @@ namespace Quirk {
 		}
 
 		inline std::string& GetName() { return GetComponent<TagComponent>().Tag; }
-		inline bool IsInvalidEntity() { return m_Scene != NULL || m_EntityHandle == entt::null; }
+		inline bool IsInvalidEntity() { return m_Scene == NULL || m_EntityHandle == entt::null; }
 
 	private:
 		entt::entity m_EntityHandle = entt::null;

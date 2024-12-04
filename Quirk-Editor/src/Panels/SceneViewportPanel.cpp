@@ -122,8 +122,8 @@ namespace Quirk {
 		if (ImGui::ImageButton("playButton", playButtonIconId, { buttonHeight, buttonHeight }, { 0, 1 }, { 1, 0 })) {
 			// on click transition from one state to other (from edit to play)
 			switch (m_SceneState) {
-				case Quirk::SceneState::Edit: OnScenePlay(); break;
-				case Quirk::SceneState::Play: OnSceneEdit(); break;
+				case Quirk::SceneState::Edit: OnScenePlay(scene); break;
+				case Quirk::SceneState::Play: OnSceneEdit(scene); break;
 			}
 		}
 
@@ -183,12 +183,14 @@ namespace Quirk {
 		return entityId;
 	}
 
-	void SceneViewportPanel::OnSceneEdit() {
+	void SceneViewportPanel::OnSceneEdit(const Ref<Scene>& scene) {
 		m_SceneState = SceneState::Edit;
+		scene->OnRuntimeStop();
 	}
 
-	void SceneViewportPanel::OnScenePlay() {
+	void SceneViewportPanel::OnScenePlay(const Ref<Scene>& scene) {
 		m_SceneState = SceneState::Play;
+		scene->OnRuntimeStart();
 	}
 
 }

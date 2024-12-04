@@ -7,6 +7,8 @@
 
 namespace Quirk { namespace ImguiUI { namespace Utility {
 	
+	void Text(const char* text, ImFont* font);
+
 	void TextCentered(const char* text);
 
 	void TextWrappedCentered(const char* text);

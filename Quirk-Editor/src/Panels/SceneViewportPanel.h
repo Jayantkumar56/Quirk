@@ -31,8 +31,8 @@ namespace Quirk {
 		void RenderViewport(const Ref<Scene>& scene);
 		int  GetEntityIdOnClick(const ImVec2& imagePos);
 
-		void OnSceneEdit();
-		void OnScenePlay();
+		void OnSceneEdit(const Ref<Scene>& scene);
+		void OnScenePlay(const Ref<Scene>& scene);
 
 	private:
 		Ref<Texture2D>   m_PlayButtonIcon;

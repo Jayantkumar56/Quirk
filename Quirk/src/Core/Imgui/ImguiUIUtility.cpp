@@ -5,6 +5,13 @@
 
 namespace Quirk { namespace ImguiUI { namespace Utility {
 
+	void Text(const char* text, ImFont* font) {
+		ImGui::AlignTextToFramePadding();
+		ImGui::PushFont(font);
+		ImGui::Text(text);
+		ImGui::PopFont();
+	}
+
 	void TextCentered(const char* text) {
 		float cell_width = ImGui::GetContentRegionAvail().x;
 		ImVec2 textSize  = ImGui::CalcTextSize(text);

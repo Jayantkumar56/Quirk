@@ -18,7 +18,6 @@ namespace Quirk {
 		}
 
 		if (ImGui::BeginPopupContextWindow(0, ImGuiPopupFlags_MouseButtonRight | ImGuiPopupFlags_NoOpenOverItems)) {
-
 			if (ImGui::MenuItem("Add Empty Entity")) {
 				scene->CreateEntity();
 			}
@@ -80,7 +79,7 @@ namespace Quirk {
 		if (openAddComponentMenu) { ImGui::OpenPopup("AddComponentsMenu"); }
 		if (ImGui::BeginPopup("AddComponentsMenu")) {
 			ComponentsIterator::Iterate([&entity] <typename T> (const std::string& componentName) -> void {
-				if (ImGui::MenuItem(componentName.c_str()) && !entity.HasComponent<T>()) {
+				if (!entity.HasComponent<T>() && ImGui::MenuItem(componentName.c_str())) {
 					entity.AddComponent<T>();
 				}
 			});
@@ -89,13 +88,10 @@ namespace Quirk {
 		}
 
 		if (entity == selectedEntity) { ImGui::PushStyleColor(ImGuiCol_Text, Theme::GetColor(ColorName::DarkText)); }
-		if (ImGui::Button("x", { lineHeight, lineHeight })) {
-			ImGui::OpenPopup("RemoveEntityOption");
-		}
+		bool buttonClicked = ImGui::Button("x", { lineHeight, lineHeight });
 		if (entity == selectedEntity) { ImGui::PopStyleColor(); }
-		bool buttonClicked = ImGui::IsItemClicked();
 
-		if (ImGui::BeginPopup("RemoveEntityOption")) {
+		if (ImGui::BeginPopupContextItem(NULL, ImGuiPopupFlags_MouseButtonLeft)) {
 			if (ImGui::MenuItem("Remove Entity"))
 				shouldDeleteEntity = true;
 

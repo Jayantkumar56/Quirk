@@ -7,6 +7,8 @@
 
 #include "entt.hpp"
 
+struct b2WorldId;
+
 namespace Quirk {
 
 	class Entity;
@@ -25,6 +27,9 @@ namespace Quirk {
 		inline void DestroyAllEntities() { m_Registry.clear(); }
 
 		void OnUpdate();
+
+		void OnRuntimeStart();
+		void OnRuntimeStop();
 
 		void RenderSceneEditor(const glm::mat4& projectionView);
 		void RenderSceneRuntime();
@@ -53,6 +58,7 @@ namespace Quirk {
 	private:
 		entt::registry m_Registry;
 		uint16_t m_ViewportWidth, m_ViewportHeight;
+		b2WorldId* m_PhysicsWorld = nullptr;
 	};
 
 }
