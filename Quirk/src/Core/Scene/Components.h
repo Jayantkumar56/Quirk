@@ -2,15 +2,13 @@
 
 #pragma once
 
-#include "Core/core.h"
+#include "Core/Core.h"
 #include "Core/Scene/SceneCamera.h"
 #include "Core/Renderer/Texture.h"
 #include "Core/Utility/UUID.h"
 
-#include <string>
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
-#define GLM_ENABLE_EXPERIMENTAL
 #include "glm/gtx/quaternion.hpp"
 
 
@@ -34,9 +32,9 @@ namespace Quirk {
 	};
 
 	struct TransformComponent {
-		glm::vec3 Translation = { 0.0f, 0.0f, 0.0f };
-		glm::vec3 Rotation = { 0.0f, 0.0f, 0.0f };
-		glm::vec3 Scale = { 1.0f, 1.0f, 1.0f };
+		glm::vec3 Translation { 0.0f, 0.0f, 0.0f };
+		glm::vec3 Rotation    { 0.0f, 0.0f, 0.0f };
+		glm::vec3 Scale       { 1.0f, 1.0f, 1.0f };
 
 		TransformComponent() = default;
 		TransformComponent(const TransformComponent&) = default;
@@ -92,12 +90,13 @@ namespace Quirk {
 				scriptComponent->Instance = nullptr;
 			};
 
-			OnCreateFunction  = [](ScriptableEntity* script) { ((T*)script)->OnCreate(); };
-
+			OnCreateFunction  = [](ScriptableEntity* script) { ((T*)script)->OnCreate();  };
 			OnDestroyFunction = [](ScriptableEntity* script) { ((T*)script)->OnDestroy(); };
-
-			OnUpdateFunction  = [](ScriptableEntity* script) { ((T*)script)->OnUpdate(); };
+			OnUpdateFunction  = [](ScriptableEntity* script) { ((T*)script)->OnUpdate();  };
 		}
+
+		NativeScriptComponent() = default;
+		NativeScriptComponent(const NativeScriptComponent&) = default;
 	};
 
 	struct RigidBody2DComponent {
@@ -129,17 +128,39 @@ namespace Quirk {
 		BoxCollider2DComponent(const BoxCollider2DComponent&) = default;
 	};
 
-	class ComponentsIterator {
+	// ComponentTypes::Identifiers    includes components which identifies an entity (UUIDComponent, TagComponent for now)
+	// ComponentTypes::All		      includes all components which could be used by an entity
+	// ComponentTypes::NonIdentifiers includes all components except identifier components
+	enum class ComponentTypes { All, Identifiers, NonIdentifiers };
+
+	class ComponentTypesIterator {
 	public:
-		template<typename function>
-		static inline void Iterate(function fun) {	
-			fun.operator() < TagComponent > ("Tag");
-			fun.operator() < TransformComponent > ("Transform");
-			fun.operator() < SpriteRendererComponent > ("Sprite Renderer");
-			fun.operator() < CameraComponent > ("Camera");
-			fun.operator() < NativeScriptComponent > ("Native Script");
-			fun.operator() < RigidBody2DComponent > ("RigidBody2D");
-			fun.operator() < BoxCollider2DComponent > ("BoxCollider2D");
+		template<ComponentTypes types, class function>
+		static inline constexpr typename std::enable_if<types == ComponentTypes::All, void>::type Iterate(function fun) {
+			fun.operator() < UUIDComponent 		     > ( "UUID"			   );
+			fun.operator() < TagComponent 			 > ( "Tag"			   );
+			fun.operator() < TransformComponent 	 > ( "Transform"	   );
+			fun.operator() < SpriteRendererComponent > ( "Sprite Renderer" );
+			fun.operator() < CameraComponent 		 > ( "Camera"		   );
+			fun.operator() < NativeScriptComponent   > ( "Native Script"   );
+			fun.operator() < RigidBody2DComponent 	 > ( "RigidBody2D"	   );
+			fun.operator() < BoxCollider2DComponent  > ( "BoxCollider2D"   );
+		}
+
+		template<ComponentTypes types, class function>
+		static inline constexpr typename std::enable_if<types == ComponentTypes::Identifiers, void>::type Iterate(function fun) {
+			fun.operator() < UUIDComponent > ("UUID");
+			fun.operator() < TagComponent  > ("Tag" );
+		}
+
+		template<ComponentTypes types, class function>
+		static inline constexpr typename std::enable_if<types == ComponentTypes::NonIdentifiers, void>::type Iterate(function fun) {
+			fun.operator() < TransformComponent      > ( "Transform"	   );
+			fun.operator() < SpriteRendererComponent > ( "Sprite Renderer" );
+			fun.operator() < CameraComponent         > ( "Camera"		   );
+			fun.operator() < NativeScriptComponent   > ( "Native Script"   );
+			fun.operator() < RigidBody2DComponent    > ( "RigidBody2D"	   );
+			fun.operator() < BoxCollider2DComponent  > ( "BoxCollider2D"   );
 		}
 	};
 

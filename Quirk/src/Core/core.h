@@ -31,6 +31,8 @@
 // to bind event function with the respective function
 #define QK_BIND_EVENT_FN(x) std::bind(&x, this, std::placeholders::_1)
 
+// enables experimental features in glm (for quaternions)
+#define GLM_ENABLE_EXPERIMENTAL
 
 namespace Quirk {
 

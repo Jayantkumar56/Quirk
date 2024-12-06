@@ -9,6 +9,7 @@
 namespace Quirk {
 
 	SceneViewportPanel::SceneViewportPanel(uint16_t width, uint16_t height) :
+			m_RuntimeScene	   (nullptr),
 			m_PlayButtonIcon   (Texture2D::Create("assets/Images/play.png")),
 			m_PauseButtonIcon  (Texture2D::Create("assets/Images/pause.png")),
 			m_PanelWidth	   (width),
@@ -41,15 +42,15 @@ namespace Quirk {
 			m_ControllingCamera = m_Camera.OnUpdate();
 
 		if(m_SceneState == SceneState::Play)
-			scene->OnUpdate();
+			m_RuntimeScene->OnUpdate();
 	}
 
 	void SceneViewportPanel::OnImguiUiUpdate(Ref<Scene>& scene, Entity& selectedEntity) {
 		MenuBar(scene);
 
-		ImGuiWindowClass window_class;
-		window_class.DockNodeFlagsOverrideSet = ImGuiDockNodeFlags_NoTabBar;
-		ImGui::SetNextWindowClass(&window_class);
+		ImGuiWindowClass windowClass;
+		windowClass.DockNodeFlagsOverrideSet = ImGuiDockNodeFlags_NoTabBar;
+		ImGui::SetNextWindowClass(&windowClass);
 
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 		ImGui::Begin("Scene Viewport");
@@ -78,6 +79,7 @@ namespace Quirk {
 			if (ImGui::BeginDragDropTarget()) {
 				const ImGuiPayload* scenePayload = ImGui::AcceptDragDropPayload("SCENE_PATH");
 				if (scenePayload) {
+					selectedEntity = Entity();
 					scene->DestroyAllEntities();
 					SceneSerializer::Deserialize(scene, **(std::filesystem::path**)scenePayload->Data);
 				}
@@ -148,6 +150,7 @@ namespace Quirk {
 			RenderCommands::UpdateViewPort(m_PanelWidth, m_PanelHeight);
 
 			scene->OnViewportResize(m_PanelWidth, m_PanelHeight);
+			if (m_RuntimeScene != nullptr) m_RuntimeScene->OnViewportResize(m_PanelWidth, m_PanelHeight);
 		}
 	}
 
@@ -159,7 +162,7 @@ namespace Quirk {
 
 		switch (m_SceneState) {
 			case Quirk::SceneState::Edit: scene->RenderSceneEditor(m_Camera.GetProjectionView()); break;
-			case Quirk::SceneState::Play: scene->RenderSceneRuntime(); break;
+			case Quirk::SceneState::Play: m_RuntimeScene->RenderSceneRuntime(); break;
 		}
 
 		m_Frame->Unbind();
@@ -185,12 +188,16 @@ namespace Quirk {
 
 	void SceneViewportPanel::OnSceneEdit(const Ref<Scene>& scene) {
 		m_SceneState = SceneState::Edit;
-		scene->OnRuntimeStop();
+
+		m_RuntimeScene->OnRuntimeStop();
+		m_RuntimeScene = nullptr;
 	}
 
 	void SceneViewportPanel::OnScenePlay(const Ref<Scene>& scene) {
 		m_SceneState = SceneState::Play;
-		scene->OnRuntimeStart();
+
+		m_RuntimeScene = Scene::Copy(scene);
+		m_RuntimeScene->OnRuntimeStart();
 	}
 
 }

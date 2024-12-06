@@ -28,6 +28,34 @@ namespace Quirk {
 	Scene::~Scene() {
 	}
 
+	Ref<Scene> Scene::Copy(const Ref<Scene>& other) {
+		Ref<Scene> newScene = CreateRef<Scene>(other->m_ViewportWidth, other->m_ViewportWidth);
+		std::unordered_map<uint64_t, uint32_t> entitiesMap;
+
+		auto view = other->m_Registry.view<UUIDComponent>();
+		for (auto entity : view) {
+			auto& tag = other->m_Registry.get<TagComponent>(entity).Tag;
+			auto uuid = other->m_Registry.get<UUIDComponent>(entity).Uuid;
+
+			entitiesMap[uuid] = (uint32_t)newScene->CreateEntity(tag, uuid);
+		}
+
+		auto copyComponentToEntity = [&] <typename Component> (const std::string & componentName) -> void {
+			auto view = other->m_Registry.view<Component>();
+
+			for (auto entity : view) {
+				auto& componentToCopy   = other->m_Registry.get<Component>(entity);
+				auto uuidOriginalEntity = (uint64_t)other->m_Registry.get<UUIDComponent>(entity).Uuid;
+
+				entt::entity entityHandle = (entt::entity)entitiesMap[uuidOriginalEntity];
+				newScene->m_Registry.emplace_or_replace<Component>(entityHandle, componentToCopy);
+			}
+		};
+
+		ComponentTypesIterator::Iterate<ComponentTypes::NonIdentifiers>(copyComponentToEntity);
+		return newScene;
+	}
+
 	Entity Scene::CreateEntity(const std::string& name, const uint64_t uuid) {
 		Entity entity = { m_Registry.create(), this };
 

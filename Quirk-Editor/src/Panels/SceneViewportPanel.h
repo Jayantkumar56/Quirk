@@ -35,6 +35,7 @@ namespace Quirk {
 		void OnScenePlay(const Ref<Scene>& scene);
 
 	private:
+		Ref<Scene>		 m_RuntimeScene;
 		Ref<Texture2D>   m_PlayButtonIcon;
 		Ref<Texture2D>   m_PauseButtonIcon;
 		uint16_t		 m_PanelWidth, m_PanelHeight;

@@ -55,7 +55,7 @@ namespace Quirk {
 		ImGui::Begin("Inspector");
 
 		// stopping further processing if no entity is selected in scene hierarcy
-		if (!(Scene*)entity) {
+		if (entity.IsInvalidEntity()) {
 			ImGui::End();
 			return;
 		}
@@ -295,9 +295,13 @@ namespace Quirk {
 			int currentProjection = (int)component.Type;
 			const char* projectionTypes[] = { "Static", "Dynamic", "Kinematic" };
 
+			ImVec2 cellPadding = ImGui::GetStyle().CellPadding;
+			ImGui::GetStyle().CellPadding = ImVec2(10.0f, 4.0f);
+
 			if (ImGui::BeginTable("BodyType", 2)) {
 				ImGui::TableSetupColumn("propertiesLable", ImGuiTableColumnFlags_WidthFixed);
 
+				ImGui::TableNextRow();
 				ImGui::TableNextColumn();
 				ImguiUI::Utility::Text("BodyType", labelFont);
 
@@ -307,7 +311,7 @@ namespace Quirk {
 				ImGui::PushStyleColor(ImGuiCol_Button, Theme::GetColor(ColorName::DropdownButton));
 				if (ImGui::Combo("##BodyTypeSelection", &currentProjection, projectionTypes, IM_ARRAYSIZE(projectionTypes))) {
 					switch (currentProjection) {
-						case 0: component.Type = RigidBody2DComponent::BodyType::Static;		break;
+						case 0 : component.Type = RigidBody2DComponent::BodyType::Static;		break;
 						case 1 : component.Type = RigidBody2DComponent::BodyType::Dynamic;		break;
 						case 2 : component.Type = RigidBody2DComponent::BodyType::Kinematic;	break;
 					}
@@ -315,19 +319,18 @@ namespace Quirk {
 				ImGui::PopStyleColor();
 				ImGui::PopStyleVar();
 
-				ImGui::EndTable();
-			}
-
-			if (ImGui::BeginTable("Propertycheckbox", 3)) {
 				ImGui::TableNextRow();
 
 				ImGui::TableNextColumn();
 				ImguiUI::Utility::Text("Fixed Rotation", labelFont);
+
 				ImGui::TableNextColumn();
 				ImGui::Checkbox("##isPrimaryCamera", &component.FixedRotation);
 
 				ImGui::EndTable();
 			}
+
+			ImGui::GetStyle().CellPadding = cellPadding;
 		});
 
 		DrawComponentNode<BoxCollider2DComponent>("BoxCollider2D", entity, [labelFont](BoxCollider2DComponent& component) {
@@ -366,6 +369,34 @@ namespace Quirk {
 				ImGui::EndTable();
 			}
 		});
+
+		// add component button
+		{
+			ImVec2 framePadding{ 5.0f, 5.0f };
+			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, framePadding);
+			const char* buttonText = "Add Component";
+
+			float windowWidth  = ImGui::GetContentRegionAvail().x;
+			float buttonSize   = ImGui::CalcTextSize(buttonText).x + framePadding.x;
+	
+			ImVec2 buttonOffset = { (windowWidth - buttonSize) * 0.5f, ImGui::GetCursorPosY() + 25.0f };
+			ImGui::SetCursorPos(buttonOffset);
+
+			ImGui::PushStyleColor(ImGuiCol_Button, { 0.192f, 0.337f, 0.349f, 1.0f });
+			ImGui::Button(buttonText);
+			ImGui::PopStyleColor();
+
+			if (ImGui::BeginPopupContextItem(NULL, ImGuiPopupFlags_MouseButtonLeft)) {
+				ComponentTypesIterator::Iterate<ComponentTypes::NonIdentifiers>([&entity] <typename T> (const std::string& componentName) -> void {
+					if (!entity.HasComponent<T>() && ImGui::MenuItem(componentName.c_str())) {
+						entity.AddComponent<T>();
+					}
+				});
+				ImGui::EndPopup();
+			}
+
+			ImGui::PopStyleVar();
+		}
 
 		ImGui::PopStyleColor();
 		ImGui::End();

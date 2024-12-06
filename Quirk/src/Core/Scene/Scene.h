@@ -22,8 +22,11 @@ namespace Quirk {
 		Scene(uint16_t width, uint16_t height);
 		~Scene();
 
+		static Ref<Scene> Copy(const Ref<Scene>& other);
+
 		Entity CreateEntity(const std::string& name = std::string(), const uint64_t uuid = UUID());
 		void DestroyEntity(Entity entity);
+
 		inline void DestroyAllEntities() { m_Registry.clear(); }
 
 		void OnUpdate();

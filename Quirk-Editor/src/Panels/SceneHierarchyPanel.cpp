@@ -78,7 +78,7 @@ namespace Quirk {
 
 		if (openAddComponentMenu) { ImGui::OpenPopup("AddComponentsMenu"); }
 		if (ImGui::BeginPopup("AddComponentsMenu")) {
-			ComponentsIterator::Iterate([&entity] <typename T> (const std::string& componentName) -> void {
+			ComponentTypesIterator::Iterate<ComponentTypes::NonIdentifiers>([&entity] <typename T> (const std::string& componentName) -> void {
 				if (!entity.HasComponent<T>() && ImGui::MenuItem(componentName.c_str())) {
 					entity.AddComponent<T>();
 				}
