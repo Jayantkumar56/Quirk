@@ -12,6 +12,21 @@ namespace Quirk {
 		ImGui::Begin("Scene Hierarcy");
 		ImGui::PushStyleColor(ImGuiCol_Border, Theme::GetColor(ColorName::PopupBorder));
 
+		ImVec2 framePadding{ 5.0f, 5.0f };
+		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, framePadding);
+		const char* buttonText = "Add Entity";
+
+		float windowWidth = ImGui::GetContentRegionAvail().x;
+		float buttonSize = ImGui::CalcTextSize(buttonText).x + framePadding.x;
+
+		ImVec2 buttonOffset = { (windowWidth - buttonSize) * 0.5f, ImGui::GetCursorPosY() + 2.0f };
+		ImGui::SetCursorPos(buttonOffset);
+
+		ImGui::PushStyleColor(ImGuiCol_Button, { 0.192f, 0.337f, 0.349f, 1.0f });
+		if (ImGui::Button(buttonText)) scene->CreateEntity();
+		ImGui::PopStyleColor();
+		ImGui::PopStyleVar();
+
 		for (auto entity : scene->m_Registry.view<entt::entity>()) {
 			Entity entityToShow = { entity, scene.get()};
 			DrawEntityNode(entityToShow, selectedEntity);
