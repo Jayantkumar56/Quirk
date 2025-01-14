@@ -3,6 +3,7 @@
 #pragma once
 
 #include "Core/Application/Window.h"
+#include "Core/Renderer/GraphicalContext.h"
 
 // TO DO: remove obsolete function calls with this
 //#define IMGUI_DISABLE_OBSOLETE_FUNCTIONS
@@ -20,19 +21,32 @@
 #include "imgui_internal.h"
 #include "backends/imgui_impl_opengl3.h"
 
-namespace Quirk { namespace ImguiUI {
-	struct ContextData {
-		HDC DeviceContext;
-		ContextData() : DeviceContext(nullptr) {}
+namespace Quirk {
+
+	class ImguiUI {
+	public:
+		struct ContextData {
+			HDC DeviceContext;
+			ContextData() : DeviceContext(nullptr) {}
+		};
+
+		void Init(Window& window, Ref<GraphicalContext>& context);
+		void Terminate();
+
+		void Begin();
+		void End(const Ref<GraphicalContext>& context);
+
+		inline void EnableDocking()  { DockingEnabled = true;  }
+		inline void DisableDocking() { DockingEnabled = false; }
+
+	private:
+		void InitForOpenGL(Window& window);
+
+	private:
+		bool DockingEnabled     = true;
+		ImGuiContext* m_Context = nullptr;
+		static inline HGLRC GLContext = nullptr;
 	};
 
-	void EnableDocking();
-	void DisableDocking();
-
-	void Init(Window& window);
-	void Terminate();
-
-	void Begin();
-	void End();
-}}
+}
 

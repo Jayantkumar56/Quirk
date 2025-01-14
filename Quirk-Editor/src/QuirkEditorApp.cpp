@@ -1,7 +1,7 @@
 
 #include "Quirk.h"
 #include "Core/Application/EntryPoint.h"
-#include "EditorLayer.h"
+#include "EditorFrame.h"
 #include "FontManager.h"
 #include "Theme.h"
 
@@ -14,21 +14,22 @@ namespace Quirk {
 		QuirkEditorApp(): 
 				Application(L"Quirk Engine Editor", RendererAPI::API::OpenGL)
 		{
-			EnableImguiUI(true);
-			GetWindow().SetVSync(true);
+			//EnableImguiUI(true);
+			//GetWindow().SetVSync(true);
 
 			FontManager::LoadFonts();
 			Theme::SetTheme(ThemeName::DarkTheme);
 
-			PushLayer(&m_EditorLayer);
+			//PushLayer(&m_EditorLayer);
+			AddFrame(&m_EditorFrame);
 		}
 
 		~QuirkEditorApp() {
-			ImguiUI::Terminate();
+			//ImguiUI::Terminate();
 		}
 
 	private:
-		EditorLayer m_EditorLayer;
+		EditorFrame m_EditorFrame;
 	};
 
 

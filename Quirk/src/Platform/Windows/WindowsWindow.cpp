@@ -23,45 +23,23 @@ extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam
 
 namespace Quirk {
 
-	HINSTANCE WindowsWindow::s_HInstance = nullptr;
-
 	WindowsWindow::WindowsWindow(const WindowSpecification& spec, Window* window) {
-		// setting the callback temporarily to handle events occured in this constructor
-		EventDispatcher::RegisterEventCallback( [](Event& event) { return false; } );
+		DWORD windExStyles = m_WindowExStyle;
+		DWORD windStyles = m_WindowStyle;
+		if (spec.Maximized) 
+			windStyles |= WS_MAXIMIZE;
 
-		m_WindowStyle   = WS_OVERLAPPEDWINDOW | WS_THICKFRAME | WS_SYSMENU | WS_MAXIMIZEBOX | WS_MINIMIZEBOX | WS_VISIBLE;
-		if (spec.Maximized) m_WindowStyle |= WS_MAXIMIZE;
-
-		m_WindowExStyle = WS_EX_ACCEPTFILES;
-		m_WindClassName = L"Quirk";
-
-		WNDCLASSEXW wc	 = {};
-		wc.cbSize		 = sizeof(WNDCLASSEXW);
-		wc.style		 = CS_HREDRAW | CS_VREDRAW | CS_OWNDC | CS_DBLCLKS;
-		wc.lpfnWndProc	 = WindowProc;
-		wc.cbClsExtra	 = 0;
-		wc.cbWndExtra	 = 0;
-		wc.hInstance	 = s_HInstance;
-		wc.hIcon		 = 0;
-		wc.hCursor		 = LoadCursorW(NULL, IDC_ARROW);
-		wc.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
-		wc.lpszMenuName	 = 0;
-		wc.lpszClassName = m_WindClassName.c_str();
-		wc.hIconSm		 = 0;
-
-		QK_CORE_ASSERTEX(RegisterClassExW(&wc), "Failed to Register the window class! {0}", GetLastError());
-
-		uint16_t WindWidth  = spec.Width;
-		uint16_t WindHeight = spec.Height;
-		AdjustWindowSizeForDPI(WindWidth, WindHeight);
+		uint16_t windWidth  = spec.Width;
+		uint16_t windHeight = spec.Height;
+		AdjustWindowSizeForDPI(windWidth, windHeight);
 
 		m_WindowHandle = CreateWindowExW(
-			m_WindowExStyle,							// The window accepts drag-drop files.
+			windExStyles,								// The window accepts drag-drop files.
 			m_WindClassName.c_str(),					// Window class
 			spec.Title.c_str(),							// Window text
-			m_WindowStyle,								// Window style
+			windStyles,									// Window style
 			spec.PosX,			spec.PosY,				// Postion of window on the screen
-			WindWidth,			WindHeight,				// height and width of the window
+			windWidth,			windHeight,				// height and width of the window
 			NULL,										// Parent window    
 			NULL,										// Menu
 			s_HInstance,								// Instance handle
@@ -99,6 +77,27 @@ namespace Quirk {
 			SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2), 
 			"Unable to set Dpi Awareness to DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2"
 		);
+
+		m_WindowStyle = WS_OVERLAPPEDWINDOW | WS_THICKFRAME | WS_SYSMENU | WS_MAXIMIZEBOX | WS_MINIMIZEBOX | WS_VISIBLE;
+
+		m_WindowExStyle = WS_EX_ACCEPTFILES;
+		m_WindClassName = L"Quirk";
+
+		WNDCLASSEXW wc = {};
+		wc.cbSize      = sizeof(WNDCLASSEXW);
+		wc.style       = CS_HREDRAW | CS_VREDRAW | CS_OWNDC | CS_DBLCLKS;
+		wc.lpfnWndProc = WindowProc;
+		wc.cbClsExtra  = 0;
+		wc.cbWndExtra  = 0;
+		wc.hInstance   = s_HInstance;
+		wc.hIcon       = 0;
+		wc.hCursor     = LoadCursorW(NULL, IDC_ARROW);
+		wc.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
+		wc.lpszMenuName  = 0;
+		wc.lpszClassName = m_WindClassName.c_str();
+		wc.hIconSm       = 0;
+
+		QK_CORE_ASSERTEX(RegisterClassExW(&wc), "Failed to Register the window class! {0}", GetLastError());
     }
 
 	void WindowsWindow::OnUpdate() {

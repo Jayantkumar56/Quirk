@@ -11,17 +11,17 @@
 
 namespace Quirk {
 
-	class EditorLayer : public Layer {
+	class EditorFrame : public Frame {
 	public:
-		EditorLayer(const std::string& name = "Editor Layer") : 
-				Layer(name),
+		EditorFrame(const std::string& name = "Editor Layer") :
+				Frame({ L"Quirk Engine Editor", 1600, 900, 200, 50, false, true }),
 				m_MainScene(CreateRef<Scene>(0, 0)),
 				m_SelectedEntity(),
 				m_SceneViewport(),
 				m_ContentBrowser("assets")				// temporarily set to "assets" till we have a proper project setup
 		{}
 
-		~EditorLayer() = default;
+		~EditorFrame() = default;
 
 		virtual void OnAttach() override;
 		virtual void OnDetach() override;

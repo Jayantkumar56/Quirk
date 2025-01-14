@@ -52,4 +52,8 @@ namespace Quirk {
 		return std::make_unique<T>(std::forward<Args>(args)...);
 	}
 
+	enum class PointerType {
+		Raw, Referenced, Scoped
+	};
+
 }

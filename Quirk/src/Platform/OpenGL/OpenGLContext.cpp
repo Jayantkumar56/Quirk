@@ -12,8 +12,6 @@ namespace Quirk {
 
 #ifdef QK_PLATFORM_WINDOWS
 
-	OpenGLContext::WGL OpenGLContext::s_WGL;
-
 	Wglproc OpenGLContext::GetProcAddressWGL(const char* procName) {	
 		if (const Wglproc proc = (Wglproc)wglGetProcAddress(procName); proc) {
 			return proc;
@@ -23,64 +21,59 @@ namespace Quirk {
 
 	LRESULT CALLBACK OpenGLContext::WndProcTemp(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
 		switch (message) {
-			case WM_CREATE: return (LRESULT)0;
+			case WM_CREATE:
 			case WM_DESTROY: return (LRESULT)0;
 		}
 		return DefWindowProc(hWnd, message, wParam, lParam);
 	}
 
-	void OpenGLContext::Init(Window& window) {
-		WindowsWindow* nativeWndObj = (WindowsWindow*)window.GetNativeWindowObject();
-
-		m_DeviceContext = GetDC((HWND)nativeWndObj->GetNativeHandle());
-		QK_CORE_ASSERT(m_DeviceContext, "Windows failed to provide a device context!");
-
+	void OpenGLContext::Init() {
 		// Creating a temporary window
-		HWND tempWindowHandle = CreateWindowExW(
+		HWND tempWindowHandle = ::CreateWindowExW(
 			0,
-			nativeWndObj->GetWindowClassName().c_str(),		// Window class
+			WindowsWindow::GetWindowClassName().c_str(),	// Window class
 			L"Temp Window",									// Window text
 			WS_OVERLAPPEDWINDOW,							// Window style
 			CW_USEDEFAULT, CW_USEDEFAULT,					// Window Position
 			800, 600,										// Window Width and Height
 			NULL,											// Parent window    
 			NULL,											// Menu
-			GetModuleHandleW(NULL),							// Instance handle
+			WindowsWindow::GetApplicationHInstance(),		// Instance handle
 			NULL											// Additional application data
 		);
 
 		QK_CORE_ASSERT(tempWindowHandle, "Failed to create dummy window!");
 
-		HDC tempDeviceContext = GetDC(tempWindowHandle);
+		HDC tempDeviceContext = ::GetDC(tempWindowHandle);
 		QK_CORE_ASSERT(tempWindowHandle, "Windows failed to provide a device context!");
 
 		PIXELFORMATDESCRIPTOR tempPFD = {};
-		tempPFD.nSize = sizeof(PIXELFORMATDESCRIPTOR);
-		tempPFD.nVersion = 1;
-		tempPFD.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
-		tempPFD.iPixelType = PFD_TYPE_RGBA;
-		tempPFD.cColorBits = 32;
-		tempPFD.cRedBits = 0;
-		tempPFD.cRedShift = 0;
-		tempPFD.cGreenBits = 0;
-		tempPFD.cGreenShift = 0;
-		tempPFD.cBlueBits = 0;
-		tempPFD.cBlueShift = 0;
-		tempPFD.cAlphaBits = 0;
-		tempPFD.cAlphaShift = 0;
-		tempPFD.cAccumBits = 0;
-		tempPFD.cAccumRedBits = 0;
+		tempPFD.nSize           = sizeof(PIXELFORMATDESCRIPTOR);
+		tempPFD.nVersion        = 1;
+		tempPFD.dwFlags         = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
+		tempPFD.iPixelType      = PFD_TYPE_RGBA;
+		tempPFD.cColorBits      = 32;
+		tempPFD.cRedBits        = 0;
+		tempPFD.cRedShift       = 0;
+		tempPFD.cGreenBits      = 0;
+		tempPFD.cGreenShift     = 0;
+		tempPFD.cBlueBits       = 0;
+		tempPFD.cBlueShift      = 0;
+		tempPFD.cAlphaBits      = 0;
+		tempPFD.cAlphaShift     = 0;
+		tempPFD.cAccumBits      = 0;
+		tempPFD.cAccumRedBits   = 0;
 		tempPFD.cAccumGreenBits = 0;
-		tempPFD.cAccumBlueBits = 0;
+		tempPFD.cAccumBlueBits  = 0;
 		tempPFD.cAccumAlphaBits = 0;
-		tempPFD.cDepthBits = 24;
-		tempPFD.cStencilBits = 8;
-		tempPFD.cAuxBuffers = 0;
-		tempPFD.iLayerType = PFD_MAIN_PLANE;
-		tempPFD.bReserved = 0;
-		tempPFD.dwLayerMask = 0;
-		tempPFD.dwVisibleMask = 0;
-		tempPFD.dwDamageMask = 0;
+		tempPFD.cDepthBits      = 24;
+		tempPFD.cStencilBits    = 8;
+		tempPFD.cAuxBuffers     = 0;
+		tempPFD.iLayerType      = PFD_MAIN_PLANE;
+		tempPFD.bReserved       = 0;
+		tempPFD.dwLayerMask     = 0;
+		tempPFD.dwVisibleMask   = 0;
+		tempPFD.dwDamageMask    = 0;
 
 		int pixelFmt = ChoosePixelFormat(tempDeviceContext, &tempPFD);
 		QK_CORE_ASSERT(pixelFmt, "Failed to choose pixel format!");
@@ -90,12 +83,27 @@ namespace Quirk {
 		QK_CORE_ASSERT(tempGLContext, "Failed to create GL context!");
 		QK_CORE_ASSERTEX(wglMakeCurrent(tempDeviceContext, tempGLContext), "Failed to make GL context current!");
 
-		s_WGL.ChoosePixelFormatARB = (PFNWGLCHOOSEPIXELFORMATARBPROC)wglGetProcAddress("wglChoosePixelFormatARB");
-		s_WGL.GetExtensionsStringEXT = (PFNWGLGETEXTENSIONSSTRINGEXTPROC)wglGetProcAddress("wglGetExtensionsStringEXT");
-		s_WGL.GetExtensionsStringARB = (PFNWGLGETEXTENSIONSSTRINGARBPROC)wglGetProcAddress("wglGetExtensionsStringARB");
-		s_WGL.CreateContextAttribsARB = (PFNWGLCREATECONTEXTATTRIBSARBPROC)wglGetProcAddress("wglCreateContextAttribsARB");
-		s_WGL.SwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC)wglGetProcAddress("wglSwapIntervalEXT");
-		s_WGL.GetPixelFormatAttribivARB = (PFNWGLGETPIXELFORMATATTRIBIVARBPROC)wglGetProcAddress("wglGetPixelFormatAttribivARB");
+		s_WGL.ChoosePixelFormatARB      = (PFNWGLCHOOSEPIXELFORMATARBPROC)      wglGetProcAddress("wglChoosePixelFormatARB");
+		s_WGL.GetExtensionsStringEXT    = (PFNWGLGETEXTENSIONSSTRINGEXTPROC)    wglGetProcAddress("wglGetExtensionsStringEXT");
+		s_WGL.GetExtensionsStringARB    = (PFNWGLGETEXTENSIONSSTRINGARBPROC)    wglGetProcAddress("wglGetExtensionsStringARB");
+		s_WGL.CreateContextAttribsARB   = (PFNWGLCREATECONTEXTATTRIBSARBPROC)   wglGetProcAddress("wglCreateContextAttribsARB");
+		s_WGL.SwapIntervalEXT           = (PFNWGLSWAPINTERVALEXTPROC)           wglGetProcAddress("wglSwapIntervalEXT");
+		s_WGL.GetPixelFormatAttribivARB = (PFNWGLGETPIXELFORMATATTRIBIVARBPROC) wglGetProcAddress("wglGetPixelFormatAttribivARB");
+
+		s_WGL.OpenGL32DLL = LoadLibraryA("opengl32.dll");
+		QK_CORE_ASSERT(s_WGL.OpenGL32DLL, "Failed to load openGL32.dll");
+		QK_CORE_ASSERTEX(gladLoadGLLoader((GLADloadproc)GetProcAddressWGL), "Failed to initialize Glad!");
+		FreeModule(s_WGL.OpenGL32DLL);
+
+		QK_CORE_ASSERTEX(wglDeleteContext(tempGLContext), "Failed to delete context!");
+		QK_CORE_ASSERTEX(ReleaseDC(tempWindowHandle, tempDeviceContext), "Failed to release DC!");
+		QK_CORE_ASSERTEX(DestroyWindow(tempWindowHandle), "Failed to destroy window!");
+	}
+
+	OpenGLContext::OpenGLContext(Window& window){
+		WindowsWindow* nativeWndObj = (WindowsWindow*)window.GetNativeWindowObject();
+		m_DeviceContext = GetDC((HWND)nativeWndObj->GetNativeHandle());
+		QK_CORE_ASSERT(m_DeviceContext, "Windows failed to provide a device context!");
 
 		int pixelFormat = 0;
 		unsigned int numPixelFormat = 0;
@@ -129,25 +137,15 @@ namespace Quirk {
 		const int attribs[] = {
 			WGL_CONTEXT_MAJOR_VERSION_ARB, 4,
 			WGL_CONTEXT_MINOR_VERSION_ARB, 6,
-			WGL_CONTEXT_LAYER_PLANE_ARB, 0, // main plane
-			WGL_CONTEXT_FLAGS_ARB, WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB | WGL_CONTEXT_DEBUG_BIT_ARB,
-			WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
+			WGL_CONTEXT_LAYER_PLANE_ARB,   0, // main plane
+			WGL_CONTEXT_FLAGS_ARB,         WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB | WGL_CONTEXT_DEBUG_BIT_ARB,
+			WGL_CONTEXT_PROFILE_MASK_ARB,  WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
 			0
 		};
 
 		m_GLContext = s_WGL.CreateContextAttribsARB(m_DeviceContext, NULL, attribs);
 		QK_CORE_ASSERT(m_GLContext, "Could not create wgl context!");
-
-		QK_CORE_ASSERTEX(wglDeleteContext(tempGLContext), "Failed to delete context!");
-		QK_CORE_ASSERTEX(ReleaseDC(tempWindowHandle, tempDeviceContext), "Failed to release DC!");
-		QK_CORE_ASSERTEX(DestroyWindow(tempWindowHandle), "Failed to destroy window!");
-
 		QK_CORE_ASSERTEX(wglMakeCurrent(m_DeviceContext, m_GLContext), "Failed to make GL context current!");
-
-		s_WGL.OpenGL32DLL = LoadLibraryA("opengl32.dll");
-		QK_CORE_ASSERT(s_WGL.OpenGL32DLL, "Failed to load openGL32.dll");
-		QK_CORE_ASSERTEX(gladLoadGLLoader((GLADloadproc)GetProcAddressWGL), "Failed to initialize Glad!");
-		FreeModule(s_WGL.OpenGL32DLL);
 	}
 
 	void OpenGLContext::DestroyContext(Window& window) {

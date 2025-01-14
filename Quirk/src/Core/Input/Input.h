@@ -30,18 +30,18 @@ namespace Quirk {
 		static MouseInfo MouseData;
 	};	
 
-	class Cursor {
-	// The member functions should be defined for each windowing platform
-	public:
-		static void ShowCursor();
-		static void HideCursor();
-			   
-		static void LockCursor();
-		static void UnlockCursor();
-			   
-		static void SetCursorPosition(float x, float y);
-		static void PlaceAtCenter();
-	};
+	//class Cursor {
+	//// The member functions should be defined for each windowing platform
+	//public:
+	//	static void ShowCursor();
+	//	static void HideCursor();
+	//		   
+	//	static void LockCursor();
+	//	static void UnlockCursor();
+	//		   
+	//	static void SetCursorPosition(float x, float y);
+	//	static void PlaceAtCenter();
+	//};
 
 	class Input {
 		friend class WindowsWindow;

@@ -12,11 +12,11 @@ namespace Quirk {
 		GraphicalContext() = default;
 		virtual ~GraphicalContext() = default;
 
-		static Ref<GraphicalContext> Create();
-		static Ref<GraphicalContext> Create(RendererAPI::API rendererAPI);
+		static Ref<GraphicalContext> Create(Window& window);
+		static Ref<GraphicalContext> Create(Window& window, RendererAPI::API rendererAPI);
+		static void Init(RendererAPI::API rendererAPI);
 
 	public:
-		virtual void Init(Window& window)			= 0;
 		virtual void DestroyContext(Window& window) = 0;
 		virtual inline void MakeContextCurrent()	= 0;
 		virtual inline void SetVSync(int toggle)	= 0;

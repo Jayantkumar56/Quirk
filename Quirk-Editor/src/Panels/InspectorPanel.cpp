@@ -71,7 +71,7 @@ namespace Quirk {
 			std::memcpy(entityName, (void*)tag.c_str(), tag.size());
 
 			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(10, ImGui::GetStyle().FramePadding.y));
-			ImguiUI::Utility::Text("Tag", labelFont);
+			ImguiUIUtility::Text("Tag", labelFont);
 
 			ImGui::SameLine(0.0f, 15.0f);
 			if (ImGui::InputText("##tag", entityName, sizeof(entityName))) {			
@@ -89,14 +89,14 @@ namespace Quirk {
 			// width of word "Position" is largest among the three also took extra 3 letters space as "xxx" for padding 
 			auto size = ImGui::CalcTextSize("Positionxxx");
 
-			ImguiUI::Utility::DrawFloat3("Position", glm::value_ptr(component.Translation), 0.0f, 0.1f, size.x, labelFont, buttonFont, valuesFont);
+			ImguiUIUtility::DrawFloat3("Position", glm::value_ptr(component.Translation), 0.0f, 0.1f, size.x, labelFont, buttonFont, valuesFont);
 
 			glm::vec3 rotation = glm::degrees(component.Rotation);
-			if (ImguiUI::Utility::DrawFloat3("Rotation", glm::value_ptr(rotation), 0.0f, 0.1f, size.x, labelFont, buttonFont, valuesFont)) {
+			if (ImguiUIUtility::DrawFloat3("Rotation", glm::value_ptr(rotation), 0.0f, 0.1f, size.x, labelFont, buttonFont, valuesFont)) {
 				component.Rotation = glm::radians(rotation);
 			}
 
-			ImguiUI::Utility::DrawFloat3("Scale", glm::value_ptr(component.Scale), 1.0f, 0.1f, size.x, labelFont, buttonFont, valuesFont);
+			ImguiUIUtility::DrawFloat3("Scale", glm::value_ptr(component.Scale), 1.0f, 0.1f, size.x, labelFont, buttonFont, valuesFont);
 		});
 
 		DrawComponentNode<SpriteRendererComponent>("Sprite Renderer", entity, [&](SpriteRendererComponent& component) {
@@ -113,7 +113,7 @@ namespace Quirk {
 				ImGui::TableSetupColumn("propertiesValue", ImGuiTableColumnFlags_NoResize);
 
 				ImGui::TableNextColumn();
-				ImguiUI::Utility::Text("Color", labelFont);
+				ImguiUIUtility::Text("Color", labelFont);
 
 				ImGui::TableNextColumn();
 				ImGui::PushFont(FontManager::GetFont("DragFloatValue"));
@@ -126,7 +126,7 @@ namespace Quirk {
 				float offset = (columnHeight - textHeight) * 0.5f;
 				ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(10, offset));
 
-				ImguiUI::Utility::Text("Texture", labelFont);
+				ImguiUIUtility::Text("Texture", labelFont);
 
 				ImGui::TableNextColumn();
 				ImGui::InputText("##texture0", (char*)texturePathStr.c_str(), texturePathStr.size(), ImGuiInputTextFlags_ReadOnly);
@@ -193,14 +193,14 @@ namespace Quirk {
 				ImGui::TableNextRow();
 
 				ImGui::TableNextColumn();
-				ImguiUI::Utility::Text("Is Primary", labelFont);
+				ImguiUIUtility::Text("Is Primary", labelFont);
 				ImGui::TableNextColumn();
 				ImGui::Checkbox("##isPrimaryCamera", &component.IsPrimary);
 
 				ImGui::TableNextRow();
 
 				ImGui::TableNextColumn();
-				ImguiUI::Utility::Text("Fixed Ratio", labelFont);
+				ImguiUIUtility::Text("Fixed Ratio", labelFont);
 				ImGui::TableNextColumn();
 				ImGui::Checkbox("##isFixedRatio", &component.FixedAspectRatio);
 
@@ -211,7 +211,7 @@ namespace Quirk {
 				ImGui::TableSetupColumn("propertiesLable", ImGuiTableColumnFlags_WidthFixed);
 
 				ImGui::TableNextColumn();
-				ImguiUI::Utility::Text("Projection Type", labelFont);
+				ImguiUIUtility::Text("Projection Type", labelFont);
 
 				ImGui::TableNextColumn();
 
@@ -234,7 +234,7 @@ namespace Quirk {
 
 				ImGui::TableNextRow();
 				ImGui::TableNextColumn();
-				ImguiUI::Utility::Text("Near Plane", labelFont);
+				ImguiUIUtility::Text("Near Plane", labelFont);
 
 				ImGui::TableNextColumn();
 				if (ImGui::DragFloat("##nearPlane", &nearPlane, 0.1f, 0.0f, 0.0f, "%.2f"))
@@ -242,7 +242,7 @@ namespace Quirk {
 
 				ImGui::TableNextRow();
 				ImGui::TableNextColumn();
-				ImguiUI::Utility::Text("Far Plane", labelFont);
+				ImguiUIUtility::Text("Far Plane", labelFont);
 
 				ImGui::TableNextColumn();
 				if (ImGui::DragFloat("##farPlane", &farPlane, 0.1f, 0.0f, 0.0f, "%.2f"))
@@ -250,7 +250,7 @@ namespace Quirk {
 
 				ImGui::TableNextRow();
 				ImGui::TableNextColumn();
-				ImguiUI::Utility::Text("Field Of View (FOV)", labelFont);
+				ImguiUIUtility::Text("Field Of View (FOV)", labelFont);
 
 				ImGui::TableNextColumn();
 				if (ImGui::DragFloat("##fieldOfView", &fov, 0.1f, 0.0f, 70.0f, "%.2f"))
@@ -265,7 +265,7 @@ namespace Quirk {
 
 				ImGui::TableNextRow();
 				ImGui::TableNextColumn();
-				ImguiUI::Utility::Text("Near Plane", labelFont);
+				ImguiUIUtility::Text("Near Plane", labelFont);
 
 				ImGui::TableNextColumn();
 				if (ImGui::DragFloat("##orthographicNear", &orthographicNear, 0.1f, 0.0f, 0.0f, "%.2f"))
@@ -273,7 +273,7 @@ namespace Quirk {
 
 				ImGui::TableNextRow();
 				ImGui::TableNextColumn();
-				ImguiUI::Utility::Text("Far Plane", labelFont);
+				ImguiUIUtility::Text("Far Plane", labelFont);
 
 				ImGui::TableNextColumn();
 				if (ImGui::DragFloat("##orthographicFar", &orthographicFar, 0.1f, 0.0f, 0.0f, "%.2f"))
@@ -281,7 +281,7 @@ namespace Quirk {
 
 				ImGui::TableNextRow();
 				ImGui::TableNextColumn();
-				ImguiUI::Utility::Text("Orthographic Size", labelFont);
+				ImguiUIUtility::Text("Orthographic Size", labelFont);
 
 				ImGui::TableNextColumn();
 				if (ImGui::DragFloat("##orthographicSize", &orthographicSize, 0.1f, 0.0f, 70.0f, "%.2f"))
@@ -303,7 +303,7 @@ namespace Quirk {
 
 				ImGui::TableNextRow();
 				ImGui::TableNextColumn();
-				ImguiUI::Utility::Text("BodyType", labelFont);
+				ImguiUIUtility::Text("BodyType", labelFont);
 
 				ImGui::TableNextColumn();
 
@@ -322,7 +322,7 @@ namespace Quirk {
 				ImGui::TableNextRow();
 
 				ImGui::TableNextColumn();
-				ImguiUI::Utility::Text("Fixed Rotation", labelFont);
+				ImguiUIUtility::Text("Fixed Rotation", labelFont);
 
 				ImGui::TableNextColumn();
 				ImGui::Checkbox("##isPrimaryCamera", &component.FixedRotation);
@@ -340,28 +340,28 @@ namespace Quirk {
 			if (ImGui::BeginTable("boxcColliderProperties", 2)) {
 				ImGui::TableNextRow();
 				ImGui::TableNextColumn();
-				ImguiUI::Utility::Text("Density", labelFont);
+				ImguiUIUtility::Text("Density", labelFont);
 
 				ImGui::TableNextColumn();
 				ImGui::DragFloat("##Density", &component.Density, 0.1f, 0.0f, 0.0f, "%.2f");		
 
 				ImGui::TableNextRow();
 				ImGui::TableNextColumn();
-				ImguiUI::Utility::Text("Friction", labelFont);
+				ImguiUIUtility::Text("Friction", labelFont);
 
 				ImGui::TableNextColumn();
 				ImGui::DragFloat("##Friction", &component.Friction, 0.1f, 0.0f, 0.0f, "%.2f");
 
 				ImGui::TableNextRow();
 				ImGui::TableNextColumn();
-				ImguiUI::Utility::Text("Restitution", labelFont);
+				ImguiUIUtility::Text("Restitution", labelFont);
 
 				ImGui::TableNextColumn();
 				ImGui::DragFloat("##Restitution", &component.Restitution, 0.1f, 0.0f, 0.0f, "%.2f");
 
 				ImGui::TableNextRow();
 				ImGui::TableNextColumn();
-				ImguiUI::Utility::Text("RestitutionThreshold", labelFont);
+				ImguiUIUtility::Text("RestitutionThreshold", labelFont);
 
 				ImGui::TableNextColumn();
 				ImGui::DragFloat("##RestitutionThreshold", &component.RestitutionThreshold, 0.1f, 0.0f, 0.0f, "%.2f");
