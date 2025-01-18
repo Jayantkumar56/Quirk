@@ -12,8 +12,8 @@ namespace Quirk {
 		GraphicalContext() = default;
 		virtual ~GraphicalContext() = default;
 
-		static Ref<GraphicalContext> Create(Window& window);
-		static Ref<GraphicalContext> Create(Window& window, RendererAPI::API rendererAPI);
+		static Scope<GraphicalContext> Create(Window& window);
+		static Scope<GraphicalContext> Create(Window& window, RendererAPI::API rendererAPI);
 		static void Init(RendererAPI::API rendererAPI);
 
 	public:

@@ -37,7 +37,7 @@ namespace Quirk {
 			RenderCommands::Clear();
 
 			m_FrameManager.UpdateFrames();
-			m_FrameManager.UpdateImguiUiFrames();
+			m_FrameManager.UpdateImguiUi();
 		}
 	}
 

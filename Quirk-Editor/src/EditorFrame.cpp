@@ -64,12 +64,11 @@ namespace Quirk {
 	}
 
 	bool EditorFrame::OnEvent(Event& event){
-		m_SceneViewport.OnEvent(event);
 		return false;
 	}
 
 	void EditorFrame::OnUpdate(){
-		m_SceneViewport.OnUpdate(m_MainScene);
+
 	}
 
 	void EditorFrame::OnImguiUiUpdate(){
@@ -77,10 +76,6 @@ namespace Quirk {
 		ImGui::SetKeyOwner(ImGuiKey_LeftAlt, ImGuiKeyOwner_Any, ImGuiInputFlags_LockThisFrame);
 
 		m_TitleBar.OnImguiUiUpdate(m_MainScene);
-		m_SceneViewport.OnImguiUiUpdate(m_MainScene, m_SelectedEntity);
-		m_SceneHierarcy.OnImguiUiUpdate(m_MainScene, m_SelectedEntity);
-		m_InspectorPanel.OnImguiUiUpdate(m_SelectedEntity);
-		m_ContentBrowser.OnImguiUiUpdate();
 	}
 
 }

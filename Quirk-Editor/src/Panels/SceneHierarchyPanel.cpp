@@ -3,12 +3,16 @@
 #include "SceneHierarchyPanel.h"
 #include "FontManager.h"
 #include "Theme.h"
+#include "EditorFrame.h"
 
 #include <imgui_internal.h>
 
 namespace Quirk {
 
-	void SceneHierarchyPanel::OnImguiUiUpdate(const Ref<Scene>& scene, Entity& selectedEntity){
+	void SceneHierarchyPanel::OnImguiUiUpdate(){
+		Ref<Scene>& scene      = ((EditorFrame*)GetParentFrame())->GetMainScene();
+		Entity& selectedEntity = ((EditorFrame*)GetParentFrame())->GetSelectedEntity();
+
 		ImGui::Begin("Scene Hierarcy");
 		ImGui::PushStyleColor(ImGuiCol_Border, Theme::GetColor(ColorName::PopupBorder));
 

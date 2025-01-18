@@ -39,7 +39,7 @@ namespace Quirk {
 		if (dialogSpec.DefaultFileName != nullptr)
 			pFileOpen->SetFileName(dialogSpec.DefaultFileName);
 
-		HWND window = (HWND)Application::Get().GetWindow().GetNativeHandle();
+		HWND window = (HWND)dialogSpec.ParentWindow->GetNativeHandle();
 		hr = pFileOpen->Show(window);
 		if (!SUCCEEDED(hr)) {
 			return false;
@@ -92,7 +92,7 @@ namespace Quirk {
 		if(dialogSpec.DefaultFileName != nullptr)
 			pFileSave->SetFileName(dialogSpec.DefaultFileName);
 
-		HWND window = (HWND)Application::Get().GetWindow().GetNativeHandle();
+		HWND window = (HWND)dialogSpec.ParentWindow->GetNativeHandle();
 		hr = pFileSave->Show(window);
 		if (!SUCCEEDED(hr)) {
 			return false;

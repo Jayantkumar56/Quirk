@@ -30,11 +30,11 @@ namespace Quirk {
 			ContextData() : DeviceContext(nullptr) {}
 		};
 
-		void Init(Window& window, Ref<GraphicalContext>& context);
+		void Init(Window& window, const Scope<GraphicalContext>& context);
 		void Terminate();
 
 		void Begin();
-		void End(const Ref<GraphicalContext>& context);
+		void End(const Scope<GraphicalContext>& context);
 
 		inline void EnableDocking()  { DockingEnabled = true;  }
 		inline void DisableDocking() { DockingEnabled = false; }

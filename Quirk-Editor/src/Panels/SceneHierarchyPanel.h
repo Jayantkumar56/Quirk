@@ -6,12 +6,14 @@
 
 namespace Quirk {
 
-	class SceneHierarchyPanel {
+	class SceneHierarchyPanel : public Panel {
 	public:
 		SceneHierarchyPanel() = default;
 		~SceneHierarchyPanel() = default;
 
-		void OnImguiUiUpdate(const Ref<Scene>& scene, Entity& selectedEntity);
+		virtual void OnUpdate() override { }
+		virtual bool OnEvent(Event& event) override { return false; }
+		virtual void OnImguiUiUpdate() override;
 
 	private:
 		void DrawEntityNode(Entity entity, Entity& selectedEntity);

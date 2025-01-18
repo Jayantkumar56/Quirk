@@ -19,7 +19,6 @@ namespace Quirk {
 		bool OnWindowResize(WindowResizeEvent& event);
 
 		inline static Application& Get() { return *s_Instance; }
-		inline Window& GetWindow()		 { return m_FrameManager.GetWindow(); }
 
 		inline void AddFrame(Frame* frame)		{ m_FrameManager.AddFrame(frame); }
 

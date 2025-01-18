@@ -3,6 +3,7 @@
 #include "InspectorPanel.h"
 #include "FontManager.h"
 #include "Theme.h"
+#include "EditorFrame.h"
 #include "Core/Imgui/ImguiUIUtility.h"
 
 namespace Quirk {
@@ -51,7 +52,9 @@ namespace Quirk {
 			entity.RemoveComponent<T>();
 	}
 
-	void InspectorPanel::OnImguiUiUpdate(Entity& entity) {
+	void InspectorPanel::OnImguiUiUpdate() {
+		Entity& entity = ((EditorFrame*)GetParentFrame())->GetSelectedEntity();
+
 		ImGui::Begin("Inspector");
 
 		// stopping further processing if no entity is selected in scene hierarcy

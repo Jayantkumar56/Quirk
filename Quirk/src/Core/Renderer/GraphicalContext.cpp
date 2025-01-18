@@ -8,22 +8,22 @@
 
 namespace Quirk{
 
-	Ref<GraphicalContext> GraphicalContext::Create(Window& window) {
+	Scope<GraphicalContext> GraphicalContext::Create(Window& window) {
 		RendererAPI::API rendererAPI = RendererAPI::GetAPI();
 
 		switch (rendererAPI) {
 			case RendererAPI::API::None:    QK_CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
-			case RendererAPI::API::OpenGL:  return CreateRef<OpenGLContext>(window);
+			case RendererAPI::API::OpenGL:  return CreateScope<OpenGLContext>(window);
 		}
 
 		QK_CORE_ASSERT(false, "Unknown RendererAPI!");
 		return nullptr;
 	}
 
-	Ref<GraphicalContext> GraphicalContext::Create(Window& window, RendererAPI::API rendererAPI) {
+	Scope<GraphicalContext> GraphicalContext::Create(Window& window, RendererAPI::API rendererAPI) {
 		switch (rendererAPI) {
 			case RendererAPI::API::None:    QK_CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
-			case RendererAPI::API::OpenGL:  return CreateRef<OpenGLContext>(window);
+			case RendererAPI::API::OpenGL:  return CreateScope<OpenGLContext>(window);
 		}
 
 		QK_CORE_ASSERT(false, "Unknown RendererAPI!");
@@ -32,7 +32,7 @@ namespace Quirk{
 
 	void GraphicalContext::Init(RendererAPI::API rendererAPI) {
 		switch (rendererAPI) {
-			case RendererAPI::API::None:    QK_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");
+			case RendererAPI::API::None:    QK_CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); break;
 			case RendererAPI::API::OpenGL:  OpenGLContext::Init();
 		}
 	}

@@ -40,7 +40,7 @@ namespace Quirk {
 	using Ref = std::shared_ptr<T>;
 
 	template<typename T, typename ... Args>
-	constexpr Ref<T> CreateRef(Args&& ... args) {
+	inline constexpr Ref<T> CreateRef(Args&& ... args) {
 		return std::make_shared<T>(std::forward<Args>(args)...);
 	}
 
@@ -48,12 +48,43 @@ namespace Quirk {
 	using Scope = std::unique_ptr<T>;
 
 	template<typename T, typename ... Args>
-	constexpr Scope<T> CreateScope(Args&& ... args) {
+	inline constexpr Scope<T> CreateScope(Args&& ... args) {
 		return std::make_unique<T>(std::forward<Args>(args)...);
 	}
 
 	enum class PointerType {
 		Raw, Referenced, Scoped
 	};
+
+	template<PointerType PT, typename Pointer>
+	struct PointerTypeToPointer { };
+
+	template<typename Pointer>
+	struct PointerTypeToPointer<PointerType::Raw, Pointer> {
+		using type = Pointer*;
+	};
+
+	template<typename Pointer>
+	struct PointerTypeToPointer<PointerType::Scoped, Pointer> {
+		using type = Scope<Pointer>;
+	};
+
+	template<typename Pointer>
+	struct PointerTypeToPointer<PointerType::Referenced, Pointer> {
+		using type = Ref<Pointer>;
+	};
+
+	template<PointerType PT, typename T, typename ... Args>
+	inline constexpr auto CreatePointer(Args&& ... args) {
+		if constexpr (PT == PointerType::Raw) {
+			return new T(std::forward<Args>(args)...);
+		}
+		else if constexpr (PT == PointerType::Scoped) {
+			return std::make_unique<T>(std::forward<Args>(args)...);
+		}
+		else {
+			return std::make_shared<T>(std::forward<Args>(args)...);
+		}
+	}
 
 }

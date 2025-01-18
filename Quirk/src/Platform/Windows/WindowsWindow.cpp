@@ -81,7 +81,7 @@ namespace Quirk {
 		m_WindowStyle = WS_OVERLAPPEDWINDOW | WS_THICKFRAME | WS_SYSMENU | WS_MAXIMIZEBOX | WS_MINIMIZEBOX | WS_VISIBLE;
 
 		m_WindowExStyle = WS_EX_ACCEPTFILES;
-		m_WindClassName = L"Quirk";
+		m_WindClassName = L"QuirkApp";
 
 		WNDCLASSEXW wc = {};
 		wc.cbSize      = sizeof(WNDCLASSEXW);

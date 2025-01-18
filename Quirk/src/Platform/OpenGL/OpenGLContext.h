@@ -51,7 +51,7 @@ namespace Quirk {
 			QK_CORE_ASSERTEX(SwapBuffers(m_DeviceContext), "Failed to Swap Buffer");
 		}
 
-		inline HGLRC GetGLContext() const { return m_GLContext; }
+		inline HGLRC GetGLContext()   const { return m_GLContext;     }
 		inline HDC GetDeviceContext() const { return m_DeviceContext; }
 
 	private:

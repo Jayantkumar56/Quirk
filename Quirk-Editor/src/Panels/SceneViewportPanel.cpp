@@ -4,6 +4,8 @@
 #include "SceneViewportPanel.h"
 #include "FontManager.h"
 #include "Core/Input/Input.h"
+#include "EditorFrame.h"
+
 #include <filesystem>
 
 namespace Quirk {
@@ -37,7 +39,9 @@ namespace Quirk {
 		return false;
 	}
 
-	void SceneViewportPanel::OnUpdate(const Ref<Scene>& scene) {
+	void SceneViewportPanel::OnUpdate() {
+		Ref<Scene>& scene = ((EditorFrame*)GetParentFrame())->GetMainScene();
+
 		if (m_IsInFocus && m_SceneState == SceneState::Edit)
 			m_ControllingCamera = m_Camera.OnUpdate();
 
@@ -45,7 +49,10 @@ namespace Quirk {
 			m_RuntimeScene->OnUpdate();
 	}
 
-	void SceneViewportPanel::OnImguiUiUpdate(Ref<Scene>& scene, Entity& selectedEntity) {
+	void SceneViewportPanel::OnImguiUiUpdate() {
+		Ref<Scene>& scene      = ((EditorFrame*)GetParentFrame())->GetMainScene();
+		Entity& selectedEntity = ((EditorFrame*)GetParentFrame())->GetSelectedEntity();
+
 		MenuBar(scene);
 
 		ImGuiWindowClass windowClass;
@@ -170,7 +177,7 @@ namespace Quirk {
 	}
 
 	int SceneViewportPanel::GetEntityIdOnClick(const ImVec2& imagePos) {
-		Window& window   = Application::Get().GetWindow();
+		Window& window   = ((EditorFrame*)GetParentFrame())->GetWindow();
 		ImVec2 windowPos = ImGui::GetWindowPos();
 		windowPos        = { windowPos.x - window.GetPosX(), windowPos.y - window.GetPosY() };
 		ImVec2 mousePos  = { Input::MouseCurrentX() - windowPos.x, Input::MouseCurrentY() - windowPos.y };

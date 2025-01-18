@@ -14,7 +14,7 @@ namespace Quirk {
 
 #ifdef QK_PLATFORM_WINDOWS
 
-	void ImguiUI::Init(Window& window, Ref<GraphicalContext>& context) {
+	void ImguiUI::Init(Window& window, const Scope<GraphicalContext>& context) {
 		// TO DO: remove this graphical context
 		GLContext = ((OpenGLContext*)context.get())->GetGLContext();
 
@@ -62,7 +62,7 @@ namespace Quirk {
 		}
 	}
 
-	void ImguiUI::End(const Ref<GraphicalContext>& context) {
+	void ImguiUI::End(const Scope<GraphicalContext>& context) {
 		ImGuiIO& io = ImGui::GetIO();
 
 		ImGui::Render();

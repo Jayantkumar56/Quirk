@@ -26,7 +26,7 @@ namespace Quirk {
 	class Window {
 	public:
 		Window(const WindowSpecification& spec) : 
-			m_Title	   (spec.Title),
+			m_Title	   (spec.Title  ),
 			m_Width	   (spec.Width  ),
 			m_Height   (spec.Height ),
 			m_PosX	   (spec.PosX   ),
@@ -37,9 +37,7 @@ namespace Quirk {
 		{
 		}
 
-		~Window() {
-			//m_Context->DestroyContext(*this);
-		}
+		~Window() {}
 
 		void OnUpdate() { m_Window.OnUpdate(); }
 
@@ -65,31 +63,6 @@ namespace Quirk {
 		inline float		GetAspectRatio() const { return static_cast<float>(m_Width) / static_cast<float>(m_Height); }
 
 		// Getters for local member varialbes ***************
-
-		// Call this only after Rendering API is set
-		/*inline void SetAsCurrentContext() {
-			if (m_Context.get() == nullptr) {
-				m_Context = GraphicalContext::Create();
-				m_Context->Init(*this);
-
-				if (m_VSyncOn)
-					m_Context->SetVSync(1);
-			}
-
-			m_Context->MakeContextCurrent();
-		}*/
-
-		//inline void SetVSync(bool toggle) {
-		//	QK_CORE_ASSERT(m_Context.get() != nullptr, "GraphicalContext not created yet!");
-
-		//	if      (m_VSyncOn && !toggle) { m_Context->SetVSync(0); }
-		//	else if (!m_VSyncOn && toggle) { m_Context->SetVSync(1); }
-
-		//	m_VSyncOn = toggle;
-		//}
-
-		//inline void SwapBuffers()					 const { m_Context->SwapBuffer(); }
-		//inline Ref<GraphicalContext> GetGraphicalContext() { return m_Context;		  }
 
 	private:
 		std::wstring m_Title;
