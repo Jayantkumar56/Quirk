@@ -24,10 +24,10 @@ namespace Quirk {
 		};
 
 	private:
-		static std::bitset<256> KeyPressed;
-		static std::bitset<256> KeyRepeat;
+		inline static std::bitset<256> KeyPressed;
+		inline static std::bitset<256> KeyRepeat;
 
-		static MouseInfo MouseData;
+		inline static MouseInfo MouseData;
 	};	
 
 	class Cursor {

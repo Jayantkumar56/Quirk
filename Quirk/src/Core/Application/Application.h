@@ -40,7 +40,7 @@ namespace Quirk {
 		bool		 m_ImguiUiEnabled = false;
 
 	private:
-		static Application* s_Instance;
+		inline static Application* s_Instance = nullptr;
 	};
 
 }

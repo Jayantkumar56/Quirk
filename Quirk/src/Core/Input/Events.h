@@ -69,8 +69,8 @@ namespace Quirk {
 
 	private:
 		// (for memory allocation) m_Event, m_EventCallbackFn are declared in Input.cpp
-		static Event* m_Event;
-		static std::function<void(Event&)> m_EventCallbackFn;
+		inline static Event* m_Event = nullptr;
+		inline static std::function<void(Event&)> m_EventCallbackFn = nullptr;
 	};
 
 

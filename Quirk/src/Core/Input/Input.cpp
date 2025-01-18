@@ -7,16 +7,6 @@
 
 namespace Quirk {
 
-	// Initializing static variables of event dispatcher
-	Event* EventDispatcher::m_Event = nullptr;
-	std::function<void(Event&)> EventDispatcher::m_EventCallbackFn;
-
-	// Initializing static variables of input data
-	std::bitset<256> InputData::KeyPressed;
-	std::bitset<256> InputData::KeyRepeat;
-
-	InputData::MouseInfo InputData::MouseData;
-
 	void Input::UpdateKey(int keyCode, int keyState) {
 		QK_CORE_ASSERT(
 			QK_KEY_STATE_START <= keyState && keyState <= QK_KEY_STATE_END,

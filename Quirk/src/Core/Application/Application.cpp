@@ -15,8 +15,6 @@
 
 namespace Quirk {
 
-	Application* Application::s_Instance = nullptr;
-
 	Application::Application(const std::wstring& appName, RendererAPI::API renderingAPI) :
 			m_AppName(appName),
 			m_Window({ appName, 1600, 900, 200, 50, false, true })
