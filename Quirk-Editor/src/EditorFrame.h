@@ -18,6 +18,8 @@ namespace Quirk {
 				m_MainScene(CreateRef<Scene>(0, 0)),
 				m_SelectedEntity()
 		{
+			SetTitleBar<EditorTitleBar>();
+
 			AddPanel<SceneViewportPanel>();
 			AddPanel<SceneHierarchyPanel>();
 			AddPanel<InspectorPanel>();
@@ -39,8 +41,6 @@ namespace Quirk {
 	private:
 		Ref<Scene> m_MainScene;
 		Entity m_SelectedEntity;
-
-		TitleBar m_TitleBar;
 	};
 
 }

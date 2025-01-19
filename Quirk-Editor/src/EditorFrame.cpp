@@ -74,8 +74,6 @@ namespace Quirk {
 	void EditorFrame::OnImguiUiUpdate(){
 		// Disabling alt key for imgui to prevent navigation with alt key (problems when using editor cotrols)
 		ImGui::SetKeyOwner(ImGuiKey_LeftAlt, ImGuiKeyOwner_Any, ImGuiInputFlags_LockThisFrame);
-
-		m_TitleBar.OnImguiUiUpdate(m_MainScene);
 	}
 
 }

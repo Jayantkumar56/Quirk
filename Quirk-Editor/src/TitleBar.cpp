@@ -4,11 +4,13 @@
 #include "Quirk.h"
 #include "TitleBar.h"
 #include "Theme.h"
-
+#include "EditorFrame.h"
 
 namespace Quirk {
 
-	void TitleBar::OnImguiUiUpdate(Ref<Scene>& scene) {
+	void EditorTitleBar::OnImguiUiUpdate() {
+		Ref<Scene>& scene = ((EditorFrame*)GetParentFrame())->GetMainScene();
+
 		if (ImGui::BeginMainMenuBar()) {
 			ImGui::PushStyleColor(ImGuiCol_Border, Theme::GetColor(ColorName::PopupBorder));
 

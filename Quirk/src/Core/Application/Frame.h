@@ -13,6 +13,26 @@ namespace Quirk {
 
 	class Frame;
 
+	class TitleBar {
+		friend class Frame;
+
+	public:
+		TitleBar() = default;
+		~TitleBar() {};
+
+		virtual void OnImguiUiUpdate() = 0;
+		virtual bool OnEvent(Event& event) = 0;
+
+		inline const Frame* GetParentFrame() const { return m_ParentFrame; }
+
+	private:
+		// to communicate with the parent Frame obj which manages this titlebar
+		Frame* m_ParentFrame = nullptr;
+	};
+
+	template <typename T>
+	concept TitleBarType = std::is_base_of<TitleBar, T>::value;
+
 	class Panel {
 		friend class Frame;
 
@@ -27,8 +47,12 @@ namespace Quirk {
 		inline const Frame* GetParentFrame() const { return m_ParentFrame; }
 
 	private:
+		// to communicate with the parent Frame obj which manages this panel
 		Frame* m_ParentFrame = nullptr;
 	};
+
+	template <typename T>
+	concept PanelType = std::is_base_of<Panel, T>::value;
 
 	class Frame {
 		friend class FrameManager;
@@ -46,73 +70,82 @@ namespace Quirk {
 				delete m_Panels[i];
 
 			if(m_Context != nullptr)
-				m_Context->DestroyContext(m_Window); 
+				m_Context->DestroyContext(m_Window);
 		}
 
 		// deleted both copy constructor and copy assignment, to make it non copyable
 		Frame(Frame& other)					 = delete;
 		Frame& operator=(const Frame& other) = delete;
 
-		virtual void OnAttach() = 0;
-		virtual void OnDetach() = 0;
-
+		virtual void OnAttach()            = 0;
+		virtual void OnDetach()            = 0;
 		virtual void OnUpdate()            = 0;
 		virtual void OnImguiUiUpdate()     = 0;
 		virtual bool OnEvent(Event& event) = 0;
 
-		inline void SwapBuffer() const	   { m_Context->SwapBuffer();     }
-		inline Window& GetWindow()		   { return m_Window;             }
-		inline void SetVSync(int toggle)   { m_Context->SetVSync(toggle); }
+		inline void SwapBuffer() const	 { m_Context->SwapBuffer();     }
+		inline Window& GetWindow()		 { return m_Window;             }
+		inline void SetVSync(int toggle) { m_Context->SetVSync(toggle); }
 
-		template<typename T, typename ...Args>
+		// lifetime of the panel is managed by the frame
+		template<PanelType P, typename ...Args>
 		inline void AddPanel(Args&& ... args) {
-			T* panel = new T(std::forward<Args>(args)...);
+			P* panel = new P(std::forward<Args>(args)...);
 			panel->m_ParentFrame = this;
-			m_Panels.push_back(panel);
+			m_Panels.push_back(static_cast<Panel*>(panel));
+		}
+
+		// lifetime of the titlebar is managed by the frame
+		template<TitleBarType T, typename ...Args>
+		inline void SetTitleBar(Args&& ... args) {
+			m_TitleBar = static_cast<T*>(new T(std::forward<Args>(args)...));
+			m_TitleBar->m_ParentFrame = this;
 		}
 
 	private:
 		Window  m_Window;
 		ImguiUI m_ImguiUI;
 		Scope<GraphicalContext> m_Context;
+
+		TitleBar*           m_TitleBar;
 		std::vector<Panel*> m_Panels;
 	};
 
 	class FrameManager {
 	public:
 		inline void UpdateFrames() {
-			for (size_t i = 0; i < m_Frames.size(); ++i) {
-				m_Frames[i]->m_Window.OnUpdate();
-				m_Frames[i]->OnUpdate();
+			for (auto& frame : m_Frames) {
+				frame->m_Window.OnUpdate();
+				frame->OnUpdate();
 
-				for (size_t j = 0; j < m_Frames[i]->m_Panels.size(); ++j)
-					m_Frames[i]->m_Panels[j]->OnUpdate();
+				for (auto& panel : frame->m_Panels)
+					panel->OnUpdate();
 			}
 		}
 
 		inline void UpdateImguiUi() {
-			for (size_t i = 0; i < m_Frames.size(); ++i) {
-				m_Frames[i]->m_ImguiUI.Begin();
+			for (auto& frame : m_Frames) {
+				frame->m_ImguiUI.Begin();
 
-				m_Frames[i]->OnImguiUiUpdate();
+				frame->OnImguiUiUpdate();
+				frame->m_TitleBar->OnImguiUiUpdate();
 
-				for (size_t j = 0; j < m_Frames[i]->m_Panels.size(); ++j)
-					m_Frames[i]->m_Panels[j]->OnImguiUiUpdate();
+				for (auto& panel : frame->m_Panels)
+					panel->OnImguiUiUpdate();
 
-				m_Frames[i]->m_ImguiUI.End(m_Frames[i]->m_Context);
-			}
+				frame->m_ImguiUI.End(frame->m_Context);
 
-			for (size_t i = 0; i < m_Frames.size(); ++i) {
-				m_Frames[i]->SwapBuffer();
+				frame->SwapBuffer();
 			}
 		}
 
 		inline bool HandleEvent(Event& event) {
-			for (size_t i = 0; i < m_Frames.size(); ++i) {
-				m_Frames[i]->OnEvent(event);
+			for (auto frame : m_Frames) {
+				frame->OnEvent(event);
+				frame->m_TitleBar->OnEvent(event);
 
-				for (size_t j = 0; j < m_Frames[i]->m_Panels.size(); ++j)
-					m_Frames[i]->m_Panels[j]->OnEvent(event);
+				for (auto& panel : frame->m_Panels)
+					panel->OnEvent(event);
 			}
 
 			return false;
