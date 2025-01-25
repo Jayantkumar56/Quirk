@@ -5,31 +5,24 @@
 #include "FontManager.h"
 #include "Theme.h"
 
-#include "glm/glm.hpp"
 
 namespace Quirk {
 
 	class QuirkEditorApp : public Application {
 	public:
 		QuirkEditorApp(): 
-				Application(L"Quirk Engine Editor", RendererAPI::API::OpenGL)
+				Application(L"Quirk Engine", RendererAPI::API::OpenGL)
 		{
-			//EnableImguiUI(true);
-			//GetWindow().SetVSync(true);
+			WindowSpecification tempSpec{ "Quirk Editor", 1600, 900, 200, 50, true, false, true };
+			AddFrame<EditorFrame>(tempSpec);
 
 			FontManager::LoadFonts();
 			Theme::SetTheme(ThemeName::DarkTheme);
-
-			//PushLayer(&m_EditorLayer);
-			AddFrame(&m_EditorFrame);
 		}
 
 		~QuirkEditorApp() {
-			//ImguiUI::Terminate();
-		}
 
-	private:
-		EditorFrame m_EditorFrame;
+		}
 	};
 
 

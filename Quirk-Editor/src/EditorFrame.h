@@ -13,8 +13,8 @@ namespace Quirk {
 
 	class EditorFrame : public Frame {
 	public:
-		EditorFrame(const std::string& name = "Editor Layer") :
-				Frame({ L"Quirk Engine Editor", 1600, 900, 200, 50, false, true }),
+		EditorFrame(WindowSpecification& spec) :
+				Frame(spec),
 				m_MainScene(CreateRef<Scene>(0, 0)),
 				m_SelectedEntity()
 		{
@@ -24,6 +24,8 @@ namespace Quirk {
 			AddPanel<SceneHierarchyPanel>();
 			AddPanel<InspectorPanel>();
 			AddPanel<ContentBrowserPanel>("assets");
+
+			SetVSync(true);
 		}
 
 		~EditorFrame() = default;

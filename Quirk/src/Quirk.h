@@ -24,6 +24,7 @@
 #include "Core/Input/MouseEvents.h"
 #include "Core/Input/KeyboardEvents.h"
 #include "Core/Input/ApplicationEvents.h"
+#include "Core/Input/Input.h"
 
 #include "Core/Camera/Camera.h"
 #include "Core/Camera/CameraController.h"

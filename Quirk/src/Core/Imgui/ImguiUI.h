@@ -26,8 +26,8 @@ namespace Quirk {
 	class ImguiUI {
 	public:
 		struct ContextData {
-			HDC DeviceContext;
-			ContextData() : DeviceContext(nullptr) {}
+			HDC DeviceContext = nullptr;
+			ContextData() = default;
 		};
 
 		void Init(Window& window, const Scope<GraphicalContext>& context);
@@ -43,7 +43,9 @@ namespace Quirk {
 		void InitForOpenGL(Window& window);
 
 	private:
-		bool DockingEnabled     = true;
+		bool DockingEnabled = true;
+
+		// must set the current ImguiContext before calling the imgui functions 
 		ImGuiContext* m_Context = nullptr;
 		static inline HGLRC GLContext = nullptr;
 	};

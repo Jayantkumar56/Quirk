@@ -31,7 +31,7 @@ namespace Quirk {
 		// Creating a temporary window
 		HWND tempWindowHandle = ::CreateWindowExW(
 			0,
-			WindowsWindow::GetWindowClassName().c_str(),	// Window class
+			WindowsWindow::GetWindowClassName().data(),	    // Window class
 			L"Temp Window",									// Window text
 			WS_OVERLAPPEDWINDOW,							// Window style
 			CW_USEDEFAULT, CW_USEDEFAULT,					// Window Position

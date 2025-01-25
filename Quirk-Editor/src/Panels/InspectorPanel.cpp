@@ -156,6 +156,7 @@ namespace Quirk {
 					fileDialogSpec.FileNameLabel = L"Texture Name";
 					fileDialogSpec.Filters = filters;
 					fileDialogSpec.NoOfFilters = sizeof(filters) / sizeof(FileFilter);
+					fileDialogSpec.ParentWindow = &((EditorFrame*)GetParentFrame())->GetWindow();
 
 					std::filesystem::path filePath;
 					if (FileDialog::OpenFile(fileDialogSpec, filePath)) {

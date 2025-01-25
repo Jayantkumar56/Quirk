@@ -20,7 +20,8 @@ namespace Quirk {
 
 		inline static Application& Get() { return *s_Instance; }
 
-		inline void AddFrame(Frame* frame)		{ m_FrameManager.AddFrame(frame); }
+		template<FrameType T, typename ...Args>
+		inline void AddFrame(Args&& ...args) { m_FrameManager.AddFrame<T>(std::forward<Args>(args)...); }
 
 	private:
 		std::wstring m_AppName;

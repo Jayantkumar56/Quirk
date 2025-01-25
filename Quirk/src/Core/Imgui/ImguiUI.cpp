@@ -17,6 +17,7 @@ namespace Quirk {
 	void ImguiUI::Init(Window& window, const Scope<GraphicalContext>& context) {
 		// TO DO: remove this graphical context
 		GLContext = ((OpenGLContext*)context.get())->GetGLContext();
+		
 
 		// Setup Dear ImGui context
 		IMGUI_CHECKVERSION();
@@ -48,10 +49,13 @@ namespace Quirk {
 		// Cleanup
 		ImGui_ImplOpenGL3_Shutdown();
 		ImGui_ImplWin32_Shutdown();
-		ImGui::DestroyContext();
+		ImGui::DestroyContext(m_Context);
 	}
 
 	void ImguiUI::Begin() {
+		// There could be only a single current imgui context at a time
+		ImGui::SetCurrentContext(m_Context);
+
 		// Start the Dear ImGui frame
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplWin32_NewFrame();
