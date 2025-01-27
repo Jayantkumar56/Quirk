@@ -30,7 +30,7 @@ namespace Quirk {
 		FrameManager m_FrameManager;
 
 	private:
-		inline static Application* s_Instance = nullptr;
+		static Application* s_Instance;
 	};
 
 }
