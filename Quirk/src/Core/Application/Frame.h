@@ -8,6 +8,7 @@
 #include "Core/Renderer/GraphicalContext.h"
 #include "Core/Input/KeyCodes.h"
 #include "Core/Input/Input.h"
+#include "Core/Renderer/RenderCommands.h"
 
 #include <utility>
 
@@ -16,14 +17,14 @@ namespace Quirk {
 	class Frame;
 
 	class TitleBar {
-		friend class Frame;
 		friend class FrameManager;
+		friend class Frame;
 
 	public:
-		TitleBar() = default;
+		TitleBar()          = default;
 		virtual ~TitleBar() = default;
 
-		virtual void OnImguiUiUpdate() = 0;
+		virtual void OnImguiUiUpdate()     = 0;
 		virtual bool OnEvent(Event& event) = 0;
 
 		Window& GetWindow();
@@ -142,15 +143,19 @@ namespace Quirk {
 		inline void UpdateFrames() {
 			for (auto& frame : m_Frames) {
 				frame->m_Window.OnUpdate();
+
+				// setting graphical and imgui context for currrent frame
+				frame->m_Context->MakeContextCurrent();
+				frame->m_ImguiUI.SetCurrentImguiContext();
+
+				// clearing the backbuffer
+				RenderCommands::Clear();
 				frame->OnUpdate();
 
 				for (auto& panel : frame->m_Panels)
 					panel->OnUpdate();
-			}
-		}
 
-		inline void UpdateImguiUi() {
-			for (auto& frame : m_Frames) {
+				// updating imgui ui of the current frame and it's panels
 				frame->m_ImguiUI.Begin();
 
 				frame->OnImguiUiUpdate();

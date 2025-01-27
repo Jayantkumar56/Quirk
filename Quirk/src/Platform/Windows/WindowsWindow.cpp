@@ -185,9 +185,13 @@ namespace Quirk {
 		if (!window) return DefWindowProc(hwnd, uMsg, wParam, lParam);
 
 		switch (uMsg) {
-			case WM_SETFOCUS:
 			case WM_CREATE: 
 			case WM_ACTIVATE: {
+				return (LRESULT)0;
+			}
+
+			case WM_SETFOCUS:
+			case WM_KILLFOCUS: {
 				return (LRESULT)0;
 			}
 

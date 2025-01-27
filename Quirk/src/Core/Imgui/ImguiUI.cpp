@@ -15,10 +15,6 @@ namespace Quirk {
 #ifdef QK_PLATFORM_WINDOWS
 
 	void ImguiUI::Init(Window& window, const Scope<GraphicalContext>& context) {
-		// TO DO: remove this graphical context
-		GLContext = ((OpenGLContext*)context.get())->GetGLContext();
-		
-
 		// Setup Dear ImGui context
 		IMGUI_CHECKVERSION();
 		m_Context = ImGui::CreateContext();
@@ -42,7 +38,7 @@ namespace Quirk {
 			style.Colors[ImGuiCol_WindowBg].w = 1.0f;
 		}
 
-		InitForOpenGL(window);
+		InitForOpenGL(window, context);
 	}
 
 	void ImguiUI::Terminate() {
@@ -52,16 +48,13 @@ namespace Quirk {
 		ImGui::DestroyContext(m_Context);
 	}
 
-	void ImguiUI::Begin() {
-		// There could be only a single current imgui context at a time
-		ImGui::SetCurrentContext(m_Context);
-
+	void ImguiUI::Begin() const {
 		// Start the Dear ImGui frame
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplWin32_NewFrame();
 		ImGui::NewFrame();
 
-		if (DockingEnabled) {
+		if (m_DockingEnabled) {
 			ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport());
 		}
 	}
@@ -82,7 +75,7 @@ namespace Quirk {
 		}
 	}
 
-	void ImguiUI::InitForOpenGL(Window& window) {
+	void ImguiUI::InitForOpenGL(Window& window, const Scope<GraphicalContext>& context) {
 		const char* glsl_version = "#version 410";
 
 		ImGui_ImplWin32_InitForOpenGL((HWND)window.GetNativeHandle());
@@ -92,6 +85,9 @@ namespace Quirk {
 		ImGuiIO& io = ImGui::GetIO();
 		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
 			ImGuiPlatformIO& platform_io = ImGui::GetPlatformIO();
+
+			// TO DO: make a permanent solution to save the GraphicalContext in ImguiContext
+			io.UserData = (void*)((OpenGLContext*)context.get())->GetGLContext();
 
 			platform_io.Renderer_CreateWindow = [] (ImGuiViewport* viewport) {
 				QK_CORE_ASSERT(viewport->RendererUserData == NULL, "Non Empty RendererUserData (from imgui)");
@@ -147,7 +143,8 @@ namespace Quirk {
 
 			platform_io.Platform_RenderWindow = [] (ImGuiViewport* viewport, void*) {
 				if (ImguiUI::ContextData* data = (ImguiUI::ContextData*)viewport->RendererUserData; data) {
-					wglMakeCurrent(data->DeviceContext, GLContext);
+					auto& io = ImGui::GetIO();
+					wglMakeCurrent(data->DeviceContext, (HGLRC)io.UserData);
 				}
 			};
 		}

@@ -34,10 +34,7 @@ namespace Quirk {
 
 		while (m_Running) {
 			Time::RefreshTime();
-			RenderCommands::Clear();
-
 			m_FrameManager.UpdateFrames();
-			m_FrameManager.UpdateImguiUi();
 		}
 	}
 
