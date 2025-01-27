@@ -1,6 +1,6 @@
 
 
-#include "EditorLayer.h"
+#include "EditorFrame.h"
 #include "FontManager.h"
 #include "Theme.h"
 
@@ -8,7 +8,7 @@
 
 namespace Quirk {
 
-	void EditorLayer::OnAttach(){
+	void EditorFrame::OnAttach(){
 #ifdef _EXAMPLE_SCENE_CREATON_
 		auto square = m_MainScene->CreateEntity("Orange Square");
 		square.AddComponent<SpriteRendererComponent>(glm::vec4{ 1.0f, 0.14f, 0.1f, 1.0f });
@@ -59,28 +59,21 @@ namespace Quirk {
 #endif // _EXAMPLE_SCENE_CREATON_
 	}
 
-	void EditorLayer::OnDetach(){
+	void EditorFrame::OnDetach(){
 
 	}
 
-	bool EditorLayer::OnEvent(Event& event){
-		m_SceneViewport.OnEvent(event);
+	bool EditorFrame::OnEvent(Event& event){
 		return false;
 	}
 
-	void EditorLayer::OnUpdate(){
-		m_SceneViewport.OnUpdate(m_MainScene);
+	void EditorFrame::OnUpdate(){
+
 	}
 
-	void EditorLayer::OnImguiUiUpdate(){
+	void EditorFrame::OnImguiUiUpdate(){
 		// Disabling alt key for imgui to prevent navigation with alt key (problems when using editor cotrols)
 		ImGui::SetKeyOwner(ImGuiKey_LeftAlt, ImGuiKeyOwner_Any, ImGuiInputFlags_LockThisFrame);
-
-		m_TitleBar.OnImguiUiUpdate(m_MainScene);
-		m_SceneViewport.OnImguiUiUpdate(m_MainScene, m_SelectedEntity);
-		m_SceneHierarcy.OnImguiUiUpdate(m_MainScene, m_SelectedEntity);
-		m_InspectorPanel.OnImguiUiUpdate(m_SelectedEntity);
-		m_ContentBrowser.OnImguiUiUpdate();
 	}
 
 }

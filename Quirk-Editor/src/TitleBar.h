@@ -1,15 +1,17 @@
 
 #pragma once
 
+#include "Quirk.h"
 
 namespace Quirk {
 
-	class TitleBar {
+	class EditorTitleBar : public TitleBar{
 	public:
-		TitleBar() = default;
-		~TitleBar() = default;
+		EditorTitleBar() = default;
+		~EditorTitleBar() = default;
 
-		void OnImguiUiUpdate(Ref<Scene>& scene);
+		virtual void OnImguiUiUpdate() override;
+		virtual bool OnEvent(Event& event) override { return false; }
 	};
 
 }

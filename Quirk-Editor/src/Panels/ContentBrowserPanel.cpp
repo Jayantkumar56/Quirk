@@ -101,7 +101,7 @@ namespace Quirk {
 					}
 				}
 
-				ImguiUI::Utility::TextWrappedCentered(directoryName.c_str());
+				ImguiUIUtility::TextWrappedCentered(directoryName.c_str());
 			}
 
 			ImGui::EndTable();

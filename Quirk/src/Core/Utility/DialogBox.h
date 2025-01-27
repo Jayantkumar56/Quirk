@@ -3,6 +3,7 @@
 #pragma once
 
 #include "Platform/Windows/WindowsDialogBox.h"
+#include "Core/Application/Window.h"
 
 namespace Quirk {
 
@@ -18,6 +19,7 @@ namespace Quirk {
 		const wchar_t*  DefaultPath     = nullptr;
 		const wchar_t*  FileNameLabel   = nullptr;
 		const wchar_t*	DefaultFileName = nullptr;
+		Window*         ParentWindow    = nullptr;
 		FileFilter*		Filters; 
 		unsigned int	NoOfFilters;
 	};

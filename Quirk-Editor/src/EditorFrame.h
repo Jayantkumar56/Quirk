@@ -11,17 +11,24 @@
 
 namespace Quirk {
 
-	class EditorLayer : public Layer {
+	class EditorFrame : public Frame {
 	public:
-		EditorLayer(const std::string& name = "Editor Layer") : 
-				Layer(name),
+		EditorFrame(WindowSpecification& spec) :
+				Frame(spec),
 				m_MainScene(CreateRef<Scene>(0, 0)),
-				m_SelectedEntity(),
-				m_SceneViewport(),
-				m_ContentBrowser("assets")				// temporarily set to "assets" till we have a proper project setup
-		{}
+				m_SelectedEntity()
+		{
+			SetTitleBar<EditorTitleBar>();
 
-		~EditorLayer() = default;
+			AddPanel<SceneViewportPanel>();
+			AddPanel<SceneHierarchyPanel>();
+			AddPanel<InspectorPanel>();
+			AddPanel<ContentBrowserPanel>("assets");
+
+			SetVSync(true);
+		}
+
+		~EditorFrame() = default;
 
 		virtual void OnAttach() override;
 		virtual void OnDetach() override;
@@ -30,15 +37,12 @@ namespace Quirk {
 		virtual void OnUpdate()			   override;
 		virtual void OnImguiUiUpdate()     override;
 
+		inline Ref<Scene>& GetMainScene()      { return m_MainScene;      }
+		inline Entity&     GetSelectedEntity() { return m_SelectedEntity; }
+
 	private:
 		Ref<Scene> m_MainScene;
 		Entity m_SelectedEntity;
-
-		TitleBar m_TitleBar;
-		SceneViewportPanel  m_SceneViewport;
-		SceneHierarchyPanel m_SceneHierarcy;
-		InspectorPanel		m_InspectorPanel;
-		ContentBrowserPanel m_ContentBrowser;
 	};
 
 }

@@ -3,7 +3,7 @@
 #include "ImguiUIUtility.h"
 
 
-namespace Quirk { namespace ImguiUI { namespace Utility {
+namespace Quirk { namespace ImguiUIUtility {
 
 	void Text(const char* text, ImFont* font) {
 		ImGui::AlignTextToFramePadding();
@@ -101,4 +101,4 @@ namespace Quirk { namespace ImguiUI { namespace Utility {
 		return valueChanged;
 	}
 
-}}}
+}}

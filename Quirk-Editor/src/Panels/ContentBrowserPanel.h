@@ -2,13 +2,15 @@
 
 #pragma once
 
+#include <Quirk.h>
+
 #include <filesystem>
 #include <stack>
 #include "Core/Renderer/Texture.h"
 
 namespace Quirk {
 
-	class ContentBrowserPanel {
+	class ContentBrowserPanel : public Panel {
 	public:
 		ContentBrowserPanel(const std::string& resourcePath) :
 				m_BaseProjectDirectory(resourcePath)
@@ -24,7 +26,9 @@ namespace Quirk {
 			m_RefreshIcon  = Texture2D::Create("assets/Images/refresh.png");
 		}
 
-		void OnImguiUiUpdate();
+		virtual void OnUpdate() override { }
+		virtual bool OnEvent(Event& event) override { return false; }
+		virtual void OnImguiUiUpdate() override;
 
 	private:
 		void FetchCurrentDirectoryContent();

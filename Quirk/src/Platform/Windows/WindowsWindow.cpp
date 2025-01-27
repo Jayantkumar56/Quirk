@@ -17,51 +17,40 @@
 #include <objbase.h>      // For COM headers
 #include <shobjidl.h>     // for IFileDialogEvents and IFileDialogControlEvents
 #include <WindowsX.h>
+#include "dwmapi.h"
+
+#define	DCX_USESTYLE 0x00010000
 
 // to provide imgui with the event data
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+typedef BOOL(*WIN32_EnableNonClientDpiScaling)(HWND);
 
 namespace Quirk {
 
-	HINSTANCE WindowsWindow::s_HInstance = nullptr;
+	HINSTANCE WindowsWindow::s_HInstance     = 0;
+	DWORD	  WindowsWindow::m_WindowStyle   = 0;
+	DWORD	  WindowsWindow::m_WindowExStyle = 0;
+	std::wstring_view WindowsWindow::m_WindClassName;
 
 	WindowsWindow::WindowsWindow(const WindowSpecification& spec, Window* window) {
-		// setting the callback temporarily to handle events occured in this constructor
-		EventDispatcher::RegisterEventCallback( [](Event& event) { return false; } );
+		DWORD windExStyles = m_WindowExStyle;
+		DWORD windStyles   = m_WindowStyle;
+		if (spec.Maximized) 
+			windStyles |= WS_MAXIMIZE;
 
-		m_WindowStyle   = WS_OVERLAPPEDWINDOW | WS_THICKFRAME | WS_SYSMENU | WS_MAXIMIZEBOX | WS_MINIMIZEBOX | WS_VISIBLE;
-		if (spec.Maximized) m_WindowStyle |= WS_MAXIMIZE;
+		uint16_t windWidth  = spec.Width;
+		uint16_t windHeight = spec.Height;
+		AdjustWindowSizeForDPI(windWidth, windHeight);
 
-		m_WindowExStyle = WS_EX_ACCEPTFILES;
-		m_WindClassName = L"Quirk";
-
-		WNDCLASSEXW wc	 = {};
-		wc.cbSize		 = sizeof(WNDCLASSEXW);
-		wc.style		 = CS_HREDRAW | CS_VREDRAW | CS_OWNDC | CS_DBLCLKS;
-		wc.lpfnWndProc	 = WindowProc;
-		wc.cbClsExtra	 = 0;
-		wc.cbWndExtra	 = 0;
-		wc.hInstance	 = s_HInstance;
-		wc.hIcon		 = 0;
-		wc.hCursor		 = LoadCursorW(NULL, IDC_ARROW);
-		wc.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
-		wc.lpszMenuName	 = 0;
-		wc.lpszClassName = m_WindClassName.c_str();
-		wc.hIconSm		 = 0;
-
-		QK_CORE_ASSERTEX(RegisterClassExW(&wc), "Failed to Register the window class! {0}", GetLastError());
-
-		uint16_t WindWidth  = spec.Width;
-		uint16_t WindHeight = spec.Height;
-		AdjustWindowSizeForDPI(WindWidth, WindHeight);
+		std::wstring title(spec.Title.begin(), spec.Title.end());
 
 		m_WindowHandle = CreateWindowExW(
-			m_WindowExStyle,							// The window accepts drag-drop files.
-			m_WindClassName.c_str(),					// Window class
-			spec.Title.c_str(),							// Window text
-			m_WindowStyle,								// Window style
+			windExStyles,								// The window accepts drag-drop files.
+			m_WindClassName.data(),						// Window class
+			title.c_str(),								// Window text
+			windStyles,									// Window style
 			spec.PosX,			spec.PosY,				// Postion of window on the screen
-			WindWidth,			WindHeight,				// height and width of the window
+			windWidth,			windHeight,				// height and width of the window
 			NULL,										// Parent window    
 			NULL,										// Menu
 			s_HInstance,								// Instance handle
@@ -70,19 +59,22 @@ namespace Quirk {
 
 		QK_CORE_ASSERT(m_WindowHandle, "Failed to create Window handle!");
 
-		// in the spec PosX and PosY contains windowframe position 
-		// calculating client area position and updating in the window object
-		POINT clientOrigin = { 0, 0 };
-		ClientToScreen(m_WindowHandle, &clientOrigin);
-		window->m_PosX = clientOrigin.x;
-		window->m_PosY = clientOrigin.y;
-
 		// putting this Window pointer into created HWND
 		SetPropW(m_WindowHandle, L"wndptr", window);
 		SetActiveWindow(m_WindowHandle);
 
 		HRESULT hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
 		QK_CORE_ASSERT(SUCCEEDED(hr), "Unable to Initialize COM!");
+
+		// Inform the application of the frame change to force redrawing without default titlebar
+		SetWindowPos(m_WindowHandle, NULL, 0, 0, 0, 0, SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOSIZE);
+
+		// in the spec PosX and PosY contains windowframe position 
+		// calculating client area position and updating in the window object
+		POINT clientOrigin = { 0, 0 };
+		ClientToScreen(m_WindowHandle, &clientOrigin);
+		window->m_PosX = clientOrigin.x;
+		window->m_PosY = clientOrigin.y;
 	}
 
 	WindowsWindow::~WindowsWindow() {
@@ -99,6 +91,26 @@ namespace Quirk {
 			SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2), 
 			"Unable to set Dpi Awareness to DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2"
 		);
+
+		m_WindowStyle   = WS_OVERLAPPEDWINDOW | WS_VISIBLE;
+		m_WindowExStyle = WS_EX_ACCEPTFILES;
+		m_WindClassName = L"QuirkApp";
+
+		WNDCLASSEXW wc   = {};
+		wc.cbSize        = sizeof(WNDCLASSEXW);
+		wc.style         = CS_HREDRAW | CS_VREDRAW | CS_OWNDC | CS_DBLCLKS;
+		wc.lpfnWndProc   = WindowProc;
+		wc.cbClsExtra    = 0;
+		wc.cbWndExtra    = 0;
+		wc.hInstance     = s_HInstance;
+		wc.hIcon         = 0;
+		wc.hCursor       = LoadCursorW(NULL, IDC_ARROW);
+		wc.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
+		wc.lpszMenuName  = 0;
+		wc.lpszClassName = m_WindClassName.data();
+		wc.hIconSm       = 0;
+
+		QK_CORE_ASSERTEX(RegisterClassExW(&wc), "Failed to Register the window class! {0}", GetLastError());
     }
 
 	void WindowsWindow::OnUpdate() {
@@ -107,6 +119,60 @@ namespace Quirk {
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		}
+	}
+
+	static void DrawWindowFrame(HWND hwnd) {
+		HDC dc = GetDCEx(hwnd, 0, DCX_WINDOW | DCX_USESTYLE);
+		PAINTSTRUCT paint;
+		BeginPaint(hwnd, &paint);
+
+		RECT frameRect;
+		RECT clientRect;
+		GetWindowRect(hwnd, &frameRect);
+		GetClientRect(hwnd, &clientRect);
+
+		ClientToScreen(hwnd, (LPPOINT)&clientRect.left);
+		ClientToScreen(hwnd, (LPPOINT)&clientRect.right);
+
+		{
+			SetDCBrushColor(dc, RGB(27, 47, 51));
+			SetDCPenColor(dc, RGB(27, 47, 51));
+
+			SelectObject(dc, GetStockObject(DC_PEN));
+			SelectObject(dc, GetStockObject(DC_BRUSH));
+
+			// left part of the frame
+			Rectangle(dc,
+				0,
+				0,
+				clientRect.left - frameRect.left,
+				clientRect.bottom - frameRect.top
+			);
+			// top part of the frame
+			Rectangle(dc,
+				clientRect.left - frameRect.left,
+				0,
+				frameRect.right - clientRect.left,
+				clientRect.top - frameRect.top
+			);
+			// right part of the frame
+			Rectangle(dc,
+				clientRect.right - frameRect.left,
+				0,
+				frameRect.right - frameRect.left,
+				frameRect.bottom - frameRect.top
+			);
+			// bottom part of the frame
+			Rectangle(dc,
+				0,
+				clientRect.bottom - frameRect.top,
+				clientRect.right - frameRect.left,
+				frameRect.bottom - frameRect.top
+			);
+		}
+
+		EndPaint(hwnd, &paint);
+		ReleaseDC(hwnd, dc);
 	}
 
 	LRESULT WindowsWindow::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
@@ -119,14 +185,99 @@ namespace Quirk {
 		if (!window) return DefWindowProc(hwnd, uMsg, wParam, lParam);
 
 		switch (uMsg) {
+			case WM_CREATE: 
+			case WM_ACTIVATE: {
+				return (LRESULT)0;
+			}
+
+			case WM_SETFOCUS:
+			case WM_KILLFOCUS: {
+				return (LRESULT)0;
+			}
+
+			// TO DO: figure out what WM_NCACTIVATE can do?
+			//		  occasional titlebar appearance can be removed by return (LRESULT)0; here but
+			//		  facing issues with other child window when return (LRESULT)0;
+			/*case WM_NCACTIVATE: {
+				DrawWindowFrame(hwnd);
+				return DefWindowProc(hwnd, uMsg, wParam, lParam);
+			}*/
+
+			case WM_QUIT:
 			case WM_CLOSE: {
 				WindowCloseEvent event;
 				EventDispatcher::DispatchEvent(event);
 				return (LRESULT)0;
 			}
 
-			case WM_ERASEBKGND: {
+			case WM_NCCALCSIZE: {
+				if (lParam == NULL) return (LRESULT)0;
+
+				UINT dpi = GetDpiForWindow(hwnd);
+				int frameX  = 4;
+				int frameY  = 4;
+				int padding = 0;
+
+				if (window->m_Maximized) {
+					frameX  = GetSystemMetricsForDpi(SM_CXFRAME, dpi);
+					frameY  = GetSystemMetricsForDpi(SM_CYFRAME, dpi);
+					padding = GetSystemMetricsForDpi(92, dpi);
+				}
+
+				NCCALCSIZE_PARAMS* params = (NCCALCSIZE_PARAMS*)lParam;
+				RECT* windowRect = params->rgrc;
+				windowRect->right  -= frameX + padding;
+				windowRect->left   += frameX + padding;
+				windowRect->bottom -= frameY + padding;
+				windowRect->top    += frameY + padding;
+				
 				return (LRESULT)0;
+			}
+
+			case WM_NCPAINT: {
+				DrawWindowFrame(hwnd);
+				return (LRESULT)0;
+			}
+
+			case WM_NCHITTEST: {
+				// Expand the hit test area for resizing
+				const int borderWidth = 4;
+
+				POINTS mousePos = MAKEPOINTS(lParam);
+				POINT clientMousePos = { mousePos.x, mousePos.y };
+				ScreenToClient(hwnd, &clientMousePos);
+
+				RECT windowRect;
+				GetClientRect(hwnd, &windowRect);
+
+				if (clientMousePos.y >= windowRect.bottom - borderWidth) {
+					if (clientMousePos.x <= borderWidth)
+						return HTBOTTOMLEFT;
+					else if (clientMousePos.x >= windowRect.right - borderWidth)
+						return HTBOTTOMRIGHT;
+					else
+						return HTBOTTOM;
+				}
+				else if (clientMousePos.y <= borderWidth) {
+					if (clientMousePos.x <= borderWidth)
+						return HTTOPLEFT;
+					else if (clientMousePos.x >= windowRect.right - borderWidth)
+						return HTTOPRIGHT;
+					else
+						return HTTOP;
+				}
+				else if (clientMousePos.x <= borderWidth) {
+					return HTLEFT;
+				}
+				else if (clientMousePos.x >= windowRect.right - borderWidth) {
+					return HTRIGHT;
+				}
+	
+				if (window->m_MoveWithCursor) {
+					return HTCAPTION;
+				}
+
+				return HTCLIENT;
 			}
 
 			case WM_SYSKEYUP:
@@ -305,13 +456,19 @@ namespace Quirk {
 			case WM_SIZE: {
 				uint16_t width = LOWORD(lParam), height = HIWORD(lParam);
 
-				window->m_Width = width;
+				window->m_Width  = width;
 				window->m_Height = height;
+				window->m_Maximized = (wParam == SIZE_MAXIMIZED);
 
 				WindowResizeEvent event(width, height);
 				EventDispatcher::DispatchEvent(event);
 
 				return (LRESULT)0;
+			}
+
+			case WM_SIZING: {
+				window->m_Maximized = false;
+				return TRUE;
 			}
 
 			case WM_MOVE: {
@@ -324,7 +481,7 @@ namespace Quirk {
 				return (LRESULT)0;
 			}
 		}
-		 
+
 		return DefWindowProc(hwnd, uMsg, wParam, lParam);
 	}
 

@@ -15,31 +15,26 @@
 
 namespace Quirk {
 
-	Application::Application(const std::wstring& appName, RendererAPI::API renderingAPI) :
-			m_AppName(appName),
-			m_Window({ appName, 1600, 900, 200, 50, false, true })
+	Application* Application::s_Instance = nullptr;
+
+	Application::Application(std::wstring appName, RendererAPI::API renderingAPI) :
+			m_AppName(std::move(appName))
 	{
 		s_Instance = this;
 		EventDispatcher::RegisterEventCallback(QK_BIND_EVENT_FN(Application::OnEvent));
 
+		GraphicalContext::Init(renderingAPI);
 		RenderCommands::Init(renderingAPI);
-		m_Window.SetAsCurrentContext();
 
 		Renderer::InitRenderer(renderingAPI);
-		Renderer2D::InitRenderer();
 	}
 
 	void Application::Run() {
+		Renderer2D::InitRenderer();
+
 		while (m_Running) {
 			Time::RefreshTime();
-
-			RenderCommands::Clear();
-
-			m_Window.OnUpdate();
-			LayerStack::UpdateLayers();
-			LayerStack::UpdateImguiUiLayers();
-
-			m_Window.SwapBuffers();
+			m_FrameManager.UpdateFrames();
 		}
 	}
 
@@ -47,7 +42,7 @@ namespace Quirk {
 		EventDispatcher::HandleEvent<WindowCloseEvent>(QK_BIND_EVENT_FN(Application::OnWindowClose));
 		EventDispatcher::HandleEvent<WindowResizeEvent>(QK_BIND_EVENT_FN(Application::OnWindowResize));
 
-		LayerStack::HandleEvent(event);
+		m_FrameManager.HandleEvent(event);
 	}
 
 	bool Application::OnWindowClose(WindowCloseEvent& event){

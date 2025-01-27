@@ -5,7 +5,7 @@
 #include "imgui.h"
 #include "imgui_internal.h"
 
-namespace Quirk { namespace ImguiUI { namespace Utility {
+namespace Quirk { namespace ImguiUIUtility {
 	
 	void Text(const char* text, ImFont* font);
 
@@ -17,5 +17,5 @@ namespace Quirk { namespace ImguiUI { namespace Utility {
 					ImFont* lableFont  = ImGui::GetIO().Fonts->Fonts[0],  ImFont* buttonFont = ImGui::GetIO().Fonts->Fonts[0],
 					ImFont* valuesFont = ImGui::GetIO().Fonts->Fonts[0]);
 
-}}}
+}}
 

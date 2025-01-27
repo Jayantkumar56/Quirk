@@ -11,14 +11,14 @@ namespace Quirk {
 		Edit = 0, Play
 	};
 
-	class SceneViewportPanel {
+	class SceneViewportPanel : public Panel {
 	public:
 		SceneViewportPanel(uint16_t width = 1, uint16_t height = 1);
 		~SceneViewportPanel() = default;
 
-		bool OnEvent(Event& event);
-		void OnUpdate(const Ref<Scene>& scene);
-		void OnImguiUiUpdate(Ref<Scene>& scene, Entity& selectedEntity);
+		virtual void OnUpdate()            override;
+		virtual bool OnEvent(Event& event) override;
+		virtual void OnImguiUiUpdate()     override;
 
 		uint16_t GetWidth()						const { return m_PanelWidth;    }
 		uint16_t GetHeight()					const { return m_PanelHeight;   }

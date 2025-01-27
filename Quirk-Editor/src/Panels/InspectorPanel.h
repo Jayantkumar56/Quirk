@@ -6,7 +6,7 @@
 
 namespace Quirk {
 
-	class InspectorPanel {
+	class InspectorPanel : public Panel {
 	public:
 		InspectorPanel() {
 			m_RemoveImage = Texture2D::Create("assets/Images/remove.png");
@@ -15,7 +15,9 @@ namespace Quirk {
 
 		~InspectorPanel() = default;
 
-		void OnImguiUiUpdate(Entity& entity);
+		virtual void OnUpdate() override { }
+		virtual bool OnEvent(Event& event) { return false; }
+		virtual void OnImguiUiUpdate() override;
 
 	private:
 		Ref<Texture> m_RemoveImage;

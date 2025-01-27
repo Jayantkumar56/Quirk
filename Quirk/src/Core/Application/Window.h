@@ -12,7 +12,7 @@
 namespace Quirk {
 
 	struct WindowSpecification {
-		std::wstring Title = L"Untitled";
+		std::string Title;
 		uint16_t	 Width; 
 		uint16_t	 Height;
 
@@ -21,25 +21,23 @@ namespace Quirk {
 		int32_t	PosY  = 0;
 		bool	VSyncOn;
 		bool	Maximized;
+		bool	CustomTitleBar = false;
 	};
 
 	class Window {
 	public:
-		Window(const WindowSpecification& spec) : 
-			m_Title	   (spec.Title  ),
+		Window(const WindowSpecification& spec) :
 			m_Width	   (spec.Width  ),
 			m_Height   (spec.Height ),
 			m_PosX	   (spec.PosX   ),
 			m_PosY	   (spec.PosX   ),
-			m_VSyncOn  (spec.VSyncOn),
 			m_Maximized(spec.Maximized),
 			m_Window   (spec, this    )
 		{
+			m_CustomTitleBarEnabled = spec.CustomTitleBar;
 		}
 
-		~Window() {
-			m_Context->DestroyContext(*this);
-		}
+		~Window() {}
 
 		void OnUpdate() { m_Window.OnUpdate(); }
 
@@ -56,52 +54,26 @@ namespace Quirk {
 		// Getters for local member varialbes ***************
 		
 		inline const void* GetNativeWindowObject() { return (void*)&m_Window; }
-		inline std::wstring GetTitle()			   { return m_Title;   }
 		inline int32_t		GetPosX()		 const { return m_PosX;    }
 		inline int32_t		GetPosY()		 const { return m_PosY;    }
 		inline uint16_t		GetWidth()		 const { return m_Width;   }
 		inline uint16_t		GetHeight()		 const { return m_Height;  }
-		inline bool			IsVSyncOn()		 const { return m_VSyncOn; }
 		inline float		GetAspectRatio() const { return static_cast<float>(m_Width) / static_cast<float>(m_Height); }
 
 		// Getters for local member varialbes ***************
 
-		// Call this only after Rendering API is set
-		inline void SetAsCurrentContext() {
-			if (m_Context.get() == nullptr) {
-				m_Context = GraphicalContext::Create();
-				m_Context->Init(*this);
-
-				if (m_VSyncOn)
-					m_Context->SetVSync(1);
-			}
-
-			m_Context->MakeContextCurrent();
-		}
-
-		inline void SetVSync(bool toggle) {
-			QK_CORE_ASSERT(m_Context.get() != nullptr, "GraphicalContext not created yet!");
-
-			if      (m_VSyncOn && !toggle) { m_Context->SetVSync(0); }
-			else if (!m_VSyncOn && toggle) { m_Context->SetVSync(1); }
-
-			m_VSyncOn = toggle;
-		}
-
-		inline void SwapBuffers()					 const { m_Context->SwapBuffer(); }
-		inline Ref<GraphicalContext> GetGraphicalContext() { return m_Context;		  }
+		inline void SetMoveWithCursor(bool toggle) { m_MoveWithCursor = toggle; }
 
 	private:
-		std::wstring m_Title;
 		uint16_t	 m_Width;
 		uint16_t	 m_Height;
 
 		// position of the client area
 		int32_t	m_PosX;						
-		int32_t	m_PosY;						
-		bool	m_VSyncOn;
+		int32_t	m_PosY;
 		bool	m_Maximized;
-		Ref<GraphicalContext> m_Context;
+		bool	m_CustomTitleBarEnabled;
+		bool	m_MoveWithCursor = false;
 
 		// made native window-object friend, 
 		// so the data could be modified right from the native object
