@@ -6,11 +6,6 @@
 #include "Core/Core.h"
 #include "Debug/Log.h"
 
-#ifdef QK_PLATFORM_WINDOWS
-#define WIN32_LEAN_AND_MEAN
-#include <Windows.h>
-#endif //QK_PLATFORM_WINDOWS
-
 // Include all GLM core / GLSL features
 #include "glm/glm.hpp" // vec2, vec3, mat4, radians
 // Include all GLM extensions
@@ -21,8 +16,8 @@
 
 #include "Core/Input/KeyCodes.h"
 #include "Core/Input/Events.h"
-#include "Core/Input/MouseEvents.h"
 #include "Core/Input/KeyboardEvents.h"
+#include "Core/Input/MouseEvents.h"
 #include "Core/Input/ApplicationEvents.h"
 #include "Core/Input/Input.h"
 

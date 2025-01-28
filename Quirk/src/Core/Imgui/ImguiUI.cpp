@@ -6,6 +6,16 @@
 #include "Platform/OpenGL/OpenGLContext.h"
 #include "Core/Imgui/ImguiUI.h"
 
+#include "Core/Application/Window.h"
+#include "Core/Renderer/GraphicalContext.h"
+
+#ifdef QK_PLATFORM_WINDOWS
+#include "wglext.h"
+#include "backends/imgui_impl_win32.h"
+#endif // QK_PLATFORM_WINDOWS
+
+#include "backends/imgui_impl_opengl3.h"
+
 // From Glad.h
 #define GL_FALSE 0
 #define GL_TRUE 1
@@ -59,7 +69,7 @@ namespace Quirk {
 		}
 	}
 
-	void ImguiUI::End(const Scope<GraphicalContext>& context) {
+	void ImguiUI::End(const Scope<GraphicalContext>& context) const {
 		ImGuiIO& io = ImGui::GetIO();
 
 		ImGui::Render();
@@ -72,6 +82,18 @@ namespace Quirk {
 
 			// Restore the OpenGL rendering context to the main window DC, since platform windows might have changed it.
 			context->MakeContextCurrent();
+		}
+	}
+
+	void ImguiUI::UpdateViewPorts() const {
+		for (auto viewport : m_Context->Viewports) {
+			if (viewport->PlatformHandle) {
+				MSG msg;
+				while (PeekMessageW(&msg, (HWND)viewport->PlatformHandle, 0, 0, PM_REMOVE) > 0) {
+					TranslateMessage(&msg);
+					DispatchMessage(&msg);
+				}
+			}
 		}
 	}
 
