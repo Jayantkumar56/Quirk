@@ -5,25 +5,31 @@
 #ifdef QK_PLATFORM_WINDOWS
 
 #include "Core/Core.h"
-#include "Core/Input/Input.h"
-#include "Core/Input/Events.h"
 #include "Core/Input/KeyCodes.h"
-#include "Core/Input/MouseEvents.h"
+#include "Core/Input/Events.h"
+
 #include "Core/Input/KeyboardEvents.h"
+#include "Core/Input/MouseEvents.h"
 #include "Core/Input/ApplicationEvents.h"
+
+#include "Core/Input/Input.h"
+
 #include "Core/Application/Window.h"
 #include "WindowsWindow.h"
 
 #include <objbase.h>      // For COM headers
 #include <shobjidl.h>     // for IFileDialogEvents and IFileDialogControlEvents
 #include <WindowsX.h>
-#include "dwmapi.h"
 
+// NOTE: do not know about this constant DCX_USESTYLE (DCX_USESTYLE is undocumented)
+//		 it helps to get the DC (Device Context) 
+//		 of full window (including client area and non client area)
+#ifndef DCX_USESTYLE
 #define	DCX_USESTYLE 0x00010000
+#endif // !DCX_USESTYLE
 
-// to provide imgui with the event data
+// to provide imgui with the event data (implemented in imgui_impl_win32.cpp in imgui)
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-typedef BOOL(*WIN32_EnableNonClientDpiScaling)(HWND);
 
 namespace Quirk {
 
@@ -31,6 +37,46 @@ namespace Quirk {
 	DWORD	  WindowsWindow::m_WindowStyle   = 0;
 	DWORD	  WindowsWindow::m_WindowExStyle = 0;
 	std::wstring_view WindowsWindow::m_WindClassName;
+
+    void WindowsWindow::Init(HINSTANCE hInstance) {
+		QK_CORE_ASSERT(hInstance, "Didn't got initial HINSTANCE from windows api!");
+		s_HInstance = hInstance;
+
+		// to maintin uniformity in window size among different dpi monitors
+		QK_CORE_ASSERTEX(
+			SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2), 
+			"Unable to set Dpi Awareness to DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2"
+		);
+
+		m_WindowStyle   = WS_OVERLAPPEDWINDOW | WS_VISIBLE;
+		m_WindowExStyle = WS_EX_ACCEPTFILES;
+		m_WindClassName = L"QuirkApp";
+
+		WNDCLASSEXW wc   = {};
+		wc.cbSize        = sizeof(WNDCLASSEXW);
+		wc.style         = CS_HREDRAW | CS_VREDRAW | CS_OWNDC | CS_DBLCLKS;
+		wc.lpfnWndProc   = WindowProc;
+		wc.cbClsExtra    = 0;
+		wc.cbWndExtra    = 0;
+		wc.hInstance     = s_HInstance;
+		wc.hIcon         = 0;
+		wc.hCursor       = LoadCursorW(NULL, IDC_ARROW);
+		wc.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
+		wc.lpszMenuName  = 0;
+		wc.lpszClassName = m_WindClassName.data();
+		wc.hIconSm       = 0;
+
+		QK_CORE_ASSERTEX(RegisterClassExW(&wc), "Failed to Register the window class! {0}", GetLastError());
+
+		// Initializes the COM library on the current thread
+		HRESULT hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
+		QK_CORE_ASSERT(SUCCEEDED(hr), "Unable to Initialize COM!");
+    }
+
+	void WindowsWindow::Terminate() {
+		// Closes the COM library on the current thread
+		CoUninitialize();
+	}
 
 	WindowsWindow::WindowsWindow(const WindowSpecification& spec, Window* window) {
 		DWORD windExStyles = m_WindowExStyle;
@@ -63,10 +109,7 @@ namespace Quirk {
 		SetPropW(m_WindowHandle, L"wndptr", window);
 		SetActiveWindow(m_WindowHandle);
 
-		HRESULT hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
-		QK_CORE_ASSERT(SUCCEEDED(hr), "Unable to Initialize COM!");
-
-		// Inform the application of the frame change to force redrawing without default titlebar
+		// Inform the application for the frame change to force redrawing without default titlebar
 		SetWindowPos(m_WindowHandle, NULL, 0, 0, 0, 0, SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOSIZE);
 
 		// in the spec PosX and PosY contains windowframe position 
@@ -78,44 +121,15 @@ namespace Quirk {
 	}
 
 	WindowsWindow::~WindowsWindow() {
-		CoUninitialize();
-		DestroyWindow(m_WindowHandle);
+		// NOTE: From Win32 api documentation :-
+		//		 A thread cannot use DestroyWindow to destroy a window 
+		//		 created by a different thread.
+		if (m_WindowHandle) DestroyWindow(m_WindowHandle);
 	}
 
-    void WindowsWindow::Init(HINSTANCE hInstance) {
-		QK_CORE_ASSERT(hInstance, "Didn't got initial HINSTANCE from windows api!");
-		s_HInstance = hInstance;
-
-		// to maintin uniformity in window size among different dpi monitors
-		QK_CORE_ASSERTEX(
-			SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2), 
-			"Unable to set Dpi Awareness to DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2"
-		);
-
-		m_WindowStyle   = WS_OVERLAPPEDWINDOW | WS_VISIBLE;
-		m_WindowExStyle = WS_EX_ACCEPTFILES;
-		m_WindClassName = L"QuirkApp";
-
-		WNDCLASSEXW wc   = {};
-		wc.cbSize        = sizeof(WNDCLASSEXW);
-		wc.style         = CS_HREDRAW | CS_VREDRAW | CS_OWNDC | CS_DBLCLKS;
-		wc.lpfnWndProc   = WindowProc;
-		wc.cbClsExtra    = 0;
-		wc.cbWndExtra    = 0;
-		wc.hInstance     = s_HInstance;
-		wc.hIcon         = 0;
-		wc.hCursor       = LoadCursorW(NULL, IDC_ARROW);
-		wc.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
-		wc.lpszMenuName  = 0;
-		wc.lpszClassName = m_WindClassName.data();
-		wc.hIconSm       = 0;
-
-		QK_CORE_ASSERTEX(RegisterClassExW(&wc), "Failed to Register the window class! {0}", GetLastError());
-    }
-
-	void WindowsWindow::OnUpdate() {
+	void WindowsWindow::OnUpdate() const {
 		MSG msg;
-		while (PeekMessageW(&msg, nullptr, 0, 0, PM_REMOVE) > 0) {
+		while (PeekMessageW(&msg, m_WindowHandle, 0, 0, PM_REMOVE) > 0) {
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		}
@@ -195,13 +209,16 @@ namespace Quirk {
 				return (LRESULT)0;
 			}
 
-			// TO DO: figure out what WM_NCACTIVATE can do?
-			//		  occasional titlebar appearance can be removed by return (LRESULT)0; here but
-			//		  facing issues with other child window when return (LRESULT)0;
-			/*case WM_NCACTIVATE: {
-				DrawWindowFrame(hwnd);
-				return DefWindowProc(hwnd, uMsg, wParam, lParam);
-			}*/
+			case WM_NCACTIVATE: {
+				// when DefWindowProc handles this message 
+				// it renderes the non client area whith the default colors
+				// returning 0 here makes the window behave abnormal
+
+				// from win32 api documentation :-
+				// return TRUE here to indicate 
+				// that the system should proceed with the default processing
+				return (LRESULT)1;
+			}
 
 			case WM_QUIT:
 			case WM_CLOSE: {
@@ -213,12 +230,16 @@ namespace Quirk {
 			case WM_NCCALCSIZE: {
 				if (lParam == NULL) return (LRESULT)0;
 
+				// TO DO: make width of frame chooseable
 				UINT dpi = GetDpiForWindow(hwnd);
 				int frameX  = 4;
 				int frameY  = 4;
 				int padding = 0;
 
 				if (window->m_Maximized) {
+					// in the maximised state window should have
+					// some padding around the client area
+					// this is to ensure client area do not overflow outside the display
 					frameX  = GetSystemMetricsForDpi(SM_CXFRAME, dpi);
 					frameY  = GetSystemMetricsForDpi(SM_CYFRAME, dpi);
 					padding = GetSystemMetricsForDpi(92, dpi);

@@ -142,14 +142,15 @@ namespace Quirk {
 	public:
 		inline void UpdateFrames() {
 			for (auto& frame : m_Frames) {
-				frame->m_Window.OnUpdate();
-
 				// setting graphical and imgui context for currrent frame
 				frame->m_Context->MakeContextCurrent();
-				frame->m_ImguiUI.SetCurrentImguiContext();
+				frame->m_ImguiUI.MakeCurrentImguiUIContext();
 
 				// clearing the backbuffer
 				RenderCommands::Clear();
+
+				frame->m_Window.OnUpdate();
+				frame->m_ImguiUI.UpdateViewPorts();
 				frame->OnUpdate();
 
 				for (auto& panel : frame->m_Panels)
@@ -169,6 +170,9 @@ namespace Quirk {
 				frame->SwapBuffer();
 			}
 		}
+
+		// right now HandleEvent called only when window is updated so no need to set context here
+		// as window is updated only after setting the proper current contexts
 
 		inline bool HandleEvent(Event& event) {
 			for (auto frame : m_Frames) {

@@ -19,14 +19,6 @@ namespace Quirk {
 		return (Wglproc)GetProcAddress(OpenGLContext::s_WGL.OpenGL32DLL, procName);
 	}
 
-	LRESULT CALLBACK OpenGLContext::WndProcTemp(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
-		switch (message) {
-			case WM_CREATE:
-			case WM_DESTROY: return (LRESULT)0;
-		}
-		return DefWindowProc(hWnd, message, wParam, lParam);
-	}
-
 	void OpenGLContext::Init() {
 		// Creating a temporary window
 		HWND tempWindowHandle = ::CreateWindowExW(
@@ -83,11 +75,11 @@ namespace Quirk {
 		QK_CORE_ASSERT(tempGLContext, "Failed to create GL context!");
 		QK_CORE_ASSERTEX(wglMakeCurrent(tempDeviceContext, tempGLContext), "Failed to make GL context current!");
 
-		s_WGL.ChoosePixelFormatARB      = (PFNWGLCHOOSEPIXELFORMATARBPROC)      wglGetProcAddress("wglChoosePixelFormatARB");
-		s_WGL.GetExtensionsStringEXT    = (PFNWGLGETEXTENSIONSSTRINGEXTPROC)    wglGetProcAddress("wglGetExtensionsStringEXT");
-		s_WGL.GetExtensionsStringARB    = (PFNWGLGETEXTENSIONSSTRINGARBPROC)    wglGetProcAddress("wglGetExtensionsStringARB");
-		s_WGL.CreateContextAttribsARB   = (PFNWGLCREATECONTEXTATTRIBSARBPROC)   wglGetProcAddress("wglCreateContextAttribsARB");
-		s_WGL.SwapIntervalEXT           = (PFNWGLSWAPINTERVALEXTPROC)           wglGetProcAddress("wglSwapIntervalEXT");
+		s_WGL.ChoosePixelFormatARB      = (PFNWGLCHOOSEPIXELFORMATARBPROC)      wglGetProcAddress("wglChoosePixelFormatARB"     );
+		s_WGL.GetExtensionsStringEXT    = (PFNWGLGETEXTENSIONSSTRINGEXTPROC)    wglGetProcAddress("wglGetExtensionsStringEXT"   );
+		s_WGL.GetExtensionsStringARB    = (PFNWGLGETEXTENSIONSSTRINGARBPROC)    wglGetProcAddress("wglGetExtensionsStringARB"   );
+		s_WGL.CreateContextAttribsARB   = (PFNWGLCREATECONTEXTATTRIBSARBPROC)   wglGetProcAddress("wglCreateContextAttribsARB"  );
+		s_WGL.SwapIntervalEXT           = (PFNWGLSWAPINTERVALEXTPROC)           wglGetProcAddress("wglSwapIntervalEXT"          );
 		s_WGL.GetPixelFormatAttribivARB = (PFNWGLGETPIXELFORMATATTRIBIVARBPROC) wglGetProcAddress("wglGetPixelFormatAttribivARB");
 
 		s_WGL.OpenGL32DLL = LoadLibraryA("opengl32.dll");
@@ -95,9 +87,9 @@ namespace Quirk {
 		QK_CORE_ASSERTEX(gladLoadGLLoader((GLADloadproc)GetProcAddressWGL), "Failed to initialize Glad!");
 		FreeModule(s_WGL.OpenGL32DLL);
 
-		QK_CORE_ASSERTEX(wglDeleteContext(tempGLContext), "Failed to delete context!");
-		QK_CORE_ASSERTEX(ReleaseDC(tempWindowHandle, tempDeviceContext), "Failed to release DC!");
-		QK_CORE_ASSERTEX(DestroyWindow(tempWindowHandle), "Failed to destroy window!");
+		QK_CORE_ASSERTEX(wglDeleteContext(tempGLContext),                "Failed to delete context!");
+		QK_CORE_ASSERTEX(ReleaseDC(tempWindowHandle, tempDeviceContext), "Failed to release DC!"    );
+		QK_CORE_ASSERTEX(DestroyWindow(tempWindowHandle),                "Failed to destroy window!");
 	}
 
 	OpenGLContext::OpenGLContext(Window& window){
