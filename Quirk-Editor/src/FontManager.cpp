@@ -6,13 +6,10 @@
 
 namespace Quirk {
 
-	std::unordered_map<uint16_t, ImFont*> FontManager::s_Fonts;
-	std::unordered_map<std::string, ImFont*> FontManager::s_FontsWithName;
-
 	std::string_view FontManager::GetFontPathWithWeight(FontWeight weight){
 		switch (weight) {
 			case FontWeight::Regular:	return "assets/Fonts/Schibsted_Grotesk/static/SchibstedGrotesk-Regular.ttf";
-			case FontWeight::Medium:		return "assets/Fonts/Schibsted_Grotesk/static/SchibstedGrotesk-Medium.ttf";
+			case FontWeight::Medium:	return "assets/Fonts/Schibsted_Grotesk/static/SchibstedGrotesk-Medium.ttf";
 			case FontWeight::SemiBold:	return "assets/Fonts/Schibsted_Grotesk/static/SchibstedGrotesk-SemiBold.ttf";
 			case FontWeight::Bold:		return "assets/Fonts/Schibsted_Grotesk/static/SchibstedGrotesk-Bold.ttf";
 			case FontWeight::ExtraBold:	return "assets/Fonts/Schibsted_Grotesk/static/SchibstedGrotesk-ExtraBold.ttf";

@@ -70,6 +70,9 @@ namespace Quirk {
 		colors[ImGuiCol_TabUnfocused]			= ImVec4{ 0.16f, 0.16f, 0.21f, 1.0f };
 		colors[ImGuiCol_TabUnfocusedActive]		= ImVec4{ 0.16f, 0.16f, 0.21f, 1.0f };
 
+		colors[ImGuiCol_TabSelectedOverline]       = ImVec4{ 0.09f, 0.09f, 0.15f, 1.0f };
+		colors[ImGuiCol_TabDimmedSelectedOverline] = ImVec4{ 0.09f, 0.09f, 0.15f, 1.0f };
+
 		// Scrollbar
 		colors[ImGuiCol_ScrollbarBg]			= ImVec4{ 0.1f, 0.1f, 0.13f, 1.0f };
 		colors[ImGuiCol_ScrollbarGrab]			= ImVec4{ 0.16f, 0.16f, 0.21f, 1.0f };

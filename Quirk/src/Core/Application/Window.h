@@ -25,16 +25,25 @@ namespace Quirk {
 	};
 
 	class Window {
+	private:
+		enum StateFlags {						// Stored in the m_StateFlags variable as
+			Maximized					=  0,			    /*   1 << 0,   */
+			CustomTitleBarEnabled		=  1,			    /*   1 << 1,   */
+			MoveWithCursor				=  2,			    /*   1 << 2,   */
+			CursorOverMinimiseButton	=  3,			    /*   1 << 3,   */
+			CursorOverMaximiseButton	=  4,			    /*   1 << 4,   */
+			CursorOverCloseButton		=  5,			    /*   1 << 5,   */
+		};
+
 	public:
 		Window(const WindowSpecification& spec) :
-			m_Width	   (spec.Width  ),
-			m_Height   (spec.Height ),
-			m_PosX	   (spec.PosX   ),
-			m_PosY	   (spec.PosX   ),
-			m_Maximized(spec.Maximized),
-			m_Window   (spec, this    )
+			m_Width  (spec.Width ),
+			m_Height (spec.Height),
+			m_PosX   (spec.PosX  ),
+			m_PosY   (spec.PosX  ),
+			m_StateFlags(((int)spec.CustomTitleBar << StateFlags::CustomTitleBarEnabled)),
+			m_Window    (spec, this    )
 		{
-			m_CustomTitleBarEnabled = spec.CustomTitleBar;
 		}
 
 		~Window() {}
@@ -43,9 +52,9 @@ namespace Quirk {
 
 		// Native Window related Calls	 ********************
 		
-		inline void* GetNativeHandle()	    { return m_Window.GetNativeHandle(); }
-		inline bool  IsCursorLocked() const { return m_Window.IsCursorLocked();	 }
-		inline bool  TrackingCursor() const { return m_Window.TrackingCursor();	 }
+		inline void* GetNativeHandle()	    noexcept { return m_Window.GetNativeHandle(); }
+		inline bool  IsCursorLocked() const noexcept { return m_Window.IsCursorLocked();  }
+		inline bool  TrackingCursor() const noexcept { return m_Window.TrackingCursor();  }
 		inline void  LockCursor()		    { m_Window.LockCursor();			 }
 		inline void  UnlockCursor()		    { m_Window.UnlockCursor();			 }
 
@@ -53,16 +62,39 @@ namespace Quirk {
 
 		// Getters for local member varialbes ***************
 		
-		inline const void* GetNativeWindowObject() { return (void*)&m_Window; }
-		inline int32_t		GetPosX()		 const { return m_PosX;    }
-		inline int32_t		GetPosY()		 const { return m_PosY;    }
-		inline uint16_t		GetWidth()		 const { return m_Width;   }
-		inline uint16_t		GetHeight()		 const { return m_Height;  }
-		inline float		GetAspectRatio() const { return static_cast<float>(m_Width) / static_cast<float>(m_Height); }
+		inline const void* GetNativeWindowObject() noexcept { return (void*)&m_Window; }
+		inline int32_t	   GetPosX()		 const noexcept { return m_PosX;    }
+		inline int32_t	   GetPosY()		 const noexcept { return m_PosY;    }
+		inline uint16_t	   GetWidth()		 const noexcept { return m_Width;   }
+		inline uint16_t	   GetHeight()		 const noexcept { return m_Height;  }
+		inline float	   GetAspectRatio()  const noexcept { return static_cast<float>(m_Width) / static_cast<float>(m_Height); }
+
+		inline bool IsMaximised()			  const noexcept { return GetStateFlag(StateFlags::Maximized);			   }
+		inline bool IsCustomTitleBarEnabled() const noexcept { return GetStateFlag(StateFlags::CustomTitleBarEnabled); }
+		inline bool GetCanMoveWithCursor()    const noexcept { return GetStateFlag(StateFlags::MoveWithCursor);        }
+		inline bool IsCursorOverCloseButton() const noexcept { return GetStateFlag(StateFlags::CursorOverCloseButton); }
+		inline bool IsCursorOverMaximiseButton() const noexcept { return GetStateFlag(StateFlags::CursorOverMaximiseButton); }
+		inline bool IsCursorOverMinimiseButton() const noexcept { return GetStateFlag(StateFlags::CursorOverMinimiseButton); }
 
 		// Getters for local member varialbes ***************
 
-		inline void SetMoveWithCursor(bool toggle) { m_MoveWithCursor = toggle; }
+		// Setters for local member variables ***************
+
+		inline void SetIsMaximised          (bool toggle)	 noexcept { return SetStateFlag(StateFlags::Maximized,                toggle); }
+		inline void SetCustomTitleBarEnabled(bool toggle)    noexcept { return SetStateFlag(StateFlags::CustomTitleBarEnabled,    toggle); }
+		inline void SetCanMoveWithCursor    (bool toggle)    noexcept { return SetStateFlag(StateFlags::MoveWithCursor,           toggle); }
+		inline void SetCursorOverCloseButton(bool toggle)    noexcept { return SetStateFlag(StateFlags::CursorOverCloseButton,    toggle); }
+		inline void SetCursorOverMaximiseButton(bool toggle) noexcept { return SetStateFlag(StateFlags::CursorOverMaximiseButton, toggle); }
+		inline void SetCursorOverMinimiseButton(bool toggle) noexcept { return SetStateFlag(StateFlags::CursorOverMinimiseButton, toggle); }
+
+		// Setters for local member variables ***************
+
+	private:
+		inline void SetStateFlag(StateFlags state, bool toggle) noexcept {
+			// first clearing the state bit then setting the value according to toggle 
+			m_StateFlags = (m_StateFlags & ~(1 << state)) | ((int)toggle << state);
+		}
+		inline bool GetStateFlag(StateFlags state) const noexcept { return (bool)(m_StateFlags & (1 << state)); }
 
 	private:
 		uint16_t	 m_Width;
@@ -71,9 +103,9 @@ namespace Quirk {
 		// position of the client area
 		int32_t	m_PosX;						
 		int32_t	m_PosY;
-		bool	m_Maximized;
-		bool	m_CustomTitleBarEnabled;
-		bool	m_MoveWithCursor = false;
+
+		// stores all the states flags and boolean properties of the window
+		int m_StateFlags;
 
 		// made native window-object friend, 
 		// so the data could be modified right from the native object

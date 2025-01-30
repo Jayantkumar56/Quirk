@@ -17,15 +17,15 @@ namespace Quirk {
 
 	class FontManager {
 	public:
-		FontManager() = delete;
-		~FontManager() = delete;
+		FontManager() = default;
+		~FontManager() = default;
 
-		static void LoadFonts();
-		static ImFont* GetFont(FontWeight weight, uint16_t size);
-		static ImFont* GetFont(const std::string& fontName);
+		void LoadFonts();
+		ImFont* GetFont(FontWeight weight, uint16_t size);
+		ImFont* GetFont(const std::string& fontName);
 
 	private:
-		static inline void LoadFont(ImGuiIO& io, FontWeight weight, uint16_t size, const char* name = nullptr) {
+		inline void LoadFont(ImGuiIO& io, FontWeight weight, uint16_t size, const char* name = nullptr) {
 			s_Fonts[weight + size] = io.Fonts->AddFontFromFileTTF(GetFontPathWithWeight(weight).data(), static_cast<float>(size));
 
 			if (name != nullptr) {
@@ -33,9 +33,11 @@ namespace Quirk {
 			}
 		}
 
-		static std::string_view GetFontPathWithWeight(FontWeight weight);
-		static std::unordered_map<uint16_t, ImFont*> s_Fonts;
-		static std::unordered_map<std::string, ImFont*> s_FontsWithName;
+		std::string_view GetFontPathWithWeight(FontWeight weight);
+
+	private:
+		std::unordered_map<uint16_t, ImFont*> s_Fonts;
+		std::unordered_map<std::string, ImFont*> s_FontsWithName;
 	};
 
 }

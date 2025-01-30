@@ -93,7 +93,7 @@ namespace Quirk {
 
 				const ImGuiPayload* imagePayload = ImGui::AcceptDragDropPayload("IMAGE_PATH");
 				if (imagePayload) {
-					int entityId =GetEntityIdOnClick(imagePos);
+					int entityId = GetEntityIdOnClick(imagePos);
 
 					if (entityId != -1) {
 						Entity entity((entt::entity)entityId, scene.get());

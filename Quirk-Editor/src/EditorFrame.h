@@ -9,6 +9,8 @@
 #include "Panels/InspectorPanel.h"
 #include "Panels/ContentBrowserPanel.h"
 
+#include "FontManager.h"
+
 namespace Quirk {
 
 	class EditorFrame : public Frame {
@@ -18,6 +20,8 @@ namespace Quirk {
 				m_MainScene(CreateRef<Scene>(0, 0)),
 				m_SelectedEntity()
 		{
+			m_FontManager.LoadFonts();
+
 			SetTitleBar<EditorTitleBar>();
 
 			AddPanel<SceneViewportPanel>();
@@ -37,12 +41,14 @@ namespace Quirk {
 		virtual void OnUpdate()			   override;
 		virtual void OnImguiUiUpdate()     override;
 
-		inline Ref<Scene>& GetMainScene()      { return m_MainScene;      }
-		inline Entity&     GetSelectedEntity() { return m_SelectedEntity; }
+		inline Ref<Scene>&  GetMainScene()      { return m_MainScene;      }
+		inline Entity&      GetSelectedEntity() { return m_SelectedEntity; }
+		inline FontManager& GetFontManager()    { return m_FontManager;    }
 
 	private:
-		Ref<Scene> m_MainScene;
-		Entity m_SelectedEntity;
+		Ref<Scene>	m_MainScene;
+		Entity		m_SelectedEntity;
+		FontManager m_FontManager;
 	};
 
 }

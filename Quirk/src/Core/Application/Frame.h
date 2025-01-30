@@ -27,8 +27,12 @@ namespace Quirk {
 		virtual void OnImguiUiUpdate()     = 0;
 		virtual bool OnEvent(Event& event) = 0;
 
-		Window& GetWindow();
-		inline Frame* GetParentFrame() { return m_ParentFrame; }
+		Window& GetWindow() noexcept;
+		inline Frame* GetParentFrame() noexcept { return m_ParentFrame; }
+
+		inline void SetCursorOverMinimiseButton(bool toggle) noexcept { GetWindow().SetCursorOverMinimiseButton(toggle); }
+		inline void SetCursorOverMaximiseButton(bool toggle) noexcept { GetWindow().SetCursorOverMaximiseButton(toggle); }
+		inline void SetCursorOverCloseButton(bool toggle)    noexcept { GetWindow().SetCursorOverCloseButton(toggle);    }
 
 	private:
 		inline void OnUiUpdate() {
@@ -37,7 +41,7 @@ namespace Quirk {
 
 				// telling window if it can move with cursor (when dragging titlebar with mouse)
 				bool itemNotHovered = ImGui::IsWindowHovered() && !ImGui::IsAnyItemHovered();
-				GetWindow().SetMoveWithCursor(itemNotHovered);
+				GetWindow().SetCanMoveWithCursor(itemNotHovered);
 
 				ImGui::EndMainMenuBar();
 			}
@@ -62,8 +66,8 @@ namespace Quirk {
 		virtual void OnImguiUiUpdate()     = 0;
 		virtual bool OnEvent(Event& event) = 0;
 
-		Window& GetWindow();
-		inline Frame* GetParentFrame() { return m_ParentFrame; }
+		Window& GetWindow() noexcept;
+		inline Frame* GetParentFrame() noexcept { return m_ParentFrame; }
 
 	private:
 		// to communicate with the parent Frame obj which manages this panel
@@ -107,8 +111,8 @@ namespace Quirk {
 
 		inline void SwapBuffer() const	     { m_Context->SwapBuffer();     }
 		inline void SetVSync(int toggle)     { m_Context->SetVSync(toggle); }
-		inline Window& GetWindow()		     { return m_Window;             }
-		inline const std::string& GetTitle() { return m_Title;              }
+		inline Window& GetWindow()		     noexcept { return m_Window;    }
+		inline const std::string& GetTitle() noexcept { return m_Title;     }
 
 		// lifetime of the panel is managed by the frame
 		template<PanelType P, typename ...Args>
@@ -140,56 +144,16 @@ namespace Quirk {
 
 	class FrameManager {
 	public:
-		inline void UpdateFrames() {
-			for (auto& frame : m_Frames) {
-				// setting graphical and imgui context for currrent frame
-				frame->m_Context->MakeContextCurrent();
-				frame->m_ImguiUI.MakeCurrentImguiUIContext();
-
-				// clearing the backbuffer
-				RenderCommands::Clear();
-
-				frame->m_Window.OnUpdate();
-				frame->m_ImguiUI.UpdateViewPorts();
-				frame->OnUpdate();
-
-				for (auto& panel : frame->m_Panels)
-					panel->OnUpdate();
-
-				// updating imgui ui of the current frame and it's panels
-				frame->m_ImguiUI.Begin();
-
-				frame->OnImguiUiUpdate();
-				frame->m_TitleBar->OnUiUpdate();
-
-				for (auto& panel : frame->m_Panels)
-					panel->OnImguiUiUpdate();
-
-				frame->m_ImguiUI.End(frame->m_Context);
-
-				frame->SwapBuffer();
-			}
-		}
+		void UpdateFrames();
 
 		// right now HandleEvent called only when window is updated so no need to set context here
 		// as window is updated only after setting the proper current contexts
 
-		inline bool HandleEvent(Event& event) {
-			for (auto frame : m_Frames) {
-				frame->OnEvent(event);
-				frame->m_TitleBar->OnEvent(event);
-
-				for (auto& panel : frame->m_Panels)
-					panel->OnEvent(event);
-			}
-
-			return false;
-		}
+		bool HandleEvent(Event& event);
 
 		template<FrameType T, typename ...Args>
 		inline void AddFrame(Args&& ...args) {
-			T* frame = new T(std::forward<Args>(args)...);
-			m_Frames.push_back(static_cast<Frame*>(frame));
+			m_Frames.push_back(static_cast<Frame*>(new T(std::forward<Args>(args)...)));
 		}
 
 		/*inline void RemoveFrame(Frame* layer) {

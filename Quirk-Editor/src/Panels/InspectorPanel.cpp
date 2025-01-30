@@ -9,7 +9,9 @@
 namespace Quirk {
 
 	template<typename T, typename function>
-	static void DrawComponentNode(const std::string& label, Entity& entity, function uiFunction) {
+	void DrawComponentNode(Frame* parentFrame, const std::string& label, Entity& entity, function uiFunction) {
+		auto& fontManager = ((EditorFrame*)parentFrame)->GetFontManager();
+
 		if (!entity.HasComponent<T>())
 			return;
 
@@ -23,7 +25,7 @@ namespace Quirk {
 		float treeNodeWidth = ImGui::GetContentRegionAvail().x;
 
 		ImGui::PushStyleColor(ImGuiCol_Text, Theme::GetColor(ColorName::DarkText));
-		ImGui::PushFont(FontManager::GetFont("ComponentTreeNode"));
+		ImGui::PushFont(fontManager.GetFont("ComponentTreeNode"));
 		bool treeNodeOpened = ImGui::TreeNodeEx((void*)typeid(T).hash_code(), treeNodeFlags, label.c_str());
 		ImGui::PopFont();
 
@@ -53,7 +55,9 @@ namespace Quirk {
 	}
 
 	void InspectorPanel::OnImguiUiUpdate() {
-		Entity& entity = ((EditorFrame*)GetParentFrame())->GetSelectedEntity();
+		auto parentFrame  = (EditorFrame*)GetParentFrame();
+		Entity& entity    = parentFrame->GetSelectedEntity();
+		auto& fontManager = parentFrame->GetFontManager();
 
 		ImGui::Begin("Inspector");
 
@@ -64,7 +68,7 @@ namespace Quirk {
 		}
 
 		ImGui::PushStyleColor(ImGuiCol_Border, Theme::GetColor(ColorName::PopupBorder));
-		ImFont* labelFont = FontManager::GetFont("PropertyLabel");
+		ImFont* labelFont = fontManager.GetFont("PropertyLabel");
 
 		if (entity.HasComponent<TagComponent>()) {
 			std::string& tag = entity.GetComponent<TagComponent>().Tag;
@@ -85,9 +89,9 @@ namespace Quirk {
 			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 10.0f);
 		}
 
-		DrawComponentNode<TransformComponent>("Transforms", entity, [labelFont](TransformComponent& component) {
-			ImFont* buttonFont = FontManager::GetFont(FontWeight::Bold, 18);
-			ImFont* valuesFont = FontManager::GetFont("DragFloatValue");
+		DrawComponentNode<TransformComponent>(parentFrame, "Transforms", entity, [&](TransformComponent& component) {
+			ImFont* buttonFont = fontManager.GetFont(FontWeight::Bold, 18);
+			ImFont* valuesFont = fontManager.GetFont("DragFloatValue");
 
 			// width of word "Position" is largest among the three also took extra 3 letters space as "xxx" for padding 
 			auto size = ImGui::CalcTextSize("Positionxxx");
@@ -102,7 +106,7 @@ namespace Quirk {
 			ImguiUIUtility::DrawFloat3("Scale", glm::value_ptr(component.Scale), 1.0f, 0.1f, size.x, labelFont, buttonFont, valuesFont);
 		});
 
-		DrawComponentNode<SpriteRendererComponent>("Sprite Renderer", entity, [&](SpriteRendererComponent& component) {
+		DrawComponentNode<SpriteRendererComponent>(parentFrame, "Sprite Renderer", entity, [&](SpriteRendererComponent& component) {
 			std::string texturePathStr = "No Texture";
 			if (component.Texture != nullptr) {
 				texturePathStr = component.Texture->GetPath().filename().string();
@@ -119,7 +123,7 @@ namespace Quirk {
 				ImguiUIUtility::Text("Color", labelFont);
 
 				ImGui::TableNextColumn();
-				ImGui::PushFont(FontManager::GetFont("DragFloatValue"));
+				ImGui::PushFont(fontManager.GetFont("DragFloatValue"));
 				ImGui::ColorEdit4("##color", glm::value_ptr(component.Color));
 				ImGui::PopFont();
 
@@ -189,7 +193,7 @@ namespace Quirk {
 			ImGui::GetStyle().CellPadding = cellPadding;
 		});
 
-		DrawComponentNode<CameraComponent>("Camera", entity, [labelFont] (CameraComponent& component) {
+		DrawComponentNode<CameraComponent>(parentFrame, "Camera", entity, [labelFont] (CameraComponent& component) {
 			int currentProjection = component.Camera.GetProjectionType();
 			const char* projectionTypes[] = { "Perspective", "Orthographic" };
 
@@ -295,7 +299,7 @@ namespace Quirk {
 			}
 		});
 
-		DrawComponentNode<RigidBody2DComponent>("RigidBody2D", entity, [labelFont](RigidBody2DComponent& component) {
+		DrawComponentNode<RigidBody2DComponent>(parentFrame, "RigidBody2D", entity, [labelFont](RigidBody2DComponent& component) {
 			int currentProjection = (int)component.Type;
 			const char* projectionTypes[] = { "Static", "Dynamic", "Kinematic" };
 
@@ -337,10 +341,7 @@ namespace Quirk {
 			ImGui::GetStyle().CellPadding = cellPadding;
 		});
 
-		DrawComponentNode<BoxCollider2DComponent>("BoxCollider2D", entity, [labelFont](BoxCollider2DComponent& component) {
-			/*glm::vec2 Offset = { 0.0f, 0.0f };
-			glm::vec2 Size = { 0.5f, 0.5f };*/
-
+		DrawComponentNode<BoxCollider2DComponent>(parentFrame, "BoxCollider2D", entity, [labelFont](BoxCollider2DComponent& component) {
 			if (ImGui::BeginTable("boxcColliderProperties", 2)) {
 				ImGui::TableNextRow();
 				ImGui::TableNextColumn();

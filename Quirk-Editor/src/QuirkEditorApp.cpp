@@ -15,8 +15,6 @@ namespace Quirk {
 		{
 			WindowSpecification tempSpec{ "Quirk Editor", 1600, 900, 200, 50, true, false, true };
 			AddFrame<EditorFrame>(tempSpec);
-
-			FontManager::LoadFonts();
 			Theme::SetTheme(ThemeName::DarkTheme);
 		}
 

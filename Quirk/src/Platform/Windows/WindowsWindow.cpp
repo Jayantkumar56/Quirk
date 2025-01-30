@@ -76,6 +76,7 @@ namespace Quirk {
 	void WindowsWindow::Terminate() {
 		// Closes the COM library on the current thread
 		CoUninitialize();
+		UnregisterClassW(m_WindClassName.data(), s_HInstance);
 	}
 
 	WindowsWindow::WindowsWindow(const WindowSpecification& spec, Window* window) {
@@ -199,7 +200,7 @@ namespace Quirk {
 		if (!window) return DefWindowProc(hwnd, uMsg, wParam, lParam);
 
 		switch (uMsg) {
-			case WM_CREATE: 
+			case WM_CREATE:
 			case WM_ACTIVATE: {
 				return (LRESULT)0;
 			}
@@ -207,98 +208,6 @@ namespace Quirk {
 			case WM_SETFOCUS:
 			case WM_KILLFOCUS: {
 				return (LRESULT)0;
-			}
-
-			case WM_NCACTIVATE: {
-				// when DefWindowProc handles this message 
-				// it renderes the non client area whith the default colors
-				// returning 0 here makes the window behave abnormal
-
-				// from win32 api documentation :-
-				// return TRUE here to indicate 
-				// that the system should proceed with the default processing
-				return (LRESULT)1;
-			}
-
-			case WM_QUIT:
-			case WM_CLOSE: {
-				WindowCloseEvent event;
-				EventDispatcher::DispatchEvent(event);
-				return (LRESULT)0;
-			}
-
-			case WM_NCCALCSIZE: {
-				if (lParam == NULL) return (LRESULT)0;
-
-				// TO DO: make width of frame chooseable
-				UINT dpi = GetDpiForWindow(hwnd);
-				int frameX  = 4;
-				int frameY  = 4;
-				int padding = 0;
-
-				if (window->m_Maximized) {
-					// in the maximised state window should have
-					// some padding around the client area
-					// this is to ensure client area do not overflow outside the display
-					frameX  = GetSystemMetricsForDpi(SM_CXFRAME, dpi);
-					frameY  = GetSystemMetricsForDpi(SM_CYFRAME, dpi);
-					padding = GetSystemMetricsForDpi(92, dpi);
-				}
-
-				NCCALCSIZE_PARAMS* params = (NCCALCSIZE_PARAMS*)lParam;
-				RECT* windowRect = params->rgrc;
-				windowRect->right  -= frameX + padding;
-				windowRect->left   += frameX + padding;
-				windowRect->bottom -= frameY + padding;
-				windowRect->top    += frameY + padding;
-				
-				return (LRESULT)0;
-			}
-
-			case WM_NCPAINT: {
-				DrawWindowFrame(hwnd);
-				return (LRESULT)0;
-			}
-
-			case WM_NCHITTEST: {
-				// Expand the hit test area for resizing
-				const int borderWidth = 4;
-
-				POINTS mousePos = MAKEPOINTS(lParam);
-				POINT clientMousePos = { mousePos.x, mousePos.y };
-				ScreenToClient(hwnd, &clientMousePos);
-
-				RECT windowRect;
-				GetClientRect(hwnd, &windowRect);
-
-				if (clientMousePos.y >= windowRect.bottom - borderWidth) {
-					if (clientMousePos.x <= borderWidth)
-						return HTBOTTOMLEFT;
-					else if (clientMousePos.x >= windowRect.right - borderWidth)
-						return HTBOTTOMRIGHT;
-					else
-						return HTBOTTOM;
-				}
-				else if (clientMousePos.y <= borderWidth) {
-					if (clientMousePos.x <= borderWidth)
-						return HTTOPLEFT;
-					else if (clientMousePos.x >= windowRect.right - borderWidth)
-						return HTTOPRIGHT;
-					else
-						return HTTOP;
-				}
-				else if (clientMousePos.x <= borderWidth) {
-					return HTLEFT;
-				}
-				else if (clientMousePos.x >= windowRect.right - borderWidth) {
-					return HTRIGHT;
-				}
-	
-				if (window->m_MoveWithCursor) {
-					return HTCAPTION;
-				}
-
-				return HTCLIENT;
 			}
 
 			case WM_SYSKEYUP:
@@ -479,7 +388,7 @@ namespace Quirk {
 
 				window->m_Width  = width;
 				window->m_Height = height;
-				window->m_Maximized = (wParam == SIZE_MAXIMIZED);
+				window->SetIsMaximised(wParam == SIZE_MAXIMIZED);
 
 				WindowResizeEvent event(width, height);
 				EventDispatcher::DispatchEvent(event);
@@ -488,7 +397,7 @@ namespace Quirk {
 			}
 
 			case WM_SIZING: {
-				window->m_Maximized = false;
+				window->SetIsMaximised(false);
 				return TRUE;
 			}
 
@@ -500,6 +409,103 @@ namespace Quirk {
 				EventDispatcher::DispatchEvent(event);
 
 				return (LRESULT)0;
+			}
+		}
+
+		if (!window->IsCustomTitleBarEnabled())
+			return DefWindowProc(hwnd, uMsg, wParam, lParam);
+
+		switch (uMsg) {
+			case WM_NCACTIVATE: {
+				// when DefWindowProc handles this message 
+				// it renderes the non client area whith the default colors
+				// returning 0 here makes the window behave abnormal
+
+				// from win32 api documentation :-
+				// return TRUE here to indicate 
+				// that the system should proceed with the default processing
+				return (LRESULT)1;
+			}
+
+			case WM_QUIT:
+			case WM_CLOSE: {
+				WindowCloseEvent event;
+				EventDispatcher::DispatchEvent(event);
+				return (LRESULT)0;
+			}
+
+			case WM_NCCALCSIZE: {
+				if (lParam == NULL) return (LRESULT)0;
+
+				// TO DO: make width of frame chooseable
+				UINT dpi = GetDpiForWindow(hwnd);
+				int frameX = 4;
+				int frameY = 4;
+				int padding = 0;
+
+				if (window->IsMaximised()) {
+					// in the maximised state window should have
+					// some padding around the client area
+					// this is to ensure client area do not overflow outside the display
+					frameX = GetSystemMetricsForDpi(SM_CXFRAME, dpi);
+					frameY = GetSystemMetricsForDpi(SM_CYFRAME, dpi);
+					padding = GetSystemMetricsForDpi(92, dpi);
+				}
+
+				NCCALCSIZE_PARAMS* params = (NCCALCSIZE_PARAMS*)lParam;
+				RECT* windowRect = params->rgrc;
+				windowRect->right -= frameX + padding;
+				windowRect->left += frameX + padding;
+				windowRect->bottom -= frameY + padding;
+				windowRect->top += frameY + padding;
+
+				return (LRESULT)0;
+			}
+
+			case WM_NCPAINT: {
+				DrawWindowFrame(hwnd);
+				return (LRESULT)0;
+			}
+
+			case WM_NCHITTEST: {
+				// Expand the hit test area for resizing
+				const int borderWidth = 4;
+
+				POINTS mousePos = MAKEPOINTS(lParam);
+				POINT clientMousePos = { mousePos.x, mousePos.y };
+				ScreenToClient(hwnd, &clientMousePos);
+
+				RECT windowRect;
+				GetClientRect(hwnd, &windowRect);
+
+				if (clientMousePos.y >= windowRect.bottom - borderWidth) {
+					if (clientMousePos.x <= borderWidth)
+						return HTBOTTOMLEFT;
+					else if (clientMousePos.x >= windowRect.right - borderWidth)
+						return HTBOTTOMRIGHT;
+					else
+						return HTBOTTOM;
+				}
+				else if (clientMousePos.y <= borderWidth) {
+					if (clientMousePos.x <= borderWidth)
+						return HTTOPLEFT;
+					else if (clientMousePos.x >= windowRect.right - borderWidth)
+						return HTTOPRIGHT;
+					else
+						return HTTOP;
+				}
+				else if (clientMousePos.x <= borderWidth) {
+					return HTLEFT;
+				}
+				else if (clientMousePos.x >= windowRect.right - borderWidth) {
+					return HTRIGHT;
+				}
+
+				if (window->GetCanMoveWithCursor()) {
+					return HTCAPTION;
+				}
+
+				return HTCLIENT;
 			}
 		}
 
