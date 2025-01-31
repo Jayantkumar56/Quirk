@@ -20,6 +20,7 @@ namespace Quirk {
 				m_MainScene(CreateRef<Scene>(0, 0)),
 				m_SelectedEntity()
 		{
+			Renderer2D::InitRenderer();
 			m_FontManager.LoadFonts();
 
 			SetTitleBar<EditorTitleBar>();

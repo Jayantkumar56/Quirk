@@ -30,8 +30,6 @@ namespace Quirk {
 	}
 
 	void Application::Run() {
-		Renderer2D::InitRenderer();
-
 		while (m_Running) {
 			Time::RefreshTime();
 			m_FrameManager.UpdateFrames();

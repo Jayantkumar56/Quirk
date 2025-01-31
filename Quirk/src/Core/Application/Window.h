@@ -37,16 +37,45 @@ namespace Quirk {
 
 	public:
 		Window(const WindowSpecification& spec) :
-			m_Width  (spec.Width ),
-			m_Height (spec.Height),
-			m_PosX   (spec.PosX  ),
-			m_PosY   (spec.PosX  ),
-			m_StateFlags(((int)spec.CustomTitleBar << StateFlags::CustomTitleBarEnabled)),
-			m_Window    (spec, this    )
+				m_Width  (spec.Width ),
+				m_Height (spec.Height),
+				m_PosX   (spec.PosX  ),
+				m_PosY   (spec.PosX  ),
+				// CustomTitleBar flag should be set before creating native window object (especially for WindowsWindow)
+				m_StateFlags(((int)spec.CustomTitleBar << StateFlags::CustomTitleBarEnabled)),
+				m_Window    (spec, this    )
+		{
+			SetIsMaximised(spec.Maximized);
+		}
+
+		// two different objects should not hold ownership of same native window
+		Window(Window& other)			 = delete;
+		Window& operator=(Window& other) = delete;
+
+		// NOTE: A thread cannot destroy a window created by a different thread,
+		//       so Window should not be moved to such different thread bound object
+		Window(Window&& other) noexcept : 
+				m_Width     (other.m_Width            ),
+				m_Height    (other.m_Height           ),
+				m_PosX      (other.m_PosX             ),
+				m_PosY      (other.m_PosY             ),
+				m_StateFlags(other.m_StateFlags       ),
+				m_Window    (std::move(other.m_Window))
 		{
 		}
 
-		~Window() {}
+		// NOTE: A thread cannot destroy a window created by a different thread,
+		//       so Window should not be moved to such different thread bound object
+		Window& operator=(Window&& other) noexcept {
+			m_Width  = other.m_Width;
+			m_Height = other.m_Height;
+			m_PosX   = other.m_PosX;
+			m_PosY   = other.m_PosY;
+			m_Window = std::move(other.m_Window);
+			return *this;
+		}
+
+		~Window() = default;
 
 		void OnUpdate() { m_Window.OnUpdate(); }
 
@@ -80,12 +109,12 @@ namespace Quirk {
 
 		// Setters for local member variables ***************
 
-		inline void SetIsMaximised          (bool toggle)	 noexcept { return SetStateFlag(StateFlags::Maximized,                toggle); }
-		inline void SetCustomTitleBarEnabled(bool toggle)    noexcept { return SetStateFlag(StateFlags::CustomTitleBarEnabled,    toggle); }
-		inline void SetCanMoveWithCursor    (bool toggle)    noexcept { return SetStateFlag(StateFlags::MoveWithCursor,           toggle); }
-		inline void SetCursorOverCloseButton(bool toggle)    noexcept { return SetStateFlag(StateFlags::CursorOverCloseButton,    toggle); }
-		inline void SetCursorOverMaximiseButton(bool toggle) noexcept { return SetStateFlag(StateFlags::CursorOverMaximiseButton, toggle); }
-		inline void SetCursorOverMinimiseButton(bool toggle) noexcept { return SetStateFlag(StateFlags::CursorOverMinimiseButton, toggle); }
+		inline void SetIsMaximised          (bool toggle)	 noexcept { SetStateFlag(StateFlags::Maximized,                toggle); }
+		inline void SetCustomTitleBarEnabled(bool toggle)    noexcept { SetStateFlag(StateFlags::CustomTitleBarEnabled,    toggle); }
+		inline void SetCanMoveWithCursor    (bool toggle)    noexcept { SetStateFlag(StateFlags::MoveWithCursor,           toggle); }
+		inline void SetCursorOverCloseButton(bool toggle)    noexcept { SetStateFlag(StateFlags::CursorOverCloseButton,    toggle); }
+		inline void SetCursorOverMaximiseButton(bool toggle) noexcept { SetStateFlag(StateFlags::CursorOverMaximiseButton, toggle); }
+		inline void SetCursorOverMinimiseButton(bool toggle) noexcept { SetStateFlag(StateFlags::CursorOverMinimiseButton, toggle); }
 
 		// Setters for local member variables ***************
 

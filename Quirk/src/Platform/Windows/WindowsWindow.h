@@ -22,19 +22,15 @@ namespace Quirk {
 		WindowsWindow(WindowsWindow& other)            = delete;
 		WindowsWindow& operator=(WindowsWindow& other) = delete;
 
-		WindowsWindow(WindowsWindow&& other) noexcept {
-			// taking ownership of window handle from the other WindowsWindow object
-			m_WindowHandle = other.m_WindowHandle;
-			other.m_WindowHandle = nullptr;
-		}
+		// NOTE: A thread cannot destroy a window created by a different thread,
+		//       so Window should not be moved to such different thread bound object
+		WindowsWindow(WindowsWindow&& other)            noexcept;
+		WindowsWindow& operator=(WindowsWindow&& other) noexcept;
 
-		WindowsWindow& operator=(WindowsWindow&& other) noexcept {
-			// taking ownership of window handle from the other WindowsWindow object
-			m_WindowHandle = other.m_WindowHandle;
-			other.m_WindowHandle = nullptr;
-		}
-
-		~WindowsWindow();
+		// NOTE: From Win32 api documentation :-
+		//		 A thread cannot use DestroyWindow to destroy a window 
+		//		 created by a different thread.
+		~WindowsWindow() { if (m_WindowHandle) DestroyWindow(m_WindowHandle); }
 
 		void OnUpdate() const;
 

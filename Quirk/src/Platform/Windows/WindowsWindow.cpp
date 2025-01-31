@@ -121,11 +121,26 @@ namespace Quirk {
 		window->m_PosY = clientOrigin.y;
 	}
 
-	WindowsWindow::~WindowsWindow() {
-		// NOTE: From Win32 api documentation :-
-		//		 A thread cannot use DestroyWindow to destroy a window 
-		//		 created by a different thread.
+	WindowsWindow::WindowsWindow(WindowsWindow&& other) noexcept :
+		// taking ownership of window handle from the other WindowsWindow object
+		m_WindowHandle(other.m_WindowHandle),
+		m_CursorLocked(other.m_CursorLocked),
+		m_CursorLeftWindow(other.m_CursorLeftWindow)
+	{
+		other.m_WindowHandle = nullptr;
+	}
+
+	WindowsWindow& WindowsWindow::operator=(WindowsWindow&& other) noexcept {
+		// destroying the current window if exist
 		if (m_WindowHandle) DestroyWindow(m_WindowHandle);
+
+		// taking ownership of window handle from the other WindowsWindow object
+		m_WindowHandle = other.m_WindowHandle;
+		other.m_WindowHandle = nullptr;
+
+		m_CursorLocked = other.m_CursorLocked;
+		m_CursorLeftWindow = other.m_CursorLeftWindow;
+		return *this;
 	}
 
 	void WindowsWindow::OnUpdate() const {
@@ -202,6 +217,13 @@ namespace Quirk {
 		switch (uMsg) {
 			case WM_CREATE:
 			case WM_ACTIVATE: {
+				return (LRESULT)0;
+			}
+
+			case WM_QUIT:
+			case WM_CLOSE: {
+				WindowCloseEvent event;
+				EventDispatcher::DispatchEvent(event);
 				return (LRESULT)0;
 			}
 
@@ -397,7 +419,6 @@ namespace Quirk {
 			}
 
 			case WM_SIZING: {
-				window->SetIsMaximised(false);
 				return TRUE;
 			}
 
@@ -425,13 +446,6 @@ namespace Quirk {
 				// return TRUE here to indicate 
 				// that the system should proceed with the default processing
 				return (LRESULT)1;
-			}
-
-			case WM_QUIT:
-			case WM_CLOSE: {
-				WindowCloseEvent event;
-				EventDispatcher::DispatchEvent(event);
-				return (LRESULT)0;
 			}
 
 			case WM_NCCALCSIZE: {
@@ -468,36 +482,42 @@ namespace Quirk {
 			}
 
 			case WM_NCHITTEST: {
+				// handling the buttons first
+				if (window->IsCursorOverCloseButton())    return HTCLOSE;
+				if (window->IsCursorOverMaximiseButton()) return HTMAXBUTTON;
+				if (window->IsCursorOverMinimiseButton()) return HTMINBUTTON;
+
 				// Expand the hit test area for resizing
 				const int borderWidth = 4;
 
-				POINTS mousePos = MAKEPOINTS(lParam);
-				POINT clientMousePos = { mousePos.x, mousePos.y };
+				POINT clientMousePos = { GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
 				ScreenToClient(hwnd, &clientMousePos);
 
 				RECT windowRect;
-				GetClientRect(hwnd, &windowRect);
+				GetWindowRect(hwnd, &windowRect);
 
 				if (clientMousePos.y >= windowRect.bottom - borderWidth) {
 					if (clientMousePos.x <= borderWidth)
 						return HTBOTTOMLEFT;
-					else if (clientMousePos.x >= windowRect.right - borderWidth)
+					if (clientMousePos.x >= windowRect.right - borderWidth)
 						return HTBOTTOMRIGHT;
-					else
-						return HTBOTTOM;
+					
+					return HTBOTTOM;
 				}
-				else if (clientMousePos.y <= borderWidth) {
+				if (clientMousePos.y <= borderWidth) {
+					if (window->IsMaximised())		// when window is maximised no need for returning top
+						return HTCAPTION;
 					if (clientMousePos.x <= borderWidth)
 						return HTTOPLEFT;
-					else if (clientMousePos.x >= windowRect.right - borderWidth)
+					if (clientMousePos.x >= windowRect.right - borderWidth)
 						return HTTOPRIGHT;
-					else
-						return HTTOP;
+					
+					return HTTOP;
 				}
-				else if (clientMousePos.x <= borderWidth) {
+				if (clientMousePos.x <= borderWidth) {
 					return HTLEFT;
 				}
-				else if (clientMousePos.x >= windowRect.right - borderWidth) {
+				if (clientMousePos.x >= windowRect.right - borderWidth) {
 					return HTRIGHT;
 				}
 

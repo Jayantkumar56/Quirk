@@ -4,6 +4,12 @@ workspace "Quirk"
     configurations { "Debug", "Release", "Dist" }
     flags          { "MultiProcessorCompile"    }
 
+    filter "configurations:Release"
+        flags { "LinkTimeOptimization" }
+    filter "configurations:Dist"
+        flags { "LinkTimeOptimization" }
+
+
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 -- Include directories relative to root folder (solution directory)
