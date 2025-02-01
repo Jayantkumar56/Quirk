@@ -1,10 +1,11 @@
 
 #include "Quirk.h"
 #include "Core/Application/EntryPoint.h"
-#include "EditorFrame.h"
-#include "FontManager.h"
-#include "Theme.h"
 
+#include "Editor/EditorFrame.h"
+#include "Launcher/LauncherFrame.h"
+
+#include "Theme.h"
 
 namespace Quirk {
 
@@ -14,7 +15,16 @@ namespace Quirk {
 				Application(L"Quirk Engine", RendererAPI::API::OpenGL)
 		{
 			WindowSpecification tempSpec{ "Quirk Editor", 1600, 900, 200, 50, true, false, true };
+
+			tempSpec.Width  = 1600;
+			tempSpec.Height = 900;
 			AddFrame<EditorFrame>(tempSpec);
+			Theme::SetTheme(ThemeName::DarkTheme);
+
+			// NOTE: for testing of multiple frames
+			tempSpec.Width  = 800;
+			tempSpec.Height = 800;
+			AddFrame<LauncherFrame>(tempSpec);
 			Theme::SetTheme(ThemeName::DarkTheme);
 		}
 

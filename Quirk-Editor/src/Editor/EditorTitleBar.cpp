@@ -2,7 +2,7 @@
 
 
 #include "Quirk.h"
-#include "TitleBar.h"
+#include "EditorTitleBar.h"
 #include "Theme.h"
 #include "EditorFrame.h"
 

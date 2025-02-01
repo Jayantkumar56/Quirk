@@ -3,7 +3,6 @@
 #pragma once
 #ifdef QK_PLATFORM_WINDOWS
 
-#include <shobjidl.h>
 #include <filesystem>
 
 namespace Quirk {

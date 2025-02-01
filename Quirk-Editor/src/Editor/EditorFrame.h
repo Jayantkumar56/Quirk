@@ -3,7 +3,7 @@
 #pragma once
 
 #include "Quirk.h"
-#include "TitleBar.h"
+#include "EditorTitleBar.h"
 #include "Panels/SceneViewportPanel.h"
 #include "Panels/SceneHierarchyPanel.h"
 #include "Panels/InspectorPanel.h"

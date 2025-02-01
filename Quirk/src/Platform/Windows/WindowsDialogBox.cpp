@@ -9,6 +9,7 @@
 #include "Core/Application/Application.h"
 #include "Core/Utility/DialogBox.h"
 
+#include <shobjidl.h>
 
 namespace Quirk {
 

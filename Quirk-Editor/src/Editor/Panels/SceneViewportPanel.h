@@ -3,7 +3,7 @@
 #pragma once
 
 #include "Quirk.h"
-#include "EditorCamera.h"
+#include "Editor/EditorCamera.h"
 
 namespace Quirk {
 

@@ -5,8 +5,6 @@
 #include "Core/Core.h"
 
 #ifdef QK_PLATFORM_WINDOWS
-#define WIN32_LEAN_AND_MEAN
-#include<Windows.h>
 typedef void (*Wglproc)(void);
 #endif // QK_PLATFORM_WINDOWS
 

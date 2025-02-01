@@ -481,7 +481,34 @@ namespace Quirk {
 				return (LRESULT)0;
 			}
 
+			case WM_NCLBUTTONDOWN: {
+				if (wParam == HTCAPTION) {
+					DefWindowProc(hwnd, uMsg, wParam, lParam);
+				}
+				else if (wParam == HTCLOSE) {
+					WindowCloseEvent event;
+					EventDispatcher::DispatchEvent(event);
+				}
+				else if (wParam == HTMAXBUTTON) {
+					if (window->IsMaximised()) {
+						window->SetIsMaximised(false);
+						ShowWindow(hwnd, SW_RESTORE);
+					}
+					else {
+						window->SetIsMaximised(true);
+						ShowWindow(hwnd, SW_MAXIMIZE);
+					}
+				}
+				else if (wParam == HTMINBUTTON) {
+					ShowWindow(hwnd, SW_MINIMIZE);
+				}
+
+				return (LRESULT)0;
+			}
+
 			case WM_NCHITTEST: {
+				//DefWindowProc(hwnd, uMsg, wParam, lParam);
+
 				// handling the buttons first
 				if (window->IsCursorOverCloseButton())    return HTCLOSE;
 				if (window->IsCursorOverMaximiseButton()) return HTMAXBUTTON;

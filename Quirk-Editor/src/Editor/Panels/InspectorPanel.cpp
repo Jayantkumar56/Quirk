@@ -3,7 +3,7 @@
 #include "InspectorPanel.h"
 #include "FontManager.h"
 #include "Theme.h"
-#include "EditorFrame.h"
+#include "Editor/EditorFrame.h"
 #include "Core/Imgui/ImguiUIUtility.h"
 
 namespace Quirk {
