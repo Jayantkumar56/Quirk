@@ -14,18 +14,21 @@ namespace Quirk {
 		QuirkEditorApp(): 
 				Application(L"Quirk Engine", RendererAPI::API::OpenGL)
 		{
-			WindowSpecification tempSpec{ "Quirk Editor", 1600, 900, 200, 50, true, false, true };
+			WindowSpecification tempSpec{ "Quirk Editor", 1600, 900, 200, 50, true, false, true, 4, 4, {12, 12, 12} };
 
 			tempSpec.Width  = 1600;
 			tempSpec.Height = 900;
+			tempSpec.MinWidth  = tempSpec.Width;
+			tempSpec.MinHeight = tempSpec.Height;
 			AddFrame<EditorFrame>(tempSpec);
 			Theme::SetTheme(ThemeName::DarkTheme);
 
 			// NOTE: for testing of multiple frames
-			tempSpec.Width  = 800;
-			tempSpec.Height = 800;
-			AddFrame<LauncherFrame>(tempSpec);
-			Theme::SetTheme(ThemeName::DarkTheme);
+			/*tempSpec.Width     = 1100;
+			tempSpec.Height    = 780;
+			tempSpec.MinWidth  = tempSpec.Width;
+			tempSpec.MinHeight = tempSpec.Height;
+			AddFrame<LauncherFrame>(tempSpec);*/
 		}
 
 		~QuirkEditorApp() {

@@ -40,8 +40,10 @@ namespace Quirk {
 				OnImguiUiUpdate();
 
 				// telling window if it can move with cursor (when dragging titlebar with mouse)
-				bool itemNotHovered = ImGui::IsWindowHovered() && !ImGui::IsAnyItemHovered();
-				GetWindow().SetCanMoveWithCursor(itemNotHovered);
+				// should only set true in requred condition since resetting is done 
+				// in every cycle in the OnUpdate() of the FrameManager
+				if(ImGui::IsWindowHovered() && !ImGui::IsAnyItemHovered())
+					GetWindow().SetCanMoveWithCursor(true);
 
 				ImGui::EndMainMenuBar();
 			}

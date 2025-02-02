@@ -5,8 +5,6 @@
 namespace Quirk {
 
 	void LauncherTitleBar::OnImguiUiUpdate() {
-		ImGui::Text("Quirk Engine");
-
 		float buttonSize    = 20.0f;
 		float buttonPadding = 10.0f;
 		ImVec2 windowSize   = ImGui::GetWindowSize();

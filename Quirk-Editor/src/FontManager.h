@@ -24,7 +24,6 @@ namespace Quirk {
 		ImFont* GetFont(FontWeight weight, uint16_t size);
 		ImFont* GetFont(const std::string& fontName);
 
-	private:
 		inline void LoadFont(ImGuiIO& io, FontWeight weight, uint16_t size, const char* name = nullptr) {
 			s_Fonts[weight + size] = io.Fonts->AddFontFromFileTTF(GetFontPathWithWeight(weight).data(), static_cast<float>(size));
 
@@ -33,6 +32,7 @@ namespace Quirk {
 			}
 		}
 
+	private:
 		std::string_view GetFontPathWithWeight(FontWeight weight);
 
 	private:

@@ -44,6 +44,7 @@ namespace Quirk {
 	private:
 		static LRESULT WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
+		// adjusts for the width and height of the titlebar and window frame according to the monitor dpi
 		void AdjustWindowSizeForDPI(uint16_t& width, uint16_t& height) const;
 
 	private:

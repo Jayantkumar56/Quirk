@@ -20,6 +20,7 @@
 #include <objbase.h>      // For COM headers
 #include <shobjidl.h>     // for IFileDialogEvents and IFileDialogControlEvents
 #include <WindowsX.h>
+#include <dwmapi.h>
 
 // NOTE: do not know about this constant DCX_USESTYLE (DCX_USESTYLE is undocumented)
 //		 it helps to get the DC (Device Context) 
@@ -87,7 +88,15 @@ namespace Quirk {
 
 		uint16_t windWidth  = spec.Width;
 		uint16_t windHeight = spec.Height;
-		AdjustWindowSizeForDPI(windWidth, windHeight);
+
+		// adjusting window size to create window with client area having spec.Width and spec.Height dimensions
+		if (!spec.CustomTitleBar) {
+			AdjustWindowSizeForDPI(windWidth, windHeight);
+		}
+		else {
+			windWidth  += 2 * spec.WindowBorderSizeX;
+			windHeight += 2 * spec.WindowBorderSizeY;
+		}
 
 		std::wstring title(spec.Title.begin(), spec.Title.end());
 
@@ -105,6 +114,11 @@ namespace Quirk {
 		);
 
 		QK_CORE_ASSERT(m_WindowHandle, "Failed to create Window handle!");
+
+		if (spec.CustomTitleBar) {
+			DWM_WINDOW_CORNER_PREFERENCE preference = DWMWCP_ROUND;
+			DwmSetWindowAttribute(m_WindowHandle, DWMWA_WINDOW_CORNER_PREFERENCE, &preference, sizeof(preference));
+		}
 
 		// putting this Window pointer into created HWND
 		SetPropW(m_WindowHandle, L"wndptr", window);
@@ -151,7 +165,7 @@ namespace Quirk {
 		}
 	}
 
-	static void DrawWindowFrame(HWND hwnd) {
+	static void DrawWindowFrame(HWND hwnd, glm::u8vec3& color) {
 		HDC dc = GetDCEx(hwnd, 0, DCX_WINDOW | DCX_USESTYLE);
 		PAINTSTRUCT paint;
 		BeginPaint(hwnd, &paint);
@@ -165,8 +179,8 @@ namespace Quirk {
 		ClientToScreen(hwnd, (LPPOINT)&clientRect.right);
 
 		{
-			SetDCBrushColor(dc, RGB(27, 47, 51));
-			SetDCPenColor(dc, RGB(27, 47, 51));
+			SetDCBrushColor(dc, RGB(color.r, color.g, color.b));
+			SetDCPenColor(dc, RGB(color.r, color.g, color.b));
 
 			SelectObject(dc, GetStockObject(DC_PEN));
 			SelectObject(dc, GetStockObject(DC_BRUSH));
@@ -229,6 +243,13 @@ namespace Quirk {
 
 			case WM_SETFOCUS:
 			case WM_KILLFOCUS: {
+				return (LRESULT)0;
+			}
+
+			case WM_GETMINMAXINFO: {
+				auto minMaxSetting = (MINMAXINFO*)lParam;
+				minMaxSetting->ptMinTrackSize.x = window->m_MinWidth;
+				minMaxSetting->ptMinTrackSize.y = window->m_MinHeight;
 				return (LRESULT)0;
 			}
 
@@ -451,10 +472,9 @@ namespace Quirk {
 			case WM_NCCALCSIZE: {
 				if (lParam == NULL) return (LRESULT)0;
 
-				// TO DO: make width of frame chooseable
 				UINT dpi = GetDpiForWindow(hwnd);
-				int frameX = 4;
-				int frameY = 4;
+				int frameX  = window->m_windowBorderSizeX;
+				int frameY  = window->m_windowBorderSizeY;
 				int padding = 0;
 
 				if (window->IsMaximised()) {
@@ -477,19 +497,17 @@ namespace Quirk {
 			}
 
 			case WM_NCPAINT: {
-				DrawWindowFrame(hwnd);
+				DrawWindowFrame(hwnd, window->m_WindowBorderColor);
 				return (LRESULT)0;
 			}
 
 			case WM_NCLBUTTONDOWN: {
-				if (wParam == HTCAPTION) {
-					DefWindowProc(hwnd, uMsg, wParam, lParam);
-				}
-				else if (wParam == HTCLOSE) {
+				if (wParam == HTCLOSE) {
 					WindowCloseEvent event;
 					EventDispatcher::DispatchEvent(event);
+					return (LRESULT)0;
 				}
-				else if (wParam == HTMAXBUTTON) {
+				if (wParam == HTMAXBUTTON) {
 					if (window->IsMaximised()) {
 						window->SetIsMaximised(false);
 						ShowWindow(hwnd, SW_RESTORE);
@@ -498,17 +516,18 @@ namespace Quirk {
 						window->SetIsMaximised(true);
 						ShowWindow(hwnd, SW_MAXIMIZE);
 					}
+					return (LRESULT)0;
 				}
-				else if (wParam == HTMINBUTTON) {
+				if (wParam == HTMINBUTTON) {
 					ShowWindow(hwnd, SW_MINIMIZE);
+					return (LRESULT)0;
 				}
 
-				return (LRESULT)0;
+				// letting DefWindowProc manage for resizing and moving window with titlebar
+				return DefWindowProc(hwnd, uMsg, wParam, lParam);
 			}
 
 			case WM_NCHITTEST: {
-				//DefWindowProc(hwnd, uMsg, wParam, lParam);
-
 				// handling the buttons first
 				if (window->IsCursorOverCloseButton())    return HTCLOSE;
 				if (window->IsCursorOverMaximiseButton()) return HTMAXBUTTON;
@@ -521,7 +540,9 @@ namespace Quirk {
 				ScreenToClient(hwnd, &clientMousePos);
 
 				RECT windowRect;
-				GetWindowRect(hwnd, &windowRect);
+				// since now the client area is the whole window
+				// should call GetClientRect to get the window rect
+				GetClientRect(hwnd, &windowRect);
 
 				if (clientMousePos.y >= windowRect.bottom - borderWidth) {
 					if (clientMousePos.x <= borderWidth)

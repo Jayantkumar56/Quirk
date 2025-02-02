@@ -1,7 +1,7 @@
 
 #include "Qkpch.h"
 
-#include "Core/core.h"
+#include "Core/Core.h"
 #include "Core/Scene/Scene.h"
 #include "Core/Scene/Entity.h"
 #include "SceneSerializer.h"

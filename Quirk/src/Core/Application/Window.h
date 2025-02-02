@@ -9,19 +9,29 @@
 #include "Core/Renderer/RendererAPI.h"
 #include "Core/Renderer/GraphicalContext.h"
 
+#include "glm/glm.hpp"
+
 namespace Quirk {
 
 	struct WindowSpecification {
 		std::string Title;
-		uint16_t	 Width; 
-		uint16_t	 Height;
+		uint16_t	Width; 
+		uint16_t	Height;
 
 		// signifies position of window frame or position of client area when having custom titlebar
-		int32_t	PosX  = 0;
-		int32_t	PosY  = 0;
+		int32_t	PosX {0};
+		int32_t	PosY {0};
 		bool	VSyncOn;
 		bool	Maximized;
 		bool	CustomTitleBar = false;
+
+		// color of the outer border in CustomTitleBar mode
+		uint8_t		WindowBorderSizeX {0};
+		uint8_t		WindowBorderSizeY {0};
+		glm::u8vec3 WindowBorderColor {0, 0, 0};
+
+		uint16_t MinWidth  = 200;
+		uint16_t MinHeight = 200;
 	};
 
 	class Window {
@@ -37,13 +47,18 @@ namespace Quirk {
 
 	public:
 		Window(const WindowSpecification& spec) :
-				m_Width  (spec.Width ),
-				m_Height (spec.Height),
-				m_PosX   (spec.PosX  ),
-				m_PosY   (spec.PosX  ),
+				m_Width             (spec.Width             ),
+				m_Height            (spec.Height            ),
+				m_MinWidth          (spec.MinWidth          ),
+				m_MinHeight         (spec.MinHeight         ),
+				m_PosX              (spec.PosX              ),
+				m_PosY              (spec.PosX              ),
+				m_windowBorderSizeX (spec.WindowBorderSizeX ),
+				m_windowBorderSizeY (spec.WindowBorderSizeY ),
+				m_WindowBorderColor (spec.WindowBorderColor ),
 				// CustomTitleBar flag should be set before creating native window object (especially for WindowsWindow)
-				m_StateFlags(((int)spec.CustomTitleBar << StateFlags::CustomTitleBarEnabled)),
-				m_Window    (spec, this    )
+				m_StateFlags (((int)spec.CustomTitleBar << StateFlags::CustomTitleBarEnabled)),
+				m_Window     (spec, this    )
 		{
 			SetIsMaximised(spec.Maximized);
 		}
@@ -55,23 +70,33 @@ namespace Quirk {
 		// NOTE: A thread cannot destroy a window created by a different thread,
 		//       so Window should not be moved to such different thread bound object
 		Window(Window&& other) noexcept : 
-				m_Width     (other.m_Width            ),
-				m_Height    (other.m_Height           ),
-				m_PosX      (other.m_PosX             ),
-				m_PosY      (other.m_PosY             ),
-				m_StateFlags(other.m_StateFlags       ),
-				m_Window    (std::move(other.m_Window))
+				m_Width             (other.m_Width            ),
+				m_Height            (other.m_Height           ),
+				m_MinWidth          (other.m_MinWidth         ),
+				m_MinHeight         (other.m_MinHeight        ),
+				m_PosX              (other.m_PosX             ),
+				m_PosY              (other.m_PosY             ),
+				m_windowBorderSizeX (other.m_windowBorderSizeX),
+				m_windowBorderSizeY (other.m_windowBorderSizeY),
+				m_WindowBorderColor (other.m_WindowBorderColor),
+				m_StateFlags        (other.m_StateFlags       ),
+				m_Window            (std::move(other.m_Window))
 		{
 		}
 
 		// NOTE: A thread cannot destroy a window created by a different thread,
 		//       so Window should not be moved to such different thread bound object
 		Window& operator=(Window&& other) noexcept {
-			m_Width  = other.m_Width;
-			m_Height = other.m_Height;
-			m_PosX   = other.m_PosX;
-			m_PosY   = other.m_PosY;
-			m_Window = std::move(other.m_Window);
+			m_Width             = other.m_Width;
+			m_Height            = other.m_Height;
+			m_MinWidth          = other.m_MinWidth;
+			m_MinHeight         = other.m_MinHeight;
+			m_PosX              = other.m_PosX;
+			m_PosY              = other.m_PosY;
+			m_windowBorderSizeX = other.m_windowBorderSizeX;
+			m_windowBorderSizeY = other.m_windowBorderSizeY;
+			m_WindowBorderColor = other.m_WindowBorderColor;
+			m_Window            = std::move(other.m_Window);
 			return *this;
 		}
 
@@ -126,12 +151,22 @@ namespace Quirk {
 		inline bool GetStateFlag(StateFlags state) const noexcept { return (bool)(m_StateFlags & (1 << state)); }
 
 	private:
-		uint16_t	 m_Width;
-		uint16_t	 m_Height;
+		uint16_t m_Width;
+		uint16_t m_Height;
+
+		// window will not be resized to smaller dimension than m_MinWidth && m_MinHeight
+		// if not set a default value of 200 and 200 is already set
+		uint16_t m_MinWidth;
+		uint16_t m_MinHeight;
 
 		// position of the client area
 		int32_t	m_PosX;						
 		int32_t	m_PosY;
+
+		// color of the outer border in CustomTitleBar mode
+		uint8_t		m_windowBorderSizeX;
+		uint8_t		m_windowBorderSizeY;
+		glm::u8vec3 m_WindowBorderColor;
 
 		// stores all the states flags and boolean properties of the window
 		int m_StateFlags;

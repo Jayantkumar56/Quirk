@@ -32,6 +32,11 @@ namespace Quirk {
 			// updating imgui ui of the current frame and it's panels
 			frame->m_ImguiUI.Begin();
 
+			// resetting if the cursor is hovering over titlebar
+			// thus it should be set by the titlebar in every frame 
+			// titlebar should only set true in the requred condition
+			frame->GetWindow().SetCanMoveWithCursor(false);
+
 			frame->OnImguiUiUpdate();
 			frame->m_TitleBar->OnUiUpdate();
 

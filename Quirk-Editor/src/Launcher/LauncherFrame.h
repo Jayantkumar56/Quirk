@@ -13,7 +13,13 @@ namespace Quirk {
 		LauncherFrame(WindowSpecification& spec) :
 			Frame(spec)
 		{
+			// removing imgui window borders especially for titlebar
+			ImGuiStyle& style = ImGui::GetStyle();
+			style.WindowBorderSize = 0.0f;
+
+			SetColorTheme();
 			m_FontManager.LoadFonts();
+			m_FontManager.LoadFont(ImGui::GetIO(), FontWeight::Regular, 50);
 			SetTitleBar<LauncherTitleBar>();
 		}
 
@@ -27,6 +33,9 @@ namespace Quirk {
 		virtual void OnImguiUiUpdate()     override;
 
 		inline FontManager& GetFontManager() { return m_FontManager; }
+
+	private:
+		void SetColorTheme();
 
 	private:
 		FontManager m_FontManager;
