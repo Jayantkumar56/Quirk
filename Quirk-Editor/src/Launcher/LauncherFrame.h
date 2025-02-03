@@ -8,6 +8,11 @@
 
 namespace Quirk {
 
+	struct ProjectMetadata {
+		std::string Title;
+		std::string Path;
+	};
+
 	class LauncherFrame : public Frame {
 	public:
 		LauncherFrame(WindowSpecification& spec) :
@@ -17,28 +22,34 @@ namespace Quirk {
 			ImGuiStyle& style = ImGui::GetStyle();
 			style.WindowBorderSize = 0.0f;
 
+			LoadFonts();
 			SetColorTheme();
-			m_FontManager.LoadFonts();
-			m_FontManager.LoadFont(ImGui::GetIO(), FontWeight::Regular, 50);
+
 			SetTitleBar<LauncherTitleBar>();
+
+			m_ProjectIcon		= Texture2D::Create("assets/Images/project.png");
+			m_OpenProjectIcon   = Texture2D::Create("assets/Images/openFoler.png");
+			m_CreateProjectIcon = Texture2D::Create("assets/Images/createProject.png");
 		}
 
 		~LauncherFrame() = default;
 
-		virtual void OnAttach() override;
-		virtual void OnDetach() override;
-
-		virtual bool OnEvent(Event& event) override;
-		virtual void OnUpdate()			   override;
+		virtual bool OnEvent(Event& event) override { return false; }
+		virtual void OnUpdate()			   override {}
 		virtual void OnImguiUiUpdate()     override;
 
 		inline FontManager& GetFontManager() { return m_FontManager; }
 
 	private:
+		void LoadFonts();
 		void SetColorTheme();
 
 	private:
-		FontManager m_FontManager;
+		FontManager    m_FontManager;
+		std::vector<ProjectMetadata> m_RecentProjects;
+		Ref<Texture2D> m_ProjectIcon;
+		Ref<Texture2D> m_OpenProjectIcon;
+		Ref<Texture2D> m_CreateProjectIcon;
 	};
 
 }

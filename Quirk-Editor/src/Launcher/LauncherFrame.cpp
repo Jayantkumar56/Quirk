@@ -2,35 +2,119 @@
 
 
 #include "LauncherFrame.h"
+#include "imgui_internal.h"
+
+#include <iostream>
 
 namespace Quirk {
 
-	void LauncherFrame::OnAttach() {
+	struct ImageTextButtonParameters {
+		ImTextureID imgId;                         ImVec2      imageSize;
+		const char* label;                         const char* description;
+		ImFont* labelFont;						   ImFont*     descriptionFont;
+		ImU32   buttonColor   = 0x00000000;        ImU32       hoverColor          = 0xFFFFFFFF;
+	    float   imageContentPadding = 10.0f; 
+		ImVec2  buttonSize = { 0.0f, 0.0f };
+	};
 
-	}
-
-	void LauncherFrame::OnDetach() {
-
-	}
-
-	bool LauncherFrame::OnEvent(Event& event) {
-
-		return false;
-	}
-
-	void LauncherFrame::OnUpdate() {
-
-	}
+	static bool ImageTextButton(ImageTextButtonParameters& p);
 
 	void LauncherFrame::OnImguiUiUpdate() {
 		ImGuiWindowClass windowClass;
 		windowClass.DockNodeFlagsOverrideSet = ImGuiDockNodeFlags_NoTabBar;
 		ImGui::SetNextWindowClass(&windowClass);
 
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(25.0f, 0.0f));
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(35.0f, 0.0f));
 		ImGui::Begin("Project Selection Panel");
 
-		ImguiUIUtility::Text("Quirk  Game  Engine", m_FontManager.GetFont(FontWeight::Regular, 50));
+		// main title 
+		ImguiUIUtility::Text("Quirk Game Engine", m_FontManager.GetFont(FontWeight::Medium, 50));
+
+		// padding between main title of the window and rest content
+		ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 30.0f);
+
+		ImVec2 cellPadding = ImGui::GetStyle().CellPadding;
+		ImGui::GetStyle().CellPadding = ImVec2(50.0f, 8.0f);  // for Main Table
+
+		if (ImGui::BeginTable("Main Table", 2)) {
+			// paramters object used to create button with customised parameters
+			ImageTextButtonParameters parameters;
+			parameters.labelFont                  = m_FontManager.GetFont(FontWeight::Medium, 29);
+			parameters.descriptionFont            = m_FontManager.GetFont(FontWeight::Regular, 20);
+			parameters.imageSize.x                = 35.0f;
+			parameters.imageSize.y                = 35.0f;
+			parameters.buttonColor                = 0xff2a2822;
+			parameters.hoverColor                 = 0xff6a5713;
+			parameters.imageContentPadding        = 10.0f;
+
+			ImGui::TableNextColumn(); // 1st column
+			{
+				ImguiUIUtility::Text("Recent Projects", m_FontManager.GetFont(FontWeight::Medium, 29));
+
+				// padding betwen title "Recent Projects" and content
+				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 20.0f);
+
+				// All of the contents (Recent Porjects)
+				if (m_RecentProjects.empty()) {
+					ImGui::PushFont(m_FontManager.GetFont(FontWeight::Regular, 23));
+					ImGui::TextColored({ 0.812f, 0.816f, 0.78f, 1.0f }, "No Recent Projects!");
+					ImGui::PopFont();
+				}
+				else {
+					auto availRgn   = ImGui::GetContentRegionAvail();
+
+					parameters.buttonSize.x = availRgn.x - ImGui::GetStyle().ScrollbarSize - 5;
+					parameters.buttonSize.y = 80.0f;
+
+					ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+					ImGui::BeginChild("ScrollingRegion", ImVec2(availRgn.x, availRgn.y -50));
+
+					for (auto& recentProject : m_RecentProjects) {
+						parameters.label       = recentProject.Title.c_str();
+						parameters.description = recentProject.Path.c_str();
+						parameters.imgId       = (ImTextureID)(intptr_t)m_ProjectIcon->GetRendererId();
+						ImageTextButton(parameters);
+					}
+
+					ImGui::EndChild();
+					ImGui::PopStyleVar();
+				}
+			}
+
+			// common properties for the custom buttons in the 2nd Column
+			parameters.imageSize.x                = 50.0f;
+			parameters.imageSize.y                = 50.0f;
+			parameters.buttonSize.x               = 400.0f;
+			parameters.buttonSize.y               = 100.0f;
+			parameters.buttonColor                = 0xff3b382f;
+			parameters.hoverColor                 = 0xff276243;
+			parameters.imageContentPadding		  = 15.0f;
+
+			ImGui::TableNextColumn();   // 2nd Column
+			{
+				ImguiUIUtility::Text("Get Started", m_FontManager.GetFont(FontWeight::Medium, 29));
+
+				// padding betwen title "Get Started" and content
+				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 20.0f);
+
+				// All of the contents
+				{
+					parameters.label       = "Open a project";
+					parameters.description = "Navigate and open an existing project from local disk.";
+					parameters.imgId       = (ImTextureID)(intptr_t)m_OpenProjectIcon->GetRendererId();
+					ImageTextButton(parameters);
+
+					parameters.label       = "Create a new project";
+					parameters.description = "Select name and settings to get started.";
+					parameters.imgId       = (ImTextureID)(intptr_t)m_CreateProjectIcon->GetRendererId();
+					ImageTextButton(parameters);
+				}
+			}
+
+			ImGui::EndTable();
+		}
+
+		ImGui::GetStyle().CellPadding = cellPadding; // for Main Table
 
 		// telling window if it can move with cursor 
 		// should only set true in requred condition since resetting is done 
@@ -39,10 +123,64 @@ namespace Quirk {
 			GetWindow().SetCanMoveWithCursor(true);
 		}
 
-
-
 		ImGui::End();
 		ImGui::PopStyleVar();
+	}
+
+	static bool ImageTextButton(ImageTextButtonParameters& p) {
+		ImVec2  buttonPadding = { 20.0f, 10.0f };
+		float availableWidthForText = p.buttonSize.x - p.imageSize.x - p.imageContentPadding - 2 * buttonPadding.x;
+
+		ImGui::PushFont(p.labelFont);
+		ImVec2 labelSize = ImGui::CalcTextSize(p.label, 0, false, availableWidthForText);
+		ImGui::PopFont();
+
+		ImGui::PushFont(p.descriptionFont);
+		ImVec2 descriptionSize = ImGui::CalcTextSize(p.description, 0, false, availableWidthForText);
+		ImGui::PopFont();
+
+		ImVec2 cursorPos = ImGui::GetCursorScreenPos();
+
+		ImGui::PushID(p.label);
+		bool isClicked = ImGui::InvisibleButton(p.label, p.buttonSize);
+		bool isHovered = ImGui::IsItemHovered();
+
+		ImDrawList* drawList = ImGui::GetWindowDrawList();
+
+		ImU32 buttonColor = isHovered ? p.hoverColor : p.buttonColor;
+		drawList->AddRectFilled(cursorPos, { cursorPos.x + p.buttonSize.x, cursorPos.y + p.buttonSize.y }, buttonColor);
+
+		drawList->AddImage(
+			p.imgId, { cursorPos.x + buttonPadding.x, cursorPos.y + buttonPadding.y },
+			{ cursorPos.x + buttonPadding.x + p.imageSize.x, cursorPos.y + buttonPadding.y + p.imageSize.y },
+			{ 0, 1 }, { 1, 0 }
+		);
+
+		ImVec2 textPos = {
+			cursorPos.x + buttonPadding.x + p.imageSize.x + p.imageContentPadding,
+			cursorPos.y + buttonPadding.y
+		};
+
+		drawList->AddText(p.labelFont, p.labelFont->FontSize, textPos, 0xFFFFFFFF, p.label, NULL, availableWidthForText);
+
+		textPos.x = cursorPos.x + buttonPadding.x + p.imageSize.x + p.imageContentPadding;
+		textPos.y = cursorPos.y + labelSize.y + buttonPadding.y;
+
+		drawList->AddText(p.descriptionFont, p.descriptionFont->FontSize, textPos, 0xffc7d0cf, p.description, NULL, availableWidthForText);
+
+		ImGui::PopID();
+		return isClicked;
+	}
+
+	void LauncherFrame::LoadFonts() {
+		auto& io = ImGui::GetIO();
+
+		m_FontManager.LoadFonts();
+		m_FontManager.LoadFont(io, FontWeight::Medium, 50);     // for Main Title (Quirk Game Engine)
+		m_FontManager.LoadFont(io, FontWeight::Medium, 29);		// for section title ()
+		m_FontManager.LoadFont(io, FontWeight::Medium, 25);
+		m_FontManager.LoadFont(io, FontWeight::Regular, 20);
+		m_FontManager.LoadFont(io, FontWeight::Regular, 23);
 	}
 
 	void LauncherFrame::SetColorTheme() {
@@ -103,10 +241,10 @@ namespace Quirk {
 		colors[ImGuiCol_TabDimmedSelectedOverline]   = ImVec4{ 0.09f, 0.09f, 0.15f, 1.0f };
 
 		// Scrollbar
-		colors[ImGuiCol_ScrollbarBg]                 = ImVec4{ 0.1f, 0.1f, 0.13f, 1.0f };
-		colors[ImGuiCol_ScrollbarGrab]               = ImVec4{ 0.16f, 0.16f, 0.21f, 1.0f };
-		colors[ImGuiCol_ScrollbarGrabHovered]        = ImVec4{ 0.19f, 0.2f, 0.25f, 1.0f };
-		colors[ImGuiCol_ScrollbarGrabActive]         = ImVec4{ 0.24f, 0.24f, 0.32f, 1.0f };
+		colors[ImGuiCol_ScrollbarBg]                 = ImVec4{ 0.275f, 0.325f, 0.341f, 1.0f };
+		colors[ImGuiCol_ScrollbarGrab]               = ImVec4{ 0.416f, 0.494f, 0.522f, 1.0f };
+		colors[ImGuiCol_ScrollbarGrabHovered]        = ImVec4{ 0.416f, 0.494f, 0.522f, 1.0f };
+		colors[ImGuiCol_ScrollbarGrabActive]         = ImVec4{ 0.416f, 0.494f, 0.522f, 1.0f };
 
 		// Seperator
 		colors[ImGuiCol_Separator]                   = ImVec4{ 0.44f, 0.37f, 0.61f, 1.0f };

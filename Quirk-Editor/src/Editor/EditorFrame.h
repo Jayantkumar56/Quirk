@@ -35,9 +35,6 @@ namespace Quirk {
 
 		~EditorFrame() = default;
 
-		virtual void OnAttach() override;
-		virtual void OnDetach() override;
-
 		virtual bool OnEvent(Event& event) override;
 		virtual void OnUpdate()			   override;
 		virtual void OnImguiUiUpdate()     override;

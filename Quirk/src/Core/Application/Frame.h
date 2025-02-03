@@ -105,8 +105,6 @@ namespace Quirk {
 		Frame(Frame& other)					 = delete;
 		Frame& operator=(const Frame& other) = delete;
 
-		virtual void OnAttach()            = 0;
-		virtual void OnDetach()            = 0;
 		virtual void OnUpdate()            = 0;
 		virtual void OnImguiUiUpdate()     = 0;
 		virtual bool OnEvent(Event& event) = 0;
