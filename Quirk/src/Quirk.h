@@ -49,3 +49,6 @@
 #include "Core/Imgui/ImguiUI.h"
 #include "Core/Imgui/ImguiUIUtility.h"
 
+#include "Core/Project/ProjectSerializer.h"
+#include "Core/Project/Project.h"
+

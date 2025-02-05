@@ -8,11 +8,6 @@
 
 namespace Quirk {
 
-	struct ProjectMetadata {
-		std::string Title;
-		std::string Path;
-	};
-
 	class LauncherFrame : public Frame {
 	public:
 		LauncherFrame(WindowSpecification& spec) :
@@ -27,12 +22,12 @@ namespace Quirk {
 
 			SetTitleBar<LauncherTitleBar>();
 
-			m_ProjectIcon		= Texture2D::Create("assets/Images/project.png");
-			m_OpenProjectIcon   = Texture2D::Create("assets/Images/openFoler.png");
-			m_CreateProjectIcon = Texture2D::Create("assets/Images/createProject.png");
-		}
+			m_ProjectIcon		= Texture2D::Create("assets/Images/Launcher/project.png");
+			m_OpenProjectIcon   = Texture2D::Create("assets/Images/Launcher/openFolder.png");
+			m_CreateProjectIcon = Texture2D::Create("assets/Images/Launcher/createProject.png");
 
-		~LauncherFrame() = default;
+			Project::LoadRecentProjectsList("RecentProjects.yaml");
+		}
 
 		virtual bool OnEvent(Event& event) override { return false; }
 		virtual void OnUpdate()			   override {}
@@ -46,7 +41,6 @@ namespace Quirk {
 
 	private:
 		FontManager    m_FontManager;
-		std::vector<ProjectMetadata> m_RecentProjects;
 		Ref<Texture2D> m_ProjectIcon;
 		Ref<Texture2D> m_OpenProjectIcon;
 		Ref<Texture2D> m_CreateProjectIcon;

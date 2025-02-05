@@ -1,0 +1,5 @@
+Project:
+    Name: Example
+    StartScene: physics_example.yaml
+    AssetDirectory: Assets
+    ScriptModulePath: Scripts

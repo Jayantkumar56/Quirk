@@ -71,9 +71,10 @@ namespace Quirk {
 		ImGui::PushStyleColor(ImGuiCol_ButtonActive,    ImVec4(0.0f, 0.0f, 0.0f, 0.0f));  
 
 		ImVec2 imagePos = ImGui::GetCursorPos();
+		ImTextureID frameBuffer = (ImTextureID)(intptr_t)m_Frame->GetColorAttachment(0);
 		bool clickedOnImage = ImGui::ImageButton(
 			"viewportimage",
-			(ImTextureID)(intptr_t)m_Frame->GetColorAttachment(0),
+			frameBuffer,
 			ImVec2((float)m_PanelWidth, (float)m_PanelHeight),
 			{ 0, 1 },
 			{ 1, 0 }

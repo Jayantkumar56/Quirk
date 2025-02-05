@@ -4,6 +4,8 @@
 #include "LauncherFrame.h"
 #include "imgui_internal.h"
 
+#include "Editor/EditorFrame.h"
+
 #include <iostream>
 
 namespace Quirk {
@@ -45,17 +47,19 @@ namespace Quirk {
 			parameters.imageSize.y                = 35.0f;
 			parameters.buttonColor                = 0xff2a2822;
 			parameters.hoverColor                 = 0xff6a5713;
-			parameters.imageContentPadding        = 10.0f;
+			parameters.imageContentPadding        = 15.0f;
 
 			ImGui::TableNextColumn(); // 1st column
 			{
+				const auto& recentProjects = Project::GetRecentProjectsList();
+
 				ImguiUIUtility::Text("Recent Projects", m_FontManager.GetFont(FontWeight::Medium, 29));
 
 				// padding betwen title "Recent Projects" and content
 				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 20.0f);
 
 				// All of the contents (Recent Porjects)
-				if (m_RecentProjects.empty()) {
+				if (recentProjects.empty()) {
 					ImGui::PushFont(m_FontManager.GetFont(FontWeight::Regular, 23));
 					ImGui::TextColored({ 0.812f, 0.816f, 0.78f, 1.0f }, "No Recent Projects!");
 					ImGui::PopFont();
@@ -69,11 +73,43 @@ namespace Quirk {
 					ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 					ImGui::BeginChild("ScrollingRegion", ImVec2(availRgn.x, availRgn.y -50));
 
-					for (auto& recentProject : m_RecentProjects) {
-						parameters.label       = recentProject.Title.c_str();
-						parameters.description = recentProject.Path.c_str();
+					for (const auto& project : recentProjects) {
+						parameters.label       = project.Title.c_str();
+						parameters.description = project.Path.c_str();
 						parameters.imgId       = (ImTextureID)(intptr_t)m_ProjectIcon->GetRendererId();
-						ImageTextButton(parameters);
+
+						// Recent project button
+						if (ImageTextButton(parameters)) {
+							std::filesystem::path path = project.Path + "/" + project.Title + ".qkproj";
+							Project::Load(path);
+
+							WindowSpecification tempSpec{ 
+								.Title             {"Quirk Editor"}, 
+								.Width             {1600},				   .Height    {900}, 
+								.PosX              {200},				   .PosY      {50}, 
+								.VSyncOn           {true},				   .Maximized {false}, 
+								.CustomTitleBar    {true},
+								.WindowBorderSizeX {4},				       .WindowBorderSizeY {4}, 
+								.WindowBorderColor {12, 12, 12},
+								.MinWidth          {1600},				   .MinHeight {900}
+							};
+
+							Application::Get().AddFrame<EditorFrame>(tempSpec);
+							// AddFrame adds the frame and makes that context to be current
+							// so making launcher frame to be the current context before proceeding
+							MakeContextCurrent();
+
+							CloseFrame();
+						}
+
+						// TODO: create a way to remove item from recent project list
+					}
+
+					// telling window if it can move with cursor 
+					// should only set true in requred condition since resetting is done 
+					// in every cycle in the OnUpdate() of the FrameManager
+					if (ImGui::IsWindowHovered() && !ImGui::IsAnyItemHovered()) {
+						GetWindow().SetCanMoveWithCursor(true);
 					}
 
 					ImGui::EndChild();
@@ -102,12 +138,20 @@ namespace Quirk {
 					parameters.label       = "Open a project";
 					parameters.description = "Navigate and open an existing project from local disk.";
 					parameters.imgId       = (ImTextureID)(intptr_t)m_OpenProjectIcon->GetRendererId();
-					ImageTextButton(parameters);
+
+					// Open project button
+					if (ImageTextButton(parameters)) {
+						// TODO: open the selected project file in the editor
+					}
 
 					parameters.label       = "Create a new project";
 					parameters.description = "Select name and settings to get started.";
 					parameters.imgId       = (ImTextureID)(intptr_t)m_CreateProjectIcon->GetRendererId();
-					ImageTextButton(parameters);
+
+					// Create project button
+					if (ImageTextButton(parameters)) {
+						// TODO: create a new project and open it in the editor
+					}
 				}
 			}
 

@@ -27,4 +27,3 @@ IncludeDir["Box2d"]     = "Quirk/vendor/box2d"
 
 include "Quirk"
 include "Quirk-Editor"
-include "Sandbox"

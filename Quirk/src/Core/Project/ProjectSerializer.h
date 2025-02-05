@@ -3,20 +3,20 @@
 
 #include "Core/Core.h"
 
-#include "Project.h"
 #include <yaml-cpp/yaml.h>
 
 namespace Quirk {
 
+	class Project;
+	struct ProjectMetadata;
+
 	class ProjectSerializer {
 	public:
-		ProjectSerializer(Ref<Project> project);
+		static bool Serialize(Ref<Project> project, const std::filesystem::path& filepath);
+		static bool Deserialize(Ref<Project> project, const std::filesystem::path& filepath);
 
-		bool Serialize(const std::filesystem::path& filepath);
-		bool Deserialize(const std::filesystem::path& filepath);
-
-	private:
-		Ref<Project> m_Project;
+		static bool SerializeRecentProjectsList(std::vector<ProjectMetadata>& list, const std::filesystem::path& filePath);
+		static bool DeserializeRecentProjectsList(std::vector<ProjectMetadata>& list, const std::filesystem::path& filePath);
 	};
 
 }

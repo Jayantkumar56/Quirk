@@ -21,6 +21,8 @@ namespace Quirk {
 			m_AppName(std::move(appName))
 	{
 		s_Instance = this;
+		m_CurrentWorkingDirectory = std::filesystem::current_path();
+
 		EventDispatcher::RegisterEventCallback(QK_BIND_EVENT_FN(Application::OnEvent));
 
 		GraphicalContext::Init(renderingAPI);

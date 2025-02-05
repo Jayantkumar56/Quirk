@@ -1,0 +1,68 @@
+Scene: New Scene
+Entities:
+  - Entity: 16536470205778128321
+    TagComponent:
+      Tag: White Square
+    TransformComponent:
+      Translation: [0, 0, 2.79999995]
+      Rotation: [0, 0, 0]
+      Scale: [2, 2, 1]
+    SpriteRendererComponent:
+      Color: [1, 1, 1, 1]
+      Texture: assets\Images\file.png
+      TillingFactor: 1
+    SpriteRendererComponent:
+      Color: [1, 1, 1, 1]
+      Texture: assets\Images\file.png
+      TillingFactor: 1
+  - Entity: 7340421662027447164
+    TagComponent:
+      Tag: Background
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [5.69999981, 3.5, 1]
+    SpriteRendererComponent:
+      Color: [1, 1, 1, 1]
+      Texture: ..\Example\Assets\Images\wallpaperflare.com_wallpaper.jpg
+      TillingFactor: 1
+    SpriteRendererComponent:
+      Color: [1, 1, 1, 1]
+      Texture: ..\Example\Assets\Images\wallpaperflare.com_wallpaper.jpg
+      TillingFactor: 1
+  - Entity: 13239927022092756028
+    TagComponent:
+      Tag: Camera B
+    TransformComponent:
+      Translation: [0, 0, 10]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    CameraComponent:
+      Camera:
+        ProjectionType: Orthographic
+        PerspectiveFOV: 45
+        PerspectiveNear: 0.00999999978
+        PerspectiveFar: 100
+        OrthographicSize: 10
+        OrthographicNear: -1
+        OrthographicFar: 100
+      Primary: true
+      FixedAspectRatio: false
+  - Entity: 17419644157912076959
+    TagComponent:
+      Tag: Camera A
+    TransformComponent:
+      Translation: [0, 0, 10]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    CameraComponent:
+      Camera:
+        ProjectionType: Perspective
+        PerspectiveFOV: 45
+        PerspectiveNear: 0.00999999978
+        PerspectiveFar: 100
+        OrthographicSize: 10
+        OrthographicNear: -1
+        OrthographicFar: 100
+      Primary: false
+      FixedAspectRatio: false

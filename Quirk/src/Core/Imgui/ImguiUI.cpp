@@ -24,7 +24,7 @@ namespace Quirk {
 
 #ifdef QK_PLATFORM_WINDOWS
 
-	void ImguiUI::Init(Window& window, const Scope<GraphicalContext>& context) {
+	void ImguiUI::Init(Window& window, const GraphicalContext* context) {
 		// Setup Dear ImGui context
 		IMGUI_CHECKVERSION();
 		m_Context = ImGui::CreateContext();
@@ -69,7 +69,7 @@ namespace Quirk {
 		}
 	}
 
-	void ImguiUI::End(const Scope<GraphicalContext>& context) const {
+	void ImguiUI::End(const GraphicalContext* context) const {
 		ImGuiIO& io = ImGui::GetIO();
 
 		ImGui::Render();
@@ -97,7 +97,7 @@ namespace Quirk {
 		}
 	}
 
-	void ImguiUI::InitForOpenGL(Window& window, const Scope<GraphicalContext>& context) {
+	void ImguiUI::InitForOpenGL(Window& window, const GraphicalContext* context) {
 		const char* glsl_version = "#version 410";
 
 		ImGui_ImplWin32_InitForOpenGL((HWND)window.GetNativeHandle());
@@ -109,7 +109,7 @@ namespace Quirk {
 			ImGuiPlatformIO& platform_io = ImGui::GetPlatformIO();
 
 			// TO DO: make a permanent solution to save the GraphicalContext in ImguiContext
-			io.UserData = (void*)((OpenGLContext*)context.get())->GetGLContext();
+			io.UserData = (void*)((OpenGLContext*)context)->GetGLContext();
 
 			platform_io.Renderer_CreateWindow = [] (ImGuiViewport* viewport) {
 				QK_CORE_ASSERT(viewport->RendererUserData == NULL, "Non Empty RendererUserData (from imgui)");

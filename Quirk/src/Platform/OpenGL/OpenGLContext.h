@@ -37,7 +37,7 @@ namespace Quirk {
 
 		virtual void DestroyContext(Window& window) override;
 
-		virtual inline void MakeContextCurrent() override {
+		virtual inline void MakeContextCurrent() const override {
 			QK_CORE_ASSERTEX(wglMakeCurrent(m_DeviceContext, m_GLContext), "Failed to make GL context current!");
 		}
 

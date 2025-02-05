@@ -8,6 +8,7 @@
 #include "Panels/SceneHierarchyPanel.h"
 #include "Panels/InspectorPanel.h"
 #include "Panels/ContentBrowserPanel.h"
+#include "Theme.h"
 
 #include "FontManager.h"
 
@@ -22,13 +23,14 @@ namespace Quirk {
 		{
 			Renderer2D::InitRenderer();
 			m_FontManager.LoadFonts();
+			Theme::SetTheme(ThemeName::DarkTheme);
 
 			SetTitleBar<EditorTitleBar>();
 
 			AddPanel<SceneViewportPanel>();
 			AddPanel<SceneHierarchyPanel>();
 			AddPanel<InspectorPanel>();
-			AddPanel<ContentBrowserPanel>("assets");
+			AddPanel<ContentBrowserPanel>();
 
 			SetVSync(true);
 		}

@@ -85,7 +85,7 @@ namespace Quirk {
 	public:
 		Frame(WindowSpecification& spec) :
 				m_Window(spec),
-				m_Context(std::move(GraphicalContext::Create(m_Window))),
+				m_Context(GraphicalContext::Create(m_Window)),
 				m_Title(std::move(spec.Title)),
 				m_TitleBar(nullptr)
 		{
@@ -93,12 +93,14 @@ namespace Quirk {
 			SetVSync(spec.VSyncOn);
 		}
 
-		virtual ~Frame() { 
+		virtual ~Frame() {
 			for (size_t i = 0; i < m_Panels.size(); ++i)
 				delete m_Panels[i];
 
-			if(m_Context != nullptr)
+			if(m_Context != nullptr) {
 				m_Context->DestroyContext(m_Window);
+				delete m_Context;
+			}
 		}
 
 		// deleted both copy constructor and copy assignment, to make it non copyable
@@ -108,6 +110,15 @@ namespace Quirk {
 		virtual void OnUpdate()            = 0;
 		virtual void OnImguiUiUpdate()     = 0;
 		virtual bool OnEvent(Event& event) = 0;
+
+		// since frames are managed by the frame manager thus by just setting m_Running to false
+		// will make the frame manager close this frame
+
+		inline void CloseFrame() noexcept { m_Running = false; }
+		inline void MakeContextCurrent() noexcept { 
+			m_Context->MakeContextCurrent();
+			m_ImguiUI.MakeImguiUIContextCurrent();
+		}
 
 		inline void SwapBuffer() const	     { m_Context->SwapBuffer();     }
 		inline void SetVSync(int toggle)     { m_Context->SetVSync(toggle); }
@@ -130,10 +141,12 @@ namespace Quirk {
 		}
 
 	private:
+		bool		m_Running = true;
 		Window      m_Window;
-		ImguiUI     m_ImguiUI;
 		std::string m_Title;
-		Scope<GraphicalContext> m_Context;
+
+		GraphicalContext* m_Context;
+		ImguiUI           m_ImguiUI;
 
 		TitleBar*           m_TitleBar;
 		std::vector<Panel*> m_Panels;
@@ -144,6 +157,11 @@ namespace Quirk {
 
 	class FrameManager {
 	public:
+		~FrameManager() {
+			for (auto frame : m_Frames)
+				delete frame;
+		}
+
 		void UpdateFrames();
 
 		// right now HandleEvent called only when window is updated so no need to set context here
@@ -152,8 +170,10 @@ namespace Quirk {
 		bool HandleEvent(Event& event);
 
 		template<FrameType T, typename ...Args>
-		inline void AddFrame(Args&& ...args) {
-			m_Frames.push_back(static_cast<Frame*>(new T(std::forward<Args>(args)...)));
+		inline T* AddFrame(Args&& ...args) {
+			T* frame = new T(std::forward<Args>(args)...);
+			m_Frames.push_back(static_cast<Frame*>(frame));
+			return frame;
 		}
 
 		/*inline void RemoveFrame(Frame* layer) {
