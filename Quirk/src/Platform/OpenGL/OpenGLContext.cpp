@@ -6,7 +6,7 @@
 #include "OpenGLContext.h"
 #include "glad/glad.h"
 
-#include "Core/Application/Window.h"
+#include "Core/Frame/Window.h"
 
 namespace Quirk {
 

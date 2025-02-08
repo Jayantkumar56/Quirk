@@ -5,7 +5,7 @@
 #include "Window.h"
 #include "Core/Input/Events.h"
 #include "Core/Imgui/ImguiUI.h"
-#include "Core/Renderer/GraphicalContext.h"
+#include "Core/Frame/GraphicalContext.h"
 #include "Core/Input/KeyCodes.h"
 #include "Core/Input/Input.h"
 #include "Core/Renderer/RenderCommands.h"

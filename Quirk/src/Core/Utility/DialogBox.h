@@ -3,7 +3,7 @@
 #pragma once
 
 #include "Platform/Windows/WindowsDialogBox.h"
-#include "Core/Application/Window.h"
+#include "Core/Frame/Window.h"
 
 namespace Quirk {
 

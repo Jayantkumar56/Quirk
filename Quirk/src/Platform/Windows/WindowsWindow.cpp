@@ -14,7 +14,7 @@
 
 #include "Core/Input/Input.h"
 
-#include "Core/Application/Window.h"
+#include "Core/Frame/Window.h"
 #include "WindowsWindow.h"
 
 #include <objbase.h>      // For COM headers

@@ -7,7 +7,7 @@
 
 #include "Core/Core.h"
 #include "Core/Renderer/RendererAPI.h"
-#include "Core/Renderer/GraphicalContext.h"
+#include "Core/Frame/GraphicalContext.h"
 
 #include "glm/glm.hpp"
 

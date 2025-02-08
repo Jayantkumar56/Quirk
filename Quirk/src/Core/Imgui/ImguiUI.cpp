@@ -6,8 +6,8 @@
 #include "Platform/OpenGL/OpenGLContext.h"
 #include "Core/Imgui/ImguiUI.h"
 
-#include "Core/Application/Window.h"
-#include "Core/Renderer/GraphicalContext.h"
+#include "Core/Frame/Window.h"
+#include "Core/Frame/GraphicalContext.h"
 
 #ifdef QK_PLATFORM_WINDOWS
 #include "wglext.h"

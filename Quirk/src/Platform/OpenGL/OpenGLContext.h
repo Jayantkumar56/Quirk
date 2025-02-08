@@ -9,7 +9,7 @@ typedef void (*Wglproc)(void);
 #endif // QK_PLATFORM_WINDOWS
 
 #include "wglext.h"
-#include "Core/Renderer/GraphicalContext.h"
+#include "Core/Frame/GraphicalContext.h"
 
 namespace Quirk {
 

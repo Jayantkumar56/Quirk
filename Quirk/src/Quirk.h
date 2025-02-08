@@ -42,9 +42,9 @@
 
 #include "Core/Serializer/SceneSerializer.h"
 
-#include "Core/Application/Window.h"
 #include "Core/Application/Application.h"
-#include "Core/Application/Frame.h"
+#include "Core/Frame/Window.h"
+#include "Core/Frame/Frame.h"
 
 #include "Core/Imgui/ImguiUI.h"
 #include "Core/Imgui/ImguiUIUtility.h"

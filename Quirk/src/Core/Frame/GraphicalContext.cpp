@@ -3,8 +3,8 @@
 
 #include "Qkpch.h"
 #include "Platform/OpenGL/OpenGLContext.h"
-#include "Core/Application/Window.h"
-#include "Core/Renderer/GraphicalContext.h"
+#include "Core/Frame/Window.h"
+#include "Core/Frame/GraphicalContext.h"
 
 namespace Quirk{
 
