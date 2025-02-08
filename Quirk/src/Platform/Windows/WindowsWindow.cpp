@@ -116,6 +116,8 @@ namespace Quirk {
 		QK_CORE_ASSERT(m_WindowHandle, "Failed to create Window handle!");
 
 		if (spec.CustomTitleBar) {
+			// makes window round (works only in windows 11)
+			// TODO: find a general approach which would work in previous windows versions
 			DWM_WINDOW_CORNER_PREFERENCE preference = DWMWCP_ROUND;
 			DwmSetWindowAttribute(m_WindowHandle, DWMWA_WINDOW_CORNER_PREFERENCE, &preference, sizeof(preference));
 		}

@@ -6,6 +6,7 @@
 namespace Quirk {
 
 	class LauncherTitleBar : public TitleBar {
+
 	public:
 		LauncherTitleBar() {
 			m_CloseIcon    = Texture2D::Create("assets/Images/close.png");
@@ -15,7 +16,10 @@ namespace Quirk {
 
 		~LauncherTitleBar() = default;
 
-		virtual void OnImguiUiUpdate() override;
+		virtual void SetImguiProperties()   override;
+		virtual void UnSetImguiProperties() override;
+
+		virtual void OnImguiUiUpdate()     override;
 		virtual bool OnEvent(Event& event) override { return false; }
 
 	private:

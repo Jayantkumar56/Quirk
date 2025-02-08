@@ -17,10 +17,12 @@ namespace Quirk {
 			out << YAML::Key << "Project" << YAML::Value;
 			{
 				out << YAML::BeginMap;// Project
-				out << YAML::Key << "Name"             << YAML::Value << config.Name;
-				out << YAML::Key << "StartScene"       << YAML::Value << config.StartScene.string();
-				out << YAML::Key << "AssetDirectory"   << YAML::Value << config.AssetDirectory.string();
-				out << YAML::Key << "ScriptModulePath" << YAML::Value << config.ScriptModulePath.string();
+				out << YAML::Key << "Name"              << YAML::Value << config.Name;
+				out << YAML::Key << "StartScene"        << YAML::Value << config.StartScene.string();
+				out << YAML::Key << "AssetDirectory"    << YAML::Value << config.AssetDirectory.string();
+				out << YAML::Key << "SceneDirectory"    << YAML::Value << config.SceneDirectory.string();
+				out << YAML::Key << "ScriptModulePath"  << YAML::Value << config.ScriptModulePath.string();
+				out << YAML::Key << "AssetRegistryPath" << YAML::Value << config.AssetRegistryPath.string();
 				out << YAML::EndMap; // Project
 			}
 			out << YAML::EndMap; // Root
@@ -48,10 +50,12 @@ namespace Quirk {
 		if (!projectNode)
 			return false;
 
-		config.Name             = projectNode["Name"            ].as<std::string>();
-		config.StartScene       = projectNode["StartScene"      ].as<std::string>();
-		config.AssetDirectory   = projectNode["AssetDirectory"  ].as<std::string>();
-		config.ScriptModulePath = projectNode["ScriptModulePath"].as<std::string>();
+		config.Name              = projectNode["Name"             ].as<std::string>();
+		config.StartScene        = projectNode["StartScene"       ].as<std::string>();
+		config.AssetDirectory    = projectNode["AssetDirectory"   ].as<std::string>();
+		config.SceneDirectory    = projectNode["SceneDirectory"   ].as<std::string>();
+		config.ScriptModulePath  = projectNode["ScriptModulePath" ].as<std::string>();
+		config.AssetRegistryPath = projectNode["AssetRegistryPath"].as<std::string>();
 		return true;
 	}
 
@@ -69,7 +73,7 @@ namespace Quirk {
 				{
 					out << YAML::BeginMap;  // Project
 					out << YAML::Key << "Title" << YAML::Value << project.Title;
-					out << YAML::Key << "Path"  << YAML::Value << project.Path;
+					out << YAML::Key << "Path"  << YAML::Value << project.Path.string();
 					out << YAML::EndMap;	// Project
 				}
 			}

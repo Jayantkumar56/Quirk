@@ -2,4 +2,6 @@ Project:
     Name: Example
     StartScene: physics_example.yaml
     AssetDirectory: Assets
+    SceneDirectory: Assets/Scenes
     ScriptModulePath: Scripts
+    AssetRegistryPath: AssetRegistry.yaml

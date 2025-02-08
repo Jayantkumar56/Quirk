@@ -19,6 +19,10 @@ namespace Quirk {
 		// returns true if successful and pathOutput contains a valid path
 		// returns false if an error occured or the user not selected a filename
 		static bool SaveFile(const FileDialogSpecification& dialogSpec, std::filesystem::path& pathOutput);
+
+		// returns true if successfully selected a folder and pathOutput contains a valid path
+		// returns false if an error occured or the user not selected a filename
+		static bool OpenFolder(const FileDialogSpecification& dialogSpec, std::filesystem::path& pathOutput);
 	};
 
 }

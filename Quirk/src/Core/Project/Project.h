@@ -21,12 +21,19 @@ namespace Quirk {
 		std::filesystem::path StartScene;
 
 		std::filesystem::path AssetDirectory;
+		std::filesystem::path SceneDirectory;
 		std::filesystem::path ScriptModulePath;
+
+		std::filesystem::path AssetRegistryPath;
 	};
 
+	// path of projMetaData should point to the directory where the proj file (**.qkproj) will reside
+	// eg. for Title = Untitled
+	//         Path  = C:\Document\Untitled
+	// thus Untitled.qkproj file will reside like C:\Document\Untitled\Untitled.qkproj
 	struct ProjectMetadata {
 		std::string Title;
-		std::string Path;
+		std::filesystem::path Path;
 	};
 
 	class Project {
@@ -44,6 +51,11 @@ namespace Quirk {
 			return ProjectSerializer::SerializeRecentProjectsList(s_RecentProjectsList, filePath);
 		}
 
+		// takes path of the folder in which project file (**.qkproj) lives
+		// return file path of the project file (**.qkproj) if successful
+		// in case of error or not finding project file it return empty path
+		static std::filesystem::path AddRecentProject(const std::filesystem::path& directory);
+
 		static inline const std::filesystem::path& GetProjectDirectory() {
 			QK_CORE_ASSERT(s_ActiveProject, "s_ActiveProject is NULL");
 			return s_ActiveProject->m_ProjectDirectory;
@@ -58,6 +70,9 @@ namespace Quirk {
 			QK_CORE_ASSERT(s_ActiveProject, "s_ActiveProject is NULL");
 			return GetAssetDirectory() / path;
 		}
+
+		// the path of projMetaData should be correct and according to the ProjectMetadata path specification rule
+		static Ref<Project> CreateNewProject(ProjectMetadata& projMetaData);
 
 		static Ref<Project> Load(const std::filesystem::path& path) {
 			Ref<Project> project = CreateRef<Project>();

@@ -24,6 +24,14 @@ namespace Quirk {
 		TitleBar()          = default;
 		virtual ~TitleBar() = default;
 
+		// SetImguiWindowProperties is called before OnImguiUiUpdate
+		// thus could be used to set Imgui properties which are set before calling ImGui::Begin()
+		virtual void SetImguiProperties()    { }
+
+		// UnSetImguiProperties is called after OnImguiUiUpdate
+		// thus could be used to unset Imgui properties which are set in SetImguiProperties()
+		virtual void UnSetImguiProperties()  { }
+
 		virtual void OnImguiUiUpdate()     = 0;
 		virtual bool OnEvent(Event& event) = 0;
 
@@ -36,6 +44,8 @@ namespace Quirk {
 
 	private:
 		inline void OnUiUpdate() {
+			SetImguiProperties();
+
 			if (ImGui::BeginMainMenuBar()) {
 				OnImguiUiUpdate();
 
@@ -47,6 +57,8 @@ namespace Quirk {
 
 				ImGui::EndMainMenuBar();
 			}
+
+			UnSetImguiProperties();
 		}
 
 	private:

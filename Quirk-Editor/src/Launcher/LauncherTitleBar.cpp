@@ -4,8 +4,22 @@
 
 namespace Quirk {
 
-	void LauncherTitleBar::OnImguiUiUpdate() {
-		float buttonSize    = 20.0f;
+    void LauncherTitleBar::SetImguiProperties() {
+		ImGuiStyle& style = ImGui::GetStyle();
+		style.FramePadding.y = 8.0f;
+
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+    }
+
+	void LauncherTitleBar::UnSetImguiProperties() {
+		ImGuiStyle& style    = ImGui::GetStyle();
+		style.FramePadding.y = 5.0f;
+
+		ImGui::PopStyleVar();
+	}
+
+    void LauncherTitleBar::OnImguiUiUpdate() {
+		float buttonSize    = 25.0f;
 		float buttonPadding = 10.0f;
 		ImVec2 windowSize   = ImGui::GetWindowSize();
 

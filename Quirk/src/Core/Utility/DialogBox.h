@@ -20,8 +20,8 @@ namespace Quirk {
 		const wchar_t*  FileNameLabel   = nullptr;
 		const wchar_t*	DefaultFileName = nullptr;
 		Window*         ParentWindow    = nullptr;
-		FileFilter*		Filters; 
-		unsigned int	NoOfFilters;
+		FileFilter*		Filters			= nullptr; 
+		unsigned int	NoOfFilters		= 0;
 	};
 
 	class FileDialog {
@@ -36,6 +36,12 @@ namespace Quirk {
 		static inline bool SaveFile(const FileDialogSpecification& dialogSpec, std::filesystem::path& pathOutput) {
 #ifdef QK_PLATFORM_WINDOWS
 			return WindowsFileDialog::SaveFile(dialogSpec, pathOutput);
+#endif // QK_PLATFORM_WINDOWS
+		}
+
+		static inline bool OpenFolder(const FileDialogSpecification& dialogSpec, std::filesystem::path& pathOutput) {
+#ifdef QK_PLATFORM_WINDOWS
+			return WindowsFileDialog::OpenFolder(dialogSpec, pathOutput);
 #endif // QK_PLATFORM_WINDOWS
 		}
 

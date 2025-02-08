@@ -5,6 +5,7 @@
 #include "imgui_internal.h"
 
 #include "Editor/EditorFrame.h"
+#include "QuirkEditorApp.h"
 
 #include <iostream>
 
@@ -20,6 +21,7 @@ namespace Quirk {
 	};
 
 	static bool ImageTextButton(ImageTextButtonParameters& p);
+	static bool TextColorButton(const char* label, ImVec2 buttonSize, ImU32 color, ImU32 hoverColor, ImU32 activeColor, ImU32 borderColor = 0);
 
 	void LauncherFrame::OnImguiUiUpdate() {
 		ImGuiWindowClass windowClass;
@@ -29,6 +31,23 @@ namespace Quirk {
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(35.0f, 0.0f));
 		ImGui::Begin("Project Selection Panel");
 
+		switch (m_State) {
+			case LauncherState::MainMenu:		DrawMainMenu();            break;
+			case LauncherState::ProjectForm:    DrawProjectCreationForm(); break;
+		}
+
+		// telling window if it can move with cursor 
+		// should only set true in requred condition since resetting is done 
+		// in every cycle in the OnUpdate() of the FrameManager
+		if (ImGui::IsWindowHovered() && !ImGui::IsAnyItemHovered()) {
+			GetWindow().SetCanMoveWithCursor(true);
+		}
+
+		ImGui::End();
+		ImGui::PopStyleVar();
+	}
+
+	void LauncherFrame::DrawMainMenu() {
 		// main title 
 		ImguiUIUtility::Text("Quirk Game Engine", m_FontManager.GetFont(FontWeight::Medium, 50));
 
@@ -41,13 +60,13 @@ namespace Quirk {
 		if (ImGui::BeginTable("Main Table", 2)) {
 			// paramters object used to create button with customised parameters
 			ImageTextButtonParameters parameters;
-			parameters.labelFont                  = m_FontManager.GetFont(FontWeight::Medium, 29);
-			parameters.descriptionFont            = m_FontManager.GetFont(FontWeight::Regular, 20);
-			parameters.imageSize.x                = 35.0f;
-			parameters.imageSize.y                = 35.0f;
-			parameters.buttonColor                = 0xff2a2822;
-			parameters.hoverColor                 = 0xff6a5713;
-			parameters.imageContentPadding        = 15.0f;
+			parameters.labelFont = m_FontManager.GetFont(FontWeight::Medium, 29);
+			parameters.descriptionFont = m_FontManager.GetFont(FontWeight::Regular, 20);
+			parameters.imageSize.x = 35.0f;
+			parameters.imageSize.y = 35.0f;
+			parameters.buttonColor = 0xff2a2822;
+			parameters.hoverColor = 0xff6a5713;
+			parameters.imageContentPadding = 15.0f;
 
 			ImGui::TableNextColumn(); // 1st column
 			{
@@ -65,36 +84,29 @@ namespace Quirk {
 					ImGui::PopFont();
 				}
 				else {
-					auto availRgn   = ImGui::GetContentRegionAvail();
+					auto availRgn = ImGui::GetContentRegionAvail();
 
 					parameters.buttonSize.x = availRgn.x - ImGui::GetStyle().ScrollbarSize - 5;
 					parameters.buttonSize.y = 80.0f;
 
 					ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-					ImGui::BeginChild("ScrollingRegion", ImVec2(availRgn.x, availRgn.y -50));
+					ImGui::BeginChild("ScrollingRegion", ImVec2(availRgn.x, availRgn.y - 50));
 
 					for (const auto& project : recentProjects) {
-						parameters.label       = project.Title.c_str();
-						parameters.description = project.Path.c_str();
-						parameters.imgId       = (ImTextureID)(intptr_t)m_ProjectIcon->GetRendererId();
+						std::string projPath = project.Path.string();
+
+						parameters.label = project.Title.c_str();
+						parameters.description = projPath.c_str();
+						parameters.imgId = (ImTextureID)(intptr_t)m_ProjectIcon->GetRendererId();
 
 						// Recent project button
 						if (ImageTextButton(parameters)) {
-							std::filesystem::path path = project.Path + "/" + project.Title + ".qkproj";
+							std::filesystem::path path = project.Path / (project.Title + ".qkproj");
 							Project::Load(path);
 
-							WindowSpecification tempSpec{ 
-								.Title             {"Quirk Editor"}, 
-								.Width             {1600},				   .Height    {900}, 
-								.PosX              {200},				   .PosY      {50}, 
-								.VSyncOn           {true},				   .Maximized {false}, 
-								.CustomTitleBar    {true},
-								.WindowBorderSizeX {4},				       .WindowBorderSizeY {4}, 
-								.WindowBorderColor {12, 12, 12},
-								.MinWidth          {1600},				   .MinHeight {900}
-							};
+							auto app = (QuirkEditorApp*)&Application::Get();
+							app->LaunchEditor();
 
-							Application::Get().AddFrame<EditorFrame>(tempSpec);
 							// AddFrame adds the frame and makes that context to be current
 							// so making launcher frame to be the current context before proceeding
 							MakeContextCurrent();
@@ -118,13 +130,13 @@ namespace Quirk {
 			}
 
 			// common properties for the custom buttons in the 2nd Column
-			parameters.imageSize.x                = 50.0f;
-			parameters.imageSize.y                = 50.0f;
-			parameters.buttonSize.x               = 400.0f;
-			parameters.buttonSize.y               = 100.0f;
-			parameters.buttonColor                = 0xff3b382f;
-			parameters.hoverColor                 = 0xff276243;
-			parameters.imageContentPadding		  = 15.0f;
+			parameters.imageSize.x = 50.0f;
+			parameters.imageSize.y = 50.0f;
+			parameters.buttonSize.x = 400.0f;
+			parameters.buttonSize.y = 100.0f;
+			parameters.buttonColor = 0xff3b382f;
+			parameters.hoverColor = 0xff276243;
+			parameters.imageContentPadding = 15.0f;
 
 			ImGui::TableNextColumn();   // 2nd Column
 			{
@@ -135,22 +147,44 @@ namespace Quirk {
 
 				// All of the contents
 				{
-					parameters.label       = "Open a project";
+					parameters.label = "Open a project";
 					parameters.description = "Navigate and open an existing project from local disk.";
-					parameters.imgId       = (ImTextureID)(intptr_t)m_OpenProjectIcon->GetRendererId();
+					parameters.imgId = (ImTextureID)(intptr_t)m_OpenProjectIcon->GetRendererId();
 
 					// Open project button
 					if (ImageTextButton(parameters)) {
-						// TODO: open the selected project file in the editor
+						FileDialogSpecification fileDialogSpec;
+						fileDialogSpec.Title = L"Open Project";
+						fileDialogSpec.FileNameLabel = L"Project Folder";
+						fileDialogSpec.ParentWindow = &GetWindow();
+
+						std::filesystem::path filePath;
+						if (FileDialog::OpenFolder(fileDialogSpec, filePath)) {
+							const auto& proj = Project::AddRecentProject(filePath);
+
+							if (proj != "") {
+								Project::Load(proj);
+
+								auto app = (QuirkEditorApp*)&Application::Get();
+								app->LaunchEditor();
+
+								// AddFrame adds the frame and makes that context to be current
+								// so making launcher frame to be the current context before proceeding
+								MakeContextCurrent();
+
+								CloseFrame();
+							}
+						}
 					}
 
-					parameters.label       = "Create a new project";
+					parameters.label = "Create a new project";
 					parameters.description = "Select name and settings to get started.";
-					parameters.imgId       = (ImTextureID)(intptr_t)m_CreateProjectIcon->GetRendererId();
+					parameters.imgId = (ImTextureID)(intptr_t)m_CreateProjectIcon->GetRendererId();
 
 					// Create project button
 					if (ImageTextButton(parameters)) {
-						// TODO: create a new project and open it in the editor
+						// switching to project creation state to draw the form
+						m_State = LauncherState::ProjectForm;
 					}
 				}
 			}
@@ -159,19 +193,138 @@ namespace Quirk {
 		}
 
 		ImGui::GetStyle().CellPadding = cellPadding; // for Main Table
+	}
 
-		// telling window if it can move with cursor 
-		// should only set true in requred condition since resetting is done 
-		// in every cycle in the OnUpdate() of the FrameManager
-		if (ImGui::IsWindowHovered() && !ImGui::IsAnyItemHovered()) {
-			GetWindow().SetCanMoveWithCursor(true);
+	void LauncherFrame::DrawProjectCreationForm() {
+		// main title 
+		ImguiUIUtility::Text("Create your new project", m_FontManager.GetFont(FontWeight::Medium, 50));
+
+		// padding between main title of the window and rest content
+		ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 30.0f);
+
+		// styles for InputText fields below
+		ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.184f, 0.22f, 0.231f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_Border,  ImVec4(0.263f, 0.427f, 0.408f, 1.0f));
+		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding,    ImVec2(15.0f, 7.0f));
+		ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize,   1.0f             );
+
+		// Project Name field
+		ImguiUIUtility::Text("Project Name", m_FontManager.GetFont(FontWeight::Regular, 23));
+		ImGui::InputText("##ProjectName", (char*)m_TempProject.Title.c_str(), m_TempProject.Title.length());
+
+		// padding between the two fields
+		ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 20.0f);
+
+		// Project Path field
+		ImguiUIUtility::Text("Project Path", m_FontManager.GetFont(FontWeight::Regular, 23));
+		ImGui::InputText("##ProjectPath", (char*)m_TempProjPath.c_str(), m_TempProjPath.length());
+
+		ImGui::SameLine();
+		// button for opening folder selection dialog
+		if (TextColorButton(". . .", { 50.0f, 35.0f }, 0xff575346, 0xff3b382f, 0xff48463a, 0xff0ca403)) {
+			FileDialogSpecification fileDialogSpec;
+			fileDialogSpec.Title = L"Open Project";
+			fileDialogSpec.FileNameLabel = L"Project Folder";
+			fileDialogSpec.ParentWindow = &GetWindow();
+
+			std::filesystem::path filePath;
+			if (FileDialog::OpenFolder(fileDialogSpec, filePath)) {
+				m_TempProjPath = filePath.string();
+				m_TempProjPath.resize(512);
+			}
 		}
 
-		ImGui::End();
-		ImGui::PopStyleVar();
+		ImGui::PopStyleVar(2);
+		ImGui::PopStyleColor(2);
+
+		// putting buttons below to the extreme corner of the window
+		ImVec2 buttonSize  = { 120.0f, 50.0f };
+		ImVec2 windSize    = ImGui::GetWindowSize();
+
+		ImVec2 buttonPos = {
+			windSize.x - buttonSize.x * 2 - 50.0f,
+			windSize.y - buttonSize.y - 50.f
+		};
+
+		ImGui::SetCursorPos(buttonPos);
+
+		// back button for navigating back
+		if (TextColorButton("Back", buttonSize, 0xff575346, 0xff3b382f, 0xff48463a)) {
+			m_State = LauncherState::MainMenu;
+		}
+
+		// if the directory choosen for project is valid or not
+		// if not valid show popup telling wrong directory choosen
+		bool isValidDirectory = true;
+
+		ImGui::SameLine();
+		// create button to create the new project
+		if (TextColorButton("Create", buttonSize, 0xff575346, 0xff3b382f, 0xff48463a)) {
+			// removing the extra '\0' characters from the strings
+			m_TempProject.Title.erase(m_TempProject.Title.find_last_not_of('\0') + 1);
+			m_TempProjPath.erase(m_TempProjPath.find_last_not_of('\0') + 1);
+
+			m_TempProject.Path = m_TempProjPath + "/" + m_TempProject.Title;
+
+			if (std::filesystem::is_directory(m_TempProject.Path.parent_path())) {
+				const auto& proj = Project::CreateNewProject(m_TempProject);
+
+				if (proj) {
+					auto app = (QuirkEditorApp*)&Application::Get();
+					app->LaunchEditor();
+
+					Project::AddRecentProject(m_TempProject.Path);
+
+					// AddFrame adds the frame and makes that context to be current
+					// so making launcher frame to be the current context before proceeding
+					MakeContextCurrent();
+
+					CloseFrame();
+				}
+			}
+			else {
+				isValidDirectory = false;
+			}
+		}
+
+		if (!isValidDirectory) {
+			// TODO: if the directory choosen for project is valid or not show popup telling wrong directory choosen
+		}
+	}
+
+	static bool TextColorButton(const char* label, ImVec2 buttonSize, ImU32 color, ImU32 hoverColor, ImU32 activeColor, ImU32 borderColor) {
+		ImGui::PushID(label);
+		ImVec2 labelSize = ImGui::CalcTextSize(label);
+		ImVec2 cursorPos = ImGui::GetCursorScreenPos();
+
+		bool isClicked = ImGui::InvisibleButton(label, buttonSize);
+		bool isHovered = ImGui::IsItemHovered();
+		bool isActive  = isHovered && ImGui::IsMouseDown(0);
+
+		ImDrawList* drawList = ImGui::GetWindowDrawList();
+		ImU32 buttonColor    = isHovered ? isActive ? activeColor : hoverColor : color;
+		
+		// for border
+		if (borderColor) {
+			drawList->AddRectFilled(
+				{ cursorPos.x - 1.0f, cursorPos.y - 1.0f } , 
+				{ cursorPos.x + buttonSize.x + 1.0f, cursorPos.y + buttonSize.y + 1.0f },
+				borderColor
+			);
+		}
+
+		drawList->AddRectFilled(cursorPos, { cursorPos.x + buttonSize.x, cursorPos.y + buttonSize.y }, buttonColor);
+
+		ImVec2 textPos = { cursorPos.x + (buttonSize.x - labelSize.x) * 0.5f, cursorPos.y + (buttonSize.y - labelSize.y) * 0.5f };
+		drawList->AddText(textPos, 0xFFFFFFFF, label);
+
+		ImGui::PopID();
+		return isClicked;
 	}
 
 	static bool ImageTextButton(ImageTextButtonParameters& p) {
+		ImGui::PushID(p.description);
+
 		ImVec2  buttonPadding = { 20.0f, 10.0f };
 		float availableWidthForText = p.buttonSize.x - p.imageSize.x - p.imageContentPadding - 2 * buttonPadding.x;
 
@@ -185,7 +338,6 @@ namespace Quirk {
 
 		ImVec2 cursorPos = ImGui::GetCursorScreenPos();
 
-		ImGui::PushID(p.label);
 		bool isClicked = ImGui::InvisibleButton(p.label, p.buttonSize);
 		bool isHovered = ImGui::IsItemHovered();
 

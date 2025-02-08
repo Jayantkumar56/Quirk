@@ -43,20 +43,26 @@ namespace Quirk {
 		HWND window = (HWND)dialogSpec.ParentWindow->GetNativeHandle();
 		hr = pFileOpen->Show(window);
 		if (!SUCCEEDED(hr)) {
+			pFileOpen->Release();
 			return false;
 		}
 
 		IShellItem* pItem;
 		hr = pFileOpen->GetResult(&pItem);
 
-		if (!SUCCEEDED(hr))
+		if (!SUCCEEDED(hr)) {
+			pFileOpen->Release();
 			return false;
+		}
 		
 		PWSTR pszFilePath;
 		hr = pItem->GetDisplayName(SIGDN_FILESYSPATH, &pszFilePath);
 
-		if (!SUCCEEDED(hr))
+		if (!SUCCEEDED(hr)) {
+			pItem->Release();
+			pFileOpen->Release();
 			return false;
+		}
 		
 		pathOutput.assign(pszFilePath);
 		CoTaskMemFree(pszFilePath);
@@ -72,6 +78,7 @@ namespace Quirk {
 
 		if (!SUCCEEDED(hr)) {
 			QK_CORE_WARN("Unable to create IFileSaveDialog instance");
+			pFileSave->Release();
 			return false;
 		}
 	
@@ -96,26 +103,88 @@ namespace Quirk {
 		HWND window = (HWND)dialogSpec.ParentWindow->GetNativeHandle();
 		hr = pFileSave->Show(window);
 		if (!SUCCEEDED(hr)) {
+			pFileSave->Release();
 			return false;
 		}
 
 		IShellItem* pItem = nullptr;
 		hr = pFileSave->GetResult(&pItem);
 
-		if (!SUCCEEDED(hr))
+		if (!SUCCEEDED(hr)) {
+			pFileSave->Release();
 			return false;
+		}
 
 		PWSTR pszFilePath;
 		hr = pItem->GetDisplayName(SIGDN_FILESYSPATH, &pszFilePath);
 
-		if (!SUCCEEDED(hr))
+		if (!SUCCEEDED(hr)) {
+			pItem->Release();
+			pFileSave->Release();
 			return false;
+		}
 
 		pathOutput.assign(pszFilePath);
 		CoTaskMemFree(pszFilePath);
 
 		pItem->Release();
 		pFileSave->Release();
+		return true;
+	}
+
+	bool WindowsFileDialog::OpenFolder(const FileDialogSpecification& dialogSpec, std::filesystem::path& pathOutput) {
+		HRESULT hr;
+		IFileDialog* pFileDialog = nullptr;
+		hr = CoCreateInstance(CLSID_FileOpenDialog, nullptr, CLSCTX_ALL, IID_IFileDialog, reinterpret_cast<void**>(&pFileDialog));
+
+		if (!SUCCEEDED(hr)) {
+			QK_CORE_WARN("Unable to create IFileOpenDialog instance");
+			return false;
+		}
+
+		// Set the dialog to folder picker mode
+		DWORD dwOptions;
+		pFileDialog->GetOptions(&dwOptions);
+		pFileDialog->SetOptions(dwOptions | FOS_PICKFOLDERS); // Enable folder selection
+
+		if (dialogSpec.Title != nullptr)
+			pFileDialog->SetTitle(dialogSpec.Title);
+
+		if (dialogSpec.FileNameLabel != nullptr)
+			pFileDialog->SetFileNameLabel(dialogSpec.FileNameLabel);
+
+		if (dialogSpec.DefaultFileName != nullptr)
+			pFileDialog->SetFileName(dialogSpec.DefaultFileName);
+
+		HWND window = (HWND)dialogSpec.ParentWindow->GetNativeHandle();
+		hr = pFileDialog->Show(window);
+		if (!SUCCEEDED(hr)) {
+			pFileDialog->Release();
+			return false;
+		}
+
+		IShellItem* pItem;
+		hr = pFileDialog->GetResult(&pItem);
+
+		if (!SUCCEEDED(hr)) {
+			pFileDialog->Release();
+			return false;
+		}
+
+		PWSTR pszFilePath;
+		hr = pItem->GetDisplayName(SIGDN_FILESYSPATH, &pszFilePath);
+
+		if (!SUCCEEDED(hr)) {
+			pItem->Release();
+			pFileDialog->Release();
+			return false;
+		}
+
+		pathOutput.assign(pszFilePath);
+		CoTaskMemFree(pszFilePath);
+
+		pItem->Release();
+		pFileDialog->Release();
 		return true;
 	}
 
