@@ -5,11 +5,11 @@
 #include "Core/Core.h"
 
 #include "RendererAPI.h"
-#include "VertexArray.h"
-#include "Shader.h"
+#include "Core/Renderer/RendererPrimitives/VertexArray.h"
+#include "Core/Renderer/RendererPrimitives/Shader.h"
 #include "Texture.h"
 
-#include "Geometry.h"
+#include "Core/Renderer/Geometry/Geometry.h"
 
 namespace Quirk {
 

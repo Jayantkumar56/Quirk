@@ -3,7 +3,7 @@
 #pragma once
 
 #include "Core/Renderer/RendererAPI.h"
-#include "Core/Renderer/Shader.h"
+#include "Core/Renderer/RendererPrimitives/Shader.h"
 #include "Texture.h"
 #include "Core/Scene/Entity.h"
 

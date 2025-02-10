@@ -4,7 +4,7 @@
 #include <utility>
 #include "glm/vec4.hpp"
 
-#include "VertexArray.h"
+#include "Core/Renderer/RendererPrimitives/VertexArray.h"
 
 namespace Quirk {
 

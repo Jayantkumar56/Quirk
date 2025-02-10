@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "Core/Renderer/VertexArray.h"
+#include "Core/Renderer/RendererPrimitives/VertexArray.h"
 
 namespace Quirk {
 

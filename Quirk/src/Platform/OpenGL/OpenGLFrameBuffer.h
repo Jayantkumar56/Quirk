@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "Core/Renderer/Buffers/FrameBuffer.h"
+#include "Core/Renderer/RendererPrimitives/FrameBuffer.h"
 #include "glad/glad.h"
 
 namespace Quirk {

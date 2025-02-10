@@ -3,7 +3,7 @@
 
 #include "Core/Core.h"
 #include "RendererAPI.h"
-#include "VertexArray.h"
+#include "Core/Renderer/RendererPrimitives/VertexArray.h"
 
 namespace Quirk {
 

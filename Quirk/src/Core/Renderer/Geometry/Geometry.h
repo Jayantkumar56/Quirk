@@ -5,6 +5,29 @@
 
 namespace Quirk {
 
+	enum class PrimitiveMeshType {
+		Plane,
+		Cube,
+		Sphere,
+		Cylinder,
+		Capsule
+	};
+
+	struct PrimitiveSpecification {
+		PrimitiveMeshType Type;
+		uint32_t   Segments[3] { 1, 1, 1 };
+		glm::vec3  Size        { 1, 1, 1 };
+		uint32_t   LOD         { 0 };
+	};
+
+	struct GeometryImportSettings {
+
+	};
+
+	struct GeometryData {
+
+	};
+
 	struct QuadVertex {
 		glm::vec3 Position;
 

@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "Core/Renderer/Buffers/Buffers.h"
+#include "Core/Renderer/RendererPrimitives/Buffers.h"
 
 namespace Quirk {
 
