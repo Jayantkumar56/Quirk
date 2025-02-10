@@ -39,7 +39,7 @@ namespace Quirk {
 			.Title             {"Quirk Editor"},
 			.Width             {1600},				   .Height    {900},
 			.PosX              {200},				   .PosY      {50},
-			.VSyncOn           {true},				   .Maximized {false},
+			.VSyncOn           {true},				   .Maximized {true},
 			.CustomTitleBar    {true},
 			.WindowBorderSizeX {0},				       .WindowBorderSizeY {0},
 			.WindowBorderColor {12, 12, 12},

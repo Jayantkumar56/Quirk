@@ -15,6 +15,9 @@ namespace Quirk {
 
 		~EditorTitleBar() = default;
 
+		virtual void SetImguiProperties()   override;
+		virtual void UnSetImguiProperties() override;
+
 		virtual void OnImguiUiUpdate() override;
 		virtual bool OnEvent(Event& event) override { return false; }
 

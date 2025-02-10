@@ -19,15 +19,13 @@ namespace Quirk {
 		// must be converted into relative to the working directory before use
 
 		std::filesystem::path StartScene;
-
 		std::filesystem::path AssetDirectory;
 		std::filesystem::path SceneDirectory;
 		std::filesystem::path ScriptModulePath;
-
 		std::filesystem::path AssetRegistryPath;
 	};
 
-	// path of projMetaData should point to the directory where the proj file (**.qkproj) will reside
+	// path of projMetaData should point to the directory where the proj file (**.qkproj) lives
 	// eg. for Title = Untitled
 	//         Path  = C:\Document\Untitled
 	// thus Untitled.qkproj file will reside like C:\Document\Untitled\Untitled.qkproj
