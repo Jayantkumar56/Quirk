@@ -25,11 +25,6 @@ namespace Quirk {
 		bool	Maximized;
 		bool	CustomTitleBar = false;
 
-		// color of the outer border in CustomTitleBar mode
-		uint8_t		WindowBorderSizeX {0};
-		uint8_t		WindowBorderSizeY {0};
-		glm::u8vec3 WindowBorderColor {0, 0, 0};
-
 		uint16_t MinWidth  = 200;
 		uint16_t MinHeight = 200;
 	};
@@ -53,9 +48,6 @@ namespace Quirk {
 				m_MinHeight         (spec.MinHeight         ),
 				m_PosX              (spec.PosX              ),
 				m_PosY              (spec.PosX              ),
-				m_windowBorderSizeX (spec.WindowBorderSizeX ),
-				m_windowBorderSizeY (spec.WindowBorderSizeY ),
-				m_WindowBorderColor (spec.WindowBorderColor ),
 				// CustomTitleBar flag should be set before creating native window object (especially for WindowsWindow)
 				m_StateFlags (((int)spec.CustomTitleBar << StateFlags::CustomTitleBarEnabled)),
 				m_Window     (spec, this    )
@@ -76,9 +68,6 @@ namespace Quirk {
 				m_MinHeight         (other.m_MinHeight        ),
 				m_PosX              (other.m_PosX             ),
 				m_PosY              (other.m_PosY             ),
-				m_windowBorderSizeX (other.m_windowBorderSizeX),
-				m_windowBorderSizeY (other.m_windowBorderSizeY),
-				m_WindowBorderColor (other.m_WindowBorderColor),
 				m_StateFlags        (other.m_StateFlags       ),
 				m_Window            (std::move(other.m_Window))
 		{
@@ -93,9 +82,6 @@ namespace Quirk {
 			m_MinHeight         = other.m_MinHeight;
 			m_PosX              = other.m_PosX;
 			m_PosY              = other.m_PosY;
-			m_windowBorderSizeX = other.m_windowBorderSizeX;
-			m_windowBorderSizeY = other.m_windowBorderSizeY;
-			m_WindowBorderColor = other.m_WindowBorderColor;
 			m_Window            = std::move(other.m_Window);
 			return *this;
 		}
@@ -162,11 +148,6 @@ namespace Quirk {
 		// position of the client area
 		int32_t	m_PosX;						
 		int32_t	m_PosY;
-
-		// color of the outer border in CustomTitleBar mode
-		uint8_t		m_windowBorderSizeX;
-		uint8_t		m_windowBorderSizeY;
-		glm::u8vec3 m_WindowBorderColor;
 
 		// stores all the states flags and boolean properties of the window
 		int m_StateFlags;

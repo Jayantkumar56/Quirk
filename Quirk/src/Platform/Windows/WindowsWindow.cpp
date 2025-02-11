@@ -93,10 +93,6 @@ namespace Quirk {
 		if (!spec.CustomTitleBar) {
 			AdjustWindowSizeForDPI(windWidth, windHeight);
 		}
-		else {
-			windWidth  += 2 * spec.WindowBorderSizeX;
-			windHeight += 2 * spec.WindowBorderSizeY;
-		}
 
 		std::wstring title(spec.Title.begin(), spec.Title.end());
 
@@ -165,60 +161,6 @@ namespace Quirk {
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		}
-	}
-
-	static void DrawWindowFrame(HWND hwnd, glm::u8vec3& color) {
-		HDC dc = GetDCEx(hwnd, 0, DCX_WINDOW | DCX_USESTYLE);
-		PAINTSTRUCT paint;
-		BeginPaint(hwnd, &paint);
-
-		RECT frameRect;
-		RECT clientRect;
-		GetWindowRect(hwnd, &frameRect);
-		GetClientRect(hwnd, &clientRect);
-
-		ClientToScreen(hwnd, (LPPOINT)&clientRect.left);
-		ClientToScreen(hwnd, (LPPOINT)&clientRect.right);
-
-		{
-			SetDCBrushColor(dc, RGB(color.r, color.g, color.b));
-			SetDCPenColor(dc, RGB(color.r, color.g, color.b));
-
-			SelectObject(dc, GetStockObject(DC_PEN));
-			SelectObject(dc, GetStockObject(DC_BRUSH));
-
-			// left part of the frame
-			Rectangle(dc,
-				0,
-				0,
-				clientRect.left - frameRect.left,
-				clientRect.bottom - frameRect.top
-			);
-			// top part of the frame
-			Rectangle(dc,
-				clientRect.left - frameRect.left,
-				0,
-				frameRect.right - clientRect.left,
-				clientRect.top - frameRect.top
-			);
-			// right part of the frame
-			Rectangle(dc,
-				clientRect.right - frameRect.left,
-				0,
-				frameRect.right - frameRect.left,
-				frameRect.bottom - frameRect.top
-			);
-			// bottom part of the frame
-			Rectangle(dc,
-				0,
-				clientRect.bottom - frameRect.top,
-				clientRect.right - frameRect.left,
-				frameRect.bottom - frameRect.top
-			);
-		}
-
-		EndPaint(hwnd, &paint);
-		ReleaseDC(hwnd, dc);
 	}
 
 	LRESULT WindowsWindow::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
@@ -475,8 +417,8 @@ namespace Quirk {
 				if (lParam == NULL) return (LRESULT)0;
 
 				UINT dpi = GetDpiForWindow(hwnd);
-				int frameX  = window->m_windowBorderSizeX;
-				int frameY  = window->m_windowBorderSizeY;
+				int frameX  = 0;
+				int frameY  = 0;
 				int padding = 0;
 
 				if (window->IsMaximised()) {
@@ -495,11 +437,6 @@ namespace Quirk {
 				windowRect->bottom -= frameY + padding;
 				windowRect->top += frameY + padding;
 
-				return (LRESULT)0;
-			}
-
-			case WM_NCPAINT: {
-				DrawWindowFrame(hwnd, window->m_WindowBorderColor);
 				return (LRESULT)0;
 			}
 
