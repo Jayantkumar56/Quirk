@@ -4,8 +4,6 @@
 #include "FontManager.h"
 #include "Theme.h"
 
-#include "Core/Serializer/SceneSerializer.h"
-
 namespace Quirk {
 
 	bool EditorFrame::OnEvent(Event& event){

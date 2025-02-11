@@ -39,8 +39,7 @@
 #include "Core/Scene/ScriptableEntity.h"
 #include "Core/Scene/SceneCamera.h"
 #include "Core/Scene/Scene.h"
-
-#include "Core/Serializer/SceneSerializer.h"
+#include "Core/Scene/SceneSerializer.h"
 
 #include "Core/Application/Application.h"
 #include "Core/Frame/Window.h"

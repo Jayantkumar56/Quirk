@@ -26,8 +26,6 @@ namespace Quirk {
 			.PosX              {200},				   .PosY      {50},
 			.VSyncOn           {true},				   .Maximized {false},
 			.CustomTitleBar    {true},
-			.WindowBorderSizeX {0},				       .WindowBorderSizeY {0},
-			.WindowBorderColor {12, 12, 12},
 			.MinWidth          {1100},				   .MinHeight {780}
 		};
 
@@ -41,8 +39,6 @@ namespace Quirk {
 			.PosX              {200},				   .PosY      {50},
 			.VSyncOn           {true},				   .Maximized {true},
 			.CustomTitleBar    {true},
-			.WindowBorderSizeX {0},				       .WindowBorderSizeY {0},
-			.WindowBorderColor {12, 12, 12},
 			.MinWidth          {1600},				   .MinHeight {900}
 		};
 

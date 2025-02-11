@@ -14,6 +14,3 @@
 [submodule "Quirk/vendor/ImGuizmo"]
 	path = Quirk/vendor/ImGuizmo
 	url = https://github.com/Jayantkumar56/ImGuizmo
-[submodule "Quirk/vendor/box2d"]
-	path = Quirk/vendor/box2d
-	url = https://github.com/Jayantkumar56/box2d

@@ -24,8 +24,7 @@ project "Quirk-Editor"
         "../%{IncludeDir.Stb_Image}",
         "../%{IncludeDir.Entt}",
         "../%{IncludeDir.Yaml_CPP}",
-        "../%{IncludeDir.ImGuizmo}",
-        "../%{IncludeDir.Box2d}"
+        "../%{IncludeDir.ImGuizmo}"
     }
 
     links { "Quirk" }

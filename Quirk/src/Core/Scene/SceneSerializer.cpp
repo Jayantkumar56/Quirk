@@ -96,26 +96,6 @@ namespace YAML {
 
 namespace Quirk {
 
-	static std::string RigidBody2DBodyTypeToString(RigidBody2DComponent::BodyType type) {
-		switch (type) {
-			case Quirk::RigidBody2DComponent::Static:	 return "Static";
-			case Quirk::RigidBody2DComponent::Dynamic:	 return "Dynamic";
-			case Quirk::RigidBody2DComponent::Kinematic: return "Kinematic";
-		}
-
-		QK_CORE_ASSERT(false, "Invalid Rigid BodyType provided");
-		return std::string();
-	}
-
-	static RigidBody2DComponent::BodyType RigidBody2DStringToBodyType(std::string type) {
-		if (type == "Static")    return Quirk::RigidBody2DComponent::Static;
-		if (type == "Dynamic")   return Quirk::RigidBody2DComponent::Dynamic;
-		if (type == "Kinematic") return Quirk::RigidBody2DComponent::Kinematic;
-
-		QK_CORE_ASSERT(false, "Invalid Rigid BodyType provided");
-		return  Quirk::RigidBody2DComponent::Static;
-	}
-
 	void SceneSerializer::Serialize(const Ref<Scene>& scene, const std::filesystem::path& filePath) {
 		YAML::Emitter out;
 
@@ -237,35 +217,6 @@ namespace Quirk {
 			emitter << YAML::EndMap;
 		}
 
-		if (entity.HasComponent<RigidBody2DComponent>()) {
-			auto& component = entity.GetComponent<RigidBody2DComponent>();
-
-			emitter << YAML::Key << "RigidBody2DComponent";
-			emitter << YAML::BeginMap;
-
-			emitter << YAML::Key << "BodyType"      << YAML::Value << RigidBody2DBodyTypeToString(component.Type);
-			emitter << YAML::Key << "FixedRotation" << YAML::Value << component.FixedRotation;
-
-			emitter << YAML::EndMap;
-		}
-
-		if (entity.HasComponent<BoxCollider2DComponent>()) {
-			auto& component = entity.GetComponent<BoxCollider2DComponent>();
-
-			emitter << YAML::Key << "BoxCollider2DComponent";
-			emitter << YAML::BeginMap;
-
-			emitter << YAML::Key << "Offset" << YAML::Value << component.Offset;
-			emitter << YAML::Key << "Size"   << YAML::Value << component.Size;
-
-			emitter << YAML::Key << "Density"			   << YAML::Value << component.Density;
-			emitter << YAML::Key << "Friction"			   << YAML::Value << component.Friction;
-			emitter << YAML::Key << "Restitution"		   << YAML::Value << component.Restitution;
-			emitter << YAML::Key << "RestitutionThreshold" << YAML::Value << component.RestitutionThreshold;
-
-			emitter << YAML::EndMap;
-		}
-
 		if (entity.HasComponent<SpriteRendererComponent>()) {
 			auto& component		 = entity.GetComponent<SpriteRendererComponent>();
 			std::string filePath = (component.Texture != nullptr) ? std::filesystem::proximate(component.Texture->GetPath()).string() : "";
@@ -300,25 +251,6 @@ namespace Quirk {
 			std::filesystem::path texturefilePath = deserializedComponent["Texture"].as<std::string>();
 			if (std::filesystem::exists(texturefilePath))
 				component.Texture = Texture2D::Create(texturefilePath);
-		}
-
-		if (auto deserializedComponent = entityNode["RigidBody2DComponent"];  deserializedComponent) {
-			auto& component = entity.AddComponent<RigidBody2DComponent>();
-
-			component.Type			= RigidBody2DStringToBodyType(deserializedComponent["BodyType"].as<std::string>());
-			component.FixedRotation = deserializedComponent["FixedRotation"].as<bool>();
-		}
-
-		if (auto deserializedComponent = entityNode["BoxCollider2DComponent"];  deserializedComponent) {
-			auto& component = entity.AddComponent<BoxCollider2DComponent>();
-
-			component.Offset = deserializedComponent["Offset"].as<glm::vec2>();
-			component.Size   = deserializedComponent["Size"].as<glm::vec2>();
-
-			component.Density			   = deserializedComponent["Density"].as<float>();
-			component.Friction			   = deserializedComponent["Friction"].as<float>();
-			component.Restitution		   = deserializedComponent["Restitution"].as<float>();
-			component.RestitutionThreshold = deserializedComponent["RestitutionThreshold"].as<float>();
 		}
 
 		if (auto deserializedComponent = entityNode["CameraComponent"];			deserializedComponent) {

@@ -380,6 +380,10 @@ namespace Quirk {
 				WindowResizeEvent event(width, height);
 				EventDispatcher::DispatchEvent(event);
 
+				// when swtching from maximised to default size need to invoke WM_NCCALCSIZE 
+				// to calculate the frame change (used in custom TitleBar mode)
+				SetWindowPos(hwnd, NULL, 0, 0, 0, 0, SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOSIZE);
+
 				return (LRESULT)0;
 			}
 
@@ -431,11 +435,11 @@ namespace Quirk {
 				}
 
 				NCCALCSIZE_PARAMS* params = (NCCALCSIZE_PARAMS*)lParam;
-				RECT* windowRect = params->rgrc;
-				windowRect->right -= frameX + padding;
-				windowRect->left += frameX + padding;
+				RECT* windowRect    = params->rgrc;
+				windowRect->right  -= frameX + padding;
+				windowRect->left   += frameX + padding;
 				windowRect->bottom -= frameY + padding;
-				windowRect->top += frameY + padding;
+				windowRect->top    += frameY + padding;
 
 				return (LRESULT)0;
 			}

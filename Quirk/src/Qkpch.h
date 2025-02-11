@@ -21,6 +21,8 @@
 #include <fstream>
 #include <filesystem>
 
+#include <algorithm>
+
 #ifdef QK_PLATFORM_WINDOWS
 
 #ifndef WIN32_LEAN_AND_MEAN

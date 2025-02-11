@@ -9,8 +9,6 @@
 #include "Core/Renderer/RendererPrimitives/Shader.h"
 #include "Texture.h"
 
-#include "Core/Renderer/Geometry/Geometry.h"
-
 namespace Quirk {
 
 	class Renderer {
@@ -18,18 +16,12 @@ namespace Quirk {
 		static void InitRenderer(RendererAPI::API rendererAPI);
 
 		static void BeginScene(const glm::mat4& projectionView);
-
 		static void EndScene();
-		static void SubmitQuadMesh(QuadVertex* vertices, uint32_t count);
 
 		inline static RendererAPI::API GetAPI() { return RendererAPI::GetAPI(); }
 
 	private:
-		static void DrawQuadMesh();
-
-	private:
 		struct SceneData {
-			uint32_t MaxNoOfQuads;
 			uint32_t MaxNoOfTextureSlots;
 
 			// Textures relate data
@@ -37,12 +29,6 @@ namespace Quirk {
 			uint32_t		NextTextureSlotToBind;
 			Ref<Texture>*	TextureSlots;
 			Ref<Texture2D>	WhiteTexture;
-
-			// Quad mesh data
-			uint32_t		  SubmitedQuadCount;
-			Ref<Shader>		  QuadShader;
-			Ref<VertexArray>  QuadMeshVA;
-			Ref<VertexBuffer> QuadMeshVB;
 
 			// camera data
 			glm::mat4 ProjectionViewMatrix;

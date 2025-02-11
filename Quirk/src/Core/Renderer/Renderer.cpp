@@ -11,9 +11,7 @@ namespace Quirk {
 	Renderer::SceneData Renderer::m_SceneData;
 
 	void Renderer::InitRenderer(RendererAPI::API rendererAPI) {
-		m_SceneData.MaxNoOfQuads		= 1000;
 		m_SceneData.MaxNoOfTextureSlots = 32;
-		m_SceneData.SubmitedQuadCount	= 0;
 
 		RenderCommands::SetClearColor({ 0.10156f, 0.17968f, 0.20703f, 1.0f });
 		RenderCommands::EnableBlending();
@@ -72,64 +70,6 @@ namespace Quirk {
 			DrawQuadMesh();
 			m_SceneData.SubmitedQuadCount = 0;
 		}
-#endif // _EXPERIMENTAL_3D_CODE_
-	}
-
-	void Renderer::SubmitQuadMesh(QuadVertex* vertices, uint32_t count) {
-#ifdef _EXPERIMENTAL_3D_CODE_
-
-		QuadVertex* vertexToSubmit = vertices;
-		uint32_t	vertexCount = count;
-
-		if (vertexCount + m_SceneData.SubmitedQuadCount >= m_SceneData.MaxNoOfQuads) {
-			vertexCount = m_SceneData.MaxNoOfQuads - m_SceneData.SubmitedQuadCount;
-
-			m_SceneData.QuadMeshVB->UploadData(
-				(void*)vertexToSubmit, 
-				vertexCount * sizeof(QuadVertex),
-				m_SceneData.SubmitedQuadCount * sizeof(QuadVertex)
-			);
-
-			// draw mesh and reset submited quads
-			DrawQuadMesh();
-			m_SceneData.SubmitedQuadCount = 0;
-
-			// advancing pointer to the remaining vertices
-			vertexToSubmit = vertices + vertexCount;
-			vertexCount    = count - vertexCount;
-		}
-
-		if (vertexCount > 0) {
-			m_SceneData.QuadMeshVB->UploadData(
-				(void*)vertexToSubmit,
-				vertexCount * sizeof(QuadVertex),
-				m_SceneData.SubmitedQuadCount * sizeof(QuadVertex)
-			);
-
-			m_SceneData.SubmitedQuadCount += vertexCount;
-		}
-
-#endif // _EXPERIMENTAL_3D_CODE_
-	}
-
-	void Renderer::DrawQuadMesh() {
-#ifdef _EXPERIMENTAL_3D_CODE_
-
-		if (m_SceneData.SubmitedQuadCount == 0) {
-			return;
-		}
-
-		m_SceneData.QuadMeshVA->Bind();
-
-		for (uint32_t i = 0; i < m_SceneData.NextTextureSlotToBind; ++i) {
-			m_SceneData.TextureSlots[i]->Bind(i);
-		}
-
-		m_SceneData.QuadShader->Bind();
-		m_SceneData.QuadShader->UploadUniform("u_ViewProjection", m_SceneData.ProjectionViewMatrix);
-		m_SceneData.QuadShader->UploadUniform("u_Textures", m_SceneData.Sampler, m_SceneData.MaxNoOfTextureSlots);
-
-		RenderCommands::DrawIndexed(m_SceneData.QuadMeshVA, m_SceneData.SubmitedQuadCount);
 #endif // _EXPERIMENTAL_3D_CODE_
 	}
 

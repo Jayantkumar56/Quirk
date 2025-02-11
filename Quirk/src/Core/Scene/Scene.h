@@ -7,8 +7,6 @@
 
 #include "entt.hpp"
 
-struct b2WorldId;
-
 namespace Quirk {
 
 	class Entity;
@@ -61,7 +59,6 @@ namespace Quirk {
 	private:
 		entt::registry m_Registry;
 		uint16_t m_ViewportWidth, m_ViewportHeight;
-		b2WorldId* m_PhysicsWorld = nullptr;
 	};
 
 }

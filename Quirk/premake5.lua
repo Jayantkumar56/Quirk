@@ -2,7 +2,6 @@ group "Dependencies"
 include "vendor/Glad"
 include "vendor/imgui"
 include "vendor/yaml-cpp"
-include "vendor/box2d"
 group ""
 
 project "Quirk"
@@ -42,7 +41,6 @@ project "Quirk"
         "vendor/entt/include",
         "vendor/yaml-cpp/include",
         "vendor/ImGuizmo",
-        "vendor/box2d/include"
     }
 
     links
@@ -50,8 +48,7 @@ project "Quirk"
         "Glad",
         "ImGui",
         "opengl32.lib",
-        "yaml-cpp",
-        "Box2D"
+        "yaml-cpp"
     }
 
     filter "files:vendor/ImGuizmo/**.cpp"
