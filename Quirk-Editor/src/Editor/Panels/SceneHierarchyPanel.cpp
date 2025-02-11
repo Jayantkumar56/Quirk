@@ -1,7 +1,6 @@
 
 
 #include "SceneHierarchyPanel.h"
-#include "FontManager.h"
 #include "Theme.h"
 #include "Editor/EditorFrame.h"
 

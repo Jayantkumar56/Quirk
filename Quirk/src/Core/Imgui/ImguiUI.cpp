@@ -16,6 +16,8 @@
 
 #include "backends/imgui_impl_opengl3.h"
 
+#include "Core/Application/Application.h"
+
 // From Glad.h
 #define GL_FALSE 0
 #define GL_TRUE 1
@@ -25,9 +27,13 @@ namespace Quirk {
 #ifdef QK_PLATFORM_WINDOWS
 
 	void ImguiUI::Init(Window& window, const GraphicalContext* context) {
-		// Setup Dear ImGui context
+		// getting the common fontAtlas
+		// TODO: maybe find a good way of doing this
+		ImFontAtlas* fontAtlas = Application::Get().GetFrameManager().GetFontAtlas();
+
+		// Setup Dear ImGui context with the fontAtlas
 		IMGUI_CHECKVERSION();
-		m_Context = ImGui::CreateContext();
+		m_Context = ImGui::CreateContext(fontAtlas);
 		ImGui::SetCurrentContext(m_Context);
 
 		ImGuiIO& io = ImGui::GetIO();

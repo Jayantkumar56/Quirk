@@ -3,9 +3,10 @@
 #include "Qkpch.h"
 #include "Core/Scene/Scene.h"
 #include "Core/Scene/Entity.h"
-#include "Core/Renderer/Renderer2D.h"
 #include "Core/Scene/ScriptableEntity.h"
 #include "Core/Utility/Time.h"
+#include "Core/Renderer/Renderer.h"
+#include "Core/Renderer/Renderer2D.h"
 
 namespace Quirk {
 
@@ -71,15 +72,21 @@ namespace Quirk {
 		});
 	}
 
-	void Scene::RenderSceneEditor(const glm::mat4& projectionView) {
-		Renderer2D::BeginScene(projectionView);
+	void Scene::RenderSceneEditor(const glm::mat4& projectionViewMat) {
+		// rendering the 2D objects
+		Renderer::BeginScene(projectionViewMat);
 
 		auto renderables = m_Registry.view<TransformComponent, SpriteRendererComponent>();
 		for (auto entity : renderables) {
 			Renderer2D::SubmitQuadEntity({ entity, this });
 		}
 
-		Renderer2D::EndScene();
+		Renderer::EndScene();
+
+		// rendering the 3D meshes
+		Renderer::BeginScene(projectionViewMat);
+
+		Renderer::EndScene();
 	}
 
 	void Scene::RenderSceneRuntime() {
@@ -90,10 +97,12 @@ namespace Quirk {
 			return;
 		}
 
-		const auto& projection	   = primaryCamera.GetComponent<CameraComponent>().Camera.GetProjection();
-		const auto cameraTransform = glm::inverse(primaryCamera.GetComponent<TransformComponent>().GetTransform());
+		const auto& projection	     = primaryCamera.GetComponent<CameraComponent>().Camera.GetProjection();
+		const auto cameraTransform   = glm::inverse(primaryCamera.GetComponent<TransformComponent>().GetTransform());
+		const auto projectionViewMat = projection * cameraTransform;
 
-		Renderer2D::BeginScene(projection * cameraTransform);
+		// rendering the 2D objects
+		Renderer2D::BeginScene(projectionViewMat);
 
 		auto renderables = m_Registry.view<TransformComponent, SpriteRendererComponent>();
 		for (auto entity : renderables) {
@@ -101,6 +110,11 @@ namespace Quirk {
 		}
 
 		Renderer2D::EndScene();
+
+		// rendering the 3D meshes
+		Renderer::BeginScene(projectionViewMat);
+
+		Renderer::EndScene();
 	}
 
 	void Scene::OnRuntimeStart() {

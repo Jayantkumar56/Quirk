@@ -10,6 +10,8 @@
 #include "Core/Input/Input.h"
 #include "Core/Renderer/RenderCommands.h"
 
+#include "FontManager.h"
+
 #include <utility>
 
 namespace Quirk {
@@ -192,8 +194,11 @@ namespace Quirk {
 
 		}*/
 
+		ImFontAtlas* GetFontAtlas() { return m_FontManager.m_FontAtlas; }
+
 	private:
 		std::vector<Frame*> m_Frames;
+		FontManager m_FontManager;
 	};
 
 }

@@ -3,7 +3,6 @@
 #pragma once
 
 #include "Quirk.h"
-#include "FontManager.h"
 #include "Launcher/LauncherTitleBar.h"
 
 namespace Quirk {
@@ -22,8 +21,6 @@ namespace Quirk {
 		{
 			// initailly MainMenu will be loaded
 			m_State = LauncherState::MainMenu;
-
-			LoadFonts();
 			SetColorTheme();
 
 			SetTitleBar<LauncherTitleBar>();
@@ -48,17 +45,12 @@ namespace Quirk {
 		virtual void OnUpdate()			   override {}
 		virtual void OnImguiUiUpdate()     override;
 
-		inline FontManager& GetFontManager() { return m_FontManager; }
-
 	private:
 		void DrawMainMenu();
 		void DrawProjectCreationForm();
-
-		void LoadFonts();
 		void SetColorTheme();
 
 	private:
-		FontManager    m_FontManager;
 		Ref<Texture2D> m_ProjectIcon;
 		Ref<Texture2D> m_OpenProjectIcon;
 		Ref<Texture2D> m_CreateProjectIcon;

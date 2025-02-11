@@ -10,19 +10,16 @@ namespace Quirk {
 		DarkTheme = 0, LightTheme = 1
 	};
 
-	enum  class ColorName {
+	enum class ColorName {
 		PopupBorder, DarkText, DropdownButton
 	};
 
 	class Theme {
 	public:
-		Theme() = delete;
-		~Theme() = delete;
-
 		static inline void SetTheme(ThemeName theme) {
 			switch (theme) {
-				case Quirk::ThemeName::DarkTheme:		SetDarkTheme();			return;
-				case Quirk::ThemeName::LightTheme:		SetLightTheme();		return;
+				case Quirk::ThemeName::DarkTheme:  SetDarkTheme();	 return;
+				case Quirk::ThemeName::LightTheme: SetLightTheme();  return;
 			}
 		}
 

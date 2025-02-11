@@ -49,7 +49,7 @@ namespace Quirk {
 
 	void LauncherFrame::DrawMainMenu() {
 		// main title 
-		ImguiUIUtility::Text("Quirk Game Engine", m_FontManager.GetFont(FontWeight::Medium, 50));
+		ImguiUIUtility::Text("Quirk Game Engine", FontManager::GetFont(FontWeight::Medium, 50));
 
 		// padding between main title of the window and rest content
 		ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 30.0f);
@@ -60,26 +60,26 @@ namespace Quirk {
 		if (ImGui::BeginTable("Main Table", 2)) {
 			// paramters object used to create button with customised parameters
 			ImageTextButtonParameters parameters;
-			parameters.labelFont = m_FontManager.GetFont(FontWeight::Medium, 29);
-			parameters.descriptionFont = m_FontManager.GetFont(FontWeight::Regular, 20);
-			parameters.imageSize.x = 35.0f;
-			parameters.imageSize.y = 35.0f;
-			parameters.buttonColor = 0xff2a2822;
-			parameters.hoverColor = 0xff6a5713;
+			parameters.labelFont           = FontManager::GetFont(FontWeight::Medium, 29);
+			parameters.descriptionFont     = FontManager::GetFont(FontWeight::Regular, 20);
+			parameters.imageSize.x         = 35.0f;
+			parameters.imageSize.y         = 35.0f;
+			parameters.buttonColor         = 0xff2a2822;
+			parameters.hoverColor          = 0xff6a5713;
 			parameters.imageContentPadding = 15.0f;
 
 			ImGui::TableNextColumn(); // 1st column
 			{
 				const auto& recentProjects = Project::GetRecentProjectsList();
 
-				ImguiUIUtility::Text("Recent Projects", m_FontManager.GetFont(FontWeight::Medium, 29));
+				ImguiUIUtility::Text("Recent Projects", FontManager::GetFont(FontWeight::Medium, 29));
 
 				// padding betwen title "Recent Projects" and content
 				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 20.0f);
 
 				// All of the contents (Recent Porjects)
 				if (recentProjects.empty()) {
-					ImGui::PushFont(m_FontManager.GetFont(FontWeight::Regular, 23));
+					ImGui::PushFont(FontManager::GetFont(FontWeight::Regular, 23));
 					ImGui::TextColored({ 0.812f, 0.816f, 0.78f, 1.0f }, "No Recent Projects!");
 					ImGui::PopFont();
 				}
@@ -130,17 +130,17 @@ namespace Quirk {
 			}
 
 			// common properties for the custom buttons in the 2nd Column
-			parameters.imageSize.x = 50.0f;
-			parameters.imageSize.y = 50.0f;
-			parameters.buttonSize.x = 400.0f;
-			parameters.buttonSize.y = 100.0f;
-			parameters.buttonColor = 0xff3b382f;
-			parameters.hoverColor = 0xff276243;
+			parameters.imageSize.x         = 50.0f;
+			parameters.imageSize.y         = 50.0f;
+			parameters.buttonSize.x        = 400.0f;
+			parameters.buttonSize.y        = 100.0f;
+			parameters.buttonColor         = 0xff3b382f;
+			parameters.hoverColor          = 0xff276243;
 			parameters.imageContentPadding = 15.0f;
 
 			ImGui::TableNextColumn();   // 2nd Column
 			{
-				ImguiUIUtility::Text("Get Started", m_FontManager.GetFont(FontWeight::Medium, 29));
+				ImguiUIUtility::Text("Get Started", FontManager::GetFont(FontWeight::Medium, 29));
 
 				// padding betwen title "Get Started" and content
 				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 20.0f);
@@ -197,7 +197,7 @@ namespace Quirk {
 
 	void LauncherFrame::DrawProjectCreationForm() {
 		// main title 
-		ImguiUIUtility::Text("Create your new project", m_FontManager.GetFont(FontWeight::Medium, 50));
+		ImguiUIUtility::Text("Create your new project", FontManager::GetFont(FontWeight::Medium, 50));
 
 		// padding between main title of the window and rest content
 		ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 30.0f);
@@ -209,14 +209,14 @@ namespace Quirk {
 		ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize,   1.0f             );
 
 		// Project Name field
-		ImguiUIUtility::Text("Project Name", m_FontManager.GetFont(FontWeight::Regular, 23));
+		ImguiUIUtility::Text("Project Name", FontManager::GetFont(FontWeight::Regular, 23));
 		ImGui::InputText("##ProjectName", (char*)m_TempProject.Title.c_str(), m_TempProject.Title.length());
 
 		// padding between the two fields
 		ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 20.0f);
 
 		// Project Path field
-		ImguiUIUtility::Text("Project Path", m_FontManager.GetFont(FontWeight::Regular, 23));
+		ImguiUIUtility::Text("Project Path", FontManager::GetFont(FontWeight::Regular, 23));
 		ImGui::InputText("##ProjectPath", (char*)m_TempProjPath.c_str(), m_TempProjPath.length());
 
 		ImGui::SameLine();
@@ -366,17 +366,6 @@ namespace Quirk {
 
 		ImGui::PopID();
 		return isClicked;
-	}
-
-	void LauncherFrame::LoadFonts() {
-		auto& io = ImGui::GetIO();
-
-		m_FontManager.LoadFonts();
-		m_FontManager.LoadFont(io, FontWeight::Medium, 50);     // for Main Title (Quirk Game Engine)
-		m_FontManager.LoadFont(io, FontWeight::Medium, 29);		// for section title ()
-		m_FontManager.LoadFont(io, FontWeight::Medium, 25);
-		m_FontManager.LoadFont(io, FontWeight::Regular, 20);
-		m_FontManager.LoadFont(io, FontWeight::Regular, 23);
 	}
 
 	void LauncherFrame::SetColorTheme() {

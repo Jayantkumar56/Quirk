@@ -2,7 +2,6 @@
 
 
 #include "SceneViewportPanel.h"
-#include "FontManager.h"
 #include "Core/Input/Input.h"
 #include "Editor/EditorFrame.h"
 

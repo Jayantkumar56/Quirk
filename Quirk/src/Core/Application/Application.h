@@ -27,6 +27,8 @@ namespace Quirk {
 		template<FrameType T, typename ...Args>
 		inline T* AddFrame(Args&& ...args) { return m_FrameManager.AddFrame<T>(std::forward<Args>(args)...); }
 
+		FrameManager& GetFrameManager() { return m_FrameManager; }
+
 	private:
 		std::wstring m_AppName;
 		bool		 m_Running		  = true;

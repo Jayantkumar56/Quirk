@@ -22,14 +22,6 @@ namespace Quirk {
 
 	private:
 		struct SceneData {
-			uint32_t MaxNoOfTextureSlots;
-
-			// Textures relate data
-			int32_t*		Sampler;
-			uint32_t		NextTextureSlotToBind;
-			Ref<Texture>*	TextureSlots;
-			Ref<Texture2D>	WhiteTexture;
-
 			// camera data
 			glm::mat4 ProjectionViewMatrix;
 		};

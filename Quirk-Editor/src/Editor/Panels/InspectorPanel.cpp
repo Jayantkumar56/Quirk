@@ -1,7 +1,6 @@
 
 
 #include "InspectorPanel.h"
-#include "FontManager.h"
 #include "Theme.h"
 #include "Editor/EditorFrame.h"
 #include "Core/Imgui/ImguiUIUtility.h"
@@ -10,8 +9,6 @@ namespace Quirk {
 
 	template<typename T, typename function>
 	void DrawComponentNode(Frame* parentFrame, const std::string& label, Entity& entity, function uiFunction) {
-		auto& fontManager = ((EditorFrame*)parentFrame)->GetFontManager();
-
 		if (!entity.HasComponent<T>())
 			return;
 
@@ -25,7 +22,7 @@ namespace Quirk {
 		float treeNodeWidth = ImGui::GetContentRegionAvail().x;
 
 		ImGui::PushStyleColor(ImGuiCol_Text, Theme::GetColor(ColorName::DarkText));
-		ImGui::PushFont(fontManager.GetFont("ComponentTreeNode"));
+		ImGui::PushFont(FontManager::GetFont("ComponentTreeNode"));
 		bool treeNodeOpened = ImGui::TreeNodeEx((void*)typeid(T).hash_code(), treeNodeFlags, label.c_str());
 		ImGui::PopFont();
 
@@ -57,7 +54,6 @@ namespace Quirk {
 	void InspectorPanel::OnImguiUiUpdate() {
 		auto parentFrame  = (EditorFrame*)GetParentFrame();
 		Entity& entity    = parentFrame->GetSelectedEntity();
-		auto& fontManager = parentFrame->GetFontManager();
 
 		ImGui::Begin("Inspector");
 
@@ -68,7 +64,7 @@ namespace Quirk {
 		}
 
 		ImGui::PushStyleColor(ImGuiCol_Border, Theme::GetColor(ColorName::PopupBorder));
-		ImFont* labelFont = fontManager.GetFont("PropertyLabel");
+		ImFont* labelFont = FontManager::GetFont("PropertyLabel");
 
 		if (entity.HasComponent<TagComponent>()) {
 			std::string& tag = entity.GetComponent<TagComponent>().Tag;
@@ -90,8 +86,8 @@ namespace Quirk {
 		}
 
 		DrawComponentNode<TransformComponent>(parentFrame, "Transforms", entity, [&](TransformComponent& component) {
-			ImFont* buttonFont = fontManager.GetFont(FontWeight::Bold, 18);
-			ImFont* valuesFont = fontManager.GetFont("DragFloatValue");
+			ImFont* buttonFont = FontManager::GetFont(FontWeight::Bold, 18);
+			ImFont* valuesFont = FontManager::GetFont("DragFloatValue");
 
 			// width of word "Position" is largest among the three also took extra 3 letters space as "xxx" for padding 
 			auto size = ImGui::CalcTextSize("Positionxxx");
@@ -123,7 +119,7 @@ namespace Quirk {
 				ImguiUIUtility::Text("Color", labelFont);
 
 				ImGui::TableNextColumn();
-				ImGui::PushFont(fontManager.GetFont("DragFloatValue"));
+				ImGui::PushFont(FontManager::GetFont("DragFloatValue"));
 				ImGui::ColorEdit4("##color", glm::value_ptr(component.Color));
 				ImGui::PopFont();
 
