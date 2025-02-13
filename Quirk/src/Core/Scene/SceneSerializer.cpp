@@ -5,6 +5,7 @@
 #include "Core/Scene/Scene.h"
 #include "Core/Scene/Entity.h"
 #include "SceneSerializer.h"
+#include "Core/Renderer/Geometry/PrimitiveMeshGenerator.h"
 
 namespace YAML {
 
@@ -95,6 +96,30 @@ namespace YAML {
 }
 
 namespace Quirk {
+
+	static std::string_view MeshTypeToString(MeshType type) {
+		switch (type) {
+			case MeshType::None:       return "None";
+			case MeshType::Cube:       return "Cube";
+			case MeshType::Plane:      return "Plane";
+			case MeshType::Sphere:     return "Sphere";
+			case MeshType::Cylinder:   return "Cylinder";
+			case MeshType::Capsule:    return "Capsule";
+			case MeshType::Custom:     return "Custom";
+		}
+		return "";
+	}
+
+	static MeshType StringToMeshType(std::string_view type) {
+		if ( type == "Cube"     ) { return MeshType::Cube;     }
+		if ( type == "Plane"    ) { return MeshType::Plane;    }
+		if ( type == "Sphere"   ) { return MeshType::Sphere;   }
+		if ( type == "Cylinder" ) { return MeshType::Cylinder; }
+		if ( type == "Capsule"  ) { return MeshType::Capsule;  }
+		if ( type == "Custom"   ) { return MeshType::Custom;   }
+
+		return MeshType::None;
+	}
 
 	void SceneSerializer::Serialize(const Ref<Scene>& scene, const std::filesystem::path& filePath) {
 		YAML::Emitter out;
@@ -217,17 +242,13 @@ namespace Quirk {
 			emitter << YAML::EndMap;
 		}
 
-		if (entity.HasComponent<SpriteRendererComponent>()) {
-			auto& component		 = entity.GetComponent<SpriteRendererComponent>();
-			std::string filePath = (component.Texture != nullptr) ? std::filesystem::proximate(component.Texture->GetPath()).string() : "";
+		if (entity.HasComponent<MeshComponent>()) {
+			auto& component = entity.GetComponent<MeshComponent>();
 
-			emitter << YAML::Key << "SpriteRendererComponent";
+			emitter << YAML::Key << "MeshComponent";
+
 			emitter << YAML::BeginMap;
-
-			emitter << YAML::Key << "Color"         << YAML::Value << component.Color;
-			emitter << YAML::Key << "Texture"       << YAML::Value << filePath;
-			emitter << YAML::Key << "TillingFactor" << YAML::Value << component.TillingFactor;
-
+			emitter << YAML::Key << "MeshType" << YAML::Value << MeshTypeToString(component.MeshObject.Type).data();
 			emitter << YAML::EndMap;
 		}
 
@@ -275,6 +296,11 @@ namespace Quirk {
 
 			component.IsPrimary		   = deserializedComponent["Primary"].as<bool>();
 			component.FixedAspectRatio = deserializedComponent["FixedAspectRatio"].as<bool>();
+		}
+
+		if (auto deserializedComponent = entityNode["MeshComponent"];  deserializedComponent) {
+			auto& component      = entity.AddComponent<MeshComponent>();
+			component.MeshObject = PrimitiveMeshGenerator::Generate(StringToMeshType(deserializedComponent["MeshType"].as<std::string>()));
 		}
 	}
 

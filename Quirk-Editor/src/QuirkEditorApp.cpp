@@ -6,7 +6,7 @@
 #include "Editor/EditorFrame.h"
 #include "Launcher/LauncherFrame.h"
 
-#include "Theme.h"
+#include "Editor/Theme.h"
 
 namespace Quirk {
 
@@ -22,7 +22,7 @@ namespace Quirk {
 	{
 		LoadFontFiles();
 
-		WindowSpecification tempSpec{
+		/*WindowSpecification tempSpec{
 			.Title             {"Quirk Engine"},
 			.Width             {1100},				   .Height    {780},
 			.PosX              {200},				   .PosY      {50},
@@ -31,7 +31,12 @@ namespace Quirk {
 			.MinWidth          {1100},				   .MinHeight {780}
 		};
 
-		AddFrame<LauncherFrame>(tempSpec);
+		AddFrame<LauncherFrame>(tempSpec);*/
+
+		// NOTE: Temporary            directly opening the editor
+		std::filesystem::path path = "D:/Dev/Quirk/Example/Example.qkproj";
+		Project::Load(path);
+		LaunchEditor();
 	}
 
 	void QuirkEditorApp::LaunchEditor() {

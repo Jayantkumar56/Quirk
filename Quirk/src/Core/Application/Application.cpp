@@ -27,8 +27,6 @@ namespace Quirk {
 
 		GraphicalContext::Init(renderingAPI);
 		RenderCommands::Init(renderingAPI);
-
-		Renderer::InitRenderer(renderingAPI);
 	}
 
 	void Application::Run() {

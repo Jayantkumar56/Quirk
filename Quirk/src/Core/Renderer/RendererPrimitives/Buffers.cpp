@@ -8,10 +8,10 @@
 
 namespace Quirk {
 
-	Ref<VertexBuffer> VertexBuffer::Create(float* vertices, uint32_t size) {
+	Ref<VertexBuffer> VertexBuffer::Create() {
 		switch (Renderer::GetAPI()) {
-			case RendererAPI::API::None:    QK_CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
-			case RendererAPI::API::OpenGL:  return std::make_shared<OpenGLVertexBuffer>(vertices, size);
+		case RendererAPI::API::None:    QK_CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
+		case RendererAPI::API::OpenGL:  return std::make_shared<OpenGLVertexBuffer>();
 		}
 
 		QK_CORE_ASSERT(false, "Unknown RendererAPI!");
@@ -22,6 +22,16 @@ namespace Quirk {
 		switch (Renderer::GetAPI()) {
 		case RendererAPI::API::None:    QK_CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
 		case RendererAPI::API::OpenGL:  return std::make_shared<OpenGLVertexBuffer>(size);
+		}
+
+		QK_CORE_ASSERT(false, "Unknown RendererAPI!");
+		return nullptr;
+	}
+
+	Ref<VertexBuffer> VertexBuffer::Create(float* vertices, uint32_t size) {
+		switch (Renderer::GetAPI()) {
+			case RendererAPI::API::None:    QK_CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
+			case RendererAPI::API::OpenGL:  return std::make_shared<OpenGLVertexBuffer>(vertices, size);
 		}
 
 		QK_CORE_ASSERT(false, "Unknown RendererAPI!");

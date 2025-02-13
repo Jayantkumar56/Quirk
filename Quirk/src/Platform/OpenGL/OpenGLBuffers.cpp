@@ -8,6 +8,12 @@ namespace Quirk {
 
 	// VertexBuffer /////////////////////////////////////////////////////////////
 
+	OpenGLVertexBuffer::OpenGLVertexBuffer() {
+		m_Size = 0;
+		glCreateBuffers(1, &m_RendererID);
+		glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);
+	}
+
 	OpenGLVertexBuffer::OpenGLVertexBuffer(float* vertices, uint32_t size) :
 			m_Size(size)
 	{
@@ -28,9 +34,15 @@ namespace Quirk {
 		glDeleteBuffers(1, &m_RendererID);
 	}
 
-    void OpenGLVertexBuffer::UploadData(const void* data, uint32_t size, uint32_t offset) const {
-		Bind();
-		glBufferSubData(GL_ARRAY_BUFFER, offset, size, data);
+    void OpenGLVertexBuffer::UploadData(const void* data, uint32_t size, uint32_t offset) {
+		glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);
+
+		if (size > m_Size)
+			glBufferData(GL_ARRAY_BUFFER, size, data, GL_DYNAMIC_DRAW);
+		else {
+			m_Size = size;
+			glBufferSubData(GL_ARRAY_BUFFER, offset, size, data);
+		}
     }
 
 	void OpenGLVertexBuffer::Bind() const {

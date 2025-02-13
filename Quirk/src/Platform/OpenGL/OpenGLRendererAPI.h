@@ -23,7 +23,7 @@ namespace Quirk {
 
 		virtual inline void DrawIndexed(Ref<VertexArray>& vertexArray, uint32_t indicesCount) override;
 		virtual inline void DrawIndexedInstanced(Ref<VertexArray>& vertexArray, uint32_t noOfInstances) override;
-		virtual inline void DrawVertices(Ref<VertexArray>& vertexArray) override;
+		virtual inline void DrawVertices(uint32_t vertexCount) override;
 	};
 
 }

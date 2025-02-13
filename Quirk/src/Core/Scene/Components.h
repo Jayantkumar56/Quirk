@@ -11,6 +11,8 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtx/quaternion.hpp"
 
+#include "Core/Renderer/Geometry/Geometry.h"
+
 
 namespace Quirk {
 
@@ -65,6 +67,13 @@ namespace Quirk {
 		CameraComponent(const CameraComponent&) = default;
 	};
 
+	struct MeshComponent {
+		Mesh MeshObject;
+
+		MeshComponent() = default;
+		MeshComponent(const MeshComponent&) = default;
+	};
+
 	// Forward declaration
 	class ScriptableEntity;
 
@@ -114,6 +123,7 @@ namespace Quirk {
 			fun.operator() < SpriteRendererComponent > ( "Sprite Renderer" );
 			fun.operator() < CameraComponent 		 > ( "Camera"		   );
 			fun.operator() < NativeScriptComponent   > ( "Native Script"   );
+			fun.operator() < MeshComponent           > ( "Mesh"            );
 		}
 
 		template<ComponentTypes types, class function>
@@ -128,6 +138,7 @@ namespace Quirk {
 			fun.operator() < SpriteRendererComponent > ( "Sprite Renderer" );
 			fun.operator() < CameraComponent         > ( "Camera"		   );
 			fun.operator() < NativeScriptComponent   > ( "Native Script"   );
+			fun.operator() < MeshComponent           > ( "Mesh"            );
 		}
 	};
 

@@ -8,11 +8,12 @@ namespace Quirk {
 
 	class OpenGLVertexBuffer : public VertexBuffer {
 	public:
+		OpenGLVertexBuffer();
 		OpenGLVertexBuffer(float* vertices, uint32_t size);
 		OpenGLVertexBuffer(uint32_t size);
 		virtual ~OpenGLVertexBuffer();
 
-		virtual void UploadData(const void* data, uint32_t size, uint32_t offset = 0) const override;
+		virtual void UploadData(const void* data, uint32_t size, uint32_t offset = 0) override;
 
 		virtual void Bind() const override;
 		virtual void Unbind() const override;

@@ -35,7 +35,7 @@ namespace Quirk {
 
 		virtual inline void DrawIndexed(Ref<VertexArray>& vertexArray, uint32_t indicesCount) = 0;
 		virtual inline void DrawIndexedInstanced(Ref<VertexArray>& vertexArray, uint32_t noOfInstances) = 0;
-		virtual inline void DrawVertices(Ref<VertexArray>& vertexArray) = 0;
+		virtual inline void DrawVertices(uint32_t vertexCount) = 0;
 
 	private:
 		static API s_API;

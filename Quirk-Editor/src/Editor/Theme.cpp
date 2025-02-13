@@ -1,7 +1,7 @@
 
 
 
-#include "Theme.h"
+#include "Editor/Theme.h"
 
 namespace Quirk {
 
@@ -19,12 +19,12 @@ namespace Quirk {
 	void Theme::SetDarkTheme() {
 		auto& colors = ImGui::GetStyle().Colors;
 
-		colors[ImGuiCol_WindowBg]				= ImVec4{ 0.059f, 0.129f, 0.161f, 1.0f };
-		colors[ImGuiCol_MenuBarBg]				= ImVec4{ 0.16f, 0.16f, 0.21f, 1.0f };
+		colors[ImGuiCol_WindowBg]				= ImVec4{ 0.027f, 0.118f, 0.133f, 1.0f };
+		colors[ImGuiCol_MenuBarBg]				= ImVec4{ 0.051f, 0.051f, 0.043f, 1.0f };
 
 		// Title
-		colors[ImGuiCol_TitleBg]				= ImVec4{ 0.039f, 0.035f, 0.047f, 1.0f };
-		colors[ImGuiCol_TitleBgActive]			= ImVec4{ 0.086f, 0.09f, 0.09f, 1.0f };
+		colors[ImGuiCol_TitleBg]				= ImVec4{ 0.051f, 0.051f, 0.043f, 1.0f };
+		colors[ImGuiCol_TitleBgActive]			= ImVec4{ 0.051f, 0.051f, 0.043f, 1.0f };
 		colors[ImGuiCol_TitleBgCollapsed]		= ImVec4{ 0.086f, 0.09f, 0.09f, 1.0f };
 
 		// Border
@@ -64,14 +64,14 @@ namespace Quirk {
 		colors[ImGuiCol_FrameBgActive]			= ImVec4{ 0.16f, 0.16f, 0.21f, 1.0f };
 
 		// Tabs
-		colors[ImGuiCol_Tab]					= ImVec4{ 0.16f, 0.16f, 0.21f, 1.0f };
-		colors[ImGuiCol_TabHovered]				= ImVec4{ 0.24f, 0.24f, 0.32f, 1.0f };
-		colors[ImGuiCol_TabActive]				= ImVec4{ 0.2f, 0.22f, 0.27f, 1.0f };
-		colors[ImGuiCol_TabUnfocused]			= ImVec4{ 0.16f, 0.16f, 0.21f, 1.0f };
-		colors[ImGuiCol_TabUnfocusedActive]		= ImVec4{ 0.16f, 0.16f, 0.21f, 1.0f };
+		colors[ImGuiCol_Tab]					= ImVec4{ 0.361f, 0.439f, 0.278f, 1.0f };
+		colors[ImGuiCol_TabHovered]				= ImVec4{ 0.361f, 0.439f, 0.278f, 1.0f };
+		colors[ImGuiCol_TabActive]				= ImVec4{ 0.361f, 0.439f, 0.278f, 1.0f };
+		colors[ImGuiCol_TabUnfocused]			= ImVec4{ 0.361f, 0.439f, 0.278f, 1.0f };
+		colors[ImGuiCol_TabUnfocusedActive]		= ImVec4{ 0.361f, 0.439f, 0.278f, 1.0f };
 
-		colors[ImGuiCol_TabSelectedOverline]       = ImVec4{ 0.09f, 0.09f, 0.15f, 1.0f };
-		colors[ImGuiCol_TabDimmedSelectedOverline] = ImVec4{ 0.09f, 0.09f, 0.15f, 1.0f };
+		colors[ImGuiCol_TabSelectedOverline]       = ImVec4{ 0.0f, 0.0f, 0.0f, 0.0f };
+		colors[ImGuiCol_TabDimmedSelectedOverline] = ImVec4{ 0.0f, 0.0f, 0.0f, 0.0f };
 
 		// Scrollbar
 		colors[ImGuiCol_ScrollbarBg]			= ImVec4{ 0.1f, 0.1f, 0.13f, 1.0f };

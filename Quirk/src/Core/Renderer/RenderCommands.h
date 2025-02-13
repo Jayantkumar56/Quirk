@@ -30,8 +30,8 @@ namespace Quirk {
 			s_RendererAPI->DrawIndexedInstanced(vertexArray, noOfInstances); 
 		}
 
-		static inline void DrawVertices(Ref<VertexArray>& vertexArray) { 
-			s_RendererAPI->DrawVertices(vertexArray); 
+		static inline void DrawVertices(uint32_t vertexCount) { 
+			s_RendererAPI->DrawVertices(vertexCount);
 		}
 
 	private:

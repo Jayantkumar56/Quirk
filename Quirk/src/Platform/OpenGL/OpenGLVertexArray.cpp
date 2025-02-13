@@ -30,11 +30,12 @@ namespace Quirk {
 		vertexBuffer->Bind();
 
 		const auto& layout = vertexBuffer->GetLayout();
+		uint64_t offset    = 0;
 
 		for (const auto& element : layout) {
 			if (element.IsIntType()) {
 				glEnableVertexAttribArray(m_Index);
-				glVertexAttribIPointer(m_Index, element.GetComponentCount(), GL_INT, layout.GetStride(), (const void*)(uint64_t)element.Offset);
+				glVertexAttribIPointer(m_Index, GetComponentCount(element.Type), GL_INT, layout.GetStride(), (const void*)offset);
 
 				if (instanced)
 					glVertexAttribDivisor(m_Index, 1);
@@ -42,10 +43,10 @@ namespace Quirk {
 				++m_Index;
 			}
 			else if (element.Type == ShaderDataType::Mat4) {
-				uint64_t offset = element.Offset;
-				for (int i = 0; i < 4; ++i, offset += static_cast<uint64_t>(4 * 4)) {
+				uint64_t elementOffset = offset;
+				for (int i = 0; i < 4; ++i, elementOffset += static_cast<uint64_t>(4 * 4)) {
 					glEnableVertexAttribArray(m_Index);
-					glVertexAttribPointer(m_Index, 4, GL_FLOAT, GL_FALSE, layout.GetStride(), (const void*)offset);
+					glVertexAttribPointer(m_Index, 4, GL_FLOAT, GL_FALSE, layout.GetStride(), (const void*)elementOffset);
 
 					if (instanced)
 						glVertexAttribDivisor(m_Index, 1);
@@ -54,10 +55,10 @@ namespace Quirk {
 				}
 			}
 			else if (element.Type == ShaderDataType::Mat3) {
-				uint64_t offset = element.Offset;
-				for (int i = 0; i < 3; ++i, offset += static_cast<uint64_t>(4 * 3)) {
+				uint64_t elementOffset = offset;
+				for (int i = 0; i < 3; ++i, elementOffset += static_cast<uint64_t>(4 * 3)) {
 					glEnableVertexAttribArray(m_Index);
-					glVertexAttribPointer(m_Index, 3, GL_FLOAT, GL_FALSE, layout.GetStride(), (const void*)offset);
+					glVertexAttribPointer(m_Index, 3, GL_FLOAT, GL_FALSE, layout.GetStride(), (const void*)elementOffset);
 
 					if (instanced)
 						glVertexAttribDivisor(m_Index, 1);
@@ -67,13 +68,15 @@ namespace Quirk {
 			}
 			else {
 				glEnableVertexAttribArray(m_Index);
-				glVertexAttribPointer(m_Index, element.GetComponentCount(), GL_FLOAT, GL_FALSE, layout.GetStride(), (const void*)(uint64_t)element.Offset);
+				glVertexAttribPointer(m_Index, GetComponentCount(element.Type), GL_FLOAT, GL_FALSE, layout.GetStride(), (const void*)offset);
 
 				if (instanced)
 					glVertexAttribDivisor(m_Index, 1);
 
 				++m_Index;
 			}
+
+			offset += ShaderDataTypeSize(element.Type);
 		}
 
 		m_VertexBuffers.push_back(vertexBuffer);

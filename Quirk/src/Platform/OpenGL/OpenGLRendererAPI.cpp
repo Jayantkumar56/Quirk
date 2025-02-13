@@ -51,8 +51,8 @@ namespace Quirk {
 		glFlush();
 	}
 
-	inline void OpenGLRendererAPI::DrawVertices(Ref<VertexArray>& vertexArray) {
-		glDrawArrays(GL_TRIANGLES, 0, vertexArray->GetVertexBuffers()[0]->GetCount());
+	inline void OpenGLRendererAPI::DrawVertices(uint32_t vertexCount) {
+		glDrawArrays(GL_TRIANGLES, 0, vertexCount);
 		glFlush();
 	}
 

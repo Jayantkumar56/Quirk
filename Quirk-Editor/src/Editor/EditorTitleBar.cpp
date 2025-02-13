@@ -10,16 +10,12 @@ namespace Quirk {
 
 	void EditorTitleBar::SetImguiProperties() {
 		ImGuiStyle& style = ImGui::GetStyle();
-		style.FramePadding.y = 8.0f;
-
+		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { style.FramePadding.x, 8.0f });
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
 	}
 
 	void EditorTitleBar::UnSetImguiProperties() {
-		ImGuiStyle& style = ImGui::GetStyle();
-		style.FramePadding.y = 5.0f;
-
-		ImGui::PopStyleVar();
+		ImGui::PopStyleVar(2);
 	}
 
 	void EditorTitleBar::OnImguiUiUpdate() {
@@ -74,8 +70,8 @@ namespace Quirk {
 			ImGui::EndMenu();
 		}
 
-		float buttonSize    = 25.0f;
-		float buttonPadding = 10.0f;
+		float buttonSize    = 23.0f;
+		float buttonPadding = 9.0f;
 		ImVec2 windowSize   = ImGui::GetWindowSize();
 
 		auto framePadding = ImGui::GetStyle().FramePadding;

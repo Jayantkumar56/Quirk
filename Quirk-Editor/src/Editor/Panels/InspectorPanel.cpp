@@ -1,9 +1,10 @@
 
 
 #include "InspectorPanel.h"
-#include "Theme.h"
+#include "Editor/Theme.h"
 #include "Editor/EditorFrame.h"
 #include "Core/Imgui/ImguiUIUtility.h"
+#include "Core/Renderer/Geometry/PrimitiveMeshGenerator.h"
 
 namespace Quirk {
 
@@ -293,6 +294,19 @@ namespace Quirk {
 
 				ImGui::EndTable();
 			}
+		});
+
+		DrawComponentNode<MeshComponent>(parentFrame, "Mesh", entity, [labelFont](MeshComponent& component) {
+			component.MeshObject.Type;
+			const char* meshTypes[] = { "Select", "Cube" };
+			int currentType = (int)component.MeshObject.Type;
+
+			if (ImGui::Combo("##meshTypeSelection", &currentType, meshTypes, IM_ARRAYSIZE(meshTypes))) {
+				if (currentType == 1) {
+					component.MeshObject = PrimitiveMeshGenerator::Generate(MeshType::Cube);
+				}
+			}
+
 		});
 
 		// add component button

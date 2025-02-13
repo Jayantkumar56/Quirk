@@ -12,6 +12,7 @@
 #ifdef QK_PLATFORM_WINDOWS
 #include "wglext.h"
 #include "backends/imgui_impl_win32.h"
+#include <dwmapi.h>
 #endif // QK_PLATFORM_WINDOWS
 
 #include "backends/imgui_impl_opengl3.h"
@@ -120,6 +121,9 @@ namespace Quirk {
 			platform_io.Renderer_CreateWindow = [] (ImGuiViewport* viewport) {
 				QK_CORE_ASSERT(viewport->RendererUserData == NULL, "Non Empty RendererUserData (from imgui)");
 				ImguiUI::ContextData* data = IM_NEW(ImguiUI::ContextData);
+
+				DWM_WINDOW_CORNER_PREFERENCE preference = DWMWCP_ROUND;
+				DwmSetWindowAttribute((HWND)viewport->PlatformHandle, DWMWA_WINDOW_CORNER_PREFERENCE, &preference, sizeof(preference));
 
 				data->DeviceContext = GetDC((HWND)viewport->PlatformHandle);
 				int pixelFormat = 0;

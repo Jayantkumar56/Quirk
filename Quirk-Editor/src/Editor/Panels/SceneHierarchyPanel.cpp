@@ -1,7 +1,7 @@
 
 
 #include "SceneHierarchyPanel.h"
-#include "Theme.h"
+#include "Editor/Theme.h"
 #include "Editor/EditorFrame.h"
 
 #include <imgui_internal.h>

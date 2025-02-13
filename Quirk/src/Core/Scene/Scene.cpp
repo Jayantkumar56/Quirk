@@ -74,18 +74,23 @@ namespace Quirk {
 
 	void Scene::RenderSceneEditor(const glm::mat4& projectionViewMat) {
 		// rendering the 2D objects
-		Renderer::BeginScene(projectionViewMat);
+		Renderer2D::BeginScene(projectionViewMat);
 
 		auto renderables = m_Registry.view<TransformComponent, SpriteRendererComponent>();
 		for (auto entity : renderables) {
 			Renderer2D::SubmitQuadEntity({ entity, this });
 		}
 
-		Renderer::EndScene();
+		Renderer2D::EndScene();
 
 		// rendering the 3D meshes
 		Renderer::BeginScene(projectionViewMat);
-
+		{
+			auto renderables = m_Registry.view<TransformComponent, MeshComponent>();
+			for (auto entity : renderables) {
+				Renderer::Submit({ entity, this });
+			}
+		}
 		Renderer::EndScene();
 	}
 
@@ -113,7 +118,12 @@ namespace Quirk {
 
 		// rendering the 3D meshes
 		Renderer::BeginScene(projectionViewMat);
-
+		{
+			auto renderables = m_Registry.view<TransformComponent, MeshComponent>();
+			for (auto entity : renderables) {
+				Renderer::Submit({ entity, this });
+			}
+		}
 		Renderer::EndScene();
 	}
 
