@@ -12,6 +12,7 @@
 #include "glm/gtx/quaternion.hpp"
 
 #include "Core/Renderer/Geometry/Geometry.h"
+#include "Core/Renderer/Light/Light.h"
 
 
 namespace Quirk {
@@ -60,18 +61,31 @@ namespace Quirk {
 
 	struct CameraComponent {
 		SceneCamera Camera;
-		bool IsPrimary = false;
-		bool FixedAspectRatio = false;
+		bool IsPrimary        { false };
+		bool FixedAspectRatio { false };
 
 		CameraComponent() = default;
 		CameraComponent(const CameraComponent&) = default;
 	};
 
 	struct MeshComponent {
-		Mesh MeshObject;
+		Mesh     MeshObject;
+		Material MaterialProperties {};
 
 		MeshComponent() = default;
 		MeshComponent(const MeshComponent&) = default;
+	};
+
+	struct LightComponent {
+		LightType Type  { LightType::None  };
+		glm::vec3 Color { 1.0f, 1.0f, 1.0f };
+
+		float Ambient  { 1.0f };
+		float Diffuse  { 1.0f };
+		float Specular { 1.0f };
+
+		LightComponent() = default;
+		LightComponent(const LightComponent&) = default;
 	};
 
 	// Forward declaration
@@ -124,6 +138,7 @@ namespace Quirk {
 			fun.operator() < CameraComponent 		 > ( "Camera"		   );
 			fun.operator() < NativeScriptComponent   > ( "Native Script"   );
 			fun.operator() < MeshComponent           > ( "Mesh"            );
+			fun.operator() < LightComponent          > ( "Light"           );
 		}
 
 		template<ComponentTypes types, class function>
@@ -139,6 +154,7 @@ namespace Quirk {
 			fun.operator() < CameraComponent         > ( "Camera"		   );
 			fun.operator() < NativeScriptComponent   > ( "Native Script"   );
 			fun.operator() < MeshComponent           > ( "Mesh"            );
+			fun.operator() < LightComponent          > ( "Light"           );
 		}
 	};
 

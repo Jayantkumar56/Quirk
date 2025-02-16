@@ -17,8 +17,8 @@ namespace Quirk {
 		friend class SceneHierarchyPanel;
 
 	public:
-		Scene(uint16_t width, uint16_t height);
-		~Scene();
+		Scene(uint16_t width, uint16_t height) : m_ViewportWidth(width), m_ViewportHeight(height) { }
+		~Scene() = default;
 
 		static Ref<Scene> Copy(const Ref<Scene>& other);
 
@@ -29,10 +29,10 @@ namespace Quirk {
 
 		void OnUpdate();
 
-		void OnRuntimeStart();
-		void OnRuntimeStop();
+		void OnRuntimeStart() { }
+		void OnRuntimeStop()  { }
 
-		void RenderSceneEditor(const glm::mat4& projectionView);
+		void RenderSceneEditor(const glm::mat4& projectionViewMat, glm::vec3 cameraPos);
 		void RenderSceneRuntime();
 
 		void OnViewportResize(uint32_t width, uint32_t height);
@@ -46,9 +46,10 @@ namespace Quirk {
 		}
 
 	private:
+		void RenderScene(const glm::mat4& projectionViewMat, glm::vec3 cameraPos);
+
 		template<typename T>
-		void OnComponentAdded(entt::entity entity, T& component) {
-		}
+		void OnComponentAdded(entt::entity entity, T& component) { }
 
 		template<>
 		void OnComponentAdded<CameraComponent>(entt::entity entity, CameraComponent& component) {

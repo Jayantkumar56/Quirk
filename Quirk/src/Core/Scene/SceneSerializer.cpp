@@ -97,30 +97,6 @@ namespace YAML {
 
 namespace Quirk {
 
-	static std::string_view MeshTypeToString(MeshType type) {
-		switch (type) {
-			case MeshType::None:       return "None";
-			case MeshType::Cube:       return "Cube";
-			case MeshType::Plane:      return "Plane";
-			case MeshType::Sphere:     return "Sphere";
-			case MeshType::Cylinder:   return "Cylinder";
-			case MeshType::Capsule:    return "Capsule";
-			case MeshType::Custom:     return "Custom";
-		}
-		return "";
-	}
-
-	static MeshType StringToMeshType(std::string_view type) {
-		if ( type == "Cube"     ) { return MeshType::Cube;     }
-		if ( type == "Plane"    ) { return MeshType::Plane;    }
-		if ( type == "Sphere"   ) { return MeshType::Sphere;   }
-		if ( type == "Cylinder" ) { return MeshType::Cylinder; }
-		if ( type == "Capsule"  ) { return MeshType::Capsule;  }
-		if ( type == "Custom"   ) { return MeshType::Custom;   }
-
-		return MeshType::None;
-	}
-
 	void SceneSerializer::Serialize(const Ref<Scene>& scene, const std::filesystem::path& filePath) {
 		YAML::Emitter out;
 
@@ -248,7 +224,25 @@ namespace Quirk {
 			emitter << YAML::Key << "MeshComponent";
 
 			emitter << YAML::BeginMap;
-			emitter << YAML::Key << "MeshType" << YAML::Value << MeshTypeToString(component.MeshObject.Type).data();
+			emitter << YAML::Key << "MeshType"  << YAML::Value << MeshTypeToString(component.MeshObject.Type).data();
+			emitter << YAML::Key << "Ambient"   << YAML::Value << component.MaterialProperties.Ambient;
+			emitter << YAML::Key << "Diffuse"   << YAML::Value << component.MaterialProperties.Diffuse;
+			emitter << YAML::Key << "Specular"  << YAML::Value << component.MaterialProperties.Specular;
+			emitter << YAML::Key << "Shininess" << YAML::Value << component.MaterialProperties.Shininess;
+			emitter << YAML::EndMap;
+		}
+
+		if (entity.HasComponent<LightComponent>()) {
+			auto& component = entity.GetComponent<LightComponent>();
+
+			emitter << YAML::Key << "LightComponent";
+
+			emitter << YAML::BeginMap;
+			emitter << YAML::Key << "LightType" << YAML::Value << LightTypeToString(component.Type).data();
+			emitter << YAML::Key << "Color"     << YAML::Value << component.Color;
+			emitter << YAML::Key << "Ambient"   << YAML::Value << component.Ambient;
+			emitter << YAML::Key << "Diffuse"   << YAML::Value << component.Diffuse;
+			emitter << YAML::Key << "Specular"  << YAML::Value << component.Specular;
 			emitter << YAML::EndMap;
 		}
 
@@ -301,6 +295,20 @@ namespace Quirk {
 		if (auto deserializedComponent = entityNode["MeshComponent"];  deserializedComponent) {
 			auto& component      = entity.AddComponent<MeshComponent>();
 			component.MeshObject = PrimitiveMeshGenerator::Generate(StringToMeshType(deserializedComponent["MeshType"].as<std::string>()));
+			component.MaterialProperties.Ambient   = deserializedComponent["Ambient"].as<glm::vec3>();
+			component.MaterialProperties.Diffuse   = deserializedComponent["Diffuse"].as<glm::vec3>();
+			component.MaterialProperties.Specular  = deserializedComponent["Specular"].as<glm::vec3>();
+			component.MaterialProperties.Shininess = deserializedComponent["Shininess"].as<float>();
+		}
+
+		if (auto deserializedComponent = entityNode["LightComponent"];  deserializedComponent) {
+			auto& component = entity.AddComponent<LightComponent>();
+
+			component.Type     = StringToLightType(deserializedComponent["LightType"].as<std::string>());
+			component.Color    = deserializedComponent["Color"].as<glm::vec3>();
+			component.Ambient  = deserializedComponent["Ambient"].as<float>();
+			component.Diffuse  = deserializedComponent["Diffuse"].as<float>();
+			component.Specular = deserializedComponent["Specular"].as<float>();
 		}
 	}
 

@@ -301,12 +301,56 @@ namespace Quirk {
 			const char* meshTypes[] = { "Select", "Cube" };
 			int currentType = (int)component.MeshObject.Type;
 
+			ImGui::Text("Mesh Type");
+			ImGui::SameLine();
 			if (ImGui::Combo("##meshTypeSelection", &currentType, meshTypes, IM_ARRAYSIZE(meshTypes))) {
 				if (currentType == 1) {
 					component.MeshObject = PrimitiveMeshGenerator::Generate(MeshType::Cube);
 				}
 			}
 
+			ImGui::Text("Ambient");
+			ImGui::SameLine();
+			ImGui::ColorEdit3("##Ambient", glm::value_ptr(component.MaterialProperties.Ambient));
+
+			ImGui::Text("Diffuse");
+			ImGui::SameLine();
+			ImGui::ColorEdit3("##Diffuse", glm::value_ptr(component.MaterialProperties.Diffuse));
+
+			ImGui::Text("Specular");
+			ImGui::SameLine();
+			ImGui::ColorEdit3("##Specular", glm::value_ptr(component.MaterialProperties.Specular));
+
+			ImGui::Text("Shininess");
+			ImGui::SameLine();
+			ImGui::DragFloat("##Shininess", &component.MaterialProperties.Shininess, 0.1f);
+		});
+
+		DrawComponentNode<LightComponent>(parentFrame, "Light", entity, [labelFont](LightComponent& component) {
+			const char* lightTypes[] = { "Select", "Point" };
+			int currentType = (int)component.Type;
+
+			ImGui::Text("Light Type");
+			ImGui::SameLine();
+			if (ImGui::Combo("##lightTypeSelection", &currentType, lightTypes, IM_ARRAYSIZE(lightTypes))) {
+				component.Type = (LightType)currentType;
+			}
+
+			ImGui::Text("Color");
+			ImGui::SameLine();
+			ImGui::ColorEdit3("##lightColor", glm::value_ptr(component.Color));
+
+			ImGui::Text("Ambient");
+			ImGui::SameLine();
+			ImGui::DragFloat("##lightAmbient", &component.Ambient, 0.1f);
+
+			ImGui::Text("Diffuse");
+			ImGui::SameLine();
+			ImGui::DragFloat("##lightDiffuse", &component.Diffuse, 0.1f);
+
+			ImGui::Text("Specular");
+			ImGui::SameLine();
+			ImGui::DragFloat("##lightSpecular", &component.Specular, 0.1f);
 		});
 
 		// add component button

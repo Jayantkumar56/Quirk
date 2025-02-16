@@ -22,8 +22,11 @@ namespace Quirk {
 		virtual void Bind() const = 0;
 		virtual void Unbind() const = 0;
 
-		virtual void UploadUniform(const std::string& name, const glm::mat4& matrix) = 0;
+		virtual void UploadUniform(const std::string& name, const glm::mat4& matrix)             = 0;
+		virtual void UploadUniform(const std::string& name, const glm::vec3& vec)                = 0;
+		virtual void UploadUniform(const std::string& name, const glm::vec4& vec)                = 0;
 		virtual void UploadUniform(const std::string& name, const int32_t* data, uint32_t count) = 0;
+		virtual void UploadUniform(const std::string& name, const float* data, uint32_t count)   = 0;
 	};
 
 	class ShaderLibrary {

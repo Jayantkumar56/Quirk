@@ -15,6 +15,9 @@ namespace Quirk {
 		Custom
 	};
 
+	std::string_view MeshTypeToString(MeshType type);
+	MeshType         StringToMeshType(std::string_view type);
+
 	struct MeshData {
 		std::vector<float> Positions;
 	};

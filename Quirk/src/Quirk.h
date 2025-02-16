@@ -24,6 +24,8 @@
 #include "Core/Camera/Camera.h"
 #include "Core/Camera/CameraController.h"
 
+#include "Core/Renderer/Light/Light.h"
+
 #include "Core/Renderer/RendererPrimitives/Buffers.h"
 #include "Core/Renderer/Texture.h"
 #include "Core/Renderer/RendererPrimitives/Shader.h"

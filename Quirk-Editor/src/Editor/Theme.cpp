@@ -19,16 +19,16 @@ namespace Quirk {
 	void Theme::SetDarkTheme() {
 		auto& colors = ImGui::GetStyle().Colors;
 
-		colors[ImGuiCol_WindowBg]				= ImVec4{ 0.027f, 0.118f, 0.133f, 1.0f };
+		colors[ImGuiCol_WindowBg]				= ImVec4{ 0.086f, 0.102f, 0.114f, 1.0f };
 		colors[ImGuiCol_MenuBarBg]				= ImVec4{ 0.051f, 0.051f, 0.043f, 1.0f };
 
 		// Title
-		colors[ImGuiCol_TitleBg]				= ImVec4{ 0.051f, 0.051f, 0.043f, 1.0f };
-		colors[ImGuiCol_TitleBgActive]			= ImVec4{ 0.051f, 0.051f, 0.043f, 1.0f };
+		colors[ImGuiCol_TitleBg]				= ImVec4{ 0.086f, 0.102f, 0.114f, 1.0f };
+		colors[ImGuiCol_TitleBgActive]			= ImVec4{ 0.086f, 0.102f, 0.114f, 1.0f };
 		colors[ImGuiCol_TitleBgCollapsed]		= ImVec4{ 0.086f, 0.09f, 0.09f, 1.0f };
 
 		// Border
-		colors[ImGuiCol_Border]					= ImVec4{ 0.086f, 0.09f, 0.09f, 1.0f };
+		colors[ImGuiCol_Border]					= ImVec4{ 0.0f, 0.0f, 0.0f, 1.0f };
 		colors[ImGuiCol_BorderShadow]			= ImVec4{ 0.0f, 0.0f, 0.0f, 1.0f };
 
 		// Resize Grip

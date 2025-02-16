@@ -52,7 +52,7 @@ namespace Quirk {
 		Ref<Scene>& scene      = ((EditorFrame*)GetParentFrame())->GetMainScene();
 		Entity& selectedEntity = ((EditorFrame*)GetParentFrame())->GetSelectedEntity();
 
-		MenuBar(scene);
+		//MenuBar(scene);
 
 		ImGuiWindowClass windowClass;
 		windowClass.DockNodeFlagsOverrideSet = ImGuiDockNodeFlags_NoTabBar;
@@ -168,7 +168,7 @@ namespace Quirk {
 		Renderer2D::ResetStats();
 
 		switch (m_SceneState) {
-			case Quirk::SceneState::Edit: scene->RenderSceneEditor(m_Camera.GetProjectionView()); break;
+			case Quirk::SceneState::Edit: scene->RenderSceneEditor(m_Camera.GetProjectionView(), m_Camera.GetPosition()); break;
 			case Quirk::SceneState::Play: m_RuntimeScene->RenderSceneRuntime(); break;
 		}
 

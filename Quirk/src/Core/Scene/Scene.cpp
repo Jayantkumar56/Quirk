@@ -10,12 +10,6 @@
 
 namespace Quirk {
 
-	Scene::Scene(uint16_t width, uint16_t height): m_ViewportWidth(width), m_ViewportHeight(height) {
-	}
-
-	Scene::~Scene() {
-	}
-
 	Ref<Scene> Scene::Copy(const Ref<Scene>& other) {
 		Ref<Scene> newScene = CreateRef<Scene>(other->m_ViewportWidth, other->m_ViewportWidth);
 		std::unordered_map<uint64_t, uint32_t> entitiesMap;
@@ -72,26 +66,8 @@ namespace Quirk {
 		});
 	}
 
-	void Scene::RenderSceneEditor(const glm::mat4& projectionViewMat) {
-		// rendering the 2D objects
-		Renderer2D::BeginScene(projectionViewMat);
-
-		auto renderables = m_Registry.view<TransformComponent, SpriteRendererComponent>();
-		for (auto entity : renderables) {
-			Renderer2D::SubmitQuadEntity({ entity, this });
-		}
-
-		Renderer2D::EndScene();
-
-		// rendering the 3D meshes
-		Renderer::BeginScene(projectionViewMat);
-		{
-			auto renderables = m_Registry.view<TransformComponent, MeshComponent>();
-			for (auto entity : renderables) {
-				Renderer::Submit({ entity, this });
-			}
-		}
-		Renderer::EndScene();
+	void Scene::RenderSceneEditor(const glm::mat4& projectionViewMat, glm::vec3 cameraPos) {
+		RenderScene(projectionViewMat, cameraPos);
 	}
 
 	void Scene::RenderSceneRuntime() {
@@ -103,36 +79,10 @@ namespace Quirk {
 		}
 
 		const auto& projection	     = primaryCamera.GetComponent<CameraComponent>().Camera.GetProjection();
-		const auto cameraTransform   = glm::inverse(primaryCamera.GetComponent<TransformComponent>().GetTransform());
-		const auto projectionViewMat = projection * cameraTransform;
+		const auto& cameraTransform  = primaryCamera.GetComponent<TransformComponent>();
+		const auto projectionViewMat = projection * glm::inverse(cameraTransform.GetTransform());
 
-		// rendering the 2D objects
-		Renderer2D::BeginScene(projectionViewMat);
-
-		auto renderables = m_Registry.view<TransformComponent, SpriteRendererComponent>();
-		for (auto entity : renderables) {
-			Renderer2D::SubmitQuadEntity({ entity, this });
-		}
-
-		Renderer2D::EndScene();
-
-		// rendering the 3D meshes
-		Renderer::BeginScene(projectionViewMat);
-		{
-			auto renderables = m_Registry.view<TransformComponent, MeshComponent>();
-			for (auto entity : renderables) {
-				Renderer::Submit({ entity, this });
-			}
-		}
-		Renderer::EndScene();
-	}
-
-	void Scene::OnRuntimeStart() {
-		
-	}
-
-	void Scene::OnRuntimeStop() {
-
+		RenderScene(projectionViewMat, cameraTransform.Translation);
 	}
 
 	void Scene::OnViewportResize(uint32_t width, uint32_t height) {
@@ -161,6 +111,36 @@ namespace Quirk {
 		}
 
 		return {};
+	}
+
+	void Scene::RenderScene(const glm::mat4& projectionViewMat, glm::vec3 cameraPos) {
+		// rendering the 2D quads
+		Renderer2D::BeginScene(projectionViewMat);
+
+		auto renderables = m_Registry.view<TransformComponent, SpriteRendererComponent>();
+		for (auto entity : renderables) {
+			Renderer2D::SubmitQuadEntity({ entity, this });
+		}
+
+		Renderer2D::EndScene();
+
+		// rendering the 3D meshes
+		Renderer::BeginScene(projectionViewMat, cameraPos);
+		{
+			std::vector<Entity> lightSourceEntities;
+
+			auto lightSources = m_Registry.view<LightComponent>();
+			for (auto entity : lightSources) {
+				lightSourceEntities.emplace_back(entity, this);
+				Renderer::SubmitLightSource({ entity, this });
+			}
+
+			auto renderables = m_Registry.view<TransformComponent, MeshComponent>();
+			for (auto entity : renderables) {
+				Renderer::Submit({ entity, this }, lightSourceEntities);
+			}
+		}
+		Renderer::EndScene();
 	}
 
 	Entity Scene::FindEntityByName(std::string_view name) {
