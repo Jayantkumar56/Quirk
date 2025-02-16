@@ -12,7 +12,8 @@ namespace Quirk {
 
 	class ContentBrowserPanel : public Panel {
 	public:
-		ContentBrowserPanel()
+		ContentBrowserPanel() : 
+				Panel("Content Browser", ImGuiWindowFlags_MenuBar)
 		{
 			m_CurrentDirectory = Project::GetAssetDirectory();
 			FetchCurrentDirectoryContent();
@@ -24,9 +25,9 @@ namespace Quirk {
 			m_RefreshIcon  = Texture2D::Create("assets/Images/refresh.png");
 		}
 
-		virtual void OnUpdate() override { }
-		virtual bool OnEvent(Event& event) override { return false; }
-		virtual void OnImguiUiUpdate() override;
+		virtual void SetImguiProperties()   override;
+		virtual void UnSetImguiProperties() override;
+		virtual void OnImguiUiUpdate()      override;
 
 	private:
 		void FetchCurrentDirectoryContent();

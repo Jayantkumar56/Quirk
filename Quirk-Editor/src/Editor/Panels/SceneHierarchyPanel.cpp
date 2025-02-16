@@ -12,7 +12,6 @@ namespace Quirk {
 		Ref<Scene>& scene      = ((EditorFrame*)GetParentFrame())->GetMainScene();
 		Entity& selectedEntity = ((EditorFrame*)GetParentFrame())->GetSelectedEntity();
 
-		ImGui::Begin("Scene Hierarcy");
 		ImGui::PushStyleColor(ImGuiCol_Border, Theme::GetColor(ColorName::PopupBorder));
 
 		ImVec2 framePadding{ 5.0f, 5.0f };
@@ -51,7 +50,6 @@ namespace Quirk {
 		ImGui::Text("FPS :- %.1f", io.Framerate);
 
 		ImGui::PopStyleColor();
-		ImGui::End();
 	}
 
 	void SceneHierarchyPanel::DrawEntityNode(Entity entity, Entity& selectedEntity) {

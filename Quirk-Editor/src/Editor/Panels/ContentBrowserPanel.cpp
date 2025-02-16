@@ -13,11 +13,16 @@ namespace Quirk {
 		return isImage;
 	}
 
+	void ContentBrowserPanel::SetImguiProperties() {
+		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 0.0f, 8.0f });
+	}
+
+	void ContentBrowserPanel::UnSetImguiProperties() {
+		ImGui::PopStyleVar();
+	}
+
 	void ContentBrowserPanel::OnImguiUiUpdate() {
 		bool updatedCurrentDirectory = false;
-
-		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 0.0f, 8.0f });
-		ImGui::Begin("Content Browser", 0, ImGuiWindowFlags_MenuBar);
 		
 		if (ImGui::BeginMenuBar()) {
 			ImTextureID backwardIconId = (ImTextureID)(intptr_t)m_BackwardIcon->GetRendererId();
@@ -53,7 +58,6 @@ namespace Quirk {
 
 			ImGui::EndMenuBar();
 		}
-		ImGui::PopStyleVar();
 
 		ImVec2 windowSize = ImGui::GetWindowSize();
 		int noOfColumns = (int)((windowSize.x) / 112);
@@ -108,7 +112,6 @@ namespace Quirk {
 		}
 		ImGui::GetStyle().CellPadding = cellPadding;
 
-		ImGui::End();
 		if (updatedCurrentDirectory) FetchCurrentDirectoryContent();
 	}
 

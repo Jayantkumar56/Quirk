@@ -10,6 +10,7 @@
 namespace Quirk {
 
 	SceneViewportPanel::SceneViewportPanel(uint16_t width, uint16_t height) :
+			Panel              ("Scene Viewport"),
 			m_RuntimeScene	   (nullptr),
 			m_PlayButtonIcon   (Texture2D::Create("assets/Images/play.png")),
 			m_PauseButtonIcon  (Texture2D::Create("assets/Images/pause.png")),
@@ -38,6 +39,18 @@ namespace Quirk {
 		return false;
 	}
 
+	void SceneViewportPanel::SetImguiProperties() {
+		ImGuiWindowClass windowClass;
+		windowClass.DockNodeFlagsOverrideSet = ImGuiDockNodeFlags_NoTabBar;
+		ImGui::SetNextWindowClass(&windowClass);
+
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+	}
+
+	void SceneViewportPanel::UnSetImguiProperties() {
+		ImGui::PopStyleVar();
+	}
+
 	void SceneViewportPanel::OnUpdate() {
 		Ref<Scene>& scene = ((EditorFrame*)GetParentFrame())->GetMainScene();
 
@@ -53,13 +66,6 @@ namespace Quirk {
 		Entity& selectedEntity = ((EditorFrame*)GetParentFrame())->GetSelectedEntity();
 
 		//MenuBar(scene);
-
-		ImGuiWindowClass windowClass;
-		windowClass.DockNodeFlagsOverrideSet = ImGuiDockNodeFlags_NoTabBar;
-		ImGui::SetNextWindowClass(&windowClass);
-
-		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-		ImGui::Begin("Scene Viewport");
 
 		m_IsInFocus = ImGui::IsWindowFocused();
 		CheckAndHandleResize(scene);
@@ -109,9 +115,6 @@ namespace Quirk {
 				selectedEntity = (entityId == -1) ? Entity() : Entity((entt::entity)entityId, scene.get());
 			}
 		}
-
-		ImGui::End();
-		ImGui::PopStyleVar();
 	}
 
 	void SceneViewportPanel::MenuBar(const Ref<Scene>& scene) {

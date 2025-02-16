@@ -8,12 +8,10 @@ namespace Quirk {
 
 	class SceneHierarchyPanel : public Panel {
 	public:
-		SceneHierarchyPanel() = default;
+		SceneHierarchyPanel() : Panel("Scene Hierarchy") { }
 		~SceneHierarchyPanel() = default;
 
-		virtual void OnUpdate() override { }
-		virtual bool OnEvent(Event& event) override { return false; }
-		virtual void OnImguiUiUpdate() override;
+		virtual void OnImguiUiUpdate()      override;
 
 	private:
 		void DrawEntityNode(Entity entity, Entity& selectedEntity);

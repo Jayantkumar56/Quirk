@@ -52,15 +52,20 @@ namespace Quirk {
 			entity.RemoveComponent<T>();
 	}
 
+	void InspectorPanel::SetImguiProperties() {
+
+	}
+
+	void InspectorPanel::UnSetImguiProperties() {
+
+	}
+
 	void InspectorPanel::OnImguiUiUpdate() {
 		auto parentFrame  = (EditorFrame*)GetParentFrame();
 		Entity& entity    = parentFrame->GetSelectedEntity();
 
-		ImGui::Begin("Inspector");
-
 		// stopping further processing if no entity is selected in scene hierarcy
 		if (entity.IsInvalidEntity()) {
-			ImGui::End();
 			return;
 		}
 
@@ -382,7 +387,6 @@ namespace Quirk {
 		}
 
 		ImGui::PopStyleColor();
-		ImGui::End();
 	}
 
 }

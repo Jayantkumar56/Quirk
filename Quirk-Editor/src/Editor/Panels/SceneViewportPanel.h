@@ -16,9 +16,11 @@ namespace Quirk {
 		SceneViewportPanel(uint16_t width = 1, uint16_t height = 1);
 		~SceneViewportPanel() = default;
 
-		virtual void OnUpdate()            override;
-		virtual bool OnEvent(Event& event) override;
-		virtual void OnImguiUiUpdate()     override;
+		virtual void OnUpdate()             override;
+		virtual bool OnEvent(Event& event)  override;
+		virtual void SetImguiProperties()   override;
+		virtual void UnSetImguiProperties() override;
+		virtual void OnImguiUiUpdate()      override;
 
 		uint16_t GetWidth()						const { return m_PanelWidth;    }
 		uint16_t GetHeight()					const { return m_PanelHeight;   }

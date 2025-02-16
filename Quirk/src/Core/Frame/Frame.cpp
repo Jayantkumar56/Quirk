@@ -59,7 +59,7 @@ namespace Quirk {
 			frame->m_TitleBar->OnUiUpdate();
 
 			for (auto& panel : frame->m_Panels)
-				panel->OnImguiUiUpdate();
+				panel->OnUiUpdate();
 
 			frame->m_ImguiUI.End(frame->m_Context);
 
