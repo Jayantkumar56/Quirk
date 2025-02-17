@@ -3,16 +3,9 @@
 #include "Frame.h"
 #include "Core/Application/Application.h"
 #include "Core/Input/ApplicationEvents.h"
+#include "Core/Renderer/RenderCommands.h"
 
 namespace Quirk {
-
-	Window& Quirk::TitleBar::GetWindow() noexcept {
-		return m_ParentFrame->GetWindow();
-	}
-
-	Window& Panel::GetWindow() noexcept {
-		return m_ParentFrame->GetWindow();
-	}
 
 	void FrameManager::UpdateFrames() {
 		// if there are no frames in the application we can terminate the Application

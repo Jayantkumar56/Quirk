@@ -2,13 +2,12 @@
 
 #pragma once
 
+#include "FrameBase.h"
 #include "Window.h"
 #include "Core/Input/Events.h"
 
-
 namespace Quirk {
 
-	class Frame;
 	class FrameManager;
 
 	class Panel {
@@ -31,9 +30,9 @@ namespace Quirk {
 		// thus could be used to unset Imgui properties which are set in SetImguiProperties()
 		virtual void UnSetImguiProperties() { }
 
-		Window&       GetWindow()                            noexcept;
-		inline Frame* GetParentFrame()                       noexcept { return m_ParentFrame;  }
-		inline void   SetWindowFlags(ImGuiWindowFlags flags) noexcept { m_WindowFlags = flags; }
+		Window&           GetWindow()          noexcept { return m_ParentFrame->GetWindow(); }
+		inline FrameBase* GetParentFrame()     noexcept { return m_ParentFrame;              }
+		inline void       SetWindowFlags(ImGuiWindowFlags flags) noexcept { m_WindowFlags = flags; }
 
 	private:
 		inline void OnUiUpdate() {
@@ -53,10 +52,10 @@ namespace Quirk {
 		const char* m_Title;
 
 		// to communicate with the parent Frame obj which manages this panel
-		Frame* m_ParentFrame = nullptr;
+		FrameBase* m_ParentFrame = nullptr;
 	};
 
 	template <typename T>
-	concept PanelType = std::is_base_of<Panel, T>::value;
+	concept PanelType = std::derived_from<T, Panel>;
 
 }

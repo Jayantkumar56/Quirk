@@ -53,11 +53,9 @@ namespace Quirk {
 	}
 
 	void InspectorPanel::SetImguiProperties() {
-
-	}
-
-	void InspectorPanel::UnSetImguiProperties() {
-
+		ImGuiWindowClass window_class;
+		window_class.DockNodeFlagsOverrideSet = ImGuiDockNodeFlags_NoWindowMenuButton;
+		ImGui::SetNextWindowClass(&window_class);
 	}
 
 	void InspectorPanel::OnImguiUiUpdate() {

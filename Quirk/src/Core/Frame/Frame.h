@@ -2,65 +2,31 @@
 
 #pragma once
 
-#include "Core/Frame/GraphicalContext.h"
-#include "Core/Input/KeyCodes.h"
-#include "Core/Input/Input.h"
-#include "Core/Renderer/RenderCommands.h"
-
 #include "TitleBar.h"
 #include "Panel.h"
+#include "FrameBase.h"
 #include "FontManager.h"
-
-#include <utility>
 
 namespace Quirk {
 
-	class Frame {
+	class Frame : public FrameBase {
 		friend class FrameManager;
 
 	public:
-		Frame(WindowSpecification& spec) :
-				m_Window(spec),
-				m_Context(GraphicalContext::Create(m_Window)),
-				m_Title(std::move(spec.Title)),
-				m_TitleBar(nullptr)
-		{
+		Frame(WindowSpecification& spec) : m_TitleBar(nullptr), FrameBase(spec) {
 			m_ImguiUI.Init(m_Window, m_Context);
-			SetVSync(spec.VSyncOn);
 		}
 
 		virtual ~Frame() {
 			for (size_t i = 0; i < m_Panels.size(); ++i)
-				delete m_Panels[i];
-
-			if(m_Context != nullptr) {
-				m_Context->DestroyContext(m_Window);
-				delete m_Context;
-			}
+				delete m_Panels[i];		
 		}
 
-		// deleted both copy constructor and copy assignment, to make it non copyable
-		Frame(Frame& other)					 = delete;
-		Frame& operator=(const Frame& other) = delete;
-
-		virtual void OnUpdate()            = 0;
-		virtual void OnImguiUiUpdate()     = 0;
-		virtual bool OnEvent(Event& event) = 0;
-
-		// since frames are managed by the frame manager thus by just setting m_Running to false
-		// will make the frame manager close this frame
-
-		inline void CloseFrame() noexcept { m_Running = false; }
-		inline void MakeContextCurrent() noexcept { 
+		inline void MakeContextCurrent() noexcept {
 			m_Context->MakeContextCurrent();
 			m_ImguiUI.MakeImguiUIContextCurrent();
 		}
-
-		inline void SwapBuffer() const	     { m_Context->SwapBuffer();     }
-		inline void SetVSync(int toggle)     { m_Context->SetVSync(toggle); }
-		inline Window& GetWindow()		     noexcept { return m_Window;    }
-		inline const std::string& GetTitle() noexcept { return m_Title;     }
-
+		
 		// lifetime of the panel is managed by the frame
 		template<PanelType P, typename ...Args>
 		inline void AddPanel(Args&& ... args) {
@@ -77,19 +43,14 @@ namespace Quirk {
 		}
 
 	private:
-		bool		m_Running = true;
-		Window      m_Window;
-		std::string m_Title;
-
-		GraphicalContext* m_Context;
-		ImguiUI           m_ImguiUI;
+		ImguiUI m_ImguiUI;
 
 		TitleBar*           m_TitleBar;
 		std::vector<Panel*> m_Panels;
 	};
 
 	template <typename T>
-	concept FrameType = std::is_base_of<Frame, T>::value;
+	concept FrameType = std::derived_from<T, Frame>;
 
 	class FrameManager {
 	public:

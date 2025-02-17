@@ -2,13 +2,13 @@
 
 #pragma once
 
+#include "FrameBase.h"
 #include "Window.h"
 #include "Core/Input/Events.h"
 #include "Core/Imgui/ImguiUI.h"
 
 namespace Quirk {
 
-	class Frame;
 	class FrameManager;
 
 	class TitleBar {
@@ -30,8 +30,8 @@ namespace Quirk {
 		// thus could be used to unset Imgui properties which are set in SetImguiProperties()
 		virtual void UnSetImguiProperties() { }
 
-		Window& GetWindow() noexcept;
-		inline Frame* GetParentFrame() noexcept { return m_ParentFrame; }
+		Window& GetWindow()                noexcept { return m_ParentFrame->GetWindow(); }
+		inline FrameBase* GetParentFrame() noexcept { return m_ParentFrame;              }
 
 		inline void SetCursorOverMinimiseButton (bool toggle) noexcept { GetWindow().SetCursorOverMinimiseButton(toggle); }
 		inline void SetCursorOverMaximiseButton (bool toggle) noexcept { GetWindow().SetCursorOverMaximiseButton(toggle); }
@@ -58,10 +58,10 @@ namespace Quirk {
 
 	private:
 		// to communicate with the parent Frame obj which manages this titlebar
-		Frame* m_ParentFrame = nullptr;
+		FrameBase* m_ParentFrame = nullptr;
 	};
 
 	template <typename T>
-	concept TitleBarType = std::is_base_of<TitleBar, T>::value;
+	concept TitleBarType = std::derived_from<T, TitleBar>;
 
 }

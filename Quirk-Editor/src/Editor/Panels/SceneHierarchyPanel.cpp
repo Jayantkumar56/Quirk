@@ -8,6 +8,12 @@
 
 namespace Quirk {
 
+	void SceneHierarchyPanel::SetImguiProperties() {
+		ImGuiWindowClass window_class;
+		window_class.DockNodeFlagsOverrideSet = ImGuiDockNodeFlags_NoWindowMenuButton;
+		ImGui::SetNextWindowClass(&window_class);
+	}
+
 	void SceneHierarchyPanel::OnImguiUiUpdate(){
 		Ref<Scene>& scene      = ((EditorFrame*)GetParentFrame())->GetMainScene();
 		Entity& selectedEntity = ((EditorFrame*)GetParentFrame())->GetSelectedEntity();
