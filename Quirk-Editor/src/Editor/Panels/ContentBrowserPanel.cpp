@@ -14,50 +14,16 @@ namespace Quirk {
 	}
 
 	void ContentBrowserPanel::SetImguiProperties() {
-		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, { 0.0f, 8.0f });
-	}
-
-	void ContentBrowserPanel::UnSetImguiProperties() {
-		ImGui::PopStyleVar();
+		ImGuiWindowClass window_class;
+		window_class.DockNodeFlagsOverrideSet = ImGuiDockNodeFlags_NoWindowMenuButton;
+		ImGui::SetNextWindowClass(&window_class);
 	}
 
 	void ContentBrowserPanel::OnImguiUiUpdate() {
 		bool updatedCurrentDirectory = false;
-		
-		if (ImGui::BeginMenuBar()) {
-			ImTextureID backwardIconId = (ImTextureID)(intptr_t)m_BackwardIcon->GetRendererId();
-			if (ImGui::ImageButton("backwardButton", backwardIconId, { 25.0f, 25.0f }, { 0, 1 }, { 1, 0 })) {
-				if (!m_BackwardNavigationHistory.empty()) {
-					m_ForwardNavigationHistory.emplace(m_CurrentDirectory);
 
-					m_CurrentDirectory = m_BackwardNavigationHistory.top();
-					m_BackwardNavigationHistory.pop();
-
-					updatedCurrentDirectory = true;
-				}
-			}
-
-			ImTextureID forwardIconId = (ImTextureID)(intptr_t)m_ForwardIcon->GetRendererId();
-			if (ImGui::ImageButton("forwardButton", forwardIconId, { 25.0f, 25.0f }, { 0, 1 }, { 1, 0 })) {
-				if (!m_ForwardNavigationHistory.empty()) {
-					m_BackwardNavigationHistory.emplace(m_CurrentDirectory);
-
-					m_CurrentDirectory = m_ForwardNavigationHistory.top();
-					m_ForwardNavigationHistory.pop();
-
-					updatedCurrentDirectory = true;
-				}
-			}
-
-			ImTextureID refresIconId = (ImTextureID)(intptr_t)m_RefreshIcon->GetRendererId();
-			if (ImGui::ImageButton("refreshButton", refresIconId, { 25.0f, 25.0f }, { 0, 1 }, { 1, 0 })) {
-				FetchCurrentDirectoryContent();
-			}
-
-			ImGui::Text(m_CurrentDirectory.string().c_str());
-
-			ImGui::EndMenuBar();
-		}
+		// menubar contains all the navigation buttons and current directory
+		DrawMenuBar();
 
 		ImVec2 windowSize = ImGui::GetWindowSize();
 		int noOfColumns = (int)((windowSize.x) / 112);
@@ -115,11 +81,130 @@ namespace Quirk {
 		if (updatedCurrentDirectory) FetchCurrentDirectoryContent();
 	}
 
+	void ContentBrowserPanel::DrawMenuBar() {
+		ImVec2 menuBarSize    = { ImGui::GetWindowWidth(), 30.0f };
+		ImVec2 menuBarPadding = { 20.0f, 5.0f };
+
+		ImVec2 cursorPos = ImGui::GetWindowPos();
+		cursorPos.y += ImGui::GetFrameHeight() + 2.0f;
+
+		ImVec2 menuBarStart = cursorPos;
+		ImVec2 menuBarEnd = { cursorPos.x + menuBarSize.x, cursorPos.y + menuBarSize.y };
+
+		ImDrawList* drawList = ImGui::GetWindowDrawList();
+
+		drawList->PushClipRect(menuBarStart, menuBarEnd, true);
+		drawList->AddRectFilled(menuBarStart, menuBarEnd, 0xff0b0d0d);
+
+		cursorPos.x += menuBarPadding.x * 0.5f;
+		cursorPos.y += menuBarPadding.y * 0.5f;
+
+		ImVec2 buttonSize  = { 25.0f, 25.0f };
+		ImVec2 buttonStart = cursorPos;
+		ImVec2 buttonEnd   = { cursorPos.x + buttonSize.x, cursorPos.y + buttonSize.y };
+
+		ImU32 buttonHoverColor  = 0xff312d29;
+		ImU32 buttonActiveColor = 0xff2d2925;
+
+		// button for Backward Navigation
+		{
+			ImGui::SetCursorScreenPos(cursorPos);
+			if (ImGui::InvisibleButton("backwardButton", buttonSize)) {
+				BackwardNavigationCallback();
+			}
+
+			// setting texture to the backward button for hovering and normal state
+			if (ImGui::IsMouseHoveringRect(buttonStart, buttonEnd)) {
+				ImU32 buttonColor = ImGui::IsMouseDown(0) ? buttonActiveColor : buttonHoverColor;
+				drawList->AddRectFilled(buttonStart, buttonEnd, buttonColor, 10.0f);
+			}
+
+			ImTextureID backwardIconId = (ImTextureID)(intptr_t)m_BackwardIcon->GetRendererId();
+			drawList->AddImage(backwardIconId, buttonStart, buttonEnd, { 0, 1 }, { 1, 0 });
+		}
+		cursorPos.x += buttonSize.x + 3.0f;
+
+		// button for Forward Navigation
+		{
+			ImGui::SetCursorScreenPos(cursorPos);
+			if (ImGui::InvisibleButton("forwardButton", buttonSize)) {
+				ForwardNavigationCallback();
+			}
+
+			buttonStart = cursorPos;
+			buttonEnd.x = cursorPos.x + buttonSize.x;
+			buttonEnd.y = cursorPos.y + buttonSize.y;
+
+			// setting texture to the backward button for hovering and normal state
+			if (ImGui::IsMouseHoveringRect(buttonStart, buttonEnd)) {
+				ImU32 buttonColor = ImGui::IsMouseDown(0) ? buttonActiveColor : buttonHoverColor;
+				drawList->AddRectFilled(buttonStart, buttonEnd, buttonColor, 10.0f);
+			}
+
+			ImTextureID backwardIconId = (ImTextureID)(intptr_t)m_ForwardIcon->GetRendererId();
+			drawList->AddImage(backwardIconId, buttonStart, buttonEnd, { 0, 1 }, { 1, 0 });
+		}
+		cursorPos.x += buttonSize.x + 7.0f;
+		
+		// button for refresh
+		{
+			ImGui::SetCursorScreenPos(cursorPos);
+			if (ImGui::InvisibleButton("refreshButton", buttonSize)) {
+				FetchCurrentDirectoryContent();
+			}
+
+			buttonStart = cursorPos;
+			buttonEnd.x = cursorPos.x + buttonSize.x;
+			buttonEnd.y = cursorPos.y + buttonSize.y;
+
+			// setting texture to the backward button for hovering and normal state
+			if (ImGui::IsMouseHoveringRect(buttonStart, buttonEnd)) {
+				ImU32 buttonColor = ImGui::IsMouseDown(0) ? buttonActiveColor : buttonHoverColor;
+				drawList->AddRectFilled(buttonStart, buttonEnd, buttonColor, 10.0f);
+			}
+
+			ImTextureID backwardIconId = (ImTextureID)(intptr_t)m_RefreshIcon->GetRendererId();
+			drawList->AddImage(backwardIconId, buttonStart, buttonEnd, { 0, 1 }, { 1, 0 });
+		}
+		cursorPos.x += buttonSize.x + 10.0f;
+
+		// displaying current working directory for ContentBrowserPanel
+		std::string directory = m_CurrentDirectory.string();
+		ImFont* directoryFont = FontManager::GetFont(FontWeight::Regular, 22);
+		drawList->AddText(directoryFont, directoryFont->FontSize, cursorPos, 0xFFFFFFFF, directory.c_str(), NULL);
+	}
+
 	void ContentBrowserPanel::FetchCurrentDirectoryContent() {
 		m_CurrentDirectoryContent.clear();
 
 		for (const auto& directory : std::filesystem::directory_iterator(m_CurrentDirectory)) {
 			m_CurrentDirectoryContent.emplace_back(directory);
+		}
+	}
+
+	void ContentBrowserPanel::ForwardNavigationCallback() {
+		// if there exist any directory in the forward Nav history setting that to the m_CurrentDirectory after
+		// putting m_CurrentDirectory in the backward history and fetching the updated directory content 
+		if (!m_ForwardNavigationHistory.empty()) {
+			m_BackwardNavigationHistory.emplace(m_CurrentDirectory);
+
+			m_CurrentDirectory = m_ForwardNavigationHistory.top();
+			m_ForwardNavigationHistory.pop();
+
+			FetchCurrentDirectoryContent();
+		}
+	}
+
+	void ContentBrowserPanel::BackwardNavigationCallback() {
+		// if there exist any directory in the backward Nav history, setting that to the m_CurrentDirectory after
+		// putting m_CurrentDirectory in the forward history and fetching the updated directory content 
+		if (!m_BackwardNavigationHistory.empty()) {
+			m_ForwardNavigationHistory.emplace(m_CurrentDirectory);
+
+			m_CurrentDirectory = m_BackwardNavigationHistory.top();
+			m_BackwardNavigationHistory.pop();
+
+			FetchCurrentDirectoryContent();
 		}
 	}
 

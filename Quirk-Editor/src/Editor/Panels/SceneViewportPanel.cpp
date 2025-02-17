@@ -40,9 +40,9 @@ namespace Quirk {
 	}
 
 	void SceneViewportPanel::SetImguiProperties() {
-		ImGuiWindowClass windowClass;
-		windowClass.DockNodeFlagsOverrideSet = ImGuiDockNodeFlags_NoTabBar;
-		ImGui::SetNextWindowClass(&windowClass);
+		ImGuiWindowClass window_class;
+		window_class.DockNodeFlagsOverrideSet = ImGuiDockNodeFlags_NoWindowMenuButton;
+		ImGui::SetNextWindowClass(&window_class);
 
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 	}

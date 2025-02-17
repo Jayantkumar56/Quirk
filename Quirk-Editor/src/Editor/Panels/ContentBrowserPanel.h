@@ -13,7 +13,7 @@ namespace Quirk {
 	class ContentBrowserPanel : public Panel {
 	public:
 		ContentBrowserPanel() : 
-				Panel("Content Browser", ImGuiWindowFlags_MenuBar)
+				Panel("Content Browser")
 		{
 			m_CurrentDirectory = Project::GetAssetDirectory();
 			FetchCurrentDirectoryContent();
@@ -25,12 +25,14 @@ namespace Quirk {
 			m_RefreshIcon  = Texture2D::Create("assets/Images/refresh.png");
 		}
 
-		virtual void SetImguiProperties()   override;
-		virtual void UnSetImguiProperties() override;
-		virtual void OnImguiUiUpdate()      override;
+		virtual void SetImguiProperties() override;
+		virtual void OnImguiUiUpdate()    override;
 
 	private:
+		void DrawMenuBar();
 		void FetchCurrentDirectoryContent();
+		void ForwardNavigationCallback();
+		void BackwardNavigationCallback();
 
 	private:
 		// TO DO: these resources should be managed automatically by resource manager
