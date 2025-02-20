@@ -30,6 +30,10 @@ namespace Quirk {
 		// thus could be used to unset Imgui properties which are set in SetImguiProperties()
 		virtual void UnSetImguiProperties() { }
 
+		// since Panels are managed by the frame manager thus by just setting m_PanelOpen to false
+		// will make the frame manager close this Panels
+		inline void CloseFrame() noexcept { m_PanelOpen = false; }
+
 		Window&           GetWindow()          noexcept { return m_ParentFrame->GetWindow(); }
 		inline FrameBase* GetParentFrame()     noexcept { return m_ParentFrame;              }
 		inline void       SetWindowFlags(ImGuiWindowFlags flags) noexcept { m_WindowFlags = flags; }
@@ -38,7 +42,7 @@ namespace Quirk {
 		inline void OnUiUpdate() {
 			SetImguiProperties();
 
-			ImGui::Begin(m_Title, (bool*)0, m_WindowFlags);
+			ImGui::Begin(m_Title, &m_PanelOpen, m_WindowFlags);
 			OnImguiUiUpdate();
 			ImGui::End();
 
@@ -46,6 +50,8 @@ namespace Quirk {
 		}
 
 	private:
+		bool m_PanelOpen = true;
+
 		ImGuiWindowFlags m_WindowFlags;
 
 		// title for the ImGui Window

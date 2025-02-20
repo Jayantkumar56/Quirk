@@ -306,7 +306,7 @@ namespace Quirk {
 		
 		// for border
 		if (borderColor) {
-			drawList->AddRectFilled(
+			drawList->AddRect(
 				{ cursorPos.x - 1.0f, cursorPos.y - 1.0f } , 
 				{ cursorPos.x + buttonSize.x + 1.0f, cursorPos.y + buttonSize.y + 1.0f },
 				borderColor

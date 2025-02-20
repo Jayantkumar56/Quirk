@@ -13,18 +13,18 @@ namespace Quirk {
 	//////////////////////////////////////////      PerspectiveCameraController      //////////////////////////////////////////////////////////
 
 	PerspectiveCameraController::PerspectiveCameraController(float fov, float aspectRatio, float nearPlane, float farPlane) :
-			m_ZoomLevel(1.0f),
-			m_CameraTranslationSpeed(5.0f), 
-			m_CameraRotationSpeed(0.03f),
-			m_Pitch				(0.0f),
-			m_Yaw				(-90.0f),
-			m_PrevCameraPosition(0.0f, 0.0f, 3.0f),
-			m_CameraPosition	(0.0f, 0.0f, 3.0f),
-			m_ViewFront			(0.0f, 0.0f, -1.0f),
-			m_ViewUp			(0.0f, 1.0f, 0.0f),
-			m_MovementFront		(0.0f, 0.0f, -1.0f),
-			m_MovementRight		(1.0f, 0.0f, 0.0f),
-			m_Camera			(glm::radians(fov), aspectRatio, nearPlane, farPlane, m_CameraPosition, m_ViewFront, m_ViewUp)
+		m_ZoomLevel(1.0f),
+		m_CameraTranslationSpeed(5.0f),
+		m_CameraRotationSpeed(0.03f),
+		m_Pitch(0.0f),
+		m_Yaw(-90.0f),
+		m_PrevCameraPosition(0.0f, 0.0f, 3.0f),
+		m_CameraPosition(0.0f, 0.0f, 3.0f),
+		m_ViewFront(0.0f, 0.0f, -1.0f),
+		m_ViewUp(0.0f, 1.0f, 0.0f),
+		m_MovementFront(0.0f, 0.0f, -1.0f),
+		m_MovementRight(1.0f, 0.0f, 0.0f),
+		m_Camera(glm::radians(fov), aspectRatio, nearPlane, farPlane)
 	{
 		RecalculateViewMatrix();
 	}
@@ -109,7 +109,7 @@ namespace Quirk {
 		m_CameraRotation(0.0f),
 		m_PrevCameraPosition(0.0f, 0.0f, 0.0f),
 		m_CameraPosition(0.0f, 0.0f, 0.0f),
-		m_Camera(-aspectRatio * m_ZoomLevel, aspectRatio * m_ZoomLevel,  -m_ZoomLevel, m_ZoomLevel)
+		m_Camera(-aspectRatio * m_ZoomLevel, aspectRatio* m_ZoomLevel, -m_ZoomLevel, m_ZoomLevel)
 	{
 		RecalculateViewMatrix();
 	}

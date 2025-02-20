@@ -37,8 +37,16 @@ namespace Quirk {
 			frame->m_ImguiUI.UpdateViewPorts();
 			frame->OnUpdate();
 
-			for (auto& panel : frame->m_Panels)
-				panel->OnUpdate();
+			// if panel is closed remove it from panel vector
+			for (size_t i = 0; i < frame->m_Panels.size(); ++i) {
+				if (!frame->m_Panels[i]->m_PanelOpen) {
+					delete frame->m_Panels[i];
+					frame->m_Panels.erase(frame->m_Panels.begin() + i);
+					break;
+				}
+
+				frame->m_Panels[i]->OnUpdate();
+			}
 
 			// updating imgui ui of the current frame and it's panels
 			frame->m_ImguiUI.Begin();
@@ -51,7 +59,7 @@ namespace Quirk {
 			frame->OnImguiUiUpdate();
 			frame->m_TitleBar->OnUiUpdate();
 
-			for (auto& panel : frame->m_Panels)
+			for (auto panel : frame->m_Panels)
 				panel->OnUiUpdate();
 
 			frame->m_ImguiUI.End(frame->m_Context);
@@ -65,7 +73,7 @@ namespace Quirk {
 			frame->OnEvent(event);
 			frame->m_TitleBar->OnEvent(event);
 
-			for (auto& panel : frame->m_Panels)
+			for (auto panel : frame->m_Panels)
 				panel->OnEvent(event);
 		}
 

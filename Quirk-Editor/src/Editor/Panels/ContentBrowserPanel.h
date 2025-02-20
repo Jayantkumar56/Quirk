@@ -20,8 +20,8 @@ namespace Quirk {
 
 			m_FolderIcon   = Texture2D::Create("assets/Images/folder.png");
 			m_FileIcon     = Texture2D::Create("assets/Images/file.png");
-			m_BackwardIcon = Texture2D::Create("assets/Images/icons8-backward-96.png");
-			m_ForwardIcon  = Texture2D::Create("assets/Images/icons8-forward-96.png");
+			m_BackwardIcon = Texture2D::Create("assets/Images/backward_arrow.png");
+			m_ForwardIcon  = Texture2D::Create("assets/Images/forward_arrow.png");
 			m_RefreshIcon  = Texture2D::Create("assets/Images/refresh.png");
 		}
 

@@ -18,6 +18,8 @@ namespace Quirk {
 		}
 
 		virtual ~Frame() {
+			delete m_TitleBar;
+
 			for (size_t i = 0; i < m_Panels.size(); ++i)
 				delete m_Panels[i];		
 		}

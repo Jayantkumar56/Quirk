@@ -10,17 +10,18 @@ namespace Quirk {
 
 	class Camera {
 	public:
-		Camera() = default;
-		Camera(const glm::mat4& projection) : m_Projection(projection) {}
-		virtual ~Camera() = default;
+		Camera(const glm::mat4& projection = glm::mat4(1.0f)) :
+			m_Projection(projection)
+		{
+		}
 
-		const glm::mat4& GetProjection() const { return m_Projection; }
+		const glm::mat4& GetProjection() const noexcept { return m_Projection; }
 
 	protected:
-		glm::mat4 m_Projection = glm::mat4(1.0f);
+		glm::mat4 m_Projection;
 	};
 
-	class OrthographicCamera : public Camera{
+	class OrthographicCamera : public Camera {
 	public:
 		OrthographicCamera(float left, float right, float bottom, float top) :
 			Camera(glm::ortho(left, right, bottom, top, -1.0f, 1.0f))
@@ -32,9 +33,9 @@ namespace Quirk {
 		}
 	};
 
-	class PerspectiveCamera : public Camera{
+	class PerspectiveCamera : public Camera {
 	public:
-		PerspectiveCamera(float fov, float aspectRatio, float nearPlane, float farPlane, glm::vec3& pos, glm::vec3& front, glm::vec3& up) :
+		PerspectiveCamera(float fov, float aspectRatio, float nearPlane, float farPlane) :
 			Camera(glm::perspective(fov, aspectRatio, nearPlane, farPlane)),
 			m_FOV(fov),
 			m_AspectRatio(aspectRatio),
@@ -43,15 +44,15 @@ namespace Quirk {
 		{
 		}
 
-		inline float GetFOV()			const { return m_FOV; }
-		inline float GetAspectRatio()	const { return m_AspectRatio; }
-		inline float GetNearPlane()		const { return m_NearPlane; }
-		inline float GetFarPlane()		const { return m_FarPlane; }
+		inline float GetFOV()			const noexcept { return m_FOV; }
+		inline float GetAspectRatio()	const noexcept { return m_AspectRatio; }
+		inline float GetNearPlane()		const noexcept { return m_NearPlane; }
+		inline float GetFarPlane()		const noexcept { return m_FarPlane; }
 
-		inline void SetFOV(float fov)					{ m_FOV = fov;					RecalculateProjectionMatrix(); }
-		inline void SetAspectRatio(float aspectRatio)	{ m_AspectRatio = aspectRatio;	RecalculateProjectionMatrix(); }
-		inline void SetNearPlane(float nearplane)		{ m_NearPlane = nearplane;		RecalculateProjectionMatrix(); }
-		inline void SetFarPlane(float farplane)			{ m_FarPlane = farplane;		RecalculateProjectionMatrix(); }
+		inline void SetFOV(float fov) { m_FOV = fov;			 RecalculateProjectionMatrix(); }
+		inline void SetAspectRatio(float aspectRatio) { m_AspectRatio = aspectRatio;	 RecalculateProjectionMatrix(); }
+		inline void SetNearPlane(float nearplane) { m_NearPlane = nearplane;	     RecalculateProjectionMatrix(); }
+		inline void SetFarPlane(float farplane) { m_FarPlane = farplane;		 RecalculateProjectionMatrix(); }
 
 		inline void RecalculateProjectionMatrix() {
 			m_Projection = glm::perspective(m_FOV, m_AspectRatio, m_NearPlane, m_FarPlane);
@@ -59,6 +60,8 @@ namespace Quirk {
 
 	private:
 		float m_FOV;
+
+		// width / height
 		float m_AspectRatio;
 		float m_NearPlane, m_FarPlane;
 	};

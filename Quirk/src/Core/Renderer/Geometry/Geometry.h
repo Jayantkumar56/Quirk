@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "glm/glm.hpp"
 
 namespace Quirk {
 
@@ -19,7 +20,9 @@ namespace Quirk {
 	MeshType         StringToMeshType(std::string_view type);
 
 	struct MeshData {
-		std::vector<float> Positions;
+		std::vector<glm::vec3> Positions;
+		std::vector<glm::vec3> Normals;
+		std::vector<glm::vec2> UV;
 	};
 
 	struct Mesh {

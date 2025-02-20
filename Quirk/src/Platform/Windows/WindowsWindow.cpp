@@ -445,6 +445,15 @@ namespace Quirk {
 			}
 
 			case WM_NCLBUTTONDOWN: {
+				if (wParam == HTCLOSE || wParam == HTMAXBUTTON || wParam == HTMINBUTTON) {
+					return (LRESULT)0;
+				}
+
+				// letting DefWindowProc manage for resizing and moving window with titlebar
+				return DefWindowProc(hwnd, uMsg, wParam, lParam);
+			}
+
+			case WM_NCLBUTTONUP: {
 				if (wParam == HTCLOSE) {
 					WindowCloseEvent event;
 					EventDispatcher::DispatchEvent(event);

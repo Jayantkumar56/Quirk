@@ -34,7 +34,9 @@ namespace Quirk {
 			// general mesh shader
 			Ref<Shader>       MeshShader;
 			Ref<VertexArray>  MeshVertexArray;
-			Ref<VertexBuffer> MeshVertexBuffer;
+			Ref<VertexBuffer> MeshPositionBuffer;
+			Ref<VertexBuffer> MeshNormalBuffer;
+			Ref<VertexBuffer> MeshUVBuffer;
 
 			// for light sources
 			Ref<Shader> LightSourceShader;

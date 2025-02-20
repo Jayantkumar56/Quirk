@@ -19,13 +19,17 @@ namespace Quirk {
 
 		s_SceneData.MeshVertexArray = VertexArray::Create();
 
-		s_SceneData.MeshVertexBuffer = VertexBuffer::Create();
-		s_SceneData.MeshVertexBuffer->SetLayout({
-			{ ShaderDataType::Float3,  "a_Position" },
-			{ ShaderDataType::Float3,  "a_Normal"   },
-			{ ShaderDataType::Float2,  "a_TexCoord" }
-		});
-		s_SceneData.MeshVertexArray->AddVertexBuffer(s_SceneData.MeshVertexBuffer);
+		s_SceneData.MeshPositionBuffer = VertexBuffer::Create();
+		s_SceneData.MeshPositionBuffer->SetLayout({ { ShaderDataType::Float3,  "a_Position" } });
+		s_SceneData.MeshVertexArray->AddVertexBuffer(s_SceneData.MeshPositionBuffer);
+
+		s_SceneData.MeshNormalBuffer = VertexBuffer::Create();
+		s_SceneData.MeshNormalBuffer->SetLayout({ { ShaderDataType::Float3,  "a_Normal"   } });
+		s_SceneData.MeshVertexArray->AddVertexBuffer(s_SceneData.MeshNormalBuffer);
+
+		s_SceneData.MeshUVBuffer = VertexBuffer::Create();
+		s_SceneData.MeshUVBuffer->SetLayout({ { ShaderDataType::Float2,  "a_TexCoord" } });
+		s_SceneData.MeshVertexArray->AddVertexBuffer(s_SceneData.MeshUVBuffer);
 	}
 
 	void Renderer::BeginScene(const glm::mat4& projectionView, glm::vec3& cameraPos) {
@@ -44,7 +48,15 @@ namespace Quirk {
 
 		const void* data  = (const void*)mesh.Data.Positions.data();
 		uint32_t dataSize = (uint32_t)mesh.Data.Positions.size() * sizeof(mesh.Data.Positions[0]);
-		s_SceneData.MeshVertexBuffer->UploadData(data, dataSize);
+		s_SceneData.MeshPositionBuffer->UploadData(data, dataSize);
+
+		data     = (const void*)mesh.Data.Normals.data();
+		dataSize = (uint32_t)mesh.Data.Normals.size() * sizeof(mesh.Data.Normals[0]);
+		s_SceneData.MeshNormalBuffer->UploadData(data, dataSize);
+
+		data     = (const void*)mesh.Data.UV.data();
+		dataSize = (uint32_t)mesh.Data.Normals.size() * sizeof(mesh.Data.UV[0]);
+		s_SceneData.MeshUVBuffer->UploadData(data, dataSize);
 
 		glm::mat4 rotation = glm::toMat4(glm::quat(transform.Rotation));
 
@@ -97,7 +109,15 @@ namespace Quirk {
 
 		const void* data  = (const void*)mesh.Data.Positions.data();
 		uint32_t dataSize = (uint32_t)mesh.Data.Positions.size() * sizeof(mesh.Data.Positions[0]);
-		s_SceneData.MeshVertexBuffer->UploadData(data, dataSize);
+		s_SceneData.MeshPositionBuffer->UploadData(data, dataSize);
+
+		data     = (const void*)mesh.Data.Normals.data();
+		dataSize = (uint32_t)mesh.Data.Normals.size() * sizeof(mesh.Data.Normals[0]);
+		s_SceneData.MeshNormalBuffer->UploadData(data, dataSize);
+
+		data     = (const void*)mesh.Data.UV.data();
+		dataSize = (uint32_t)mesh.Data.UV.size() * sizeof(mesh.Data.UV[0]);
+		s_SceneData.MeshUVBuffer->UploadData(data, dataSize);
 
 		s_SceneData.LightSourceShader->Bind();
 		s_SceneData.LightSourceShader->UploadUniform("u_ViewProjection", s_SceneData.ProjectionViewMatrix);

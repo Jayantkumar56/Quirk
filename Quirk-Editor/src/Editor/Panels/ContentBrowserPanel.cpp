@@ -86,10 +86,10 @@ namespace Quirk {
 		ImVec2 menuBarPadding = { 20.0f, 5.0f };
 
 		ImVec2 cursorPos = ImGui::GetWindowPos();
-		cursorPos.y += ImGui::GetFrameHeight() + 2.0f;
+		cursorPos.y     += ImGui::GetFrameHeight() + 2.0f;
 
 		ImVec2 menuBarStart = cursorPos;
-		ImVec2 menuBarEnd = { cursorPos.x + menuBarSize.x, cursorPos.y + menuBarSize.y };
+		ImVec2 menuBarEnd   = { cursorPos.x + menuBarSize.x, cursorPos.y + menuBarSize.y };
 
 		ImDrawList* drawList = ImGui::GetWindowDrawList();
 
@@ -160,18 +160,24 @@ namespace Quirk {
 			// setting texture to the backward button for hovering and normal state
 			if (ImGui::IsMouseHoveringRect(buttonStart, buttonEnd)) {
 				ImU32 buttonColor = ImGui::IsMouseDown(0) ? buttonActiveColor : buttonHoverColor;
-				drawList->AddRectFilled(buttonStart, buttonEnd, buttonColor, 10.0f);
+				drawList->AddRectFilled(buttonStart, buttonEnd, buttonColor);
 			}
 
 			ImTextureID backwardIconId = (ImTextureID)(intptr_t)m_RefreshIcon->GetRendererId();
 			drawList->AddImage(backwardIconId, buttonStart, buttonEnd, { 0, 1 }, { 1, 0 });
 		}
-		cursorPos.x += buttonSize.x + 10.0f;
+		cursorPos.x += buttonSize.x + 20.0f;
 
 		// displaying current working directory for ContentBrowserPanel
-		std::string directory = m_CurrentDirectory.string();
-		ImFont* directoryFont = FontManager::GetFont(FontWeight::Regular, 22);
-		drawList->AddText(directoryFont, directoryFont->FontSize, cursorPos, 0xFFFFFFFF, directory.c_str(), NULL);
+		{
+			// separator line before directory text
+			drawList->AddLine({ cursorPos.x, menuBarStart.y }, { cursorPos.x, cursorPos.y + menuBarSize.y }, 0xFF534626, 2.0f);
+			cursorPos.x += 15.0f;
+
+			std::string directory = m_CurrentDirectory.string();
+			ImFont* directoryFont = FontManager::GetFont(FontWeight::Regular, 22);
+			drawList->AddText(directoryFont, directoryFont->FontSize, cursorPos, 0xFFFFFFFF, directory.c_str(), NULL);
+		}
 	}
 
 	void ContentBrowserPanel::FetchCurrentDirectoryContent() {
