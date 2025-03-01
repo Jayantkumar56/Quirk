@@ -11,6 +11,9 @@
 // Include all GLM extensions
 #include "glm/ext.hpp" // perspective, translate, rotate
 
+#include "stb_image.h"
+#include "stb_image_write.h"
+
 #include "Core/Utility/Time.h"
 #include "Core/Utility/DialogBox.h"
 
