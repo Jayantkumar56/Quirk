@@ -3,6 +3,8 @@
 #pragma once
 
 namespace Quirk {
+	// LaunchApp() must be defined in the application
+	// Create app object inside this function and call Run method
 	void LaunchApp();
 }
 

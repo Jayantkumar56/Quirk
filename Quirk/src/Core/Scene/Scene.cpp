@@ -11,7 +11,7 @@
 namespace Quirk {
 
 	Ref<Scene> Scene::Copy(const Ref<Scene>& other) {
-		Ref<Scene> newScene = CreateRef<Scene>(other->m_ViewportWidth, other->m_ViewportWidth);
+		Ref<Scene> newScene = CreateRef<Scene>(other->m_Name, other->m_ViewportWidth, other->m_ViewportWidth);
 		std::unordered_map<uint64_t, uint32_t> entitiesMap;
 
 		auto view = other->m_Registry.view<UUIDComponent>();

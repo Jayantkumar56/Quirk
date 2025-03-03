@@ -17,7 +17,11 @@ namespace Quirk {
 		friend class SceneHierarchyPanel;
 
 	public:
-		Scene(uint16_t width, uint16_t height) : m_ViewportWidth(width), m_ViewportHeight(height) { }
+		Scene(std::string name, uint16_t width, uint16_t height) : 
+				m_Name(std::move(name)), 
+				m_ViewportWidth(width), 
+				m_ViewportHeight(height) 
+		{}
 		~Scene() = default;
 
 		static Ref<Scene> Copy(const Ref<Scene>& other);
@@ -40,6 +44,12 @@ namespace Quirk {
 		Entity FindEntityByName(std::string_view name);
 		Entity GetPrimaryCameraEntity();
 
+		std::string GetName()           { return m_Name;         }
+		const char* GetNamePtr()  const { return m_Name.c_str(); }
+		const auto& GetRegistry() const { return m_Registry;     }
+
+		void SetName(const char* str) { m_Name = std::string(str); }
+
 		template<typename... Components>
 		auto GetAllEntitiesWith() {
 			return m_Registry.view<Components...>();
@@ -58,8 +68,10 @@ namespace Quirk {
 		}
 
 	private:
+		std::string    m_Name;
 		entt::registry m_Registry;
-		uint16_t m_ViewportWidth, m_ViewportHeight;
+		uint16_t       m_ViewportWidth;
+		uint16_t       m_ViewportHeight;
 	};
 
 }
