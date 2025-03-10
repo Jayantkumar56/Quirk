@@ -58,15 +58,19 @@ namespace Quirk {
 		CreateAttachments();
     }
 
-	void OpenGLFrameBuffer::GetColorPixelData(size_t index, int x, int y, void* outputData, int dataCount) {
+	void OpenGLFrameBuffer::GetColorPixelData(size_t index, int x, int y, int width, int height, void* outputData, int size) {
 		QK_CORE_ASSERT(index < m_ColorAttachments.size(), "index exceeds the color attachment's count");
 		glBindFramebuffer(GL_FRAMEBUFFER, m_RendererID);
 		glReadBuffer(GL_COLOR_ATTACHMENT0 + (GLenum)index);
 
 		switch (m_ColorAttachmentsSpec[index].Type) {
 			case FrameBufferTextureType::RED_INTEGER: {
-				QK_CORE_ASSERT(dataCount == 1, "Can output only a single value from requested buffer");
-				glReadPixels(x, y, 1, 1, GL_RED_INTEGER, GL_INT, outputData);
+				glReadnPixels(x, y, width, height, GL_RED_INTEGER, GL_INT, size, outputData);
+				break;
+			}
+
+			case FrameBufferTextureType::RGBA_8: {
+				glReadPixels(x, y, width, height, GL_RGBA, GL_UNSIGNED_BYTE, outputData);
 				break;
 			}
 		}

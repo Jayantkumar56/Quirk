@@ -44,11 +44,8 @@ namespace Quirk {
 		Entity FindEntityByName(std::string_view name);
 		Entity GetPrimaryCameraEntity();
 
-		std::string GetName()           { return m_Name;         }
-		const char* GetNamePtr()  const { return m_Name.c_str(); }
+		std::string& GetName()          { return m_Name;         }
 		const auto& GetRegistry() const { return m_Registry;     }
-
-		void SetName(const char* str) { m_Name = std::string(str); }
 
 		template<typename... Components>
 		auto GetAllEntitiesWith() {
