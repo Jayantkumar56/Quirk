@@ -53,8 +53,8 @@ namespace Quirk {
 
 		static inline float MouseCurrentX() { return InputData::MouseData.CurrentPosX; }
 		static inline float MouseCurrentY() { return InputData::MouseData.CurrentPosY; }
-		static inline float MousePreviousX() { return InputData::MouseData.CurrentPosX; }
-		static inline float MousePreviousY() { return InputData::MouseData.CurrentPosY; }
+		static inline float MousePreviousX() { return InputData::MouseData.PreviousPosX; }
+		static inline float MousePreviousY() { return InputData::MouseData.PreviousPosY; }
 
 	protected:
 		static void UpdateKey(int keyCode, int keyState);

@@ -70,7 +70,7 @@ namespace Quirk {
 			}
 
 			case FrameBufferTextureType::RGBA_8: {
-				glReadPixels(x, y, width, height, GL_RGBA, GL_UNSIGNED_BYTE, outputData);
+				glReadnPixels(x, y, width, height, GL_RGBA, GL_UNSIGNED_BYTE, size, outputData);
 				break;
 			}
 		}

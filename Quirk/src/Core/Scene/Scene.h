@@ -24,6 +24,7 @@ namespace Quirk {
 		{}
 		~Scene() = default;
 
+		static Ref<Scene> Copy(const Scene* other);
 		static Ref<Scene> Copy(const Ref<Scene>& other);
 
 		Entity CreateEntity(const std::string& name = std::string(), const uint64_t uuid = UUID());
