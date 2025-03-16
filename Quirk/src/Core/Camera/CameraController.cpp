@@ -14,8 +14,8 @@ namespace Quirk {
 
 	PerspectiveCameraController::PerspectiveCameraController(float fov, float aspectRatio, float nearPlane, float farPlane) :
 		m_ZoomLevel(1.0f),
-		m_CameraTranslationSpeed(5.0f),
-		m_CameraRotationSpeed(0.03f),
+		m_CameraTranslationSpeed(1.0f),
+		m_CameraRotationSpeed(0.01f),
 		m_Pitch(0.0f),
 		m_Yaw(-90.0f),
 		m_PrevCameraPosition(0.0f, 0.0f, 3.0f),
@@ -60,7 +60,6 @@ namespace Quirk {
 
 	void PerspectiveCameraController::OnEvent(Event& e) {
 		EventDispatcher::HandleEvent<MouseMovedEvent>(QK_BIND_EVENT_FN(PerspectiveCameraController::OnMouseMove));
-		EventDispatcher::HandleEvent<WindowResizeEvent>(QK_BIND_EVENT_FN(PerspectiveCameraController::OnWindowResized));
 	}
 
 	bool PerspectiveCameraController::OnMouseMove(MouseMovedEvent& e) {
@@ -91,11 +90,6 @@ namespace Quirk {
 
 		RecalculateViewMatrix();
 
-		return false;
-	}
-
-	bool PerspectiveCameraController::OnWindowResized(WindowResizeEvent& e) {
-		m_Camera.SetAspectRatio(static_cast<float>(e.GetWidth()) / static_cast<float>(e.GetHeight()));
 		return false;
 	}
 

@@ -79,9 +79,12 @@ namespace Quirk {
 
 		}*/
 
+		inline Frame* GetCurrentFrame() { return m_CurrentFrame; }
+
 		ImFontAtlas* GetFontAtlas() { return m_FontManager.m_FontAtlas; }
 
 	private:
+		Frame* m_CurrentFrame;
 		std::vector<Frame*> m_Frames;
 		FontManager m_FontManager;
 	};

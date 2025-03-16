@@ -33,13 +33,12 @@ namespace Quirk {
 		~WindowsWindow() { if (m_WindowHandle) DestroyWindow(m_WindowHandle); }
 
 		void OnUpdate() const;
+		inline void* GetNativeHandle() noexcept { return m_WindowHandle; }
 
-		inline void* GetNativeHandle()	   noexcept { return m_WindowHandle;       }
-		inline bool IsCursorLocked() const noexcept { return m_CursorLocked;       }
-		inline bool TrackingCursor() const noexcept { return !m_CursorLeftWindow;  }
-
-		inline void LockCursor()	noexcept { m_CursorLocked = true;  }
-		inline void UnlockCursor()	noexcept { m_CursorLocked = false; }
+		void ShowCursor() const;
+		void HideCursor() const;
+		void SetCursorPosition(float x, float y)     const;
+		void SetCursorAtCenter(const Window* window) const;
 
 	private:
 		static LRESULT WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
@@ -54,8 +53,6 @@ namespace Quirk {
 		static std::wstring_view m_WindClassName;
 
 		HWND m_WindowHandle;
-		bool m_CursorLocked     = false;
-		bool m_CursorLeftWindow = false;
 	};
 
 }
