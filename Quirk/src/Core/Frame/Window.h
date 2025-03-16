@@ -38,16 +38,18 @@ namespace Quirk {
 			CursorOverMinimiseButton	=  3,			    /*   1 << 3,   */
 			CursorOverMaximiseButton	=  4,			    /*   1 << 4,   */
 			CursorOverCloseButton		=  5,			    /*   1 << 5,   */
+			CursorLocked        		=  6,			    /*   1 << 5,   */
+			CursorLeftWindow            =  7,			    /*   1 << 5,   */
 		};
 
 	public:
 		Window(const WindowSpecification& spec) :
-				m_Width             (spec.Width             ),
-				m_Height            (spec.Height            ),
-				m_MinWidth          (spec.MinWidth          ),
-				m_MinHeight         (spec.MinHeight         ),
-				m_PosX              (spec.PosX              ),
-				m_PosY              (spec.PosX              ),
+				m_Width             (spec.Width      ),
+				m_Height            (spec.Height     ),
+				m_MinWidth          (spec.MinWidth   ),
+				m_MinHeight         (spec.MinHeight  ),
+				m_PosX              (spec.PosX       ),
+				m_PosY              (spec.PosX       ),
 				// CustomTitleBar flag should be set before creating native window object (especially for WindowsWindow)
 				m_StateFlags (((int)spec.CustomTitleBar << StateFlags::CustomTitleBarEnabled)),
 				m_Window     (spec, this    )
@@ -88,17 +90,14 @@ namespace Quirk {
 
 		~Window() = default;
 
-		void OnUpdate() { m_Window.OnUpdate(); }
+		inline void OnUpdate()                  { m_Window.OnUpdate();               }
+		inline void* GetNativeHandle() noexcept { return m_Window.GetNativeHandle(); }
 
-		// Native Window related Calls	 ********************
-		
-		inline void* GetNativeHandle()	    noexcept { return m_Window.GetNativeHandle(); }
-		inline bool  IsCursorLocked() const noexcept { return m_Window.IsCursorLocked();  }
-		inline bool  TrackingCursor() const noexcept { return m_Window.TrackingCursor();  }
-		inline void  LockCursor()		    { m_Window.LockCursor();			 }
-		inline void  UnlockCursor()		    { m_Window.UnlockCursor();			 }
+		inline void ShowCursor() const { m_Window.ShowCursor(); }
+		inline void HideCursor() const { m_Window.HideCursor(); }
 
-		// Native Window related Calls	 ********************
+		inline void SetCursorPosition(float x, float y) const { m_Window.SetCursorPosition(x, y); }
+		inline void SetCursorAtCenter()                 const { m_Window.SetCursorAtCenter(this); }
 
 		// Getters for local member varialbes ***************
 		
@@ -115,6 +114,8 @@ namespace Quirk {
 		inline bool IsCursorOverCloseButton() const noexcept { return GetStateFlag(StateFlags::CursorOverCloseButton); }
 		inline bool IsCursorOverMaximiseButton() const noexcept { return GetStateFlag(StateFlags::CursorOverMaximiseButton); }
 		inline bool IsCursorOverMinimiseButton() const noexcept { return GetStateFlag(StateFlags::CursorOverMinimiseButton); }
+		inline bool IsCursorLocked()             const noexcept { return GetStateFlag(StateFlags::CursorLocked);             }
+		inline bool IsCursorLeftWindow()         const noexcept { return GetStateFlag(StateFlags::CursorLeftWindow);         }
 
 		// Getters for local member varialbes ***************
 
@@ -126,6 +127,8 @@ namespace Quirk {
 		inline void SetCursorOverCloseButton(bool toggle)    noexcept { SetStateFlag(StateFlags::CursorOverCloseButton,    toggle); }
 		inline void SetCursorOverMaximiseButton(bool toggle) noexcept { SetStateFlag(StateFlags::CursorOverMaximiseButton, toggle); }
 		inline void SetCursorOverMinimiseButton(bool toggle) noexcept { SetStateFlag(StateFlags::CursorOverMinimiseButton, toggle); }
+		inline void SetCursorLocked            (bool toggle) noexcept { SetStateFlag(StateFlags::CursorLocked,             toggle); }
+		inline void SetCursorLeftWindow        (bool toggle) noexcept { SetStateFlag(StateFlags::CursorLeftWindow,         toggle); }
 
 		// Setters for local member variables ***************
 

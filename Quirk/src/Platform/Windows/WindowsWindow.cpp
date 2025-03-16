@@ -135,9 +135,7 @@ namespace Quirk {
 
 	WindowsWindow::WindowsWindow(WindowsWindow&& other) noexcept :
 		// taking ownership of window handle from the other WindowsWindow object
-		m_WindowHandle(other.m_WindowHandle),
-		m_CursorLocked(other.m_CursorLocked),
-		m_CursorLeftWindow(other.m_CursorLeftWindow)
+		m_WindowHandle(other.m_WindowHandle)
 	{
 		other.m_WindowHandle = nullptr;
 	}
@@ -150,8 +148,6 @@ namespace Quirk {
 		m_WindowHandle = other.m_WindowHandle;
 		other.m_WindowHandle = nullptr;
 
-		m_CursorLocked = other.m_CursorLocked;
-		m_CursorLeftWindow = other.m_CursorLeftWindow;
 		return *this;
 	}
 
@@ -161,6 +157,27 @@ namespace Quirk {
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		}
+	}
+
+	void WindowsWindow::ShowCursor() const {
+		while (::ShowCursor(TRUE) < 0);
+	}
+
+	void WindowsWindow::HideCursor() const {
+		while (::ShowCursor(FALSE) > -1);
+	}
+
+	void WindowsWindow::SetCursorPosition(float x, float y) const {
+		SetCursorPos(static_cast<int>(x), static_cast<int>(y));
+		Input::UpdateMousePos(x, y);
+	}
+
+	void WindowsWindow::SetCursorAtCenter(const Window* window) const {
+		int x = window->GetPosX() + window->GetWidth() / 2;
+		int y = window->GetPosY() + window->GetHeight() / 2;
+
+		SetCursorPos(x, y);
+		Input::UpdateMousePos(static_cast<float>(window->GetWidth() / 2), static_cast<float>(window->GetHeight() / 2));
 	}
 
 	LRESULT WindowsWindow::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
@@ -334,9 +351,9 @@ namespace Quirk {
 				float PosX = (float)GET_X_LPARAM(lParam), PosY = (float)GET_Y_LPARAM(lParam);
 				float PrevX = Input::MouseCurrentX(), PrevY = Input::MouseCurrentY();
 
-				if (windowNative->m_CursorLeftWindow) {
+				if ( window->IsCursorLeftWindow()) {
 					Input::UpdateMousePos(PosX, PosY);
-					windowNative->m_CursorLeftWindow = false;
+					window->SetCursorLeftWindow(false);
 					return (LRESULT)0;
 				}
 
@@ -346,7 +363,7 @@ namespace Quirk {
 				MouseMovedEvent event(PrevX, PrevY, PosX, PosY);
 				EventDispatcher::DispatchEvent(event);
 
-				if (windowNative->m_CursorLocked) {
+				if (window->IsCursorLocked()) {
 					POINT cursorPos = { static_cast<int>(PrevX), static_cast<int>(PrevY) };
 
 					ClientToScreen(hwnd, &cursorPos);
@@ -367,7 +384,7 @@ namespace Quirk {
 			}
 
 			case WM_MOUSELEAVE: {
-				windowNative->m_CursorLeftWindow = true;
+				window->SetCursorLeftWindow(true);
 				return (LRESULT)0;
 			}
 			

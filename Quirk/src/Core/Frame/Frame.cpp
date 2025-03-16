@@ -15,6 +15,7 @@ namespace Quirk {
 		}
 
 		for (size_t i = 0; i < m_Frames.size(); ++i) {
+			m_CurrentFrame = m_Frames[i];
 			auto frame = m_Frames[i];
 
 			// setting graphical and imgui context for currrent frame
@@ -71,6 +72,7 @@ namespace Quirk {
 
 	bool FrameManager::HandleEvent(Event& event) {
 		for (auto frame : m_Frames) {
+			m_CurrentFrame = frame;
 			frame->OnEvent(event);
 			frame->m_TitleBar->OnEvent(event);
 

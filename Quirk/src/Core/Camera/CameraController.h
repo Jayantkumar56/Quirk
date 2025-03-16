@@ -38,12 +38,15 @@ namespace Quirk {
 			RecalculateViewMatrix();
 		}
 
+		void OnWindowResized(uint16_t width, uint16_t height) {
+			m_Camera.SetAspectRatio(static_cast<float>(width) / static_cast<float>(height));
+		}
+
 		void OnUpdate();
 		void OnEvent(Event& e);
 
 	private:
 		bool OnMouseMove(MouseMovedEvent& e);
-		bool OnWindowResized(WindowResizeEvent& e);
 
 		inline void RecalculateViewMatrix() { 
 			m_ViewMatrix = glm::lookAt(m_CameraPosition, m_ViewFront + m_CameraPosition, m_ViewUp);
