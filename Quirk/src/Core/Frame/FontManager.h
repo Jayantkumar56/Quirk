@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include <array>
 
 namespace Quirk {
 
