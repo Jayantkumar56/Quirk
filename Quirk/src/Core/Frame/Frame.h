@@ -44,6 +44,16 @@ namespace Quirk {
 			m_TitleBar->m_ParentFrame = this;
 		}
 
+		inline Panel* GetPanel(const std::string_view panelName) {
+			for (auto panel : m_Panels) {
+				if (panelName == panel->GetTitle())
+					return panel;
+			}
+
+			QK_WARN("Specified Panel \"{0}\" does not exist!", panelName);
+			return nullptr;
+		}
+
 	private:
 		ImguiUI m_ImguiUI;
 

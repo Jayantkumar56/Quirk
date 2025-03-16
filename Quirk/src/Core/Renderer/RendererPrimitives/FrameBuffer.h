@@ -80,7 +80,7 @@ namespace Quirk {
 		virtual inline const std::vector<FrameBufferAttachmentSpecification>& GetColorAttachmentSpecification() const = 0;
 
 		virtual void Resize(uint16_t width, uint16_t height) = 0;
-		virtual void GetColorPixelData(size_t index, int x, int y, void* outputData, int dataCount) = 0;
+		virtual void GetColorPixelData(size_t index, int x, int y, int width, int height, void* outputData, int size) = 0;
 	};
 
 }

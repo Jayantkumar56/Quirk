@@ -299,6 +299,7 @@ namespace Quirk {
 				}
 
 				Input::UpdateKey(button, buttonState);
+				Input::UpdateMousePos(PosX, PosY);
 
 				switch (buttonState) {
 					case QK_KEY_PRESSED: {

@@ -127,6 +127,8 @@ namespace Quirk {
 		s_Data.QuadCurrentPtr->TextureSlot = texSlot;
 		s_Data.QuadCurrentPtr->Transform = transform;
 
+		s_Data.QuadCurrentPtr->EntityId = -1;
+
 		++s_Data.QuadCurrentPtr;
 		++s_Data.NoOfSubmitedQuads;
 	}
