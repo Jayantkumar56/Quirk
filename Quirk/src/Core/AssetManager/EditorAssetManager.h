@@ -2,17 +2,13 @@
 
 #pragma once
 
+#include "AssetImporter.h"
 #include "AssetManagerBase.h"
 
 #include <unordered_map>
 
 
 namespace Quirk {
-
-	struct AssetMetadata {
-		AssetType Type;
-		std::filesystem::path Path;
-	};
 
 	class EditorAssetManager : public AssetManagerBase {
 	public:
@@ -27,14 +23,18 @@ namespace Quirk {
 		}
 
 		virtual Ref<Asset> GetAsset(AssetHandle handle) override {
-			if (!IsAssetHandleValid(handle))
+			if (!IsAssetHandleValid(handle)) {
+				QK_CORE_WARN("Requested Asset {0} do not exist in the registry", static_cast<uint64_t>(handle));
 				return nullptr;
+			}
 
 			if (IsAssetLoaded(handle)) {
 				return m_LoadedAssets[handle];
 			}
 			else {
-
+				Ref<Asset> loadedAsset = AssetImporter::Import(m_AssetRegistry[handle]);
+				m_LoadedAssets.emplace(handle, loadedAsset);
+				return loadedAsset;
 			}
 
 			return nullptr;

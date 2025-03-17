@@ -18,7 +18,7 @@ namespace Quirk {
 		EditorFrame(WindowSpecification& spec) :
 				Frame            (spec),
 				m_SelectedEntity (    ),
-				m_MainScene      (CreateRef<Scene>(0, 0))
+				m_MainScene      (CreateRef<Scene>("New Scene", 0, 0))
 		{
 			Renderer::InitRenderer();
 			Renderer2D::InitRenderer();

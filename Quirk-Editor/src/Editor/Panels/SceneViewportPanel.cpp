@@ -192,7 +192,7 @@ namespace Quirk {
 		mousePos.y = m_PanelHeight - mousePos.y - 2;
 
 		int entityId = 0;
-		m_Frame->GetColorPixelData(1, (int)mousePos.x, (int)mousePos.y, &entityId, 1);
+		m_Frame->GetColorPixelData(1, (int)mousePos.x, (int)mousePos.y, 1, 1, &entityId, sizeof(entityId));
 		return entityId;
 	}
 
