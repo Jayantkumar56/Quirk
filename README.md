@@ -2,6 +2,8 @@
 
 Quirk is primarily an early-stage interactive application and rendering engine. Currently not much is implemented and works on windows only. It uses OpenGl as the rendering api.
 
+![Screenshot 2025-04-09 150818](https://github.com/user-attachments/assets/488a21a1-e3ac-4986-9f0a-d5d01091bd3a)
+
 # Getting Started
 
 Visual Studio 2022 is recommended, Quirk is not tested on other development environments, while it uses Premake to generate project files for various platforms and IDEs.
