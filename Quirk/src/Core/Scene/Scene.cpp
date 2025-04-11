@@ -163,7 +163,7 @@ namespace Quirk {
 				Renderer::SubmitLightSource({ entity, this });
 			}
 
-			auto renderables = m_Registry.view<TransformComponent, MeshComponent>();
+			auto renderables = m_Registry.view<TransformComponent, MeshRendererComponent>();
 			for (auto entity : renderables) {
 				Renderer::Submit({ entity, this }, lightSourceEntities);
 			}

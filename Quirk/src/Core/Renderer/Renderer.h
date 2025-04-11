@@ -9,7 +9,7 @@
 #include "Core/Renderer/RendererPrimitives/Shader.h"
 #include "Texture.h"
 
-#include "Geometry/Geometry.h"
+#include "Core/Assets/Geometry/Geometry.h"
 #include "Core/Scene/Entity.h"
 
 namespace Quirk {

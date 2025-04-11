@@ -34,7 +34,7 @@ namespace Quirk {
 		AddFrame<LauncherFrame>(tempSpec);*/
 
 		// NOTE: Temporary            directly opening the editor
-		std::filesystem::path path = "D:/Dev/Quirk/Example/Example.qkproj";
+		std::filesystem::path path = "../Example/Example.qkproj";
 		Project::Load(path);
 		LaunchEditor();
 	}

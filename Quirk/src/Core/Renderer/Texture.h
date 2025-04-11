@@ -3,7 +3,7 @@
 #pragma once
 
 #include "Core/Core.h"
-#include "Core/AssetManager/Asset.h"
+#include "Core/Assets/Asset.h"
 
 #include <utility>
 #include <string>

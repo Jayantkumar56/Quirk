@@ -11,7 +11,7 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtx/quaternion.hpp"
 
-#include "Core/Renderer/Geometry/Geometry.h"
+#include "Core/Assets/Geometry/Geometry.h"
 #include "Core/Renderer/Light/Light.h"
 
 
@@ -68,12 +68,12 @@ namespace Quirk {
 		CameraComponent(const CameraComponent&) = default;
 	};
 
-	struct MeshComponent {
+	struct MeshRendererComponent {
 		Mesh     MeshObject;
 		Material MaterialProperties {};
 
-		MeshComponent() = default;
-		MeshComponent(const MeshComponent&) = default;
+        MeshRendererComponent() = default;
+        MeshRendererComponent(const MeshRendererComponent&) = default;
 	};
 
 	struct LightComponent {
@@ -137,7 +137,7 @@ namespace Quirk {
 			fun.operator() < SpriteRendererComponent > ( "Sprite Renderer" );
 			fun.operator() < CameraComponent 		 > ( "Camera"		   );
 			fun.operator() < NativeScriptComponent   > ( "Native Script"   );
-			fun.operator() < MeshComponent           > ( "Mesh"            );
+			fun.operator() < MeshRendererComponent   > ( "Mesh"            );
 			fun.operator() < LightComponent          > ( "Light"           );
 		}
 
@@ -153,7 +153,7 @@ namespace Quirk {
 			fun.operator() < SpriteRendererComponent > ( "Sprite Renderer" );
 			fun.operator() < CameraComponent         > ( "Camera"		   );
 			fun.operator() < NativeScriptComponent   > ( "Native Script"   );
-			fun.operator() < MeshComponent           > ( "Mesh"            );
+			fun.operator() < MeshRendererComponent   > ( "Mesh Renderer"   );
 			fun.operator() < LightComponent          > ( "Light"           );
 		}
 	};

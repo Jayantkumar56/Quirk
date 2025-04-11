@@ -25,7 +25,7 @@ Entities:
       Translation: [-3.20000005, -2.20000005, 0]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
-    MeshComponent:
+    MeshRendererComponent:
       MeshType: Cube
       Ambient: [0.79207921, 0.79207921, 0.79207921]
       Diffuse: [0.765676558, 0.765676558, 0.765676558]
@@ -38,7 +38,7 @@ Entities:
       Translation: [0, -6.4000001, 0]
       Rotation: [0, 0, 0]
       Scale: [20, 1, 20.6000004]
-    MeshComponent:
+    MeshRendererComponent:
       MeshType: Cube
       Ambient: [0.742574215, 0, 0]
       Diffuse: [0.834983468, 0, 0]
@@ -51,7 +51,7 @@ Entities:
       Translation: [4.4000001, 1, 2.5]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
-    MeshComponent:
+    MeshRendererComponent:
       MeshType: Cube
       Ambient: [1, 1, 1]
       Diffuse: [1, 1, 1]

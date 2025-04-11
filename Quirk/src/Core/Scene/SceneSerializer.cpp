@@ -5,7 +5,7 @@
 #include "Core/Scene/Scene.h"
 #include "Core/Scene/Entity.h"
 #include "SceneSerializer.h"
-#include "Core/Renderer/Geometry/PrimitiveMeshGenerator.h"
+#include "Core/Assets/Geometry/PrimitiveMeshGenerator.h"
 
 namespace YAML {
 
@@ -218,10 +218,10 @@ namespace Quirk {
 			emitter << YAML::EndMap;
 		}
 
-		if (entity.HasComponent<MeshComponent>()) {
-			auto& component = entity.GetComponent<MeshComponent>();
+		if (entity.HasComponent<MeshRendererComponent>()) {
+			auto& component = entity.GetComponent<MeshRendererComponent>();
 
-			emitter << YAML::Key << "MeshComponent";
+			emitter << YAML::Key << "MeshRendererComponent";
 
 			emitter << YAML::BeginMap;
 			emitter << YAML::Key << "MeshType"  << YAML::Value << MeshTypeToString(component.MeshObject.Type).data();
@@ -292,8 +292,8 @@ namespace Quirk {
 			component.FixedAspectRatio = deserializedComponent["FixedAspectRatio"].as<bool>();
 		}
 
-		if (auto deserializedComponent = entityNode["MeshComponent"];  deserializedComponent) {
-			auto& component      = entity.AddComponent<MeshComponent>();
+		if (auto deserializedComponent = entityNode["MeshRendererComponent"];  deserializedComponent) {
+			auto& component      = entity.AddComponent<MeshRendererComponent>();
 			component.MeshObject = PrimitiveMeshGenerator::Generate(StringToMeshType(deserializedComponent["MeshType"].as<std::string>()));
 			component.MaterialProperties.Ambient   = deserializedComponent["Ambient"].as<glm::vec3>();
 			component.MaterialProperties.Diffuse   = deserializedComponent["Diffuse"].as<glm::vec3>();

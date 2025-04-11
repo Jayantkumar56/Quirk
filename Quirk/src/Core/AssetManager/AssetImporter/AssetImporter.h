@@ -3,7 +3,7 @@
 #pragma once
 
 #include "Core/Core.h"
-#include "Asset.h"
+#include "Core/Assets/Asset.h"
 
 
 namespace Quirk {

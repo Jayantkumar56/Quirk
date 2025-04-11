@@ -39,7 +39,7 @@ namespace Quirk {
 
 	void Renderer::Submit(Entity entity, std::vector<Entity>& lightSources) {
 		auto& transform = entity.GetComponent<TransformComponent>();
-		auto& mesh      = entity.GetComponent<MeshComponent>().MeshObject;
+		auto& mesh      = entity.GetComponent<MeshRendererComponent>().MeshObject;
 		int entityId    = (uint32_t)entity;
 
 		if (!mesh.Data.Positions.size()) return;
@@ -67,7 +67,7 @@ namespace Quirk {
 		s_SceneData.MeshShader->UploadUniform( "u_Rotation",       rotation                         );
 		s_SceneData.MeshShader->UploadUniform( "u_EntityId",       &entityId, 1                     );
 
-		auto& material = entity.GetComponent<MeshComponent>().MaterialProperties;
+		auto& material = entity.GetComponent<MeshRendererComponent>().MaterialProperties;
 		s_SceneData.MeshShader->UploadUniform( "u_Material.Ambient",   material.Ambient       );
 		s_SceneData.MeshShader->UploadUniform( "u_Material.Diffuse",   material.Diffuse       );
 		s_SceneData.MeshShader->UploadUniform( "u_Material.Specular",  material.Specular      );
@@ -96,10 +96,10 @@ namespace Quirk {
 	}
 
 	void Renderer::SubmitLightSource(Entity entity) {
-		if (!entity.HasComponent<MeshComponent>()) return;
+		if (!entity.HasComponent<MeshRendererComponent>()) return;
 
 		auto transform = entity.GetComponent<TransformComponent>().GetTransform();
-		auto& mesh     = entity.GetComponent<MeshComponent>().MeshObject;
+		auto& mesh     = entity.GetComponent<MeshRendererComponent>().MeshObject;
 		auto& light    = entity.GetComponent<LightComponent>();
 		int entityId   = (uint32_t)entity;
 

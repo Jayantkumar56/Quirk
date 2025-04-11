@@ -4,7 +4,7 @@
 #include "Editor/Theme.h"
 #include "Editor/EditorFrame.h"
 #include "Core/Imgui/ImguiUIUtility.h"
-#include "Core/Renderer/Geometry/PrimitiveMeshGenerator.h"
+#include "Core/Assets/Geometry/PrimitiveMeshGenerator.h"
 
 namespace Quirk {
 
@@ -299,7 +299,7 @@ namespace Quirk {
 			}
 		});
 
-		DrawComponentNode<MeshComponent>(parentFrame, "Mesh", entity, [labelFont](MeshComponent& component) {
+		DrawComponentNode<MeshRendererComponent>(parentFrame, "Mesh", entity, [labelFont](MeshRendererComponent& component) {
 			component.MeshObject.Type;
 			const char* meshTypes[] = { "Select", "Cube" };
 			int currentType = (int)component.MeshObject.Type;

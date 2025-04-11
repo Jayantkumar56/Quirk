@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "AssetImporter.h"
+#include "AssetImporter/AssetImporter.h"
 #include "AssetManagerBase.h"
 
 #include <unordered_map>
