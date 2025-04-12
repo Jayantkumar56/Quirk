@@ -19,8 +19,8 @@ namespace Quirk {
 		virtual void OnImguiUiUpdate()      override;
 
 	private:
-		Ref<Texture> m_RemoveImage;
-		Ref<Texture> m_UploadImage;
+		Ref<Texture2D> m_RemoveImage;
+		Ref<Texture2D> m_UploadImage;
 	};
 
 }

@@ -6,8 +6,8 @@
 
 #include "RendererAPI.h"
 #include "Core/Renderer/RendererPrimitives/VertexArray.h"
-#include "Core/Renderer/RendererPrimitives/Shader.h"
-#include "Texture.h"
+#include "Core/Assets/RenderAssets/Shader.h"
+#include "Core/Assets/RenderAssets/Texture.h"
 
 #include "Core/Assets/Geometry/Geometry.h"
 #include "Core/Scene/Entity.h"

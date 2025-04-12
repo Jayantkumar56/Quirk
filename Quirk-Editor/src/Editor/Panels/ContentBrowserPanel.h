@@ -6,7 +6,7 @@
 
 #include <filesystem>
 #include <stack>
-#include "Core/Renderer/Texture.h"
+#include "Core/Assets/RenderAssets/Texture.h"
 
 namespace Quirk {
 

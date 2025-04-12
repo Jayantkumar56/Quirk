@@ -3,8 +3,8 @@
 #pragma once
 
 #include "Core/Renderer/RendererAPI.h"
-#include "Core/Renderer/RendererPrimitives/Shader.h"
-#include "Texture.h"
+#include "Core/Assets/RenderAssets/Shader.h"
+#include "Core/Assets/RenderAssets/Texture.h"
 #include "Core/Scene/Entity.h"
 
 namespace Quirk {
@@ -52,7 +52,7 @@ namespace Quirk {
 			// Textures relate data
 			uint32_t	   NextTextureSlotToBind;
 			int32_t*	   Sampler;
-			Ref<Texture>*  TextureSlots;
+			Ref<Texture2D>*  TextureSlots;
 			Ref<Texture2D> WhiteTexture;
 
 			// Quad related data

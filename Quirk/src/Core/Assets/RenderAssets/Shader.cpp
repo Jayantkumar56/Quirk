@@ -3,7 +3,7 @@
 #include "Qkpch.h"
 #include <fstream>
 
-#include "Core/Renderer/RendererPrimitives/Shader.h"
+#include "Core/Assets/RenderAssets/Shader.h"
 #include "Core/Renderer/Renderer.h"
 
 #include "Platform/OpenGL/OpenGLShader.h"

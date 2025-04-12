@@ -4,7 +4,7 @@
 
 #include "Core/Core.h"
 #include "Core/Scene/SceneCamera.h"
-#include "Core/Renderer/Texture.h"
+#include "Core/Assets/RenderAssets/Texture.h"
 #include "Core/Utility/UUID.h"
 
 #include "glm/glm.hpp"

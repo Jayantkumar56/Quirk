@@ -51,6 +51,8 @@ namespace Quirk {
 	private:
 		std::unordered_map<AssetHandle, Ref<Asset>>    m_LoadedAssets;
 		std::unordered_map<AssetHandle, AssetMetadata> m_AssetRegistry;
+
+        //std::unordered_map < AssetHandle, Ref<Texture2D>> m_Textures;
 	};
 
 }

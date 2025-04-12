@@ -1,7 +1,7 @@
 
 #pragma once
 
-#include "Core/Renderer/RendererPrimitives/Shader.h"
+#include "Core/Assets/RenderAssets/Shader.h"
 
 namespace Quirk {
 

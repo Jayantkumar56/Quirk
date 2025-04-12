@@ -30,8 +30,8 @@
 #include "Core/Renderer/Light/Light.h"
 
 #include "Core/Renderer/RendererPrimitives/Buffers.h"
-#include "Core/Renderer/Texture.h"
-#include "Core/Renderer/RendererPrimitives/Shader.h"
+#include "Core/Assets/RenderAssets/Texture.h"
+#include "Core/Assets/RenderAssets/Shader.h"
 #include "Core/Renderer/RendererPrimitives/VertexArray.h"
 #include "Core/Renderer/RendererPrimitives/FrameBuffer.h"
 #include "Core/Renderer/RendererAPI.h"
