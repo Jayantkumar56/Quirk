@@ -17,8 +17,15 @@ namespace Quirk {
 	};
 
 	class Asset {
+        friend class AssetImporter;
+
 	public:
-		virtual AssetType GetAssetType() = 0;
+		inline virtual AssetType GetAssetType() const noexcept = 0;
+
+        inline AssetHandle GetHandle() const noexcept { return m_Handle; }
+
+    private:
+        inline void SetHandle(AssetHandle handle) noexcept { m_Handle = handle; }
 
 	private:
 		AssetHandle m_Handle;

@@ -3,7 +3,7 @@
 #pragma once
 
 #include "Core/Core.h"
-#include "Asset.h"
+#include "Core/Assets/Asset.h"
 
 
 namespace Quirk {
@@ -19,5 +19,8 @@ namespace Quirk {
 		virtual inline bool      IsAssetHandleValid (AssetHandle handle) = 0;
 		virtual inline bool      IsAssetLoaded      (AssetHandle handle) = 0;
 	};
+
+    template <typename T>
+    concept AssetManagerType = std::derived_from<T, AssetManagerBase>;
 
 }

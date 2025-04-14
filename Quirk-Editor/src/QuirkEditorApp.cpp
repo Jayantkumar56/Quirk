@@ -22,7 +22,7 @@ namespace Quirk {
 	{
 		LoadFontFiles();
 
-		/*WindowSpecification tempSpec{
+		WindowSpecification tempSpec{
 			.Title             {"Quirk Engine"},
 			.Width             {1100},				   .Height    {780},
 			.PosX              {200},				   .PosY      {50},
@@ -31,12 +31,12 @@ namespace Quirk {
 			.MinWidth          {1100},				   .MinHeight {780}
 		};
 
-		AddFrame<LauncherFrame>(tempSpec);*/
+		AddFrame<LauncherFrame>(tempSpec);
 
 		// NOTE: Temporary            directly opening the editor
-		std::filesystem::path path = "../Example/Example.qkproj";
-		Project::Load(path);
-		LaunchEditor();
+		/*std::filesystem::path path = "../Example/Example.qkproj";
+		Project::Load<EditorAssetManager>(path);
+		LaunchEditor();*/
 	}
 
 	void QuirkEditorApp::LaunchEditor() {

@@ -62,9 +62,9 @@ namespace Quirk {
 
 		s_Data.QuadShader = ShaderLibrary::LoadShader("assets/Shaders/Quad.glsl");
 
-		s_Data.WhiteTexture = Texture2D::Create(TextureSpecification());
-		uint32_t whiteTextureData = 0xffffffff;
-		s_Data.WhiteTexture->SetData(&whiteTextureData, sizeof(uint32_t));
+		//s_Data.WhiteTexture = Texture2D::Create(TextureSpecification());
+		//uint32_t whiteTextureData = 0xffffffff;
+		//s_Data.WhiteTexture->SetData(&whiteTextureData, sizeof(uint32_t));
 
 		s_Data.TextureSlots = new Ref<Texture2D>[s_Data.MaxNoOfTextureSlots];
 		s_Data.TextureSlots[0] = s_Data.WhiteTexture;

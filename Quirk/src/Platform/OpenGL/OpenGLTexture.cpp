@@ -28,20 +28,20 @@ namespace Quirk {
 		return -1;
 	}
 
-	static GLenum ImageFormatToGLDataFormat(ImageFormat format) {
+	static GLenum ImageDataFormatToGLDataFormat(ImageDataFormat format) {
 		switch (format) {
-			case ImageFormat::RGB8:  return GL_RGB;
-			case ImageFormat::RGBA8: return GL_RGBA;
+			case ImageDataFormat::RGB:  return GL_RGB;
+			case ImageDataFormat::RGBA: return GL_RGBA;
 		}
 
 		QK_CORE_ASSERT(false, "Incorrect Image Format!");
 		return 0;
 	}
 
-	static GLenum ImageFormatToGLInternalFormat(ImageFormat format) {
+	static GLenum ImageInternalFormatToGLInternalFormat(ImageInternalFormat format) {
 		switch (format) {
-			case ImageFormat::RGB8:  return GL_RGB8;
-			case ImageFormat::RGBA8: return GL_RGBA8;
+			case ImageInternalFormat::RGB8:  return GL_RGB8;
+			case ImageInternalFormat::RGBA8: return GL_RGBA8;
 		}
 
 		QK_CORE_ASSERT(false, "Incorrect Image Format!");
@@ -49,58 +49,31 @@ namespace Quirk {
 	}
 
 
-    OpenGLTexture2D::OpenGLTexture2D(const TextureSpecification& spec) :
-			m_Path(""),
-			m_Width(spec.Width),
-			m_Height(spec.Height)
+    OpenGLTexture2D::OpenGLTexture2D(Buffer dataBuffer, const TextureSpecification& spec) :
+        m_Specification(spec)
 	{
-		m_InternalFormat = ImageFormatToGLInternalFormat(spec.Format);
-		m_DataFormat = ImageFormatToGLDataFormat(spec.Format);
+		GLenum dataFormat     = ImageDataFormatToGLDataFormat(spec.DataFormat);
+		GLenum internalFormat = ImageInternalFormatToGLInternalFormat(spec.GpuInternalFormat);
 
 		glCreateTextures(GL_TEXTURE_2D, 1, &m_RendererId);
-		glTextureStorage2D(m_RendererId, 1, m_InternalFormat, m_Width, m_Height);
+		glTextureStorage2D(m_RendererId, 1, internalFormat, m_Specification.Width, m_Specification.Height);
 
-		glTextureParameteri(m_RendererId, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTextureParameteri(m_RendererId, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTextureParameteri(m_RendererId, GL_TEXTURE_MIN_FILTER, TexutureFilterToOpenglFilter(spec.MinFilter));
+		glTextureParameteri(m_RendererId, GL_TEXTURE_MAG_FILTER, TexutureFilterToOpenglFilter(spec.MagFilter));
 
-		glTextureParameteri(m_RendererId, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTextureParameteri(m_RendererId, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTextureParameteri(m_RendererId, GL_TEXTURE_WRAP_S, TextureWrapToOpenglWrap(spec.WrapS));
+		glTextureParameteri(m_RendererId, GL_TEXTURE_WRAP_T, TextureWrapToOpenglWrap(spec.WrapT));
+
+		glTextureSubImage2D(
+            m_RendererId, 
+            0, 0, 0, 
+            m_Specification.Width,
+            m_Specification.Height,
+            dataFormat, 
+            GL_UNSIGNED_BYTE, 
+            (void*)dataBuffer.Data
+        );
     }
-
-    OpenGLTexture2D::OpenGLTexture2D(const std::filesystem::path& filePath) :
-			m_Path(filePath)
-	{
-		int width, height, channels;
-		std::string file = filePath.string();
-
-		stbi_set_flip_vertically_on_load(1);
-		stbi_uc* data = stbi_load(file.c_str(), &width, &height, &channels, 0);
-		QK_CORE_ASSERT(data, "Failed to load image!");
-		m_Width = width;
-		m_Height = height;
-
-		GLenum internalFormat = 0, dataFormat = 0;
-		if (channels == 4) {
-			internalFormat = GL_RGBA8;
-			dataFormat = GL_RGBA;
-		}
-		else if (channels == 3) {
-			internalFormat = GL_RGB8;
-			dataFormat = GL_RGB;
-		}
-
-		m_InternalFormat = internalFormat, m_DataFormat = dataFormat;
-		QK_CORE_ASSERT(internalFormat & dataFormat, "Image format not supported!");
-
-		glCreateTextures(GL_TEXTURE_2D, 1, &m_RendererId);
-		glTextureStorage2D(m_RendererId, 1, internalFormat, width, height);
-
-		glTexParameteri(m_RendererId, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexParameteri(m_RendererId, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-
-		glTextureSubImage2D(m_RendererId, 0, 0, 0, width, height, dataFormat, GL_UNSIGNED_BYTE, data);
-		stbi_image_free(data);
-	}
 
 	OpenGLTexture2D::~OpenGLTexture2D(){
 		glDeleteTextures(1, &m_RendererId);
@@ -111,9 +84,18 @@ namespace Quirk {
 	}
 
 	void OpenGLTexture2D::SetData(void* data, uint32_t size) const {
-		uint32_t bpp = m_DataFormat == GL_RGBA ? 4 : 3;
-		QK_CORE_ASSERT(size == m_Width * m_Height * bpp, "Data must be entire texture!");
-		glTextureSubImage2D(m_RendererId, 0, 0, 0, m_Width, m_Height, m_DataFormat, GL_UNSIGNED_BYTE, data);
+        uint32_t bpp = m_Specification.Channels;
+		QK_CORE_ASSERT(size == m_Specification.Width * m_Specification.Height * bpp, "Data must be entire texture!");
+
+		glTextureSubImage2D(
+            m_RendererId,
+            0, 0, 0,
+            m_Specification.Width,
+            m_Specification.Height,
+            ImageDataFormatToGLDataFormat(m_Specification.DataFormat),
+            GL_UNSIGNED_BYTE,
+            data
+        );
 	}
 
 }

@@ -109,7 +109,7 @@ namespace Quirk {
 		DrawComponentNode<SpriteRendererComponent>(parentFrame, "Sprite Renderer", entity, [&](SpriteRendererComponent& component) {
 			std::string texturePathStr = "No Texture";
 			if (component.Texture != nullptr) {
-				texturePathStr = component.Texture->GetPath().filename().string();
+				//texturePathStr = component.Texture->GetPath().filename().string();
 			}
 
 			ImVec2 cellPadding = ImGui::GetStyle().CellPadding;

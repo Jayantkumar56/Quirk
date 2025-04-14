@@ -5,6 +5,8 @@
 #include "Quirk.h"
 #include "Launcher/LauncherTitleBar.h"
 
+#include "Core/ProjectManager.h"
+
 namespace Quirk {
 
 	class LauncherFrame : public Frame {
@@ -29,7 +31,7 @@ namespace Quirk {
 			m_OpenProjectIcon   = Texture2D::Create("assets/Images/Launcher/openFolder.png");
 			m_CreateProjectIcon = Texture2D::Create("assets/Images/Launcher/createProject.png");
 
-			Project::LoadRecentProjectsList("RecentProjects.yaml");
+			ProjectManager::LoadRecentProjectsList("RecentProjects.yaml");
 
 			// reserving some storage to get input through imgui
 			m_TempProject.Title = "Untitled";
@@ -38,7 +40,7 @@ namespace Quirk {
 		}
 
 		virtual ~LauncherFrame() {
-			Project::SaveRecentProjectsList("RecentProjects.yaml");
+            ProjectManager::SaveRecentProjectsList("RecentProjects.yaml");
 		}
 
 		virtual bool OnEvent(Event& event) override { return false; }

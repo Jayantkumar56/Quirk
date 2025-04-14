@@ -6,26 +6,22 @@
 #include "Core/Renderer/Renderer.h"
 #include "Platform/OpenGL/OpenGLTexture.h"
 
+#include "Core/AssetManager/AssetImporter/TextureImporter.h"
+
 namespace Quirk {
 
-	Ref<Texture2D> Texture2D::Create(const TextureSpecification& spec) {
+    Ref<Texture2D> Texture2D::Create(const std::filesystem::path& filePath) {
+        return Texture2DImporter::Import(filePath);
+    }
+
+    Ref<Texture2D> Texture2D::Create(Buffer dataBuffer, const TextureSpecification& spec) {
 		switch (Renderer::GetAPI()) {
 			case RendererAPI::API::None:    QK_CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
-			case RendererAPI::API::OpenGL:  return std::make_shared<OpenGLTexture2D>(spec);
+			case RendererAPI::API::OpenGL:  return std::make_shared<OpenGLTexture2D>(dataBuffer, spec);
 		}
 
 		QK_CORE_ASSERT(false, "Unknown RendererAPI!");
 		return nullptr;
-	}
-
-	Ref<Texture2D> Texture2D::Create(const std::filesystem::path& filePath) {
-		switch (Renderer::GetAPI()) {
-			case RendererAPI::API::None:    QK_CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
-			case RendererAPI::API::OpenGL:  return  std::make_shared<OpenGLTexture2D>(filePath);
-		}
-
-		QK_CORE_ASSERT(false, "Unknown RendererAPI!");
-		return nullptr;
-	}
+    }
 
 }

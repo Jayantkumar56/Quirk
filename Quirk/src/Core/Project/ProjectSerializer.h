@@ -4,6 +4,7 @@
 #include "Core/Core.h"
 
 #include <yaml-cpp/yaml.h>
+#include <filesystem>
 
 namespace Quirk {
 

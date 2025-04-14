@@ -1,11 +1,14 @@
 
 
+#include "Quirk.h"
 
 #include "LauncherFrame.h"
 #include "imgui_internal.h"
 
 #include "Editor/EditorFrame.h"
 #include "QuirkEditorApp.h"
+
+#include "Core/ProjectManager.h"
 
 #include <iostream>
 
@@ -70,7 +73,7 @@ namespace Quirk {
 
 			ImGui::TableNextColumn(); // 1st column
 			{
-				const auto& recentProjects = Project::GetRecentProjectsList();
+				const auto& recentProjects = ProjectManager::GetRecentProjectsList();
 
 				ImguiUIUtility::Text("Recent Projects", FontManager::GetFont(FontWeight::Medium, 29));
 
@@ -102,7 +105,7 @@ namespace Quirk {
 						// Recent project button
 						if (ImageTextButton(parameters)) {
 							std::filesystem::path path = project.Path / (project.Title + ".qkproj");
-							Project::Load(path);
+							Project::Load<Quirk::EditorAssetManager>(path);
 
 							auto app = (QuirkEditorApp*)&Application::Get();
 							app->LaunchEditor();
@@ -160,10 +163,10 @@ namespace Quirk {
 
 						std::filesystem::path filePath;
 						if (FileDialog::OpenFolder(fileDialogSpec, filePath)) {
-							const auto& proj = Project::AddRecentProject(filePath);
+							const auto& proj = ProjectManager::AddRecentProject(filePath);
 
 							if (proj != "") {
-								Project::Load(proj);
+								Project::Load<Quirk::EditorAssetManager>(proj);
 
 								auto app = (QuirkEditorApp*)&Application::Get();
 								app->LaunchEditor();
@@ -267,13 +270,13 @@ namespace Quirk {
 			m_TempProject.Path = m_TempProjPath + "/" + m_TempProject.Title;
 
 			if (std::filesystem::is_directory(m_TempProject.Path.parent_path())) {
-				const auto& proj = Project::CreateNewProject(m_TempProject);
+				const auto& proj = ProjectManager::CreateNewProject(m_TempProject);
 
 				if (proj) {
 					auto app = (QuirkEditorApp*)&Application::Get();
 					app->LaunchEditor();
 
-					Project::AddRecentProject(m_TempProject.Path);
+                    ProjectManager::AddRecentProject(m_TempProject.Path);
 
 					// AddFrame adds the frame and makes that context to be current
 					// so making launcher frame to be the current context before proceeding

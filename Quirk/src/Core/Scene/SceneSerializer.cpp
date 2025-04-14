@@ -179,8 +179,8 @@ namespace Quirk {
 
 			emitter << YAML::Key << "Color" << YAML::Value << component.Color;
 
-			std::string filePath = (component.Texture != nullptr) ? std::filesystem::proximate(component.Texture->GetPath()).string() : "";
-			emitter << YAML::Key << "Texture" << YAML::Value << filePath;
+			//std::string filePath = (component.Texture != nullptr) ? std::filesystem::proximate(component.Texture->GetPath()).string() : "";
+			//emitter << YAML::Key << "Texture" << YAML::Value << filePath;
 
 			emitter << YAML::Key << "TillingFactor" << YAML::Value << component.TillingFactor;
 

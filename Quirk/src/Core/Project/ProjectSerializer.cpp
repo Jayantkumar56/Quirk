@@ -9,6 +9,11 @@
 namespace Quirk {
 
 	bool ProjectSerializer::Serialize(Ref<Project> project, const std::filesystem::path& filePath) {
+        if (project == nullptr) {
+            QK_WARN("No project is provided for Serialization!");
+            return false;
+        }
+
 		const auto& config = project->GetConfig();
 
 		YAML::Emitter out;
@@ -35,6 +40,11 @@ namespace Quirk {
 	}
 
 	bool ProjectSerializer::Deserialize(Ref<Project> project, const std::filesystem::path& filePath) {
+        if (project == nullptr) {
+            QK_WARN("Must provide a non null project to deserialize into!");
+            return false;
+        }
+
 		auto& config = project->GetConfig();
 
 		YAML::Node data;
