@@ -8,6 +8,7 @@
 
 namespace Quirk {
 
+    Ref<Project> ProjectManager::s_ActiveProject;
     std::vector<ProjectMetadata> ProjectManager::s_RecentProjectsList;
 
     Ref<Project> ProjectManager::CreateInDirectory(std::string&& title, const std::filesystem::path& projDirectory) {
@@ -20,7 +21,10 @@ namespace Quirk {
 
         CreateProjectDirectoryStructure(projMeta.ProjectRootDirectory, projConfig);
 
-        auto project = Project::Create<EditorAssetManager>(projMeta.ProjectRootDirectory, std::move(projConfig));
+        s_ActiveProject = Project::Create<EditorAssetManager>(projMeta.ProjectRootDirectory, std::move(projConfig));
+        if (s_ActiveProject == nullptr) {
+            return nullptr;
+        }
 
         // saving the .qkproj file
         {
@@ -35,35 +39,35 @@ namespace Quirk {
             }
 
             std::filesystem::path projFilePath = projMeta.ProjectRootDirectory / projFile;
-            ProjectSerializer::Serialize(project, projFilePath);
+            ProjectSerializer::Serialize(s_ActiveProject, projFilePath);
         }
 
         AddRecentProject(std::move(projMeta));
 
-        return project;
+        return s_ActiveProject;
     }
 
     Ref<Project> ProjectManager::LoadProject(const std::filesystem::path& projFilePath) {
-        Ref<Project> project = nullptr;
-
         if (!std::filesystem::is_regular_file(projFilePath)) {
             QK_WARN("Project file is not valid: {0}", projFilePath.string());
-            return project;
+            return nullptr;
         }
 
-        project = Project::Load<EditorAssetManager>(projFilePath);
+        s_ActiveProject = Project::Load<EditorAssetManager>(projFilePath);
 
-        if (project == nullptr) {
+        if (s_ActiveProject == nullptr) {
             QK_WARN("Unable to load project at {0}", projFilePath.string());
-            return project;
+            return nullptr;
         }
+
+        std::string title = s_ActiveProject->GetTitle();
 
         AddRecentProject(ProjectMetadata{
-            .Title                { std::move(project->GetTitle()) },
-            .ProjectRootDirectory { project->GetDirectory()        }
+            .Title                { std::move(title)                },
+            .ProjectRootDirectory { s_ActiveProject->GetDirectory() }
         });
 
-        return project;
+        return s_ActiveProject;
     }
 
     Ref<Project> ProjectManager::LoadProject(const std::string& title, const std::filesystem::path& projRootDir) {

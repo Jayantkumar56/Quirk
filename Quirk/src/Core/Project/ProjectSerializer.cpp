@@ -48,26 +48,8 @@ namespace Quirk {
         }
 
 		auto& config = project->GetConfig();
-
-		YAML::Node data;
-		try {
-			data = YAML::LoadFile(filePath.string());
-		}
-		catch (YAML::ParserException e) {
-			QK_CORE_ERROR("Failed to load project file");
-			return false;
-		}
-
-		auto projectNode = data["Project"];
-		if (!projectNode)
-			return false;
-
-		config.Name              = projectNode["Name"             ].as<std::string>();
-		config.StartScene        = projectNode["StartScene"       ].as<std::string>();
-		config.AssetDirectory    = projectNode["AssetDirectory"   ].as<std::string>();
-		config.SceneDirectory    = projectNode["SceneDirectory"   ].as<std::string>();
-		config.ScriptModulePath  = projectNode["ScriptModulePath" ].as<std::string>();
-		config.AssetRegistryPath = projectNode["AssetRegistryPath"].as<std::string>();
+        DeserializeConfig(config, filePath);
+		
 		return true;
 	}
 

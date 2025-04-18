@@ -45,12 +45,24 @@ namespace Quirk {
 
         static inline bool HaveRecentProjects() noexcept { return !s_RecentProjectsList.empty(); }
 
+        // === Begin: API related to active project ===
+
+        static inline void UnloadActive() noexcept { s_ActiveProject = nullptr; }
+        static inline auto GetActive()    noexcept { return s_ActiveProject;    }
+
+        static inline bool SaveActive(const std::filesystem::path& projDirectory) {
+            return s_ActiveProject->Save(projDirectory);
+        }
+
+        // === End:   API related to active project ===
+
     private:
         static void CreateProjectDirectoryStructure(const std::filesystem::path& projFilePath, const ProjectConfig& projConfig);
 
         static void AddRecentProject(ProjectMetadata&& projMeta);
 
     private:
+        static Ref<Project> s_ActiveProject;
         static std::vector<ProjectMetadata> s_RecentProjectsList;
     };
 

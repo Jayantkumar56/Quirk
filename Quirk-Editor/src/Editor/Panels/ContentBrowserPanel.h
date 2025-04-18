@@ -4,9 +4,11 @@
 
 #include <Quirk.h>
 
+#include "Core/Assets/RenderAssets/Texture.h"
+#include "EditorCore/ProjectManager.h"
+
 #include <filesystem>
 #include <stack>
-#include "Core/Assets/RenderAssets/Texture.h"
 
 namespace Quirk {
 
@@ -15,7 +17,7 @@ namespace Quirk {
 		ContentBrowserPanel() : 
 				Panel("Content Browser")
 		{
-			m_CurrentDirectory = Project::GetAssetDirectory();
+			m_CurrentDirectory = ProjectManager::GetActive()->GetAssetDirectory();
 			FetchCurrentDirectoryContent();
 
 			m_FolderIcon   = Texture2D::Create("assets/Images/folder.png");
