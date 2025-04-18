@@ -9,8 +9,22 @@ namespace Quirk {
 
 	class Application {
 	public:
-		inline static Application& Get() noexcept { return *s_Instance; }
-		inline static const std::filesystem::path& GetWorkingDirectory() noexcept { return s_Instance->m_CurrentWorkingDirectory; }
+        template<typename T>
+        requires std::derived_from<T, Application>
+        inline static T& GetAs() noexcept {
+            QK_CORE_ASSERT(s_Instance, "Application object is not instanciated yet!");
+            return *(static_cast<T*>(s_Instance));
+        }
+
+		inline static Application& Get() noexcept {
+            QK_CORE_ASSERT(s_Instance, "Application object is not instanciated yet!");
+            return *s_Instance;
+        }
+
+		inline static const std::filesystem::path& GetWorkingDirectory() noexcept {
+            QK_CORE_ASSERT(s_Instance, "Application object is not instanciated yet!");
+            return s_Instance->m_CurrentWorkingDirectory;
+        }
 
 	public:
 		Application(std::wstring appName, RendererAPI::API renderingAPI);

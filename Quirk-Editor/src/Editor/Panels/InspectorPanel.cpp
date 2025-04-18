@@ -1,5 +1,8 @@
 
 
+#include "QkEditorpch.h"
+
+
 #include "InspectorPanel.h"
 #include "Editor/Theme.h"
 #include "Editor/EditorFrame.h"

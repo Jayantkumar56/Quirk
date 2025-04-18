@@ -1,4 +1,7 @@
 
+
+#include "QkEditorpch.h"
+
 #include "Quirk.h"
 #include "Core/Application/EntryPoint.h"
 #include "QuirkEditorApp.h"
@@ -34,9 +37,9 @@ namespace Quirk {
 		AddFrame<LauncherFrame>(tempSpec);
 
 		// NOTE: Temporary            directly opening the editor
-		/*std::filesystem::path path = "../Example/Example.qkproj";
-		Project::Load<EditorAssetManager>(path);
-		LaunchEditor();*/
+		//std::filesystem::path path = "../Example/Example.qkproj";
+		//Project::Load<EditorAssetManager>(path);
+		//LaunchEditor();
 	}
 
 	void QuirkEditorApp::LaunchEditor() {

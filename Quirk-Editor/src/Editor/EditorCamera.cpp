@@ -1,4 +1,6 @@
 
+#include "QkEditorpch.h"
+
 #include "EditorCamera.h"
 
 #include "Core/Input/Input.h"

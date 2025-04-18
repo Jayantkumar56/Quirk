@@ -2,7 +2,9 @@
 
 #include "Qkpch.h"
 #include "ProjectSerializer.h"
+
 #include "Project.h"
+
 
 #include <fstream>
 
@@ -69,39 +71,8 @@ namespace Quirk {
 		return true;
 	}
 
-	bool ProjectSerializer::SerializeRecentProjectsList(std::vector<ProjectMetadata>& list, const std::filesystem::path& filePath) {
-		YAML::Emitter out;
-
-		out << YAML::BeginMap; // root
-		out << YAML::Key << "Recent Projects";
-		{
-			out << YAML::BeginMap;	// Recent Projects
-			out << YAML::Key << "Projects Count" << YAML::Value << list.size();
-
-			out << YAML::Key << "Projects" << YAML::BeginSeq;  // projects sequence 
-			for (auto& project : list) {
-				{
-					out << YAML::BeginMap;  // Project
-					out << YAML::Key << "Title" << YAML::Value << project.Title;
-					out << YAML::Key << "Path"  << YAML::Value << project.Path.string();
-					out << YAML::EndMap;	// Project
-				}
-			}
-
-			out << YAML::EndSeq;    // projects sequence 
-			out << YAML::EndMap;	// Recent Projects
-		}
-
-		out << YAML::EndMap;   // root
-
-		std::ofstream fout(filePath);
-		fout << out.c_str();
-
-		return true;
-	}
-
-	bool ProjectSerializer::DeserializeRecentProjectsList(std::vector<ProjectMetadata>& list, const std::filesystem::path& filePath) {
-		YAML::Node data;
+    bool ProjectSerializer::DeserializeConfig(ProjectConfig& config, const std::filesystem::path& filePath) {
+        YAML::Node data;
 		try {
 			data = YAML::LoadFile(filePath.string());
 		}
@@ -110,20 +81,16 @@ namespace Quirk {
 			return false;
 		}
 
-		auto recentProjects = data["Recent Projects"];
-		auto projectCount   = recentProjects["Projects Count"].as<int>();
+		auto projectNode = data["Project"];
+		if (!projectNode)
+			return false;
 
-		// clearing the recent list for any item already in the list
-		// and reserving appropriate size for the list
-		list.clear();
-		list.reserve(projectCount);
-
-		// storing all the projects metadata in the list
-		auto projects = recentProjects["Projects"];
-		for (auto project : projects) {
-			list.emplace_back(project["Title"].as<std::string>(), project["Path"].as<std::string>());
-		}
-
+		config.Name              = projectNode["Name"             ].as<std::string>();
+		config.StartScene        = projectNode["StartScene"       ].as<std::string>();
+		config.AssetDirectory    = projectNode["AssetDirectory"   ].as<std::string>();
+		config.SceneDirectory    = projectNode["SceneDirectory"   ].as<std::string>();
+		config.ScriptModulePath  = projectNode["ScriptModulePath" ].as<std::string>();
+		config.AssetRegistryPath = projectNode["AssetRegistryPath"].as<std::string>();
 		return true;
     }
 

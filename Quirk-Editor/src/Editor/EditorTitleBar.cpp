@@ -1,5 +1,6 @@
 
 
+#include "QkEditorpch.h"
 
 #include "Quirk.h"
 #include "EditorTitleBar.h"

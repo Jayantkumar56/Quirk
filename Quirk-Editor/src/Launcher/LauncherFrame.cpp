@@ -1,5 +1,7 @@
 
 
+#include "QkEditorpch.h"
+
 #include "Quirk.h"
 
 #include "LauncherFrame.h"
@@ -8,9 +10,7 @@
 #include "Editor/EditorFrame.h"
 #include "QuirkEditorApp.h"
 
-#include "Core/ProjectManager.h"
-
-#include <iostream>
+#include "EditorCore/ProjectManager.h"
 
 namespace Quirk {
 
@@ -27,94 +27,107 @@ namespace Quirk {
 	static bool TextColorButton(const char* label, ImVec2 buttonSize, ImU32 color, ImU32 hoverColor, ImU32 activeColor, ImU32 borderColor = 0);
 
 	void LauncherFrame::OnImguiUiUpdate() {
-		ImGuiWindowClass windowClass;
-		windowClass.DockNodeFlagsOverrideSet = ImGuiDockNodeFlags_NoTabBar;
-		ImGui::SetNextWindowClass(&windowClass);
+        // setting window properties for imgui window
+        {
+		    ImGuiWindowClass windowClass;
+		    windowClass.DockNodeFlagsOverrideSet = ImGuiDockNodeFlags_NoTabBar;
+		    ImGui::SetNextWindowClass(&windowClass);
+        }
 
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(35.0f, 0.0f));
+
 		ImGui::Begin("Project Selection Panel");
+        {
+		    switch (m_State) {
+			    case LauncherState::MainMenu:		DrawMainMenu();            break;
+			    case LauncherState::ProjectForm:    DrawProjectCreationForm(); break;
+		    }
 
-		switch (m_State) {
-			case LauncherState::MainMenu:		DrawMainMenu();            break;
-			case LauncherState::ProjectForm:    DrawProjectCreationForm(); break;
-		}
+		    // telling window if it can move with cursor 
+		    // should only set true in requred condition since resetting is done 
+		    // in every cycle in the OnUpdate() of the FrameManager
+		    if (ImGui::IsWindowHovered() && !ImGui::IsAnyItemHovered()) {
+			    GetWindow().SetCanMoveWithCursor(true);
+		    }
 
-		// telling window if it can move with cursor 
-		// should only set true in requred condition since resetting is done 
-		// in every cycle in the OnUpdate() of the FrameManager
-		if (ImGui::IsWindowHovered() && !ImGui::IsAnyItemHovered()) {
-			GetWindow().SetCanMoveWithCursor(true);
-		}
+		    ImGui::End();
+        }
 
-		ImGui::End();
 		ImGui::PopStyleVar();
 	}
 
 	void LauncherFrame::DrawMainMenu() {
 		// main title 
-		ImguiUIUtility::Text("Quirk Game Engine", FontManager::GetFont(FontWeight::Medium, 50));
+        {
+		    ImguiUIUtility::Text("Quirk Game Engine", FontManager::GetFont(FontWeight::Medium, 50));
 
-		// padding between main title of the window and rest content
-		ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 30.0f);
+		    // padding between main title of the window and rest content
+		    ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 30.0f);
+        }
 
 		ImVec2 cellPadding = ImGui::GetStyle().CellPadding;
 		ImGui::GetStyle().CellPadding = ImVec2(50.0f, 8.0f);  // for Main Table
 
 		if (ImGui::BeginTable("Main Table", 2)) {
 			// paramters object used to create button with customised parameters
-			ImageTextButtonParameters parameters;
-			parameters.labelFont           = FontManager::GetFont(FontWeight::Medium, 29);
-			parameters.descriptionFont     = FontManager::GetFont(FontWeight::Regular, 20);
-			parameters.imageSize.x         = 35.0f;
-			parameters.imageSize.y         = 35.0f;
-			parameters.buttonColor         = 0xff2a2822;
-			parameters.hoverColor          = 0xff6a5713;
-			parameters.imageContentPadding = 15.0f;
+			ImageTextButtonParameters buttonParameters;
+			buttonParameters.labelFont           = FontManager::GetFont(FontWeight::Medium, 29);
+			buttonParameters.descriptionFont     = FontManager::GetFont(FontWeight::Regular, 20);
+			buttonParameters.imageSize.x         = 35.0f;
+			buttonParameters.imageSize.y         = 35.0f;
+			buttonParameters.buttonColor         = 0xff2a2822;
+			buttonParameters.hoverColor          = 0xff6a5713;
+			buttonParameters.imageContentPadding = 15.0f;
 
-			ImGui::TableNextColumn(); // 1st column
+			ImGui::TableNextColumn(); // 1st column         (Recent Project List Column)
 			{
-				const auto& recentProjects = ProjectManager::GetRecentProjectsList();
+                //Recent Project List heading
+                {
+				    ImguiUIUtility::Text("Recent Projects", FontManager::GetFont(FontWeight::Medium, 29));
 
-				ImguiUIUtility::Text("Recent Projects", FontManager::GetFont(FontWeight::Medium, 29));
-
-				// padding betwen title "Recent Projects" and content
-				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 20.0f);
+				    // padding betwen title "Recent Projects" and content
+				    ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 20.0f);
+                }
 
 				// All of the contents (Recent Porjects)
-				if (recentProjects.empty()) {
+				if (!ProjectManager::HaveRecentProjects()) {
 					ImGui::PushFont(FontManager::GetFont(FontWeight::Regular, 23));
 					ImGui::TextColored({ 0.812f, 0.816f, 0.78f, 1.0f }, "No Recent Projects!");
 					ImGui::PopFont();
 				}
 				else {
-					auto availRgn = ImGui::GetContentRegionAvail();
+                    // setting content alignments
+                    {
+					    auto availRgn = ImGui::GetContentRegionAvail();
 
-					parameters.buttonSize.x = availRgn.x - ImGui::GetStyle().ScrollbarSize - 5;
-					parameters.buttonSize.y = 80.0f;
+					    buttonParameters.buttonSize.x = availRgn.x - ImGui::GetStyle().ScrollbarSize - 5;
+					    buttonParameters.buttonSize.y = 80.0f;
 
-					ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-					ImGui::BeginChild("ScrollingRegion", ImVec2(availRgn.x, availRgn.y - 50));
+					    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+					    ImGui::BeginChild("ScrollingRegion", ImVec2(availRgn.x, availRgn.y - 50));
+                    }
 
-					for (const auto& project : recentProjects) {
-						std::string projPath = project.Path.string();
+					for (const auto& projectMeta : ProjectManager::GetRecentProjectsList()) {
+						std::string projPath = projectMeta.ProjectRootDirectory.string();
 
-						parameters.label = project.Title.c_str();
-						parameters.description = projPath.c_str();
-						parameters.imgId = (ImTextureID)(intptr_t)m_ProjectIcon->GetRendererId();
+						buttonParameters.label = projectMeta.Title.c_str();
+						buttonParameters.description = projPath.c_str();
+						buttonParameters.imgId = (ImTextureID)(intptr_t)m_ProjectIcon->GetRendererId();
 
 						// Recent project button
-						if (ImageTextButton(parameters)) {
-							std::filesystem::path path = project.Path / (project.Title + ".qkproj");
-							Project::Load<Quirk::EditorAssetManager>(path);
+						if (ImageTextButton(buttonParameters)) {
+                            auto project = ProjectManager::LoadProject(projectMeta);
 
-							auto app = (QuirkEditorApp*)&Application::Get();
-							app->LaunchEditor();
+                            if (project != nullptr) {
+							    auto app = (QuirkEditorApp*)&Application::Get();
+							    app->LaunchEditor();
 
-							// AddFrame adds the frame and makes that context to be current
-							// so making launcher frame to be the current context before proceeding
-							MakeContextCurrent();
+							    // AddFrame adds the frame and makes that context to be current
+							    // so making launcher frame to be the current context before proceeding
+							    MakeContextCurrent();
 
-							CloseFrame();
+							    CloseFrame();
+                            }
 						}
 
 						// TODO: create a way to remove item from recent project list
@@ -133,13 +146,13 @@ namespace Quirk {
 			}
 
 			// common properties for the custom buttons in the 2nd Column
-			parameters.imageSize.x         = 50.0f;
-			parameters.imageSize.y         = 50.0f;
-			parameters.buttonSize.x        = 400.0f;
-			parameters.buttonSize.y        = 100.0f;
-			parameters.buttonColor         = 0xff3b382f;
-			parameters.hoverColor          = 0xff276243;
-			parameters.imageContentPadding = 15.0f;
+			buttonParameters.imageSize.x         = 50.0f;
+			buttonParameters.imageSize.y         = 50.0f;
+			buttonParameters.buttonSize.x        = 400.0f;
+			buttonParameters.buttonSize.y        = 100.0f;
+			buttonParameters.buttonColor         = 0xff3b382f;
+			buttonParameters.hoverColor          = 0xff276243;
+			buttonParameters.imageContentPadding = 15.0f;
 
 			ImGui::TableNextColumn();   // 2nd Column
 			{
@@ -150,26 +163,30 @@ namespace Quirk {
 
 				// All of the contents
 				{
-					parameters.label = "Open a project";
-					parameters.description = "Navigate and open an existing project from local disk.";
-					parameters.imgId = (ImTextureID)(intptr_t)m_OpenProjectIcon->GetRendererId();
+					buttonParameters.label = "Open a project";
+					buttonParameters.description = "Navigate and open an existing project from local disk.";
+					buttonParameters.imgId = (ImTextureID)(intptr_t)m_OpenProjectIcon->GetRendererId();
 
 					// Open project button
-					if (ImageTextButton(parameters)) {
+					if (ImageTextButton(buttonParameters)) {
+                        FileFilter filters[] = {
+                            {L"Proj File",		L"*.qkproj"}
+                        };
+
 						FileDialogSpecification fileDialogSpec;
-						fileDialogSpec.Title = L"Open Project";
+						fileDialogSpec.Title         = L"Open Project";
 						fileDialogSpec.FileNameLabel = L"Project Folder";
-						fileDialogSpec.ParentWindow = &GetWindow();
+						fileDialogSpec.ParentWindow  = &GetWindow();
+                        fileDialogSpec.Filters       = filters;
+                        fileDialogSpec.NoOfFilters   = sizeof(filters) / sizeof(FileFilter);
 
-						std::filesystem::path filePath;
-						if (FileDialog::OpenFolder(fileDialogSpec, filePath)) {
-							const auto& proj = ProjectManager::AddRecentProject(filePath);
+						std::filesystem::path projfilePath;
+						if (FileDialog::OpenFile(fileDialogSpec, projfilePath)) {
+                            const auto& proj = ProjectManager::LoadProject(projfilePath);
 
-							if (proj != "") {
-								Project::Load<Quirk::EditorAssetManager>(proj);
-
-								auto app = (QuirkEditorApp*)&Application::Get();
-								app->LaunchEditor();
+							if (proj != nullptr) {
+								auto& app = Application::GetAs<QuirkEditorApp>();
+								app.LaunchEditor();
 
 								// AddFrame adds the frame and makes that context to be current
 								// so making launcher frame to be the current context before proceeding
@@ -180,12 +197,12 @@ namespace Quirk {
 						}
 					}
 
-					parameters.label = "Create a new project";
-					parameters.description = "Select name and settings to get started.";
-					parameters.imgId = (ImTextureID)(intptr_t)m_CreateProjectIcon->GetRendererId();
+					buttonParameters.label = "Create a new project";
+					buttonParameters.description = "Select name and settings to get started.";
+					buttonParameters.imgId = (ImTextureID)(intptr_t)m_CreateProjectIcon->GetRendererId();
 
 					// Create project button
-					if (ImageTextButton(parameters)) {
+					if (ImageTextButton(buttonParameters)) {
 						// switching to project creation state to draw the form
 						m_State = LauncherState::ProjectForm;
 					}
@@ -267,16 +284,17 @@ namespace Quirk {
 			m_TempProject.Title.erase(m_TempProject.Title.find_last_not_of('\0') + 1);
 			m_TempProjPath.erase(m_TempProjPath.find_last_not_of('\0') + 1);
 
-			m_TempProject.Path = m_TempProjPath + "/" + m_TempProject.Title;
+			m_TempProject.ProjectRootDirectory = m_TempProjPath;
 
-			if (std::filesystem::is_directory(m_TempProject.Path.parent_path())) {
-				const auto& proj = ProjectManager::CreateNewProject(m_TempProject);
+			if (std::filesystem::is_directory(m_TempProject.ProjectRootDirectory.parent_path())) {
+                const auto& proj = ProjectManager::CreateInDirectory(
+                    std::move(m_TempProject.Title), 
+                    std::move(m_TempProject.ProjectRootDirectory)
+                );
 
-				if (proj) {
-					auto app = (QuirkEditorApp*)&Application::Get();
-					app->LaunchEditor();
-
-                    ProjectManager::AddRecentProject(m_TempProject.Path);
+				if (proj != nullptr) {
+                    auto& app = Application::GetAs<QuirkEditorApp>();
+					app.LaunchEditor();
 
 					// AddFrame adds the frame and makes that context to be current
 					// so making launcher frame to be the current context before proceeding

@@ -1,5 +1,6 @@
 
 
+#include "QkEditorpch.h"
 
 #include "SceneViewportPanel.h"
 #include "Core/Input/Input.h"

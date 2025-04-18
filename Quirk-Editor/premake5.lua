@@ -13,6 +13,9 @@ project "Quirk-Editor"
         "src/**.cpp"
     }
 
+    pchheader "QkEditorpch.h"
+	pchsource "src/QkEditorpch.cpp"
+
     includedirs
     {
         "src",

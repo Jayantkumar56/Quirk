@@ -1,5 +1,7 @@
 
 
+#include "QkEditorpch.h"
+
 #include "LauncherTitleBar.h"
 
 namespace Quirk {

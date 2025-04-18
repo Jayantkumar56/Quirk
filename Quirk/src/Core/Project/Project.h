@@ -23,47 +23,57 @@ namespace Quirk {
 		std::filesystem::path SceneDirectory;
 		std::filesystem::path ScriptModulePath;
 		std::filesystem::path AssetRegistryPath;
-	};
 
-	// path of projMetaData should point to the directory where the proj file (**.qkproj) lives
-	// eg. for Title = Untitled
-	//         Path  = C:\Document\Untitled
-	// thus Untitled.qkproj file will reside like C:\Document\Untitled\Untitled.qkproj
-	struct ProjectMetadata {
-		std::string Title;
-		std::filesystem::path Path;
+        static inline ProjectConfig GetDefaultConfig(std::string&& title) {
+            return ProjectConfig {
+                .Name              { std::move(title)     },
+                .StartScene        { ""                   },
+                .AssetDirectory    { "Assets"             },
+                .SceneDirectory    { "Assets/Scenes"      },
+                .ScriptModulePath  { "Scripts"            },
+                .AssetRegistryPath { "AssetRegistry.yaml" }
+            };
+        }
+
+        static inline ProjectConfig GetDefaultConfig(const std::string& title) {
+            return GetDefaultConfig(std::string(title));
+        }
 	};
 
 	class Project {
-	public:
-        template<AssetManagerType T>
-        static Ref<Project> Create(const std::filesystem::path& path, ProjectConfig&& config) {
-            s_ActiveProject = CreateRef<Project>();
+	private:
+        // takes the ownership of the passed AssetManagerBase* in a Ref member varaible
+        // should not be called directly (if called should consider ownership of the parameters)
+        inline Project(std::filesystem::path projRootDir, ProjectConfig&& config, AssetManagerBase* assetManager) noexcept :
+                m_Config              ( std::move(config)      ),
+                m_ProjectRootDirectory( std::move(projRootDir) ),
+                m_AssetManager        ( assetManager           )
+        {
+        }
 
-            s_ActiveProject->m_ProjectDirectory = path.parent_path();
-            s_ActiveProject->m_Config           = std::move(config);
-            s_ActiveProject->m_AssetManager     = CreateRef<T>();
-
+    public:
+        template<AssetManagerType T, typename PathType>
+        requires std::same_as<std::remove_cvref_t<PathType>, std::filesystem::path>
+        static inline Ref<Project> Create(PathType&& projRootDir, ProjectConfig&& config) {
+            s_ActiveProject = Ref<Project>(new Project(std::forward<PathType>(projRootDir), std::move(config), new T));
             return s_ActiveProject;
         }
 
         template<AssetManagerType T>
-		static Ref<Project> Load(const std::filesystem::path& path) {
-            s_ActiveProject = CreateRef<Project>();
-            s_ActiveProject->m_ProjectDirectory = path.parent_path();
+		static inline Ref<Project> Load(const std::filesystem::path& projFilePath) {
+            ProjectConfig config;
+            if (!ProjectSerializer::DeserializeConfig(config, projFilePath)) {
+                QK_WARN("Unable to Deserialize proj file!");
+                return nullptr;
+            }
 
-			if (!ProjectSerializer::Deserialize(s_ActiveProject, path)) {
-                s_ActiveProject = nullptr;
-			}
-
-            s_ActiveProject->m_AssetManager = CreateRef<T>();
-
+            s_ActiveProject = Ref<Project>(new Project(projFilePath.parent_path(), std::move(config), new T));
 			return s_ActiveProject;
 		}
 
 		static bool SaveActive(const std::filesystem::path& path) {
 			if (ProjectSerializer::Serialize(s_ActiveProject, path)) {
-				s_ActiveProject->m_ProjectDirectory = path.parent_path();
+				s_ActiveProject->m_ProjectRootDirectory = path.parent_path();
 				return true;
 			}
 
@@ -74,24 +84,31 @@ namespace Quirk {
         static inline auto& GetConfig()       noexcept { return s_ActiveProject->m_Config;       }
         static inline auto  GetAssetManager() noexcept { return s_ActiveProject->m_AssetManager; }
 
-        static inline const auto& GetDirectory() noexcept {
-			QK_CORE_ASSERT(s_ActiveProject, "No Active Project!");
-            return s_ActiveProject->m_ProjectDirectory;
+        static inline std::string GetTitle() noexcept {
+            QK_CORE_ASSERT(s_ActiveProject, "No Active Project!");
+            return s_ActiveProject->m_Config.Name;
         }
 
-		static inline auto GetAssetDirectory() {
+        static inline const auto& GetDirectory() noexcept {
 			QK_CORE_ASSERT(s_ActiveProject, "No Active Project!");
-			return s_ActiveProject->m_ProjectDirectory / s_ActiveProject->m_Config.AssetDirectory;
+            return s_ActiveProject->m_ProjectRootDirectory;
+        }
+
+		static inline auto GetAssetDirectory() noexcept {
+			QK_CORE_ASSERT(s_ActiveProject, "No Active Project!");
+			return s_ActiveProject->m_ProjectRootDirectory / s_ActiveProject->m_Config.AssetDirectory;
 		}
 
-		static inline std::filesystem::path GetAssetFileSystemPath(const std::filesystem::path& path) {
+		static inline auto GetAssetFileSystemPath(const std::filesystem::path& path) noexcept {
 			QK_CORE_ASSERT(s_ActiveProject, "No Active Project!");
 			return GetAssetDirectory() / path;
 		}
 
+        static inline std::string_view GetProjFileExtenstion() noexcept { return ".qkproj"; }
+
 	private:
 		ProjectConfig		  m_Config;
-		std::filesystem::path m_ProjectDirectory;
+		std::filesystem::path m_ProjectRootDirectory;
         Ref<AssetManagerBase> m_AssetManager;
 
 		// only a single project could be loaded at once
