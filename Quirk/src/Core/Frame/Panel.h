@@ -6,13 +6,12 @@
 #include "Window.h"
 #include "Core/Input/Events.h"
 
+#include "imgui.h"
+
 namespace Quirk {
 
-	class FrameManager;
-
 	class Panel {
-		friend class Frame;
-		friend class FrameManager;
+        friend class PanelManager;
 
 	public:
 		Panel(const char* title, ImGuiWindowFlags flags = 0) : m_Title(title), m_WindowFlags(flags) { }
@@ -64,5 +63,59 @@ namespace Quirk {
 
 	template <typename T>
 	concept PanelType = std::derived_from<T, Panel>;
+
+    class PanelManager {
+    public:
+        virtual ~PanelManager() {
+            for (size_t i = 0; i < m_Panels.size(); ++i)
+                delete m_Panels[i];
+        }
+
+        // lifetime of the panel is managed by the frame
+        template<PanelType P, typename ...Args>
+        inline void AddPanel(FrameBase* frame, Args&& ... args) {
+            P* panel = new P(std::forward<Args>(args)...);
+            panel->m_ParentFrame = frame;
+            m_Panels.push_back(static_cast<Panel*>(panel));
+        }
+
+        inline Panel* GetPanel(const std::string_view panelName) {
+            for (auto panel : m_Panels) {
+                if (panelName == panel->GetTitle())
+                    return panel;
+            }
+
+            QK_WARN("Specified Panel \"{0}\" does not exist!", panelName);
+            return nullptr;
+        }
+
+        inline void UpdatePanels() {
+            for (size_t i = 0; i < m_Panels.size(); ++i) {
+                if (!m_Panels[i]->m_PanelOpen) {
+                    delete m_Panels[i];
+                    m_Panels.erase(m_Panels.begin() + i--);
+                    continue;
+                }
+
+                m_Panels[i]->OnUpdate();
+            }
+        }
+
+        inline void UpdatePanelsUI() {
+            for (size_t j = 0; j < m_Panels.size(); ++j) {
+                m_Panels[j]->OnUiUpdate();
+            }
+        }
+
+        inline bool HandlePanelsEvent(Event& event) {
+            for (auto panel : m_Panels)
+                panel->OnEvent(event);
+
+            return false;
+        }
+
+    private:
+        std::vector<Panel*> m_Panels;
+    };
 
 }

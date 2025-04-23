@@ -7,12 +7,8 @@
 
 namespace Quirk {
 
-	class FrameManager;
-	class Frame;
-
 	class FrameBase {
 		friend class FrameManager;
-		friend class Frame;
 
 	public:
 		FrameBase(WindowSpecification& spec) :
@@ -26,13 +22,8 @@ namespace Quirk {
 		virtual ~FrameBase() {
 			if (m_Context != nullptr) {
 				m_Context->DestroyContext(m_Window);
-				delete m_Context;
 			}
 		}
-
-		// deleted both copy constructor and copy assignment, to make it non copyable
-		FrameBase(FrameBase& other)                  = delete;
-		FrameBase& operator=(const FrameBase& other) = delete;
 
 		virtual void OnUpdate()            { }
 		virtual void OnImguiUiUpdate()     { }
@@ -48,12 +39,24 @@ namespace Quirk {
 		inline Window& GetWindow()		       noexcept { return m_Window;             }
 		inline const   std::string& GetTitle() noexcept { return m_Title;              }
 
-	private:
+        virtual void MakeContextCurrent() = 0;
+
+    protected:
+        virtual void UpdateFrame()   = 0;
+        virtual void UpdateFrameUI() = 0;
+        virtual bool HandleEvent(Event& event) = 0;
+
+        inline GraphicalContext* GetGraphicalContext() noexcept { return m_Context.get(); }
+
+    private:
 		bool		m_Running = true;
 		Window      m_Window;
 		std::string m_Title;
 
-		GraphicalContext* m_Context;
+        Scope<GraphicalContext> m_Context;
 	};
+
+    template <typename T>
+    concept FrameType = std::derived_from<T, FrameBase>;
 
 }

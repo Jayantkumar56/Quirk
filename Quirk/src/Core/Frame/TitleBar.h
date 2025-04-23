@@ -9,11 +9,8 @@
 
 namespace Quirk {
 
-	class FrameManager;
-
 	class TitleBar {
 		friend class FrameManager;
-		friend class Frame;
 
 	public:
 		TitleBar()          = default;
@@ -37,7 +34,7 @@ namespace Quirk {
 		inline void SetCursorOverMaximiseButton (bool toggle) noexcept { GetWindow().SetCursorOverMaximiseButton(toggle); }
 		inline void SetCursorOverCloseButton    (bool toggle) noexcept { GetWindow().SetCursorOverCloseButton(toggle);    }
 
-	private:
+	public:
 		inline void OnUiUpdate() {
 			SetImguiProperties();
 
@@ -56,12 +53,37 @@ namespace Quirk {
 			UnSetImguiProperties();
 		}
 
-	private:
+	public:
 		// to communicate with the parent Frame obj which manages this titlebar
 		FrameBase* m_ParentFrame = nullptr;
 	};
 
 	template <typename T>
 	concept TitleBarType = std::derived_from<T, TitleBar>;
+
+
+    class TitleBarManager {
+    public:
+        virtual ~TitleBarManager() { delete m_TitleBar; }
+
+        // lifetime of the titlebar is managed by the frame
+        template<TitleBarType T, typename ...Args>
+        inline void SetTitleBar(FrameBase* frame, Args&& ... args) {
+            // TODO: think about this static_cast
+            m_TitleBar = static_cast<T*>(new T(std::forward<Args>(args)...));
+            m_TitleBar->m_ParentFrame = frame;
+        }
+
+        inline void UpdateTitleBarUI() {
+            m_TitleBar->OnUiUpdate();
+        }
+
+        inline bool TitleBarHandleEvents(Event& event) {
+            return m_TitleBar->OnEvent(event);
+        }
+
+    private:
+        TitleBar* m_TitleBar = nullptr;
+    };
 
 }

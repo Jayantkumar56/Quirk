@@ -12,7 +12,7 @@
 namespace Quirk {
 
 	template<typename T, typename function>
-	void DrawComponentNode(Frame* parentFrame, const std::string& label, Entity& entity, function uiFunction) {
+	void DrawComponentNode(EditorFrame* parentFrame, const std::string& label, Entity& entity, function uiFunction) {
 		if (!entity.HasComponent<T>())
 			return;
 

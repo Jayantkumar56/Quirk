@@ -7,96 +7,78 @@
 #include "FrameBase.h"
 #include "FontManager.h"
 
+#include "FrameTraits.h"
+
 namespace Quirk {
 
-	class Frame : public FrameBase {
-		friend class FrameManager;
+    template<PanelPolicy PPanel, TitleBarPolicy PTitleBar>
+	class Frame : 
+            public FrameBase, 
+            public EnumPolicyToType<PPanel>::Type,
+            public EnumPolicyToType<PTitleBar>::Type
+    {
+        using PanelManagerType    = EnumPolicyToType<PPanel>::Type;
+        using TitleBarManagerType = EnumPolicyToType<PTitleBar>::Type;
 
 	public:
-		Frame(WindowSpecification& spec) : m_TitleBar(nullptr), FrameBase(spec) {
-			m_ImguiUI.Init(m_Window, m_Context);
+		Frame(WindowSpecification& spec) : FrameBase(spec) {
+			m_ImguiUI.Init(GetWindow(), GetGraphicalContext());
 		}
 
-		virtual ~Frame() {
-			delete m_TitleBar;
-
-			for (size_t i = 0; i < m_Panels.size(); ++i)
-				delete m_Panels[i];		
-		}
-
-		inline void MakeContextCurrent() noexcept {
-			m_Context->MakeContextCurrent();
+		inline void MakeContextCurrent() noexcept override {
+            GetGraphicalContext()->MakeContextCurrent();
 			m_ImguiUI.MakeImguiUIContextCurrent();
 		}
-		
-		// lifetime of the panel is managed by the frame
-		template<PanelType P, typename ...Args>
-		inline void AddPanel(Args&& ... args) {
-			P* panel = new P(std::forward<Args>(args)...);
-			panel->m_ParentFrame = this;
-			m_Panels.push_back(static_cast<Panel*>(panel));
-		}
 
-		// lifetime of the titlebar is managed by the frame
-		template<TitleBarType T, typename ...Args>
-		inline void SetTitleBar(Args&& ... args) {
-			m_TitleBar = static_cast<T*>(new T(std::forward<Args>(args)...));
-			m_TitleBar->m_ParentFrame = this;
-		}
+    private:
+        virtual void UpdateFrame() override {
+            GetWindow().OnUpdate();
+            m_ImguiUI.UpdateViewPorts();
+            OnUpdate();
 
-		inline Panel* GetPanel(const std::string_view panelName) {
-			for (auto panel : m_Panels) {
-				if (panelName == panel->GetTitle())
-					return panel;
-			}
+            if constexpr (PPanel == PanelPolicy::Enabled) {
+                PanelManagerType::UpdatePanels();
+            }
+        }
 
-			QK_WARN("Specified Panel \"{0}\" does not exist!", panelName);
-			return nullptr;
-		}
+        virtual void UpdateFrameUI() override {
+            // updating imgui ui of the current frame and it's panels
+            m_ImguiUI.Begin();
+
+            // resetting if the cursor is hovering over titlebar
+            // thus it should be set by the titlebar in every frame 
+            // titlebar should only set true in the requred condition
+            GetWindow().SetCanMoveWithCursor(false);
+
+            OnImguiUiUpdate();
+
+            if constexpr (PTitleBar == TitleBarPolicy::Enabled) {
+                TitleBarManagerType::UpdateTitleBarUI();
+            }
+
+            if constexpr (PPanel == PanelPolicy::Enabled) {
+                PanelManagerType::UpdatePanelsUI();
+            }
+
+            m_ImguiUI.End(GetGraphicalContext());
+        }
+
+        virtual bool HandleEvent(Event& event) override {
+            OnEvent(event);
+
+            if constexpr (PTitleBar == TitleBarPolicy::Enabled) {
+                TitleBarManagerType::TitleBarHandleEvents(event);
+            }
+
+            if constexpr (PPanel == PanelPolicy::Enabled) {
+                PanelManagerType::HandlePanelsEvent(event);
+            }
+
+            return false;
+        }
 
 	private:
 		ImguiUI m_ImguiUI;
-
-		TitleBar*           m_TitleBar;
-		std::vector<Panel*> m_Panels;
-	};
-
-	template <typename T>
-	concept FrameType = std::derived_from<T, Frame>;
-
-	class FrameManager {
-	public:
-		~FrameManager() {
-			for (auto frame : m_Frames)
-				delete frame;
-		}
-
-		void UpdateFrames();
-
-		// right now HandleEvent called only when window is updated so no need to set context here
-		// as window is updated only after setting the proper current contexts
-
-		bool HandleEvent(Event& event);
-
-		template<FrameType T, typename ...Args>
-		inline T* AddFrame(Args&& ...args) {
-			T* frame = new T(std::forward<Args>(args)...);
-			m_Frames.push_back(static_cast<Frame*>(frame));
-			return frame;
-		}
-
-		/*inline void RemoveFrame(Frame* layer) {
-
-		}*/
-
-		inline Frame* GetCurrentFrame() { return m_CurrentFrame; }
-
-		ImFontAtlas* GetFontAtlas() { return m_FontManager.m_FontAtlas; }
-
-	private:
-		Frame* m_CurrentFrame;
-		std::vector<Frame*> m_Frames;
-		FontManager m_FontManager;
 	};
 
 }

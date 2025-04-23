@@ -13,7 +13,7 @@
 
 namespace Quirk {
 
-	class EditorFrame : public Frame {
+	class EditorFrame : public Frame<PanelPolicy::Enabled, TitleBarPolicy::Enabled> {
 	public:
 		EditorFrame(WindowSpecification& spec) :
 				Frame            (spec),
@@ -24,12 +24,12 @@ namespace Quirk {
 			Renderer2D::InitRenderer();
 			Theme::SetTheme(ThemeName::DarkTheme);
 
-			SetTitleBar<EditorTitleBar>();
+			SetTitleBar<EditorTitleBar>(this);
 
-			AddPanel<SceneViewportPanel> ();
-			AddPanel<SceneHierarchyPanel>();
-			AddPanel<InspectorPanel>     ();
-			AddPanel<ContentBrowserPanel>();
+			AddPanel<SceneViewportPanel> (this);
+			AddPanel<SceneHierarchyPanel>(this);
+			AddPanel<InspectorPanel>     (this);
+			AddPanel<ContentBrowserPanel>(this);
 		}
 
 		~EditorFrame() = default;

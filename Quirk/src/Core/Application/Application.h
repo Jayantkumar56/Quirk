@@ -3,7 +3,7 @@
 
 #include "Core/Frame/Window.h"
 #include "Core/Input/ApplicationEvents.h"
-#include "Core/Frame/Frame.h"
+#include "Core/Frame/FrameManager.h"
 
 namespace Quirk {
 

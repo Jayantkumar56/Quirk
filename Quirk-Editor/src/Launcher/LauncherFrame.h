@@ -9,7 +9,7 @@
 
 namespace Quirk {
 
-	class LauncherFrame : public Frame {
+	class LauncherFrame : public Frame<PanelPolicy::Disabled, TitleBarPolicy::Enabled> {
 	private:
 		// two different states for two different ui
 		enum class LauncherState {
@@ -25,7 +25,7 @@ namespace Quirk {
 			m_State = LauncherState::MainMenu;
 			SetColorTheme();
 
-			SetTitleBar<LauncherTitleBar>();
+			SetTitleBar<LauncherTitleBar>(this);
 
 			m_ProjectIcon		= Texture2D::Create("assets/Images/Launcher/project.png");
 			m_OpenProjectIcon   = Texture2D::Create("assets/Images/Launcher/openFolder.png");

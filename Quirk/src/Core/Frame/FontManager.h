@@ -2,7 +2,10 @@
 
 #pragma once
 
+#include "imgui.h"
+
 #include <array>
+#include <string>
 
 namespace Quirk {
 
