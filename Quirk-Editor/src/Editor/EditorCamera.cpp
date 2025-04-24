@@ -9,7 +9,7 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/quaternion.hpp>
 
-namespace Quirk {
+namespace QuirkEditor {
 
 	EditorCamera::EditorCamera(float fov, float aspectRatio, float nearClip, float farClip) : 
 			m_FOV(fov), 
@@ -58,6 +58,8 @@ namespace Quirk {
 	}
 
 	bool EditorCamera::OnUpdate() {
+        using namespace Quirk;
+
 		if (Input::IsKeyPressed(QK_Key_LeftAlt)) {
 			const glm::vec2& mouse{ Input::MouseCurrentX(), Input::MouseCurrentY() };
 			glm::vec2 delta = (mouse - m_InitialMousePosition) * 0.003f;
@@ -77,11 +79,11 @@ namespace Quirk {
 		return false;
 	}
 
-	bool EditorCamera::OnEvent(Event& e) {
-		return EventDispatcher::HandleEvent<MouseScrolledEvent>(QK_BIND_EVENT_FN(EditorCamera::OnMouseScroll));
+	bool EditorCamera::OnEvent(Quirk::Event& e) {
+		return Quirk::EventDispatcher::HandleEvent<Quirk::MouseScrolledEvent>(QK_BIND_EVENT_FN(EditorCamera::OnMouseScroll));
 	}
 
-	bool EditorCamera::OnMouseScroll(MouseScrolledEvent& e) {
+	bool EditorCamera::OnMouseScroll(Quirk::MouseScrolledEvent& e) {
 		float delta = e.GetOffset() * 0.1f;
 		MouseZoom(delta);
 		UpdateView();

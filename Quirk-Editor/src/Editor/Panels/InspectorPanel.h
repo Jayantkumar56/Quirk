@@ -4,13 +4,13 @@
 
 #include "Quirk.h"
 
-namespace Quirk {
+namespace QuirkEditor {
 
-	class InspectorPanel : public Panel {
+	class InspectorPanel : public Quirk::Panel {
 	public:
-		InspectorPanel() : Panel("Inspector") {
-			m_RemoveImage = Texture2D::Create("assets/Images/remove.png");
-			m_UploadImage = Texture2D::Create("assets/Images/uploadImage.png");
+		InspectorPanel() : Quirk::Panel("Inspector") {
+			m_RemoveImage = Quirk::Texture2D::Create("assets/Images/remove.png");
+			m_UploadImage = Quirk::Texture2D::Create("assets/Images/uploadImage.png");
 		}
 
 		~InspectorPanel() = default;
@@ -19,8 +19,8 @@ namespace Quirk {
 		virtual void OnImguiUiUpdate()      override;
 
 	private:
-		Ref<Texture2D> m_RemoveImage;
-		Ref<Texture2D> m_UploadImage;
+		Quirk::Ref<Quirk::Texture2D> m_RemoveImage;
+		Quirk::Ref<Quirk::Texture2D> m_UploadImage;
 	};
 
 }

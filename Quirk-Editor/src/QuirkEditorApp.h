@@ -6,9 +6,9 @@
 #include "Quirk.h"
 
 
-namespace Quirk {
+namespace QuirkEditor {
 
-	class QuirkEditorApp : public Application {
+	class QuirkEditorApp : public Quirk::Application {
 	public:
 		QuirkEditorApp();
 		~QuirkEditorApp() = default;

@@ -14,7 +14,6 @@ namespace Quirk {
 	class Scene {
 		friend class Entity;
 		friend class SceneSerializer;
-		friend class SceneHierarchyPanel;
 
 	public:
 		Scene(std::string name, uint16_t width, uint16_t height) : 

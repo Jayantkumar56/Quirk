@@ -4,7 +4,7 @@
 
 #include "Quirk.h"
 
-namespace Quirk {
+namespace QuirkEditor {
 
 	enum class ThemeName {
 		DarkTheme = 0, LightTheme = 1
@@ -18,8 +18,8 @@ namespace Quirk {
 	public:
 		static inline void SetTheme(ThemeName theme) {
 			switch (theme) {
-				case Quirk::ThemeName::DarkTheme:  SetDarkTheme();	 return;
-				case Quirk::ThemeName::LightTheme: SetLightTheme();  return;
+				case ThemeName::DarkTheme:  SetDarkTheme();	 return;
+				case ThemeName::LightTheme: SetLightTheme();  return;
 			}
 		}
 

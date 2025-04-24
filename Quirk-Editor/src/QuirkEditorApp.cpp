@@ -16,16 +16,21 @@ namespace Quirk {
 	// LaunchApp() must be defined in the application
 	// Create app object inside this function and call Run method
 	void LaunchApp() {
-		QuirkEditorApp app;
+        QuirkEditor::QuirkEditorApp app;
 		app.Run();
 	}
 
+}
+
+namespace QuirkEditor {
+
+
 	QuirkEditorApp::QuirkEditorApp() :
-		Application(L"Quirk Engine", RendererAPI::API::OpenGL)
+		Application(L"Quirk Engine", Quirk::RendererAPI::API::OpenGL)
 	{
 		LoadFontFiles();
 
-		WindowSpecification tempSpec{
+        Quirk::WindowSpecification tempSpec{
 			.Title             {"Quirk Engine"},
 			.Width             {1100},				   .Height    {780},
 			.PosX              {200},				   .PosY      {50},
@@ -43,7 +48,7 @@ namespace Quirk {
 	}
 
 	void QuirkEditorApp::LaunchEditor() {
-		WindowSpecification tempSpec{
+        Quirk::WindowSpecification tempSpec{
 			.Title             {"Quirk Editor"},
 			.Width             {1600},				   .Height    {900},
 			.PosX              {200},				   .PosY      {50},
@@ -57,6 +62,8 @@ namespace Quirk {
 	}
 
 	void QuirkEditorApp::LoadFontFiles() {
+        using namespace Quirk;
+
 		//FontManager::SetFontFileToFontWeight(FontWeight::Regular, std::string("assets/Fonts/Schibsted_Grotesk/static/SchibstedGrotesk-Regular.ttf"));
 		FontManager::SetFontFileToFontWeight(FontWeight::Regular,   "assets/Fonts/Schibsted_Grotesk/static/SchibstedGrotesk-Regular.ttf"  );
 		FontManager::SetFontFileToFontWeight(FontWeight::Medium,    "assets/Fonts/Schibsted_Grotesk/static/SchibstedGrotesk-Medium.ttf"   );

@@ -12,7 +12,7 @@
 
 #include "EditorCore/ProjectManager.h"
 
-namespace Quirk {
+namespace QuirkEditor {
 
 	struct ImageTextButtonParameters {
 		ImTextureID imgId;                         ImVec2      imageSize;
@@ -59,7 +59,7 @@ namespace Quirk {
 	void LauncherFrame::DrawMainMenu() {
 		// main title 
         {
-		    ImguiUIUtility::Text("Quirk Game Engine", FontManager::GetFont(FontWeight::Medium, 50));
+		    Quirk::ImguiUIUtility::Text("Quirk Game Engine", Quirk::FontManager::GetFont(Quirk::FontWeight::Medium, 50));
 
 		    // padding between main title of the window and rest content
 		    ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 30.0f);
@@ -71,8 +71,8 @@ namespace Quirk {
 		if (ImGui::BeginTable("Main Table", 2)) {
 			// paramters object used to create button with customised parameters
 			ImageTextButtonParameters buttonParameters;
-			buttonParameters.labelFont           = FontManager::GetFont(FontWeight::Medium, 29);
-			buttonParameters.descriptionFont     = FontManager::GetFont(FontWeight::Regular, 20);
+			buttonParameters.labelFont           = Quirk::FontManager::GetFont(Quirk::FontWeight::Medium, 29);
+			buttonParameters.descriptionFont     = Quirk::FontManager::GetFont(Quirk::FontWeight::Regular, 20);
 			buttonParameters.imageSize.x         = 35.0f;
 			buttonParameters.imageSize.y         = 35.0f;
 			buttonParameters.buttonColor         = 0xff2a2822;
@@ -83,15 +83,15 @@ namespace Quirk {
 			{
                 //Recent Project List heading
                 {
-				    ImguiUIUtility::Text("Recent Projects", FontManager::GetFont(FontWeight::Medium, 29));
+                    Quirk::ImguiUIUtility::Text("Recent Projects", Quirk::FontManager::GetFont(Quirk::FontWeight::Medium, 29));
 
 				    // padding betwen title "Recent Projects" and content
 				    ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 20.0f);
                 }
 
 				// All of the contents (Recent Porjects)
-				if (!ProjectManager::HaveRecentProjects()) {
-					ImGui::PushFont(FontManager::GetFont(FontWeight::Regular, 23));
+				if (!Quirk::ProjectManager::HaveRecentProjects()) {
+					ImGui::PushFont(Quirk::FontManager::GetFont(Quirk::FontWeight::Regular, 23));
 					ImGui::TextColored({ 0.812f, 0.816f, 0.78f, 1.0f }, "No Recent Projects!");
 					ImGui::PopFont();
 				}
@@ -107,7 +107,7 @@ namespace Quirk {
 					    ImGui::BeginChild("ScrollingRegion", ImVec2(availRgn.x, availRgn.y - 50));
                     }
 
-					for (const auto& projectMeta : ProjectManager::GetRecentProjectsList()) {
+					for (const auto& projectMeta : Quirk::ProjectManager::GetRecentProjectsList()) {
 						std::string projPath = projectMeta.ProjectRootDirectory.string();
 
 						buttonParameters.label = projectMeta.Title.c_str();
@@ -116,11 +116,11 @@ namespace Quirk {
 
 						// Recent project button
 						if (ImageTextButton(buttonParameters)) {
-                            auto project = ProjectManager::LoadProject(projectMeta);
+                            auto project = Quirk::ProjectManager::LoadProject(projectMeta);
 
                             if (project != nullptr) {
-							    auto app = (QuirkEditorApp*)&Application::Get();
-							    app->LaunchEditor();
+                                auto& app = Quirk::Application::GetAs<QuirkEditorApp>();
+							    app.LaunchEditor();
 
 							    // AddFrame adds the frame and makes that context to be current
 							    // so making launcher frame to be the current context before proceeding
@@ -156,7 +156,7 @@ namespace Quirk {
 
 			ImGui::TableNextColumn();   // 2nd Column
 			{
-				ImguiUIUtility::Text("Get Started", FontManager::GetFont(FontWeight::Medium, 29));
+                Quirk::ImguiUIUtility::Text("Get Started", Quirk::FontManager::GetFont(Quirk::FontWeight::Medium, 29));
 
 				// padding betwen title "Get Started" and content
 				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 20.0f);
@@ -169,23 +169,23 @@ namespace Quirk {
 
 					// Open project button
 					if (ImageTextButton(buttonParameters)) {
-                        FileFilter filters[] = {
+                        Quirk::FileFilter filters[] = {
                             {L"Proj File",		L"*.qkproj"}
                         };
 
-						FileDialogSpecification fileDialogSpec;
+                        Quirk::FileDialogSpecification fileDialogSpec;
 						fileDialogSpec.Title         = L"Open Project";
 						fileDialogSpec.FileNameLabel = L"Project Folder";
 						fileDialogSpec.ParentWindow  = &GetWindow();
                         fileDialogSpec.Filters       = filters;
-                        fileDialogSpec.NoOfFilters   = sizeof(filters) / sizeof(FileFilter);
+                        fileDialogSpec.NoOfFilters   = sizeof(filters) / sizeof(Quirk::FileFilter);
 
 						std::filesystem::path projfilePath;
-						if (FileDialog::OpenFile(fileDialogSpec, projfilePath)) {
-                            const auto& proj = ProjectManager::LoadProject(projfilePath);
+						if (Quirk::FileDialog::OpenFile(fileDialogSpec, projfilePath)) {
+                            const auto& proj = Quirk::ProjectManager::LoadProject(projfilePath);
 
 							if (proj != nullptr) {
-								auto& app = Application::GetAs<QuirkEditorApp>();
+                                auto& app = Quirk::Application::GetAs<QuirkEditorApp>();
 								app.LaunchEditor();
 
 								// AddFrame adds the frame and makes that context to be current
@@ -217,7 +217,7 @@ namespace Quirk {
 
 	void LauncherFrame::DrawProjectCreationForm() {
 		// main title 
-		ImguiUIUtility::Text("Create your new project", FontManager::GetFont(FontWeight::Medium, 50));
+        Quirk::ImguiUIUtility::Text("Create your new project", Quirk::FontManager::GetFont(Quirk::FontWeight::Medium, 50));
 
 		// padding between main title of the window and rest content
 		ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 30.0f);
@@ -229,26 +229,26 @@ namespace Quirk {
 		ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize,   1.0f             );
 
 		// Project Name field
-		ImguiUIUtility::Text("Project Name", FontManager::GetFont(FontWeight::Regular, 23));
+        Quirk::ImguiUIUtility::Text("Project Name", Quirk::FontManager::GetFont(Quirk::FontWeight::Regular, 23));
 		ImGui::InputText("##ProjectName", (char*)m_TempProject.Title.c_str(), m_TempProject.Title.length());
 
 		// padding between the two fields
 		ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 20.0f);
 
 		// Project Path field
-		ImguiUIUtility::Text("Project Path", FontManager::GetFont(FontWeight::Regular, 23));
+        Quirk::ImguiUIUtility::Text("Project Path", Quirk::FontManager::GetFont(Quirk::FontWeight::Regular, 23));
 		ImGui::InputText("##ProjectPath", (char*)m_TempProjPath.c_str(), m_TempProjPath.length());
 
 		ImGui::SameLine();
 		// button for opening folder selection dialog
 		if (TextColorButton(". . .", { 50.0f, 35.0f }, 0xff575346, 0xff3b382f, 0xff48463a, 0xff0ca403)) {
-			FileDialogSpecification fileDialogSpec;
+            Quirk::FileDialogSpecification fileDialogSpec;
 			fileDialogSpec.Title = L"Open Project";
 			fileDialogSpec.FileNameLabel = L"Project Folder";
 			fileDialogSpec.ParentWindow = &GetWindow();
 
 			std::filesystem::path filePath;
-			if (FileDialog::OpenFolder(fileDialogSpec, filePath)) {
+			if (Quirk::FileDialog::OpenFolder(fileDialogSpec, filePath)) {
 				m_TempProjPath = filePath.string();
 				m_TempProjPath.resize(512);
 			}
@@ -287,13 +287,13 @@ namespace Quirk {
 			m_TempProject.ProjectRootDirectory = m_TempProjPath;
 
 			if (std::filesystem::is_directory(m_TempProject.ProjectRootDirectory.parent_path())) {
-                const auto& proj = ProjectManager::CreateInDirectory(
+                const auto& proj = Quirk::ProjectManager::CreateInDirectory(
                     std::move(m_TempProject.Title), 
                     std::move(m_TempProject.ProjectRootDirectory)
                 );
 
 				if (proj != nullptr) {
-                    auto& app = Application::GetAs<QuirkEditorApp>();
+                    auto& app = Quirk::Application::GetAs<QuirkEditorApp>();
 					app.LaunchEditor();
 
 					// AddFrame adds the frame and makes that context to be current

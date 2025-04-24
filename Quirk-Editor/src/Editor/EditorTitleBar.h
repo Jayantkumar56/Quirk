@@ -3,14 +3,14 @@
 
 #include "Quirk.h"
 
-namespace Quirk {
+namespace QuirkEditor {
 
-	class EditorTitleBar : public TitleBar{
+	class EditorTitleBar : public Quirk::TitleBar{
 	public:
 		EditorTitleBar() {
-			m_CloseIcon    = Texture2D::Create("assets/Images/close.png");
-			m_MinimiseIcon = Texture2D::Create("assets/Images/minus.png");
-			m_MaximiseIcon = Texture2D::Create("assets/Images/maximize.png");
+			m_CloseIcon    = Quirk::Texture2D::Create("assets/Images/close.png");
+			m_MinimiseIcon = Quirk::Texture2D::Create("assets/Images/minus.png");
+			m_MaximiseIcon = Quirk::Texture2D::Create("assets/Images/maximize.png");
 		}
 
 		~EditorTitleBar() = default;
@@ -19,12 +19,12 @@ namespace Quirk {
 		virtual void UnSetImguiProperties() override;
 
 		virtual void OnImguiUiUpdate() override;
-		virtual bool OnEvent(Event& event) override { return false; }
+		virtual bool OnEvent(Quirk::Event& event) override { return false; }
 
 	private:
-		Ref<Texture2D> m_CloseIcon;
-		Ref<Texture2D> m_MinimiseIcon;
-		Ref<Texture2D> m_MaximiseIcon;
+		Quirk::Ref<Quirk::Texture2D> m_CloseIcon;
+		Quirk::Ref<Quirk::Texture2D> m_MinimiseIcon;
+		Quirk::Ref<Quirk::Texture2D> m_MaximiseIcon;
 	};
 
 }

@@ -7,9 +7,9 @@
 
 #include "EditorCore/ProjectManager.h"
 
-namespace Quirk {
+namespace QuirkEditor {
 
-	class LauncherFrame : public Frame<PanelPolicy::Disabled, TitleBarPolicy::Enabled> {
+	class LauncherFrame : public Quirk::Frame<Quirk::PanelPolicy::Disabled, Quirk::TitleBarPolicy::Enabled> {
 	private:
 		// two different states for two different ui
 		enum class LauncherState {
@@ -18,7 +18,7 @@ namespace Quirk {
 		};
 
 	public:
-		LauncherFrame(WindowSpecification& spec) :
+		LauncherFrame(Quirk::WindowSpecification& spec) :
 			Frame(spec)
 		{
 			// initailly MainMenu will be loaded
@@ -27,11 +27,11 @@ namespace Quirk {
 
 			SetTitleBar<LauncherTitleBar>(this);
 
-			m_ProjectIcon		= Texture2D::Create("assets/Images/Launcher/project.png");
-			m_OpenProjectIcon   = Texture2D::Create("assets/Images/Launcher/openFolder.png");
-			m_CreateProjectIcon = Texture2D::Create("assets/Images/Launcher/createProject.png");
+			m_ProjectIcon		= Quirk::Texture2D::Create("assets/Images/Launcher/project.png");
+			m_OpenProjectIcon   = Quirk::Texture2D::Create("assets/Images/Launcher/openFolder.png");
+			m_CreateProjectIcon = Quirk::Texture2D::Create("assets/Images/Launcher/createProject.png");
 
-			ProjectManager::LoadRecentProjectsList("RecentProjects.yaml");
+            Quirk::ProjectManager::LoadRecentProjectsList("RecentProjects.yaml");
 
 			// reserving some storage to get input through imgui
 			m_TempProject.Title = "Untitled";
@@ -40,10 +40,10 @@ namespace Quirk {
 		}
 
 		virtual ~LauncherFrame() {
-            ProjectManager::SaveRecentProjectsList("RecentProjects.yaml");
+            Quirk::ProjectManager::SaveRecentProjectsList("RecentProjects.yaml");
 		}
 
-		virtual bool OnEvent(Event& event) override { return false; }
+		virtual bool OnEvent(Quirk::Event& event) override { return false; }
 		virtual void OnUpdate()			   override {}
 		virtual void OnImguiUiUpdate()     override;
 
@@ -53,15 +53,15 @@ namespace Quirk {
 		void SetColorTheme();
 
 	private:
-		Ref<Texture2D> m_ProjectIcon;
-		Ref<Texture2D> m_OpenProjectIcon;
-		Ref<Texture2D> m_CreateProjectIcon;
+		Quirk::Ref<Quirk::Texture2D> m_ProjectIcon;
+		Quirk::Ref<Quirk::Texture2D> m_OpenProjectIcon;
+		Quirk::Ref<Quirk::Texture2D> m_CreateProjectIcon;
 		LauncherState  m_State;
 
 		// used for temporary things (in the creation of new project)
 		// some storage should be reserved to the member strings even when the strings are empty 
 		// so that it could be used for input from imgui
-		ProjectMetadata m_TempProject;
+        Quirk::ProjectMetadata m_TempProject;
 		std::string     m_TempProjPath;
 	};
 

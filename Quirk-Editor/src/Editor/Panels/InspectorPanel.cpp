@@ -9,10 +9,10 @@
 #include "Core/Imgui/ImguiUIUtility.h"
 #include "Core/Assets/Geometry/PrimitiveMeshGenerator.h"
 
-namespace Quirk {
+namespace QuirkEditor {
 
 	template<typename T, typename function>
-	void DrawComponentNode(EditorFrame* parentFrame, const std::string& label, Entity& entity, function uiFunction) {
+	void DrawComponentNode(EditorFrame* parentFrame, const std::string& label, Quirk::Entity& entity, function uiFunction) {
 		if (!entity.HasComponent<T>())
 			return;
 
@@ -26,7 +26,7 @@ namespace Quirk {
 		float treeNodeWidth = ImGui::GetContentRegionAvail().x;
 
 		ImGui::PushStyleColor(ImGuiCol_Text, Theme::GetColor(ColorName::DarkText));
-		ImGui::PushFont(FontManager::GetFont("ComponentTreeNode"));
+		ImGui::PushFont(Quirk::FontManager::GetFont("ComponentTreeNode"));
 		bool treeNodeOpened = ImGui::TreeNodeEx((void*)typeid(T).hash_code(), treeNodeFlags, label.c_str());
 		ImGui::PopFont();
 
@@ -63,7 +63,7 @@ namespace Quirk {
 
 	void InspectorPanel::OnImguiUiUpdate() {
 		auto parentFrame  = (EditorFrame*)GetParentFrame();
-		Entity& entity    = parentFrame->GetSelectedEntity();
+        Quirk::Entity& entity    = parentFrame->GetSelectedEntity();
 
 		// stopping further processing if no entity is selected in scene hierarcy
 		if (entity.IsInvalidEntity()) {
@@ -71,17 +71,17 @@ namespace Quirk {
 		}
 
 		ImGui::PushStyleColor(ImGuiCol_Border, Theme::GetColor(ColorName::PopupBorder));
-		ImFont* labelFont = FontManager::GetFont("PropertyLabel");
+		ImFont* labelFont = Quirk::FontManager::GetFont("PropertyLabel");
 
-		if (entity.HasComponent<TagComponent>()) {
-			std::string& tag = entity.GetComponent<TagComponent>().Tag;
+		if (entity.HasComponent<Quirk::TagComponent>()) {
+			std::string& tag = entity.GetComponent<Quirk::TagComponent>().Tag;
 
 			char entityName[128];
 			std::memset(entityName, 0, sizeof(entityName));
 			std::memcpy(entityName, (void*)tag.c_str(), tag.size());
 
 			ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(10, ImGui::GetStyle().FramePadding.y));
-			ImguiUIUtility::Text("Tag", labelFont);
+            Quirk::ImguiUIUtility::Text("Tag", labelFont);
 
 			ImGui::SameLine(0.0f, 15.0f);
 			if (ImGui::InputText("##tag", entityName, sizeof(entityName))) {			
@@ -92,24 +92,24 @@ namespace Quirk {
 			ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 10.0f);
 		}
 
-		DrawComponentNode<TransformComponent>(parentFrame, "Transforms", entity, [&](TransformComponent& component) {
-			ImFont* buttonFont = FontManager::GetFont(FontWeight::Bold, 18);
-			ImFont* valuesFont = FontManager::GetFont("DragFloatValue");
+		DrawComponentNode<Quirk::TransformComponent>(parentFrame, "Transforms", entity, [&](Quirk::TransformComponent& component) {
+			ImFont* buttonFont = Quirk::FontManager::GetFont(Quirk::FontWeight::Bold, 18);
+			ImFont* valuesFont = Quirk::FontManager::GetFont("DragFloatValue");
 
 			// width of word "Position" is largest among the three also took extra 3 letters space as "xxx" for padding 
 			auto size = ImGui::CalcTextSize("Positionxxx");
 
-			ImguiUIUtility::DrawFloat3("Position", glm::value_ptr(component.Translation), 0.0f, 0.1f, size.x, labelFont, buttonFont, valuesFont);
+            Quirk::ImguiUIUtility::DrawFloat3("Position", glm::value_ptr(component.Translation), 0.0f, 0.1f, size.x, labelFont, buttonFont, valuesFont);
 
 			glm::vec3 rotation = glm::degrees(component.Rotation);
-			if (ImguiUIUtility::DrawFloat3("Rotation", glm::value_ptr(rotation), 0.0f, 0.1f, size.x, labelFont, buttonFont, valuesFont)) {
+			if (Quirk::ImguiUIUtility::DrawFloat3("Rotation", glm::value_ptr(rotation), 0.0f, 0.1f, size.x, labelFont, buttonFont, valuesFont)) {
 				component.Rotation = glm::radians(rotation);
 			}
 
-			ImguiUIUtility::DrawFloat3("Scale", glm::value_ptr(component.Scale), 1.0f, 0.1f, size.x, labelFont, buttonFont, valuesFont);
+            Quirk::ImguiUIUtility::DrawFloat3("Scale", glm::value_ptr(component.Scale), 1.0f, 0.1f, size.x, labelFont, buttonFont, valuesFont);
 		});
 
-		DrawComponentNode<SpriteRendererComponent>(parentFrame, "Sprite Renderer", entity, [&](SpriteRendererComponent& component) {
+		DrawComponentNode<Quirk::SpriteRendererComponent>(parentFrame, "Sprite Renderer", entity, [&](Quirk::SpriteRendererComponent& component) {
 			std::string texturePathStr = "No Texture";
 			if (component.Texture != nullptr) {
 				//texturePathStr = component.Texture->GetPath().filename().string();
@@ -123,10 +123,10 @@ namespace Quirk {
 				ImGui::TableSetupColumn("propertiesValue", ImGuiTableColumnFlags_NoResize);
 
 				ImGui::TableNextColumn();
-				ImguiUIUtility::Text("Color", labelFont);
+                Quirk::ImguiUIUtility::Text("Color", labelFont);
 
 				ImGui::TableNextColumn();
-				ImGui::PushFont(FontManager::GetFont("DragFloatValue"));
+				ImGui::PushFont(Quirk::FontManager::GetFont("DragFloatValue"));
 				ImGui::ColorEdit4("##color", glm::value_ptr(component.Color));
 				ImGui::PopFont();
 
@@ -136,7 +136,7 @@ namespace Quirk {
 				float offset = (columnHeight - textHeight) * 0.5f;
 				ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(10, offset));
 
-				ImguiUIUtility::Text("Texture", labelFont);
+                Quirk::ImguiUIUtility::Text("Texture", labelFont);
 
 				ImGui::TableNextColumn();
 				ImGui::InputText("##texture0", (char*)texturePathStr.c_str(), texturePathStr.size(), ImGuiInputTextFlags_ReadOnly);
@@ -145,7 +145,7 @@ namespace Quirk {
 				if (ImGui::BeginDragDropTarget()) {
 					const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("IMAGE_PATH");
 					if (payload) {
-						component.Texture = Texture2D::Create(**(std::filesystem::path**)payload->Data);
+						component.Texture = Quirk::Texture2D::Create(**(std::filesystem::path**)payload->Data);
 					}
 
 					ImGui::EndDragDropTarget();
@@ -154,20 +154,20 @@ namespace Quirk {
 				ImGui::SameLine(0.0f, 0.0f);
 				ImTextureID uploadImageIconId = (ImTextureID)(intptr_t)m_UploadImage->GetRendererId();
 				if (ImGui::ImageButton("uploadImageButton", uploadImageIconId, { columnHeight -6.0f, columnHeight -6.0f }, { 0, 1 }, { 1, 0 })) {
-					FileFilter filters[] = {
+                    Quirk::FileFilter filters[] = {
 						{L"image",		L"*.png;*.JPG;*.JPEG*.jpg;*.jpeg"}
 					};
 
-					FileDialogSpecification fileDialogSpec;
+                    Quirk::FileDialogSpecification fileDialogSpec;
 					fileDialogSpec.Title = L"Select Texture";
 					fileDialogSpec.FileNameLabel = L"Texture Name";
 					fileDialogSpec.Filters = filters;
-					fileDialogSpec.NoOfFilters = sizeof(filters) / sizeof(FileFilter);
+					fileDialogSpec.NoOfFilters = sizeof(filters) / sizeof(Quirk::FileFilter);
 					fileDialogSpec.ParentWindow = &((EditorFrame*)GetParentFrame())->GetWindow();
 
 					std::filesystem::path filePath;
-					if (FileDialog::OpenFile(fileDialogSpec, filePath)) {
-						component.Texture = Texture2D::Create(filePath);
+					if (Quirk::FileDialog::OpenFile(fileDialogSpec, filePath)) {
+						component.Texture = Quirk::Texture2D::Create(filePath);
 					}
 				}
 				if (ImGui::IsItemHovered()) {
@@ -196,7 +196,7 @@ namespace Quirk {
 			ImGui::GetStyle().CellPadding = cellPadding;
 		});
 
-		DrawComponentNode<CameraComponent>(parentFrame, "Camera", entity, [labelFont] (CameraComponent& component) {
+		DrawComponentNode<Quirk::CameraComponent>(parentFrame, "Camera", entity, [labelFont] (Quirk::CameraComponent& component) {
 			int currentProjection = component.Camera.GetProjectionType();
 			const char* projectionTypes[] = { "Perspective", "Orthographic" };
 
@@ -204,14 +204,14 @@ namespace Quirk {
 				ImGui::TableNextRow();
 
 				ImGui::TableNextColumn();
-				ImguiUIUtility::Text("Is Primary", labelFont);
+                Quirk::ImguiUIUtility::Text("Is Primary", labelFont);
 				ImGui::TableNextColumn();
 				ImGui::Checkbox("##isPrimaryCamera", &component.IsPrimary);
 
 				ImGui::TableNextRow();
 
 				ImGui::TableNextColumn();
-				ImguiUIUtility::Text("Fixed Ratio", labelFont);
+                Quirk::ImguiUIUtility::Text("Fixed Ratio", labelFont);
 				ImGui::TableNextColumn();
 				ImGui::Checkbox("##isFixedRatio", &component.FixedAspectRatio);
 
@@ -222,14 +222,14 @@ namespace Quirk {
 				ImGui::TableSetupColumn("propertiesLable", ImGuiTableColumnFlags_WidthFixed);
 
 				ImGui::TableNextColumn();
-				ImguiUIUtility::Text("Projection Type", labelFont);
+                Quirk::ImguiUIUtility::Text("Projection Type", labelFont);
 
 				ImGui::TableNextColumn();
 
 				ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(10, ImGui::GetStyle().FramePadding.y));
 				ImGui::PushStyleColor(ImGuiCol_Button, Theme::GetColor(ColorName::DropdownButton));
 				if (ImGui::Combo("##projectionTypeSelection", &currentProjection, projectionTypes, IM_ARRAYSIZE(projectionTypes))) {
-					auto projectionType = (currentProjection == 1) ? SceneCamera::ProjectionType::Orthographic : SceneCamera::ProjectionType::Perspective;
+					auto projectionType = (currentProjection == 1) ? Quirk::SceneCamera::ProjectionType::Orthographic : Quirk::SceneCamera::ProjectionType::Perspective;
 					component.Camera.SetProjectionType(projectionType);
 				}
 				ImGui::PopStyleColor();
@@ -245,7 +245,7 @@ namespace Quirk {
 
 				ImGui::TableNextRow();
 				ImGui::TableNextColumn();
-				ImguiUIUtility::Text("Near Plane", labelFont);
+                Quirk::ImguiUIUtility::Text("Near Plane", labelFont);
 
 				ImGui::TableNextColumn();
 				if (ImGui::DragFloat("##nearPlane", &nearPlane, 0.1f, 0.0f, 0.0f, "%.2f"))
@@ -253,7 +253,7 @@ namespace Quirk {
 
 				ImGui::TableNextRow();
 				ImGui::TableNextColumn();
-				ImguiUIUtility::Text("Far Plane", labelFont);
+                Quirk::ImguiUIUtility::Text("Far Plane", labelFont);
 
 				ImGui::TableNextColumn();
 				if (ImGui::DragFloat("##farPlane", &farPlane, 0.1f, 0.0f, 0.0f, "%.2f"))
@@ -261,7 +261,7 @@ namespace Quirk {
 
 				ImGui::TableNextRow();
 				ImGui::TableNextColumn();
-				ImguiUIUtility::Text("Field Of View (FOV)", labelFont);
+                Quirk::ImguiUIUtility::Text("Field Of View (FOV)", labelFont);
 
 				ImGui::TableNextColumn();
 				if (ImGui::DragFloat("##fieldOfView", &fov, 0.1f, 0.0f, 70.0f, "%.2f"))
@@ -276,7 +276,7 @@ namespace Quirk {
 
 				ImGui::TableNextRow();
 				ImGui::TableNextColumn();
-				ImguiUIUtility::Text("Near Plane", labelFont);
+                Quirk::ImguiUIUtility::Text("Near Plane", labelFont);
 
 				ImGui::TableNextColumn();
 				if (ImGui::DragFloat("##orthographicNear", &orthographicNear, 0.1f, 0.0f, 0.0f, "%.2f"))
@@ -284,7 +284,7 @@ namespace Quirk {
 
 				ImGui::TableNextRow();
 				ImGui::TableNextColumn();
-				ImguiUIUtility::Text("Far Plane", labelFont);
+                Quirk::ImguiUIUtility::Text("Far Plane", labelFont);
 
 				ImGui::TableNextColumn();
 				if (ImGui::DragFloat("##orthographicFar", &orthographicFar, 0.1f, 0.0f, 0.0f, "%.2f"))
@@ -292,7 +292,7 @@ namespace Quirk {
 
 				ImGui::TableNextRow();
 				ImGui::TableNextColumn();
-				ImguiUIUtility::Text("Orthographic Size", labelFont);
+                Quirk::ImguiUIUtility::Text("Orthographic Size", labelFont);
 
 				ImGui::TableNextColumn();
 				if (ImGui::DragFloat("##orthographicSize", &orthographicSize, 0.1f, 0.0f, 70.0f, "%.2f"))
@@ -302,7 +302,7 @@ namespace Quirk {
 			}
 		});
 
-		DrawComponentNode<MeshRendererComponent>(parentFrame, "Mesh", entity, [labelFont](MeshRendererComponent& component) {
+		DrawComponentNode<Quirk::MeshRendererComponent>(parentFrame, "Mesh", entity, [labelFont](Quirk::MeshRendererComponent& component) {
 			component.MeshObject.Type;
 			const char* meshTypes[] = { "Select", "Cube" };
 			int currentType = (int)component.MeshObject.Type;
@@ -311,7 +311,7 @@ namespace Quirk {
 			ImGui::SameLine();
 			if (ImGui::Combo("##meshTypeSelection", &currentType, meshTypes, IM_ARRAYSIZE(meshTypes))) {
 				if (currentType == 1) {
-					component.MeshObject = PrimitiveMeshGenerator::Generate(MeshType::Cube);
+					component.MeshObject = Quirk::PrimitiveMeshGenerator::Generate(Quirk::MeshType::Cube);
 				}
 			}
 
@@ -332,14 +332,14 @@ namespace Quirk {
 			ImGui::DragFloat("##Shininess", &component.MaterialProperties.Shininess, 0.1f);
 		});
 
-		DrawComponentNode<LightComponent>(parentFrame, "Light", entity, [labelFont](LightComponent& component) {
+		DrawComponentNode<Quirk::LightComponent>(parentFrame, "Light", entity, [labelFont](Quirk::LightComponent& component) {
 			const char* lightTypes[] = { "Select", "Point" };
 			int currentType = (int)component.Type;
 
 			ImGui::Text("Light Type");
 			ImGui::SameLine();
 			if (ImGui::Combo("##lightTypeSelection", &currentType, lightTypes, IM_ARRAYSIZE(lightTypes))) {
-				component.Type = (LightType)currentType;
+				component.Type = (Quirk::LightType)currentType;
 			}
 
 			ImGui::Text("Color");
@@ -376,7 +376,7 @@ namespace Quirk {
 			ImGui::PopStyleColor();
 
 			if (ImGui::BeginPopupContextItem(NULL, ImGuiPopupFlags_MouseButtonLeft)) {
-				ComponentTypesIterator::Iterate<ComponentTypes::NonIdentifiers>([&entity] <typename T> (const std::string& componentName) -> void {
+                Quirk::ComponentTypesIterator::Iterate<Quirk::ComponentTypes::NonIdentifiers>([&entity] <typename T> (const std::string& componentName) -> void {
 					if (!entity.HasComponent<T>() && ImGui::MenuItem(componentName.c_str())) {
 						entity.AddComponent<T>();
 					}

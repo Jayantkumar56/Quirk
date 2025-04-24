@@ -4,7 +4,7 @@
 
 #include "LauncherTitleBar.h"
 
-namespace Quirk {
+namespace QuirkEditor {
 
     void LauncherTitleBar::SetImguiProperties() {
 		ImGuiStyle& style = ImGui::GetStyle();

@@ -4,7 +4,7 @@
 
 #include "Editor/Theme.h"
 
-namespace Quirk {
+namespace QuirkEditor {
 
 	ImVec4 Theme::GetColor(ColorName color) {
 		switch (color) {

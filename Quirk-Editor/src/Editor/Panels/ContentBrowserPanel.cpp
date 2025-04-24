@@ -6,7 +6,7 @@
 #include "Core/Imgui/ImguiUI.h"
 #include "Core/Imgui/ImguiUIUtility.h"
 
-namespace Quirk {
+namespace QuirkEditor {
 
 	static bool IsImagePath(const std::string& extension) {
 		bool isImage = false;
@@ -73,7 +73,7 @@ namespace Quirk {
 					}
 				}
 
-				ImguiUIUtility::TextWrappedCentered(directoryName.c_str());
+                Quirk::ImguiUIUtility::TextWrappedCentered(directoryName.c_str());
 			}
 
 			ImGui::EndTable();
@@ -177,7 +177,7 @@ namespace Quirk {
 			cursorPos.x += 15.0f;
 
 			std::string directory = m_CurrentDirectory.string();
-			ImFont* directoryFont = FontManager::GetFont(FontWeight::Regular, 22);
+			ImFont* directoryFont = Quirk::FontManager::GetFont(Quirk::FontWeight::Regular, 22);
 			drawList->AddText(directoryFont, directoryFont->FontSize, cursorPos, 0xFFFFFFFF, directory.c_str(), NULL);
 		}
 	}

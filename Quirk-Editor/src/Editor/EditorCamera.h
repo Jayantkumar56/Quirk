@@ -6,18 +6,18 @@
 
 #include <glm/glm.hpp>
 
-namespace Quirk {
+namespace QuirkEditor {
 
 	// EditorCamera Taken from Hazel 2D Game Engine by Cherno
 	// https://github.com/TheCherno/Hazel/blob/1feb70572fa87fa1c4ba784a2cfeada5b4a500db/Hazel/src/Hazel/Renderer/EditorCamera.cpp
 
-	class EditorCamera : public Camera {
+	class EditorCamera : public Quirk::Camera {
 	public:
 		EditorCamera() = default;
 		EditorCamera(float fov, float aspectRatio, float nearClip, float farClip);
 
 		bool OnUpdate();
-		bool OnEvent(Event& e);
+		bool OnEvent(Quirk::Event& e);
 
 		inline float GetDistance() const { return m_Distance; }
 		inline void SetDistance(float distance) { m_Distance = distance; }
@@ -40,7 +40,7 @@ namespace Quirk {
 		void UpdateProjection();
 		void UpdateView();
 
-		bool OnMouseScroll(MouseScrolledEvent& e);
+		bool OnMouseScroll(Quirk::MouseScrolledEvent& e);
 
 		void MousePan(const glm::vec2& delta);
 		void MouseRotate(const glm::vec2& delta);

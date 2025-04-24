@@ -11,17 +11,22 @@
 #include "Theme.h"
 
 
-namespace Quirk {
+namespace QuirkEditor {
 
-	class EditorFrame : public Frame<PanelPolicy::Enabled, TitleBarPolicy::Enabled> {
+	class EditorFrame : 
+        public Quirk::Frame<
+            Quirk::PanelPolicy::Enabled, 
+            Quirk::TitleBarPolicy::Enabled
+        >
+    {
 	public:
-		EditorFrame(WindowSpecification& spec) :
+		EditorFrame(Quirk::WindowSpecification& spec) :
 				Frame            (spec),
 				m_SelectedEntity (    ),
-				m_MainScene      (CreateRef<Scene>("New Scene", 0, 0))
+				m_MainScene      (Quirk::CreateRef<Quirk::Scene>("New Scene", 0, 0))
 		{
-			Renderer::InitRenderer();
-			Renderer2D::InitRenderer();
+			Quirk::Renderer::InitRenderer();
+			Quirk::Renderer2D::InitRenderer();
 			Theme::SetTheme(ThemeName::DarkTheme);
 
 			SetTitleBar<EditorTitleBar>(this);
@@ -34,7 +39,7 @@ namespace Quirk {
 
 		~EditorFrame() = default;
 
-		virtual bool OnEvent(Event& event) override { return false; }
+		virtual bool OnEvent(Quirk::Event& event) override { return false; }
 		virtual void OnUpdate()			   override { }
 
 		virtual void OnImguiUiUpdate() override {
@@ -42,12 +47,12 @@ namespace Quirk {
 			ImGui::SetKeyOwner(ImGuiKey_LeftAlt, ImGuiKeyOwner_Any, ImGuiInputFlags_LockThisFrame);
 		}
 
-		inline Ref<Scene>&  GetMainScene()      { return m_MainScene;      }
-		inline Entity&      GetSelectedEntity() { return m_SelectedEntity; }
+		inline Quirk::Ref<Quirk::Scene>&  GetMainScene()      { return m_MainScene;      }
+		inline Quirk::Entity&             GetSelectedEntity() { return m_SelectedEntity; }
 
 	private:
-		Entity     m_SelectedEntity;
-		Ref<Scene> m_MainScene;
+		Quirk::Entity     m_SelectedEntity;
+		Quirk::Ref<Quirk::Scene> m_MainScene;
 	};
 
 }

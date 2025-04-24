@@ -8,7 +8,7 @@
 
 #include <imgui_internal.h>
 
-namespace Quirk {
+namespace QuirkEditor {
 
 	void SceneHierarchyPanel::SetImguiProperties() {
 		ImGuiWindowClass window_class;
@@ -17,8 +17,8 @@ namespace Quirk {
 	}
 
 	void SceneHierarchyPanel::OnImguiUiUpdate(){
-		Ref<Scene>& scene      = ((EditorFrame*)GetParentFrame())->GetMainScene();
-		Entity& selectedEntity = ((EditorFrame*)GetParentFrame())->GetSelectedEntity();
+        Quirk::Ref<Quirk::Scene>& scene      = ((EditorFrame*)GetParentFrame())->GetMainScene();
+        Quirk::Entity& selectedEntity = ((EditorFrame*)GetParentFrame())->GetSelectedEntity();
 
 		ImGui::PushStyleColor(ImGuiCol_Border, Theme::GetColor(ColorName::PopupBorder));
 
@@ -37,8 +37,8 @@ namespace Quirk {
 		ImGui::PopStyleColor();
 		ImGui::PopStyleVar();
 
-		for (auto entity : scene->m_Registry.view<entt::entity>()) {
-			Entity entityToShow = { entity, scene.get()};
+		for (auto entity : scene->GetRegistry().view<entt::entity>()) {
+            Quirk::Entity entityToShow = { entity, scene.get()};
 			DrawEntityNode(entityToShow, selectedEntity);
 		}
 
@@ -60,11 +60,11 @@ namespace Quirk {
 		ImGui::PopStyleColor();
 	}
 
-	void SceneHierarchyPanel::DrawEntityNode(Entity entity, Entity& selectedEntity) {
+	void SceneHierarchyPanel::DrawEntityNode(Quirk::Entity entity, Quirk::Entity& selectedEntity) {
 		bool shouldDeleteEntity = false;
 		float windowPadding		= GImGui->Style.WindowPadding.x;
-		const std::string& tag	= entity.GetComponent<TagComponent>().Tag;
-		uint64_t uuid			= entity.GetComponent<UUIDComponent>().Uuid;
+		const std::string& tag	= entity.GetComponent<Quirk::TagComponent>().Tag;
+		uint64_t uuid			= entity.GetComponent<Quirk::UUIDComponent>().Uuid;
 		ImGui::PushID((int)uuid);
 
 		ImGuiTreeNodeFlags flags = 0;
@@ -102,11 +102,13 @@ namespace Quirk {
 
 		if (openAddComponentMenu) { ImGui::OpenPopup("AddComponentsMenu"); }
 		if (ImGui::BeginPopup("AddComponentsMenu")) {
-			ComponentTypesIterator::Iterate<ComponentTypes::NonIdentifiers>([&entity] <typename T> (const std::string& componentName) -> void {
-				if (!entity.HasComponent<T>() && ImGui::MenuItem(componentName.c_str())) {
-					entity.AddComponent<T>();
-				}
-			});
+            Quirk::ComponentTypesIterator::Iterate<Quirk::ComponentTypes::NonIdentifiers>(
+                [&entity] <typename T> (const std::string& componentName) -> void {
+				    if (!entity.HasComponent<T>() && ImGui::MenuItem(componentName.c_str())) {
+					    entity.AddComponent<T>();
+				    }
+			    }
+            );
 
 			ImGui::EndPopup();
 		}
@@ -134,7 +136,7 @@ namespace Quirk {
 			if (entity == selectedEntity) 
 				selectedEntity = {};
 
-			((Scene*)entity)->DestroyEntity(entity);
+			((Quirk::Scene*)entity)->DestroyEntity(entity);
 		}
 	}
 
