@@ -5,7 +5,7 @@
 #include "Quirk.h"
 #include "Launcher/LauncherTitleBar.h"
 
-#include "EditorCore/ProjectManager.h"
+#include "Base/ProjectManager.h"
 
 namespace QuirkEditor {
 

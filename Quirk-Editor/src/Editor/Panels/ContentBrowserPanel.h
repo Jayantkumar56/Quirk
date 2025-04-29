@@ -5,7 +5,7 @@
 #include <Quirk.h>
 
 #include "Core/Assets/RenderAssets/Texture.h"
-#include "EditorCore/ProjectManager.h"
+#include "Base/ProjectManager.h"
 
 #include <filesystem>
 #include <stack>

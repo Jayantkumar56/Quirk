@@ -94,7 +94,7 @@ namespace QuirkEditor {
 
 #define REGISTER_PROPERTY_ACCESS(PropName, Getter, Setter, AccessMode)                                                      \
     struct PropName {                                                                                                       \
-        using Type = std::remove_cvref_t<decltype(((_InternalReflectingType*)nullptr)->Getter())>;                          \
+        using Type = std::remove_cvref_t<decltype(((ReflectingType*)nullptr)->Getter())>;                                   \
                                                                                                                             \
         static constexpr std::string_view PropertyName  = #PropName;                                                        \
         static constexpr auto   Accessibility           = AccessMode;                                                       \
@@ -104,8 +104,8 @@ namespace QuirkEditor {
         requires (Writable)                                                                                                 \
         static inline void Set(Obj&& obj, Args&&... args) {                                                                 \
             static_assert(                                                                                                  \
-                std::is_same_v<std::remove_cvref_t<Obj>, _InternalReflectingType> ||                                        \
-                std::is_same_v<std::remove_cvref_t<Obj>, _InternalReflectingType*>,                                         \
+                std::is_same_v<std::remove_cvref_t<Obj>, ReflectingType> ||                                                 \
+                std::is_same_v<std::remove_cvref_t<Obj>, ReflectingType*>,                                                  \
                 "Wrong object type passed to Set()"                                                                         \
             );                                                                                                              \
                                                                                                                             \
@@ -118,8 +118,8 @@ namespace QuirkEditor {
         template<typename Obj>                                                                                              \
         static inline decltype(auto) Get(Obj&& obj) {                                                                       \
             static_assert(                                                                                                  \
-                std::is_same_v<std::remove_cvref_t<Obj>, _InternalReflectingType> ||                                        \
-                std::is_same_v<std::remove_cvref_t<Obj>, _InternalReflectingType*>,                                         \
+                std::is_same_v<std::remove_cvref_t<Obj>, ReflectingType> ||                                                 \
+                std::is_same_v<std::remove_cvref_t<Obj>, ReflectingType*>,                                                  \
                 "Wrong object type passed to Set()"                                                                         \
             );                                                                                                              \
                                                                                                                             \
@@ -137,7 +137,7 @@ namespace QuirkEditor {
 #define REGISTER_REFLECTION(TYPE_, TITLE_, ...)                                                                             \
     template<>                                                                                                              \
     struct ::QuirkEditor::Reflect<TYPE_> {                                                                                  \
-        using _InternalReflectingType  = TYPE_;                                                                             \
+        using ReflectingType  = TYPE_;                                                                                      \
         static constexpr std::string_view TypeName = TITLE_;                                                                \
                                                                                                                             \
         FOR_EACH(REGISTER_PROP_TUPLE, __VA_ARGS__)                                                                          \

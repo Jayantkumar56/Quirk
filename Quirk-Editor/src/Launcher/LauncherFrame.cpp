@@ -10,7 +10,7 @@
 #include "Editor/EditorFrame.h"
 #include "QuirkEditorApp.h"
 
-#include "EditorCore/ProjectManager.h"
+#include "Base/ProjectManager.h"
 
 namespace QuirkEditor {
 

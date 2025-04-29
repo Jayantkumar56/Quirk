@@ -51,13 +51,6 @@ namespace QuirkEditor {
     // ============================================================================================================================
 
 
-#define ENUM_STR_TO_VAL_PAIR(...)                                                                           \
-        { TUPLE_GET_SECOND(__VA_ARGS__),  RegisteredType::TUPLE_GET_FIRST(__VA_ARGS__) }
-
-#define ENUM_VAL_TO_STR_PAIR(...)                                                                           \
-        case RegisteredType::TUPLE_GET_FIRST(__VA_ARGS__):   return TUPLE_GET_SECOND(__VA_ARGS__);
-
-
     // Fallback EnumRegistry<EnumType> stub (used when no reflection is registered).
     // NOTE: No static_assert here!
     // In MSVC, even SFINAE/concepts-based checks like IsEnumRegistered
@@ -81,6 +74,15 @@ namespace QuirkEditor {
 
     template<typename T>
     constexpr bool HasEnumReflection = IsEnumRegistered<T>::value;
+
+
+
+
+#define ENUM_STR_TO_VAL_PAIR(...)                                                                                          \
+        { TUPLE_GET_SECOND(__VA_ARGS__),  RegisteredType::TUPLE_GET_FIRST(__VA_ARGS__) }
+
+#define ENUM_VAL_TO_STR_PAIR(...)                                                                                          \
+        case RegisteredType::TUPLE_GET_FIRST(__VA_ARGS__):   return TUPLE_GET_SECOND(__VA_ARGS__);
 
 
 
