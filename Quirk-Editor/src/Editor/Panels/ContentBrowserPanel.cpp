@@ -15,13 +15,13 @@ namespace QuirkEditor {
 		return isImage;
 	}
 
-	void ContentBrowserPanel::SetImguiProperties() {
+	void ContentBrowserPanel::SetUiProperties() {
 		ImGuiWindowClass window_class;
 		window_class.DockNodeFlagsOverrideSet = ImGuiDockNodeFlags_NoWindowMenuButton;
 		ImGui::SetNextWindowClass(&window_class);
 	}
 
-	void ContentBrowserPanel::OnImguiUiUpdate() {
+	void ContentBrowserPanel::OnUiUpdate() {
 		bool updatedCurrentDirectory = false;
 
 		// menubar contains all the navigation buttons and current directory

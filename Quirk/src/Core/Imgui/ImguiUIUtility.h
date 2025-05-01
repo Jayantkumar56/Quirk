@@ -17,5 +17,7 @@ namespace Quirk { namespace ImguiUIUtility {
 					ImFont* lableFont  = ImGui::GetIO().Fonts->Fonts[0],  ImFont* buttonFont = ImGui::GetIO().Fonts->Fonts[0],
 					ImFont* valuesFont = ImGui::GetIO().Fonts->Fonts[0]);
 
+
+
 }}
 

@@ -17,17 +17,17 @@ namespace Quirk {
 		Panel(const char* title, ImGuiWindowFlags flags = 0) : m_Title(title), m_WindowFlags(flags) { }
 		virtual ~Panel() = default;
 
-		virtual void OnUpdate()             { }
-		virtual void OnImguiUiUpdate()      { }
-		virtual bool OnEvent(Event& event)  { return false; }
+		virtual void OnUpdate()            { }
+		virtual void OnUiUpdate()          { }
+		virtual bool OnEvent(Event& event) { return false; }
 
 		// SetImguiWindowProperties is called before OnImguiUiUpdate
 		// thus could be used to set Imgui properties which are set before calling ImGui::Begin()
-		virtual void SetImguiProperties()   { }
+		virtual void SetUiProperties()   { }
 
 		// UnSetImguiProperties is called after OnImguiUiUpdate
 		// thus could be used to unset Imgui properties which are set in SetImguiProperties()
-		virtual void UnSetImguiProperties() { }
+		virtual void UnsetUiProperties() { }
 
 		// since Panels are managed by the frame manager thus by just setting m_PanelOpen to false
 		// will make the frame manager close this Panels
@@ -39,14 +39,14 @@ namespace Quirk {
 		inline void       SetWindowFlags(ImGuiWindowFlags flags) noexcept { m_WindowFlags = flags; }
 
 	private:
-		inline void OnUiUpdate() {
-			SetImguiProperties();
+		inline void UpdateUi() {
+            SetUiProperties();
 
 			ImGui::Begin(m_Title, &m_PanelOpen, m_WindowFlags);
-			OnImguiUiUpdate();
+            OnUiUpdate();
 			ImGui::End();
 
-			UnSetImguiProperties();
+            UnsetUiProperties();
 		}
 
 	private:
@@ -103,7 +103,7 @@ namespace Quirk {
 
         inline void UpdatePanelsUI() {
             for (size_t j = 0; j < m_Panels.size(); ++j) {
-                m_Panels[j]->OnUiUpdate();
+                m_Panels[j]->UpdateUi();
             }
         }
 

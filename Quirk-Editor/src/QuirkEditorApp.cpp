@@ -33,10 +33,10 @@ namespace QuirkEditor {
         Quirk::WindowSpecification tempSpec{
 			.Title             {"Quirk Engine"},
 			.Width             {1100},				   .Height    {780},
+			.MinWidth          {1100},				   .MinHeight {780},
 			.PosX              {200},				   .PosY      {50},
 			.VSyncOn           {true},				   .Maximized {false},
-			.CustomTitleBar    {true},
-			.MinWidth          {1100},				   .MinHeight {780}
+			.CustomTitleBar    {true}
 		};
 
 		AddFrame<LauncherFrame>(tempSpec);
@@ -51,14 +51,14 @@ namespace QuirkEditor {
         Quirk::WindowSpecification tempSpec{
 			.Title             {"Quirk Editor"},
 			.Width             {1600},				   .Height    {900},
+			.MinWidth          {1600},				   .MinHeight {900},
 			.PosX              {200},				   .PosY      {50},
 			.VSyncOn           {true},				   .Maximized {true},
-			.CustomTitleBar    {true},
-			.MinWidth          {1600},				   .MinHeight {900}
+			.CustomTitleBar    {true}
 		};
 
 		// AddFrame adds the frame and makes that context to be current
-		Application::Get().AddFrame<EditorFrame>(tempSpec);
+		AddFrame<EditorFrame>(tempSpec);
 	}
 
 	void QuirkEditorApp::LoadFontFiles() {

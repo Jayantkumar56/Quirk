@@ -18,9 +18,9 @@ namespace QuirkEditor {
 
 		virtual void OnUpdate()             override;
 		virtual bool OnEvent(Quirk::Event& event)  override;
-		virtual void SetImguiProperties()   override;
-		virtual void UnSetImguiProperties() override;
-		virtual void OnImguiUiUpdate()      override;
+		virtual void SetUiProperties()   override;
+		virtual void UnsetUiProperties() override;
+		virtual void OnUiUpdate()      override;
 
 		uint16_t GetWidth()						const { return m_PanelWidth;    }
 		uint16_t GetHeight()					const { return m_PanelHeight;   }

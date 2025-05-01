@@ -15,21 +15,31 @@ namespace Quirk {
 
 	struct WindowSpecification {
 		std::string Title;
-		uint16_t	Width; 
-		uint16_t	Height;
 
-		// signifies position of window frame or position of client area when having custom titlebar
-		int32_t	PosX {0};
-		int32_t	PosY {0};
+		uint16_t Width; 
+		uint16_t Height;
+
+		uint16_t MinWidth { 200 };
+        uint16_t MinHeight{ 200 };
+
+		// signifies position of window frame or position of client area when having custom titlebar or no titlebar
+		int32_t	PosX{ 0 };
+		int32_t	PosY{ 0 };
+
 		bool	VSyncOn;
 		bool	Maximized;
 		bool	CustomTitleBar = false;
-
-		uint16_t MinWidth  = 200;
-		uint16_t MinHeight = 200;
 	};
 
 	class Window {
+#if QK_PLATFORM_WINDOWS
+        using NativeWindowType = WindowsWindow;
+#endif // QK_PLATFORM_WINDOWS
+
+        // made native window-object friend, 
+        // so the data could be modified right from the native object
+        friend class NativeWindowType;
+
 	private:
 		enum StateFlags {						// Stored in the m_StateFlags variable as
 			Maximized					=  0,			    /*   1 << 0,   */
@@ -155,12 +165,7 @@ namespace Quirk {
 		// stores all the states flags and boolean properties of the window
 		int m_StateFlags;
 
-		// made native window-object friend, 
-		// so the data could be modified right from the native object
-#if QK_PLATFORM_WINDOWS
-		friend class WindowsWindow;
-		WindowsWindow m_Window;
-#endif // QK_PLATFORM_WINDOWS
+		NativeWindowType m_Window;
 	};
 
 }

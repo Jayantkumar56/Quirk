@@ -6,9 +6,11 @@
 #include "EditorTitleBar.h"
 #include "Panels/SceneViewportPanel.h"
 #include "Panels/SceneHierarchyPanel.h"
-#include "Panels/InspectorPanel.h"
+#include "Panels/InspectorPanel/InspectorPanel.h"
 #include "Panels/ContentBrowserPanel.h"
 #include "Theme.h"
+
+#include "EditorResourceManager.h"
 
 
 namespace QuirkEditor {
@@ -27,6 +29,8 @@ namespace QuirkEditor {
 		{
 			Quirk::Renderer::InitRenderer();
 			Quirk::Renderer2D::InitRenderer();
+
+
 			Theme::SetTheme(ThemeName::DarkTheme);
 
 			SetTitleBar<EditorTitleBar>(this);
@@ -53,6 +57,7 @@ namespace QuirkEditor {
 	private:
 		Quirk::Entity     m_SelectedEntity;
 		Quirk::Ref<Quirk::Scene> m_MainScene;
+        EditorResourceManager m_ResourceManager;
 	};
 
 }

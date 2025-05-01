@@ -11,8 +11,8 @@ namespace QuirkEditor {
 		SceneHierarchyPanel() : Quirk::Panel("Scene Hierarchy") { }
 		~SceneHierarchyPanel() = default;
 
-		virtual void SetImguiProperties() override;
-		virtual void OnImguiUiUpdate()    override;
+		virtual void SetUiProperties() override;
+		virtual void OnUiUpdate()    override;
 
 	private:
 		void DrawEntityNode(Quirk::Entity entity, Quirk::Entity& selectedEntity);

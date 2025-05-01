@@ -13,6 +13,18 @@ namespace QuirkEditor {
     // ============================================================================================================================
     //                                           Global Selection Context
     // ============================================================================================================================
+    // Notes:
+    // 
+    // - all the storage is per type and the containers are static 
+    //   thus only a single global SelectionContext is available right now.
+    //   
+    // TODO:
+    // 
+    // - make the SelectionContext usable as an instance 
+    //   (would enables to create different selection contexts per editor frame for example)
+    //   (mainly to move all the individual containers associated with different types from static space to dynamic space)
+    // 
+    // ----------------------------------------------------------------------------------------------------------------------------
 
     class SelectionContext {
         template<
@@ -258,6 +270,16 @@ namespace QuirkEditor {
             static_cast<SelectionHandle*>(obj)->AccessPolicy::OnSelectedTypeChange(newType);
         }
     };
+
+    // selection handle that only allows one active selection at a time.
+    // automatically clears the selection if a type mismatch occurs.
+    template<typename... Types>
+    using UniqueSelectionHandle = SelectionHandle<SingleActiveSelection, ClearOnTypeMismatch, Types...>;
+
+    // selection handle that allows one active selection per type.
+    // automatically clears the selection if a type mismatch occurs.
+    template<typename... Types>
+    using PerTypeSelectionHandle = SelectionHandle<PerTypeSelection, ClearOnTypeMismatch, Types...>;
 
     // ============================================================================================================================
 

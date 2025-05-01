@@ -27,8 +27,8 @@ namespace QuirkEditor {
 			m_RefreshIcon  = Quirk::Texture2D::Create("assets/Images/refresh.png");
 		}
 
-		virtual void SetImguiProperties() override;
-		virtual void OnImguiUiUpdate()    override;
+		virtual void SetUiProperties() override;
+		virtual void OnUiUpdate()    override;
 
 	private:
 		void DrawMenuBar();

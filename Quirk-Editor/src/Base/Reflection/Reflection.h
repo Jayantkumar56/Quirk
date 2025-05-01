@@ -4,8 +4,11 @@
 
 #include "CommonMacros.h"
 
+#include "Core/Utility/TypeTraits.h"
+
 #include <string_view>
 #include <type_traits>
+
 
 namespace QuirkEditor {
 
@@ -142,15 +145,7 @@ namespace QuirkEditor {
                                                                                                                             \
         FOR_EACH(REGISTER_PROP_TUPLE, __VA_ARGS__)                                                                          \
                                                                                                                             \
-        template<typename... Types>                                                                                         \
-        struct TypeList {                                                                                                   \
-            template<typename Function, typename ...Args>                                                                   \
-            static void ForEach(Function&& func, Args&& ...args) {                                                          \
-                (func.template operator() < Types > (std::forward<Args>(args)...), ...);                                    \
-            }                                                                                                               \
-        };                                                                                                                  \
-                                                                                                                            \
-        using PropertyList = TypeList <                                                                                     \
+        using PropertyList = Quirk::TypeList <                                                                              \
             FOR_EACH_SEP_COMMA(TUPLE_GET_FIRST_4, __VA_ARGS__)                                                              \
         >;                                                                                                                  \
                                                                                                                             \

@@ -8,6 +8,8 @@ workspace "Quirk"
         flags { "LinkTimeOptimization" }
     filter "configurations:Dist"
         flags { "LinkTimeOptimization" }
+    filter "action:vs*"
+        buildoptions { "/Zc:preprocessor" }
 
 
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"

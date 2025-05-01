@@ -3,8 +3,10 @@
 #include "QkEditorpch.h"
 
 #include "SceneViewportPanel.h"
-#include "Core/Input/Input.h"
 #include "Editor/EditorFrame.h"
+#include "Base/SelectionContext.h"
+
+#include "Core/Input/Input.h"
 
 #include <filesystem>
 
@@ -40,7 +42,7 @@ namespace QuirkEditor {
 		return false;
 	}
 
-	void SceneViewportPanel::SetImguiProperties() {
+	void SceneViewportPanel::SetUiProperties() {
 		ImGuiWindowClass window_class;
 		window_class.DockNodeFlagsOverrideSet = ImGuiDockNodeFlags_NoWindowMenuButton;
 		ImGui::SetNextWindowClass(&window_class);
@@ -48,7 +50,7 @@ namespace QuirkEditor {
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 	}
 
-	void SceneViewportPanel::UnSetImguiProperties() {
+	void SceneViewportPanel::UnsetUiProperties() {
 		ImGui::PopStyleVar();
 	}
 
@@ -62,7 +64,7 @@ namespace QuirkEditor {
 			m_RuntimeScene->OnUpdate();
 	}
 
-	void SceneViewportPanel::OnImguiUiUpdate() {
+	void SceneViewportPanel::OnUiUpdate() {
         Quirk::Ref<Quirk::Scene>& scene      = ((EditorFrame*)GetParentFrame())->GetMainScene();
         Quirk::Entity& selectedEntity = ((EditorFrame*)GetParentFrame())->GetSelectedEntity();
 
@@ -114,6 +116,7 @@ namespace QuirkEditor {
 			if (clickedOnImage && !m_ControllingCamera) {
 				int entityId   = GetEntityIdOnClick(imagePos);
 				selectedEntity = (entityId == -1) ? Quirk::Entity() : Quirk::Entity((entt::entity)entityId, scene.get());
+                SelectionContext::SetSelected<Quirk::Entity>(selectedEntity);
 			}
 		}
 	}
