@@ -83,13 +83,13 @@ namespace QuirkEditor {
     // ============================================================================================================================
 
     template<typename TypeList, typename Func, typename ...Args>
-    void ComponentsIterator(Func&& func, Args&& ...args) {
+    void ComponentsIterator(Func&& func, Args& ...args) {
         TypeList::ForEach(
-            [&]<typename Pair, typename Func, typename ...Args>(Func && func, Args&& ...args) {
-            func.template operator() < typename Pair::Type > (Pair::Name, std::forward<Args>(args)...);
-        },
-            std::forward<Func>(func),
-            std::forward<Args>(args)...
+            []<typename Pair, typename Func, typename ...Args>(Func& func, Args& ...args) {
+                func.template operator() < typename Pair::Type > (Pair::Name, args...);
+            },
+            func,
+            args...
         );
     }
 

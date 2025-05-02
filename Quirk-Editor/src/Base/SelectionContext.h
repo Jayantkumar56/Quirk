@@ -178,8 +178,7 @@ namespace QuirkEditor {
     public:
         PerTypeSelection() :
             m_Data(SelectionContext::GetSelected<Types>()...)
-        {
-        }
+        {}
 
         template<typename T>
         T& Get() noexcept { return std::get<T>(m_Data); }

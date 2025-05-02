@@ -15,8 +15,8 @@ namespace QuirkEditor {
             m_IconUpload = Quirk::Texture2D::Create("assets/Images/uploadImage.png");
         }
 
-        inline const Quirk::Texture2D& GetIconRemove() const noexcept { return *m_IconRemove; }
-        inline const Quirk::Texture2D& GetIconUpload() const noexcept { return *m_IconUpload; }
+        inline ImTextureID GetIconRemove() noexcept { return (ImTextureID)(intptr_t)m_IconRemove->GetRendererId(); }
+        inline ImTextureID GetIconUpload() noexcept { return (ImTextureID)(intptr_t)m_IconUpload->GetRendererId(); }
 
     private:
         Quirk::Ref<Quirk::Texture2D> m_IconRemove;

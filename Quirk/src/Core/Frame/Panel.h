@@ -35,8 +35,10 @@ namespace Quirk {
 
 		std::string_view  GetTitle()           noexcept { return m_Title;                    }
 		Window&           GetWindow()          noexcept { return m_ParentFrame->GetWindow(); }
-		inline FrameBase* GetParentFrame()     noexcept { return m_ParentFrame;              }
 		inline void       SetWindowFlags(ImGuiWindowFlags flags) noexcept { m_WindowFlags = flags; }
+
+        template<FrameType T>
+		inline T* GetParentFrameAs() noexcept { return static_cast<T*>(m_ParentFrame); }
 
 	private:
 		inline void UpdateUi() {

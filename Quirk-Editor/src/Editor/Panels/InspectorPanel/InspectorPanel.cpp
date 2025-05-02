@@ -5,6 +5,7 @@
 
 #include "InspectorPanel.h"
 #include "EntityInspectorUI.h"
+#include "Editor/EditorFrame.h"
 
 #include "imgui.h"
 #include "imgui_internal.h"
@@ -20,7 +21,7 @@ namespace QuirkEditor {
 
     void InspectorPanel::OnUiUpdate() {
         if (m_SelectionHandle.Has<Quirk::Entity>()) {
-            InspectorDraw<Quirk::Entity>::Draw(m_SelectionHandle.Get<Quirk::Entity>());
+            InspectorDraw<Quirk::Entity>::Draw(GetParentFrameAs<EditorFrame>(), m_SelectionHandle.Get<Quirk::Entity>());
         }
     }
 

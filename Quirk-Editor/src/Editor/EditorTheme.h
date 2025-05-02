@@ -14,20 +14,20 @@ namespace QuirkEditor {
 		PopupBorder, DarkText, DropdownButton
 	};
 
-	class Theme {
+	class EditorTheme {
 	public:
-		static inline void SetTheme(ThemeName theme) {
+		inline void SetTheme(ThemeName theme) {
 			switch (theme) {
 				case ThemeName::DarkTheme:  SetDarkTheme();	 return;
 				case ThemeName::LightTheme: SetLightTheme();  return;
 			}
 		}
 
-		static ImVec4 GetColor(ColorName color);
+		ImVec4 GetColor(ColorName color);
 
 	private:
-		static void SetDarkTheme();
-		static void SetLightTheme();
+		void SetDarkTheme();
+		void SetLightTheme();
 	};
 
 }

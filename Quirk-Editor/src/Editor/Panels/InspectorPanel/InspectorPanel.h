@@ -5,7 +5,6 @@
 #include "Base/SelectionContext.h"
 
 #include "Core/Frame/Panel.h"
-#include "Core/Assets/RenderAssets/Texture.h"
 #include "Core/Scene/Entity.h"
 #include "Core/Utility/TypeTraits.h"
 
@@ -29,8 +28,8 @@ namespace QuirkEditor {
 
     class InspectorPanel : public Quirk::Panel {
     public:
-        InspectorPanel() : 
-                Quirk::Panel("Inspector") 
+        InspectorPanel() :
+                Quirk::Panel( "Inspector"     )
         {}
 
         ~InspectorPanel() = default;

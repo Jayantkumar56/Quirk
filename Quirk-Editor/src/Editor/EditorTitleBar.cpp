@@ -4,7 +4,7 @@
 
 #include "Quirk.h"
 #include "EditorTitleBar.h"
-#include "Theme.h"
+#include "Editor/EditorTheme.h"
 #include "EditorFrame.h"
 
 namespace QuirkEditor {
@@ -20,8 +20,10 @@ namespace QuirkEditor {
 	}
 
 	void EditorTitleBar::OnImguiUiUpdate() {
-        Quirk::Ref<Quirk::Scene>& scene = ((EditorFrame*)GetParentFrame())->GetMainScene();
-		ImGui::PushStyleColor(ImGuiCol_Border, Theme::GetColor(ColorName::PopupBorder));
+        EditorFrame* frame = GetParentFrameAs<EditorFrame>();
+
+        Quirk::Ref<Quirk::Scene>& scene = frame->GetMainScene();
+		ImGui::PushStyleColor(ImGuiCol_Border, frame->GetTheme().GetColor(ColorName::PopupBorder));
 
 		if (ImGui::BeginMenu("File")) {
 			if (ImGui::MenuItem("Exit")) {
@@ -40,7 +42,7 @@ namespace QuirkEditor {
 				fileDialogSpec.FileNameLabel = L"Scene Name";
 				fileDialogSpec.Filters		 = filters;
 				fileDialogSpec.NoOfFilters	 = sizeof(filters) / sizeof(Quirk::FileFilter);
-				fileDialogSpec.ParentWindow  = &((EditorFrame*)GetParentFrame())->GetWindow();
+				fileDialogSpec.ParentWindow  = &GetWindow();
 
 				std::filesystem::path filePath;
 				if (Quirk::FileDialog::OpenFile(fileDialogSpec, filePath)) {
@@ -60,7 +62,7 @@ namespace QuirkEditor {
 				fileDialogSpec.FileNameLabel = L"Scene Name";
 				fileDialogSpec.Filters		 = filters;
 				fileDialogSpec.NoOfFilters	 = sizeof(filters) / sizeof(Quirk::FileFilter);
-				fileDialogSpec.ParentWindow = &((EditorFrame*)GetParentFrame())->GetWindow();
+				fileDialogSpec.ParentWindow  = &GetWindow();
 
 				std::filesystem::path filePath;
 				if (Quirk::FileDialog::SaveFile(fileDialogSpec, filePath)) {

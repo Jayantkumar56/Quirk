@@ -2,15 +2,18 @@
 
 #pragma once
 
-#include "Quirk.h"
-#include "EditorTitleBar.h"
+
 #include "Panels/SceneViewportPanel.h"
 #include "Panels/SceneHierarchyPanel.h"
 #include "Panels/InspectorPanel/InspectorPanel.h"
 #include "Panels/ContentBrowserPanel.h"
-#include "Theme.h"
 
+#include "EditorTitleBar.h"
+#include "EditorTheme.h"
 #include "EditorResourceManager.h"
+
+#include "Quirk.h"
+
 
 
 namespace QuirkEditor {
@@ -30,8 +33,7 @@ namespace QuirkEditor {
 			Quirk::Renderer::InitRenderer();
 			Quirk::Renderer2D::InitRenderer();
 
-
-			Theme::SetTheme(ThemeName::DarkTheme);
+            m_Theme.SetTheme(ThemeName::DarkTheme);
 
 			SetTitleBar<EditorTitleBar>(this);
 
@@ -41,11 +43,6 @@ namespace QuirkEditor {
 			AddPanel<ContentBrowserPanel>(this);
 		}
 
-		~EditorFrame() = default;
-
-		virtual bool OnEvent(Quirk::Event& event) override { return false; }
-		virtual void OnUpdate()			   override { }
-
 		virtual void OnImguiUiUpdate() override {
 			// Disabling alt key for imgui to prevent navigation with alt key (problems when using editor cotrols)
 			ImGui::SetKeyOwner(ImGuiKey_LeftAlt, ImGuiKeyOwner_Any, ImGuiInputFlags_LockThisFrame);
@@ -54,9 +51,14 @@ namespace QuirkEditor {
 		inline Quirk::Ref<Quirk::Scene>&  GetMainScene()      { return m_MainScene;      }
 		inline Quirk::Entity&             GetSelectedEntity() { return m_SelectedEntity; }
 
+        inline EditorTheme&           GetTheme()           noexcept { return m_Theme;           }
+        inline EditorResourceManager& GetResourceManager() noexcept { return m_ResourceManager; }
+
 	private:
 		Quirk::Entity     m_SelectedEntity;
 		Quirk::Ref<Quirk::Scene> m_MainScene;
+
+        EditorTheme           m_Theme;
         EditorResourceManager m_ResourceManager;
 	};
 

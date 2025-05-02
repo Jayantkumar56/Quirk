@@ -3,7 +3,7 @@
 #include "QkEditorpch.h"
 
 #include "SceneHierarchyPanel.h"
-#include "Editor/Theme.h"
+#include "Editor/EditorTheme.h"
 #include "Editor/EditorFrame.h"
 
 #include <imgui_internal.h>
@@ -17,10 +17,12 @@ namespace QuirkEditor {
 	}
 
 	void SceneHierarchyPanel::OnUiUpdate(){
-        Quirk::Ref<Quirk::Scene>& scene      = ((EditorFrame*)GetParentFrame())->GetMainScene();
-        Quirk::Entity& selectedEntity = ((EditorFrame*)GetParentFrame())->GetSelectedEntity();
+        EditorFrame* frame = GetParentFrameAs<EditorFrame>();
 
-		ImGui::PushStyleColor(ImGuiCol_Border, Theme::GetColor(ColorName::PopupBorder));
+        Quirk::Ref<Quirk::Scene>& scene = frame->GetMainScene();
+        Quirk::Entity& selectedEntity   = frame->GetSelectedEntity();
+
+		ImGui::PushStyleColor(ImGuiCol_Border, frame->GetTheme().GetColor(ColorName::PopupBorder));
 
 		ImVec2 framePadding{ 5.0f, 5.0f };
 		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, framePadding);
@@ -61,6 +63,7 @@ namespace QuirkEditor {
 	}
 
 	void SceneHierarchyPanel::DrawEntityNode(Quirk::Entity entity, Quirk::Entity& selectedEntity) {
+        EditorFrame* frame      = GetParentFrameAs<EditorFrame>();
 		bool shouldDeleteEntity = false;
 		float windowPadding		= GImGui->Style.WindowPadding.x;
 		const std::string& tag	= entity.GetComponent<Quirk::TagComponent>().Tag;
@@ -113,7 +116,7 @@ namespace QuirkEditor {
 			ImGui::EndPopup();
 		}
 
-		if (entity == selectedEntity) { ImGui::PushStyleColor(ImGuiCol_Text, Theme::GetColor(ColorName::DarkText)); }
+		if (entity == selectedEntity) { ImGui::PushStyleColor(ImGuiCol_Text, frame->GetTheme().GetColor(ColorName::DarkText)); }
 		bool buttonClicked = ImGui::Button("x", { lineHeight, lineHeight });
 		if (entity == selectedEntity) { ImGui::PopStyleColor(); }
 

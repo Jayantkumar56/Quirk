@@ -15,8 +15,8 @@ namespace Quirk {
     template<typename... Types>
     struct TypeList {
         template<typename Function, typename ...Args>
-        static void ForEach(Function&& func, Args&& ...args) {
-            (func.template operator() < Types > (std::forward<Args>(args)...), ...);
+        static void ForEach(Function&& func, Args& ...args) {
+            (func.template operator() < Types > (args...), ...);
         }
     };
 

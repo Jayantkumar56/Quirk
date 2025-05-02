@@ -27,8 +27,10 @@ namespace Quirk {
 		// thus could be used to unset Imgui properties which are set in SetImguiProperties()
 		virtual void UnSetImguiProperties() { }
 
-		Window& GetWindow()                noexcept { return m_ParentFrame->GetWindow(); }
-		inline FrameBase* GetParentFrame() noexcept { return m_ParentFrame;              }
+		Window& GetWindow() noexcept { return m_ParentFrame->GetWindow(); }
+
+        template<FrameType T>
+        inline T* GetParentFrameAs() noexcept { return static_cast<T*>(m_ParentFrame); }
 
 		inline void SetCursorOverMinimiseButton (bool toggle) noexcept { GetWindow().SetCursorOverMinimiseButton(toggle); }
 		inline void SetCursorOverMaximiseButton (bool toggle) noexcept { GetWindow().SetCursorOverMaximiseButton(toggle); }

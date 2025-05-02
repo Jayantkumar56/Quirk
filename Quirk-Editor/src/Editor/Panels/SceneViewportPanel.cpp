@@ -55,7 +55,7 @@ namespace QuirkEditor {
 	}
 
 	void SceneViewportPanel::OnUpdate() {
-        Quirk::Ref<Quirk::Scene>& scene = ((EditorFrame*)GetParentFrame())->GetMainScene();
+        Quirk::Ref<Quirk::Scene>& scene = GetParentFrameAs<EditorFrame>()->GetMainScene();
 
 		if (m_IsInFocus && m_SceneState == SceneState::Edit)
 			m_ControllingCamera = m_Camera.OnUpdate();
@@ -65,8 +65,8 @@ namespace QuirkEditor {
 	}
 
 	void SceneViewportPanel::OnUiUpdate() {
-        Quirk::Ref<Quirk::Scene>& scene      = ((EditorFrame*)GetParentFrame())->GetMainScene();
-        Quirk::Entity& selectedEntity = ((EditorFrame*)GetParentFrame())->GetSelectedEntity();
+        Quirk::Ref<Quirk::Scene>& scene = GetParentFrameAs<EditorFrame>()->GetMainScene();
+        Quirk::Entity& selectedEntity   = GetParentFrameAs<EditorFrame>()->GetSelectedEntity();
 
 		//MenuBar(scene);
 
@@ -184,7 +184,7 @@ namespace QuirkEditor {
 	}
 
 	int SceneViewportPanel::GetEntityIdOnClick(const ImVec2& imagePos) {
-        Quirk::Window& window   = ((EditorFrame*)GetParentFrame())->GetWindow();
+        Quirk::Window& window   = GetWindow();
 		ImVec2 windowPos = ImGui::GetWindowPos();
 		windowPos        = { windowPos.x - window.GetPosX(), windowPos.y - window.GetPosY() };
 		ImVec2 mousePos  = { Quirk::Input::MouseCurrentX() - windowPos.x, Quirk::Input::MouseCurrentY() - windowPos.y };

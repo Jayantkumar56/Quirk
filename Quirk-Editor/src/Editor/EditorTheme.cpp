@@ -2,11 +2,11 @@
 
 #include "QkEditorpch.h"
 
-#include "Editor/Theme.h"
+#include "EditorTheme.h"
 
 namespace QuirkEditor {
 
-	ImVec4 Theme::GetColor(ColorName color) {
+	ImVec4 EditorTheme::GetColor(ColorName color) {
 		switch (color) {
 			case ColorName::PopupBorder:			return ImVec4(0.259f, 0.42f, 0.412f, 1.0f);
 			case ColorName::DarkText:				return ImVec4{ 0.0f, 0.0f, 0.0f, 1.0f };
@@ -17,7 +17,7 @@ namespace QuirkEditor {
 		return ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
 	}
 
-	void Theme::SetDarkTheme() {
+	void EditorTheme::SetDarkTheme() {
 		auto& colors = ImGui::GetStyle().Colors;
 
 		colors[ImGuiCol_WindowBg]				= ImVec4{ 0.086f, 0.102f, 0.114f, 1.0f };
@@ -89,7 +89,7 @@ namespace QuirkEditor {
 		colors[ImGuiCol_DockingPreview]			= ImVec4{ 0.44f, 0.37f, 0.61f, 1.0f };
 	}
 
-	void Theme::SetLightTheme() {
+	void EditorTheme::SetLightTheme() {
 		QK_WARN("LightTheme is not written yet!");
 		SetDarkTheme();
 	}

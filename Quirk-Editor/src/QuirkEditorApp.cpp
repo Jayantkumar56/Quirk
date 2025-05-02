@@ -2,14 +2,13 @@
 
 #include "QkEditorpch.h"
 
-#include "Quirk.h"
-#include "Core/Application/EntryPoint.h"
 #include "QuirkEditorApp.h"
-
 #include "Editor/EditorFrame.h"
 #include "Launcher/LauncherFrame.h"
 
-#include "Editor/Theme.h"
+#include "Quirk.h"
+#include "Core/Application/EntryPoint.h"
+
 
 namespace Quirk {
 
