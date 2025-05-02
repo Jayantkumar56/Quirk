@@ -2,7 +2,7 @@
 
 #pragma once
 
-namespace Quirk {
+namespace QuirkEditor {
 
     struct ProjectMetadata;
 

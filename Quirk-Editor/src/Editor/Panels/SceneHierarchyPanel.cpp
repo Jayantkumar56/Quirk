@@ -20,7 +20,6 @@ namespace QuirkEditor {
         EditorFrame* frame = GetParentFrameAs<EditorFrame>();
 
         Quirk::Ref<Quirk::Scene>& scene = frame->GetMainScene();
-        Quirk::Entity& selectedEntity   = frame->GetSelectedEntity();
 
 		ImGui::PushStyleColor(ImGuiCol_Border, frame->GetTheme().GetColor(ColorName::PopupBorder));
 
@@ -40,8 +39,7 @@ namespace QuirkEditor {
 		ImGui::PopStyleVar();
 
 		for (auto entity : scene->GetRegistry().view<entt::entity>()) {
-            Quirk::Entity entityToShow = { entity, scene.get()};
-			DrawEntityNode(entityToShow, selectedEntity);
+			DrawEntityNode({ entity, scene.get() });
 		}
 
 		if (ImGui::BeginPopupContextWindow(0, ImGuiPopupFlags_MouseButtonRight | ImGuiPopupFlags_NoOpenOverItems)) {
@@ -52,7 +50,9 @@ namespace QuirkEditor {
 			ImGui::EndPopup();
 		}
 
-		if (ImGui::IsMouseClicked(0) && ImGui::IsWindowHovered()) { selectedEntity = {}; }
+		if (ImGui::IsMouseClicked(0) && ImGui::IsWindowHovered()) { 
+            SelectionContext::SetSelected(Quirk::Entity());
+        }
 
 		ImGui::Dummy({0.0f, 10.0f});
 		ImGuiIO& io = ImGui::GetIO();
@@ -62,13 +62,15 @@ namespace QuirkEditor {
 		ImGui::PopStyleColor();
 	}
 
-	void SceneHierarchyPanel::DrawEntityNode(Quirk::Entity entity, Quirk::Entity& selectedEntity) {
+	void SceneHierarchyPanel::DrawEntityNode(Quirk::Entity entity) {
         EditorFrame* frame      = GetParentFrameAs<EditorFrame>();
 		bool shouldDeleteEntity = false;
 		float windowPadding		= GImGui->Style.WindowPadding.x;
 		const std::string& tag	= entity.GetComponent<Quirk::TagComponent>().Tag;
 		uint64_t uuid			= entity.GetComponent<Quirk::UUIDComponent>().Uuid;
 		ImGui::PushID((int)uuid);
+
+        Quirk::Entity selectedEntity = m_SelectionHandle.Get<Quirk::Entity>();
 
 		ImGuiTreeNodeFlags flags = 0;
 		flags |= ImGuiTreeNodeFlags_SpanAvailWidth	| ImGuiTreeNodeFlags_AllowItemOverlap;
@@ -127,7 +129,10 @@ namespace QuirkEditor {
 			ImGui::EndPopup();
 		}
 
-		if (!buttonClicked && !treeToggledOpen && treeNodeClicked) { selectedEntity = entity; }
+		if (!buttonClicked && !treeToggledOpen && treeNodeClicked) {
+            SelectionContext::SetSelected(entity);
+            selectedEntity = entity;
+        }
 
 		ImGui::PopID();
 		ImGui::PopStyleVar();
@@ -137,7 +142,7 @@ namespace QuirkEditor {
 
 		if (shouldDeleteEntity) {
 			if (entity == selectedEntity) 
-				selectedEntity = {};
+                SelectionContext::SetSelected(Quirk::Entity());
 
 			((Quirk::Scene*)entity)->DestroyEntity(entity);
 		}

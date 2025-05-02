@@ -66,7 +66,6 @@ namespace QuirkEditor {
 
 	void SceneViewportPanel::OnUiUpdate() {
         Quirk::Ref<Quirk::Scene>& scene = GetParentFrameAs<EditorFrame>()->GetMainScene();
-        Quirk::Entity& selectedEntity   = GetParentFrameAs<EditorFrame>()->GetSelectedEntity();
 
 		//MenuBar(scene);
 
@@ -95,7 +94,7 @@ namespace QuirkEditor {
 			if (ImGui::BeginDragDropTarget()) {
 				const ImGuiPayload* scenePayload = ImGui::AcceptDragDropPayload("SCENE_PATH");
 				if (scenePayload) {
-					selectedEntity = Quirk::Entity();
+                    SelectionContext::SetSelected(Quirk::Entity());
 					scene->DestroyAllEntities();
                     Quirk::SceneSerializer::Deserialize(scene, **(std::filesystem::path**)scenePayload->Data);
 				}
@@ -115,8 +114,11 @@ namespace QuirkEditor {
 
 			if (clickedOnImage && !m_ControllingCamera) {
 				int entityId   = GetEntityIdOnClick(imagePos);
-				selectedEntity = (entityId == -1) ? Quirk::Entity() : Quirk::Entity((entt::entity)entityId, scene.get());
-                SelectionContext::SetSelected<Quirk::Entity>(selectedEntity);
+
+                if (entityId == -1)
+                    SelectionContext::SetSelected(Quirk::Entity());
+                else
+                    SelectionContext::SetSelected(Quirk::Entity((entt::entity)entityId, scene.get()));
 			}
 		}
 	}

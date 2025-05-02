@@ -12,8 +12,7 @@
 #include "EditorTheme.h"
 #include "EditorResourceManager.h"
 
-#include "Quirk.h"
-
+#include "Core/Frame/Frame.h"
 
 
 namespace QuirkEditor {
@@ -26,9 +25,8 @@ namespace QuirkEditor {
     {
 	public:
 		EditorFrame(Quirk::WindowSpecification& spec) :
-				Frame            (spec),
-				m_SelectedEntity (    ),
-				m_MainScene      (Quirk::CreateRef<Quirk::Scene>("New Scene", 0, 0))
+				Frame       (spec),
+				m_MainScene (Quirk::CreateRef<Quirk::Scene>("New Scene", 0, 0))
 		{
 			Quirk::Renderer::InitRenderer();
 			Quirk::Renderer2D::InitRenderer();
@@ -48,14 +46,12 @@ namespace QuirkEditor {
 			ImGui::SetKeyOwner(ImGuiKey_LeftAlt, ImGuiKeyOwner_Any, ImGuiInputFlags_LockThisFrame);
 		}
 
-		inline Quirk::Ref<Quirk::Scene>&  GetMainScene()      { return m_MainScene;      }
-		inline Quirk::Entity&             GetSelectedEntity() { return m_SelectedEntity; }
+		inline Quirk::Ref<Quirk::Scene>&  GetMainScene() { return m_MainScene; }
 
         inline EditorTheme&           GetTheme()           noexcept { return m_Theme;           }
         inline EditorResourceManager& GetResourceManager() noexcept { return m_ResourceManager; }
 
 	private:
-		Quirk::Entity     m_SelectedEntity;
 		Quirk::Ref<Quirk::Scene> m_MainScene;
 
         EditorTheme           m_Theme;

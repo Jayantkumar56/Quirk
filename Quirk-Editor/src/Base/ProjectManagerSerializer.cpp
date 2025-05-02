@@ -8,7 +8,7 @@
 #include "Core/Core.h"
 #include "yaml-cpp/yaml.h"
 
-namespace Quirk {
+namespace QuirkEditor {
 
     bool ProjectManagerSerializer::SerializeRecentProjectsList(std::vector<ProjectMetadata>& list, const std::filesystem::path& filePath) {
         YAML::Emitter out;

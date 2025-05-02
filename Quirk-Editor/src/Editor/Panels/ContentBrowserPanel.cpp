@@ -3,6 +3,8 @@
 #include "QkEditorpch.h"
 
 #include "ContentBrowserPanel.h"
+#include "Editor/EditorFrame.h"
+
 #include "Core/Imgui/ImguiUI.h"
 #include "Core/Imgui/ImguiUIUtility.h"
 
@@ -22,6 +24,7 @@ namespace QuirkEditor {
 	}
 
 	void ContentBrowserPanel::OnUiUpdate() {
+        EditorResourceManager& resourceManager = GetParentFrameAs<EditorFrame>()->GetResourceManager();
 		bool updatedCurrentDirectory = false;
 
 		// menubar contains all the navigation buttons and current directory
@@ -39,7 +42,7 @@ namespace QuirkEditor {
 				std::string directoryName = m_CurrentDirectoryContent[i].filename().string();
 
 				if (std::filesystem::is_directory(m_CurrentDirectoryContent[i])) {
-					ImTextureID folderIconId = (ImTextureID)(intptr_t)m_FolderIcon->GetRendererId();
+					ImTextureID folderIconId = resourceManager.GetIconFolder();
 					if (ImGui::ImageButton(directoryName.c_str(), folderIconId, { 100.0f, 100.0f }, { 0, 1 }, { 1, 0 })) {
 						m_BackwardNavigationHistory.emplace(m_CurrentDirectory);
 
@@ -51,7 +54,7 @@ namespace QuirkEditor {
 					}
 				}
 				else {
-					ImTextureID fileIconId = (ImTextureID)(intptr_t)m_FileIcon->GetRendererId();
+					ImTextureID fileIconId = resourceManager.GetIconFile();
 					ImGui::ImageButton(directoryName.c_str(), fileIconId, { 100.0f, 100.0f }, { 0, 1 }, { 1, 0 });
 
 					if (ImGui::BeginDragDropSource()) {
@@ -84,6 +87,8 @@ namespace QuirkEditor {
 	}
 
 	void ContentBrowserPanel::DrawMenuBar() {
+        EditorResourceManager& resourceManager = GetParentFrameAs<EditorFrame>()->GetResourceManager();
+
 		ImVec2 menuBarSize    = { ImGui::GetWindowWidth(), 30.0f };
 		ImVec2 menuBarPadding = { 20.0f, 5.0f };
 
@@ -121,7 +126,7 @@ namespace QuirkEditor {
 				drawList->AddRectFilled(buttonStart, buttonEnd, buttonColor, 10.0f);
 			}
 
-			ImTextureID backwardIconId = (ImTextureID)(intptr_t)m_BackwardIcon->GetRendererId();
+			ImTextureID backwardIconId = resourceManager.GetIconBackward();
 			drawList->AddImage(backwardIconId, buttonStart, buttonEnd, { 0, 1 }, { 1, 0 });
 		}
 		cursorPos.x += buttonSize.x + 3.0f;
@@ -143,7 +148,7 @@ namespace QuirkEditor {
 				drawList->AddRectFilled(buttonStart, buttonEnd, buttonColor, 10.0f);
 			}
 
-			ImTextureID backwardIconId = (ImTextureID)(intptr_t)m_ForwardIcon->GetRendererId();
+			ImTextureID backwardIconId = resourceManager.GetIconForward();
 			drawList->AddImage(backwardIconId, buttonStart, buttonEnd, { 0, 1 }, { 1, 0 });
 		}
 		cursorPos.x += buttonSize.x + 7.0f;
@@ -165,7 +170,7 @@ namespace QuirkEditor {
 				drawList->AddRectFilled(buttonStart, buttonEnd, buttonColor);
 			}
 
-			ImTextureID backwardIconId = (ImTextureID)(intptr_t)m_RefreshIcon->GetRendererId();
+			ImTextureID backwardIconId = resourceManager.GetIconRefresh();
 			drawList->AddImage(backwardIconId, buttonStart, buttonEnd, { 0, 1 }, { 1, 0 });
 		}
 		cursorPos.x += buttonSize.x + 20.0f;

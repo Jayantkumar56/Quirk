@@ -3,11 +3,12 @@
 #pragma once
 
 #include "ProjectManagerSerializer.h"
+
 #include "Core/AssetManager/EditorAssetManager.h"
 #include "Core/Project/Project.h"
 
 
-namespace Quirk {
+namespace QuirkEditor {
 
 	struct ProjectMetadata {
 		std::string Title;
@@ -31,15 +32,15 @@ namespace Quirk {
         static inline const std::vector<ProjectMetadata>& GetRecentProjectsList() noexcept { return s_RecentProjectsList; }
 
         // projectDirectory is the directory where project root directory will be created
-        static Ref<Project> CreateInDirectory(std::string&& title, const std::filesystem::path& projDirectory);
+        static Quirk::Ref<Quirk::Project> CreateInDirectory(std::string&& title, const std::filesystem::path& projDirectory);
 
         // takes in path of the **.qkproj in the project root directory
-        static Ref<Project> LoadProject(const std::filesystem::path& projFilePath);
+        static Quirk::Ref<Quirk::Project> LoadProject(const std::filesystem::path& projFilePath);
 
         // takes in path of the **.qkproj in the project root directory
-        static Ref<Project> LoadProject(const std::string& title, const std::filesystem::path& projRootDir);
+        static Quirk::Ref<Quirk::Project> LoadProject(const std::string& title, const std::filesystem::path& projRootDir);
 
-        static inline Ref<Project> LoadProject(const ProjectMetadata& projMeta) {
+        static inline Quirk::Ref<Quirk::Project> LoadProject(const ProjectMetadata& projMeta) {
             return LoadProject(projMeta.Title, projMeta.ProjectRootDirectory);
         }
 
@@ -57,12 +58,12 @@ namespace Quirk {
         // === End:   API related to active project ===
 
     private:
-        static void CreateProjectDirectoryStructure(const std::filesystem::path& projFilePath, const ProjectConfig& projConfig);
+        static void CreateProjectDirectoryStructure(const std::filesystem::path& projFilePath, const Quirk::ProjectConfig& projConfig);
 
         static void AddRecentProject(ProjectMetadata&& projMeta);
 
     private:
-        static Ref<Project> s_ActiveProject;
+        static Quirk::Ref<Quirk::Project> s_ActiveProject;
         static std::vector<ProjectMetadata> s_RecentProjectsList;
     };
 

@@ -3,6 +3,8 @@
 #pragma once
 
 #include "Quirk.h"
+#include "Base/SelectionContext.h"
+
 
 namespace QuirkEditor {
 
@@ -15,7 +17,10 @@ namespace QuirkEditor {
 		virtual void OnUiUpdate()    override;
 
 	private:
-		void DrawEntityNode(Quirk::Entity entity, Quirk::Entity& selectedEntity);
+		void DrawEntityNode(Quirk::Entity entity);
+
+    private:
+        PerTypeSelectionHandle<Quirk::Entity> m_SelectionHandle;
 	};
 
 }

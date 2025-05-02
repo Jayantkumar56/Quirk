@@ -31,7 +31,7 @@ namespace QuirkEditor {
 			m_OpenProjectIcon   = Quirk::Texture2D::Create("assets/Images/Launcher/openFolder.png");
 			m_CreateProjectIcon = Quirk::Texture2D::Create("assets/Images/Launcher/createProject.png");
 
-            Quirk::ProjectManager::LoadRecentProjectsList("RecentProjects.yaml");
+            ProjectManager::LoadRecentProjectsList("RecentProjects.yaml");
 
 			// reserving some storage to get input through imgui
 			m_TempProject.Title = "Untitled";
@@ -40,7 +40,7 @@ namespace QuirkEditor {
 		}
 
 		virtual ~LauncherFrame() {
-            Quirk::ProjectManager::SaveRecentProjectsList("RecentProjects.yaml");
+            ProjectManager::SaveRecentProjectsList("RecentProjects.yaml");
 		}
 
 		virtual bool OnEvent(Quirk::Event& event) override { return false; }
@@ -61,7 +61,7 @@ namespace QuirkEditor {
 		// used for temporary things (in the creation of new project)
 		// some storage should be reserved to the member strings even when the strings are empty 
 		// so that it could be used for input from imgui
-        Quirk::ProjectMetadata m_TempProject;
+        ProjectMetadata m_TempProject;
 		std::string     m_TempProjPath;
 	};
 

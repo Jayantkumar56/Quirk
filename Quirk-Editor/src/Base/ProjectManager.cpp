@@ -6,22 +6,22 @@
 #include "Core/AssetManager/EditorAssetManager.h"
 
 
-namespace Quirk {
+namespace QuirkEditor {
 
-    Ref<Project> ProjectManager::s_ActiveProject;
+    Quirk::Ref<Quirk::Project> ProjectManager::s_ActiveProject;
     std::vector<ProjectMetadata> ProjectManager::s_RecentProjectsList;
 
-    Ref<Project> ProjectManager::CreateInDirectory(std::string&& title, const std::filesystem::path& projDirectory) {
+    Quirk::Ref<Quirk::Project> ProjectManager::CreateInDirectory(std::string&& title, const std::filesystem::path& projDirectory) {
         ProjectMetadata projMeta{
             .Title                { std::move(title)               },
             .ProjectRootDirectory { projDirectory / projMeta.Title }
         };
 
-        ProjectConfig projConfig = ProjectConfig::GetDefaultConfig(projMeta.Title);
+        Quirk::ProjectConfig projConfig = Quirk::ProjectConfig::GetDefaultConfig(projMeta.Title);
 
         CreateProjectDirectoryStructure(projMeta.ProjectRootDirectory, projConfig);
 
-        s_ActiveProject = Project::Create<EditorAssetManager>(projMeta.ProjectRootDirectory, std::move(projConfig));
+        s_ActiveProject = Quirk::Project::Create<Quirk::EditorAssetManager>(projMeta.ProjectRootDirectory, std::move(projConfig));
         if (s_ActiveProject == nullptr) {
             return nullptr;
         }
@@ -32,14 +32,14 @@ namespace Quirk {
 
             // setting projfile name
             {
-                std::string_view extension = Project::GetProjFileExtenstion();
+                std::string_view extension = Quirk::Project::GetProjFileExtenstion();
                 projFile.reserve(projMeta.Title.size() + extension.size());
                 projFile += projMeta.Title;
                 projFile += extension;
             }
 
             std::filesystem::path projFilePath = projMeta.ProjectRootDirectory / projFile;
-            ProjectSerializer::Serialize(s_ActiveProject, projFilePath);
+            Quirk::ProjectSerializer::Serialize(s_ActiveProject, projFilePath);
         }
 
         AddRecentProject(std::move(projMeta));
@@ -47,13 +47,13 @@ namespace Quirk {
         return s_ActiveProject;
     }
 
-    Ref<Project> ProjectManager::LoadProject(const std::filesystem::path& projFilePath) {
+    Quirk::Ref<Quirk::Project> ProjectManager::LoadProject(const std::filesystem::path& projFilePath) {
         if (!std::filesystem::is_regular_file(projFilePath)) {
             QK_WARN("Project file is not valid: {0}", projFilePath.string());
             return nullptr;
         }
 
-        s_ActiveProject = Project::Load<EditorAssetManager>(projFilePath);
+        s_ActiveProject = Quirk::Project::Load<Quirk::EditorAssetManager>(projFilePath);
 
         if (s_ActiveProject == nullptr) {
             QK_WARN("Unable to load project at {0}", projFilePath.string());
@@ -70,12 +70,12 @@ namespace Quirk {
         return s_ActiveProject;
     }
 
-    Ref<Project> ProjectManager::LoadProject(const std::string& title, const std::filesystem::path& projRootDir) {
+    Quirk::Ref<Quirk::Project> ProjectManager::LoadProject(const std::string& title, const std::filesystem::path& projRootDir) {
         std::string projFile;
 
         // setting projfile name
         {
-            std::string_view extension = Project::GetProjFileExtenstion();
+            std::string_view extension = Quirk::Project::GetProjFileExtenstion();
             projFile.reserve(title.size() + extension.size());
             projFile += title;
             projFile += extension;
@@ -86,7 +86,7 @@ namespace Quirk {
         return LoadProject(projFilePath);
     }
 
-    void ProjectManager::CreateProjectDirectoryStructure(const std::filesystem::path& projRootDir, const ProjectConfig& projConfig) {
+    void ProjectManager::CreateProjectDirectoryStructure(const std::filesystem::path& projRootDir, const Quirk::ProjectConfig& projConfig) {
         // main project directory created
         std::filesystem::create_directory(projRootDir);
 
