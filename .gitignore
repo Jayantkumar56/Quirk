@@ -14,19 +14,13 @@
 
 # Visual Studio Settings
 .vs/
-**.sln
-**.vcxproj
-**.vcxproj.filters
-**.vcxproj.user
-**.csproj
+*.sln
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+*.csproj
 
 # Excluding all the binaries
 Quirk.sln
 bin/
 bin-int/
-Quirk/Quirk.vcxproj
-Quirk.vcxproj.filters
-Quirk.vcxproj.user
-Sandbox.vcxproj
-Sandbox.vcxproj.filters
-Sandbox.vcxproj.user
