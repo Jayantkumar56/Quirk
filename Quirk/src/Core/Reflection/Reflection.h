@@ -3,14 +3,13 @@
 #pragma once
 
 #include "CommonMacros.h"
-
 #include "Core/Utility/TypeTraits.h"
 
 #include <string_view>
 #include <type_traits>
 
 
-namespace QuirkEditor {
+namespace Quirk {
 
     // ============================================================================================================================
     //                                           REFLECTION SYSTEM USAGE GUIDE
@@ -139,7 +138,7 @@ namespace QuirkEditor {
 
 #define REGISTER_REFLECTION(TYPE_, TITLE_, ...)                                                                             \
     template<>                                                                                                              \
-    struct ::QuirkEditor::Reflect<TYPE_> {                                                                                  \
+    struct ::Quirk::Reflect<TYPE_> {                                                                                        \
         using ReflectingType  = TYPE_;                                                                                      \
         static constexpr std::string_view TypeName = TITLE_;                                                                \
                                                                                                                             \

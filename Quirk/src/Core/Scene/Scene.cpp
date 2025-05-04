@@ -7,6 +7,7 @@
 #include "Core/Utility/Time.h"
 #include "Core/Renderer/Renderer.h"
 #include "Core/Renderer/Renderer2D.h"
+#include "Core/Reflection/Registrations/ComponentList.h"
 
 namespace Quirk {
 
@@ -22,19 +23,22 @@ namespace Quirk {
 			entitiesMap[uuid] = (uint32_t)newScene->CreateEntity(tag, uuid);
 		}
 
-		auto copyComponentToEntity = [&] <typename Component> (const std::string & componentName) -> void {
-			auto view = other->m_Registry.view<Component>();
+        Quirk::ComponentsIterator<ComponentTypesNonIdentifiers>(
+            [] <typename Component> 
+            (std::string_view, const Scene * scene, Ref<Scene>&newScene, std::unordered_map<uint64_t, uint32_t>& entitiesMap) {
+                auto view = scene->m_Registry.view<Component>();
 
-			for (auto entity : view) {
-				auto& componentToCopy = other->m_Registry.get<Component>(entity);
-				auto uuidOriginalEntity = (uint64_t)other->m_Registry.get<UUIDComponent>(entity).Uuid;
+                for (auto entity : view) {
+                    auto& componentToCopy = scene->m_Registry.get<Component>(entity);
+                    auto uuidOriginalEntity = (uint64_t)scene->m_Registry.get<UUIDComponent>(entity).Uuid;
 
-				entt::entity entityHandle = (entt::entity)entitiesMap[uuidOriginalEntity];
-				newScene->m_Registry.emplace_or_replace<Component>(entityHandle, componentToCopy);
-			}
-		};
+                    entt::entity entityHandle = (entt::entity)entitiesMap[uuidOriginalEntity];
+                    newScene->m_Registry.emplace_or_replace<Component>(entityHandle, componentToCopy);
+                }
+            },
+            other, newScene, entitiesMap
+        );
 
-		ComponentTypesIterator::Iterate<ComponentTypes::NonIdentifiers>(copyComponentToEntity);
 		return newScene;
 	}
 
@@ -50,19 +54,22 @@ namespace Quirk {
 			entitiesMap[uuid] = (uint32_t)newScene->CreateEntity(tag, uuid);
 		}
 
-		auto copyComponentToEntity = [&] <typename Component> (const std::string & componentName) -> void {
-			auto view = other->m_Registry.view<Component>();
+        Quirk::ComponentsIterator<ComponentTypesNonIdentifiers>(
+            [] <typename Component>
+            (std::string_view, const Ref<Scene>& other, Ref<Scene>& newScene, std::unordered_map<uint64_t, uint32_t>& entitiesMap) {
+                auto view = other->m_Registry.view<Component>();
 
-			for (auto entity : view) {
-				auto& componentToCopy   = other->m_Registry.get<Component>(entity);
-				auto uuidOriginalEntity = (uint64_t)other->m_Registry.get<UUIDComponent>(entity).Uuid;
+                for (auto entity : view) {
+                    auto& componentToCopy = other->m_Registry.get<Component>(entity);
+                    auto uuidOriginalEntity = (uint64_t)other->m_Registry.get<UUIDComponent>(entity).Uuid;
 
-				entt::entity entityHandle = (entt::entity)entitiesMap[uuidOriginalEntity];
-				newScene->m_Registry.emplace_or_replace<Component>(entityHandle, componentToCopy);
-			}
-		};
+                    entt::entity entityHandle = (entt::entity)entitiesMap[uuidOriginalEntity];
+                    newScene->m_Registry.emplace_or_replace<Component>(entityHandle, componentToCopy);
+                }
+            },
+            other, newScene, entitiesMap
+        );
 
-		ComponentTypesIterator::Iterate<ComponentTypes::NonIdentifiers>(copyComponentToEntity);
 		return newScene;
 	}
 

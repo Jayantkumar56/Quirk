@@ -6,6 +6,8 @@
 #include "Editor/EditorTheme.h"
 #include "Editor/EditorFrame.h"
 
+#include "Core/Reflection/Registrations/ComponentList.h"
+
 #include <imgui_internal.h>
 
 namespace QuirkEditor {
@@ -107,12 +109,13 @@ namespace QuirkEditor {
 
 		if (openAddComponentMenu) { ImGui::OpenPopup("AddComponentsMenu"); }
 		if (ImGui::BeginPopup("AddComponentsMenu")) {
-            Quirk::ComponentTypesIterator::Iterate<Quirk::ComponentTypes::NonIdentifiers>(
-                [&entity] <typename T> (const std::string& componentName) -> void {
-				    if (!entity.HasComponent<T>() && ImGui::MenuItem(componentName.c_str())) {
-					    entity.AddComponent<T>();
-				    }
-			    }
+            Quirk::ComponentsIterator<Quirk::ComponentTypesNonIdentifiers>(
+                [] <typename T> (std::string_view componentName, Quirk::Entity entity) -> void {
+                    if (!entity.HasComponent<T>() && ImGui::MenuItem(componentName.data())) {
+                        entity.AddComponent<T>();
+                    }
+                },
+                entity
             );
 
 			ImGui::EndPopup();

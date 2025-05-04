@@ -10,7 +10,7 @@
 #include <array>
 
 
-namespace QuirkEditor {
+namespace Quirk {
 
     // ============================================================================================================================
     //                                           ENUM_REGISTRY SYSTEM USAGE GUIDE
@@ -88,7 +88,7 @@ namespace QuirkEditor {
 
 #define REGISTER_ENUM(Enum, EnumTitle, ...)                                                                                \
     template<>                                                                                                             \
-    struct ::QuirkEditor::EnumRegistry<Enum> {                                                                             \
+    struct ::Quirk::EnumRegistry<Enum> {                                                                                   \
         using RegisteredType = Enum;                                                                                       \
                                                                                                                            \
         static constexpr std::string_view EnumName       = EnumTitle;                                                      \

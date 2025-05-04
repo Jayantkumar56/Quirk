@@ -3,12 +3,12 @@
 #include "QkEditorpch.h"
 
 #include "EntityInspectorUI.h"
-#include "Base/Reflection/Registrations/ComponentList.h"
 #include "Editor/EditorTheme.h"
 #include "Editor/EditorFrameResourceManager.h"
 
-#include "Core/Frame/FontManager.h"
 #include "Core/Assets/Geometry/PrimitiveMeshGenerator.h"
+#include "Core/Frame/FontManager.h"
+#include "Core/Utility/Reflection/Registrations/ComponentList.h"
 
 #include "imgui.h"
 #include "imgui_internal.h"
@@ -23,7 +23,7 @@ namespace QuirkEditor {
         ComponentDraw(frame, entity.GetComponent<Quirk::UUIDComponent>());
         ComponentDraw(frame, entity.GetComponent<Quirk::TagComponent>());
 
-        ComponentsIterator<ComponentTypesNonIdentifiers>(
+        Quirk::ComponentsIterator<Quirk::ComponentTypesNonIdentifiers>(
             [] <typename Component> (std::string_view label, EditorFrame * frame, Quirk::Entity entity) {
                 if (!entity.HasComponent<Component>()) {
                     return;
@@ -66,7 +66,7 @@ namespace QuirkEditor {
         	ImGui::PopStyleColor();
         
             if (ImGui::BeginPopupContextItem((const char*)0, ImGuiPopupFlags_MouseButtonLeft)) {
-                ComponentsIterator<ComponentTypesNonIdentifiers>(
+                Quirk::ComponentsIterator<Quirk::ComponentTypesNonIdentifiers>(
                     [] <typename Component> (std::string_view componentName, Quirk::Entity entity) {
                         if (!entity.HasComponent<Component>() && ImGui::MenuItem(componentName.data()))
                             entity.AddComponent<Component>();

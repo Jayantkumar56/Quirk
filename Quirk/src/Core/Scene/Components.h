@@ -122,40 +122,4 @@ namespace Quirk {
 		NativeScriptComponent(const NativeScriptComponent&) = default;
 	};
 
-	// ComponentTypes::Identifiers    includes components which identifies an entity (UUIDComponent, TagComponent for now)
-	// ComponentTypes::All		      includes all components which could be used by an entity
-	// ComponentTypes::NonIdentifiers includes all components except identifier components
-	enum class ComponentTypes { All, Identifiers, NonIdentifiers };
-
-	class ComponentTypesIterator {
-	public:
-		template<ComponentTypes types, class function>
-		static inline constexpr typename std::enable_if<types == ComponentTypes::All, void>::type Iterate(function fun) {
-			fun.operator() < UUIDComponent 		     > ( "UUID"			   );
-			fun.operator() < TagComponent 			 > ( "Tag"			   );
-			fun.operator() < TransformComponent 	 > ( "Transform"	   );
-			fun.operator() < SpriteRendererComponent > ( "Sprite Renderer" );
-			fun.operator() < CameraComponent 		 > ( "Camera"		   );
-			fun.operator() < NativeScriptComponent   > ( "Native Script"   );
-			fun.operator() < MeshRendererComponent   > ( "Mesh"            );
-			fun.operator() < LightComponent          > ( "Light"           );
-		}
-
-		template<ComponentTypes types, class function>
-		static inline constexpr typename std::enable_if<types == ComponentTypes::Identifiers, void>::type Iterate(function fun) {
-			fun.operator() < UUIDComponent > ("UUID");
-			fun.operator() < TagComponent  > ("Tag" );
-		}
-
-		template<ComponentTypes types, class function>
-		static inline constexpr typename std::enable_if<types == ComponentTypes::NonIdentifiers, void>::type Iterate(function fun) {
-			fun.operator() < TransformComponent      > ( "Transform"	   );
-			fun.operator() < SpriteRendererComponent > ( "Sprite Renderer" );
-			fun.operator() < CameraComponent         > ( "Camera"		   );
-			fun.operator() < NativeScriptComponent   > ( "Native Script"   );
-			fun.operator() < MeshRendererComponent   > ( "Mesh Renderer"   );
-			fun.operator() < LightComponent          > ( "Light"           );
-		}
-	};
-
 }

@@ -2,12 +2,12 @@
 
 #pragma once
 
-#include "Base/Reflection/CommonMacros.h"
+#include "Core/Reflection/CommonMacros.h"
 
 #include "Core/Utility/TypeTraits.h"
 #include "Core/Scene/Components.h"
 
-namespace QuirkEditor {
+namespace Quirk {
 
     // ============================================================================================================================
     //                                           ComponentTypeMeta Registration
@@ -31,14 +31,14 @@ namespace QuirkEditor {
 
 
     REGISTER_COMPONENT_META(
-        ( Quirk::UUIDComponent,           "UUID"            ),
-        ( Quirk::TagComponent,            "Tag"             ),
-        ( Quirk::TransformComponent,      "Transform"       ),
-        ( Quirk::SpriteRendererComponent, "Sprite Renderer" ),
-        ( Quirk::CameraComponent,         "Camera"          ),
-        ( Quirk::NativeScriptComponent,   "Native Script"   ),
-        ( Quirk::MeshRendererComponent,   "Mesh"            ),
-        ( Quirk::LightComponent,          "Light"           )
+        ( UUIDComponent,           "UUID"            ),
+        ( TagComponent,            "Tag"             ),
+        ( TransformComponent,      "Transform"       ),
+        ( SpriteRendererComponent, "Sprite Renderer" ),
+        ( CameraComponent,         "Camera"          ),
+        ( NativeScriptComponent,   "Native Script"   ),
+        ( MeshRendererComponent,   "Mesh"            ),
+        ( LightComponent,          "Light"           )
     );
 
     // ============================================================================================================================
@@ -49,29 +49,29 @@ namespace QuirkEditor {
     //                                           ComponentTypeMeta Lists
     // ============================================================================================================================
 
-    using ComponentTypesAll = Quirk::TypeList<
-        ComponentTypeMeta< Quirk::UUIDComponent           >,
-        ComponentTypeMeta< Quirk::TagComponent            >,
-        ComponentTypeMeta< Quirk::TransformComponent      >,
-        ComponentTypeMeta< Quirk::SpriteRendererComponent >,
-        ComponentTypeMeta< Quirk::CameraComponent         >,
-        ComponentTypeMeta< Quirk::NativeScriptComponent   >,
-        ComponentTypeMeta< Quirk::MeshRendererComponent   >,
-        ComponentTypeMeta< Quirk::LightComponent          >
+    using ComponentTypesAll = TypeList<
+        ComponentTypeMeta< UUIDComponent           >,
+        ComponentTypeMeta< TagComponent            >,
+        ComponentTypeMeta< TransformComponent      >,
+        ComponentTypeMeta< SpriteRendererComponent >,
+        ComponentTypeMeta< CameraComponent         >,
+        ComponentTypeMeta< NativeScriptComponent   >,
+        ComponentTypeMeta< MeshRendererComponent   >,
+        ComponentTypeMeta< LightComponent          >
     >;
 
     using ComponentTypesIdentifiers = Quirk::TypeList<
-        ComponentTypeMeta< Quirk::UUIDComponent >,
-        ComponentTypeMeta< Quirk::TagComponent  >
+        ComponentTypeMeta< UUIDComponent >,
+        ComponentTypeMeta< TagComponent  >
     >;
 
     using ComponentTypesNonIdentifiers = Quirk::TypeList<
-        ComponentTypeMeta< Quirk::TransformComponent      >,
-        ComponentTypeMeta< Quirk::SpriteRendererComponent >,
-        ComponentTypeMeta< Quirk::CameraComponent         >,
-        ComponentTypeMeta< Quirk::NativeScriptComponent   >,
-        ComponentTypeMeta< Quirk::MeshRendererComponent   >,
-        ComponentTypeMeta< Quirk::LightComponent          >
+        ComponentTypeMeta< TransformComponent      >,
+        ComponentTypeMeta< SpriteRendererComponent >,
+        ComponentTypeMeta< CameraComponent         >,
+        ComponentTypeMeta< NativeScriptComponent   >,
+        ComponentTypeMeta< MeshRendererComponent   >,
+        ComponentTypeMeta< LightComponent          >
     >;
 
     // ============================================================================================================================
