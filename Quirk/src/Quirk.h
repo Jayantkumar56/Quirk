@@ -53,7 +53,6 @@
 #include "Core/Imgui/ImguiUI.h"
 #include "Core/Imgui/ImguiUIUtility.h"
 
-#include "Core/AssetManager/AssetManagerBase.h"
 #include "Core/AssetManager/EditorAssetManager.h"
 
 #include "Core/Project/ProjectSerializer.h"

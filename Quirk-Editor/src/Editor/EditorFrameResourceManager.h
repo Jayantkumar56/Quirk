@@ -5,12 +5,14 @@
 
 #include "Core/Assets/RenderAssets/Texture.h"
 
+#include "imgui.h"
+
 
 namespace QuirkEditor {
 
-    class EditorResourceManager {
+    class EditorFrameResourceManager {
     public:
-        EditorResourceManager() {
+        EditorFrameResourceManager() {
             InitInspectorPanelIcons();
             InitContentBrowserPanelIcons();
         }

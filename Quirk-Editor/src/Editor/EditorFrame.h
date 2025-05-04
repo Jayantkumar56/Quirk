@@ -10,7 +10,7 @@
 
 #include "EditorTitleBar.h"
 #include "EditorTheme.h"
-#include "EditorResourceManager.h"
+#include "EditorFrameResourceManager.h"
 
 #include "Core/Frame/Frame.h"
 
@@ -48,14 +48,14 @@ namespace QuirkEditor {
 
 		inline Quirk::Ref<Quirk::Scene>&  GetMainScene() { return m_MainScene; }
 
-        inline EditorTheme&           GetTheme()           noexcept { return m_Theme;           }
-        inline EditorResourceManager& GetResourceManager() noexcept { return m_ResourceManager; }
+        inline EditorTheme& GetTheme() noexcept { return m_Theme; }
+        inline EditorFrameResourceManager& GetResourceManager() noexcept { return m_ResourceManager; }
 
 	private:
 		Quirk::Ref<Quirk::Scene> m_MainScene;
 
-        EditorTheme           m_Theme;
-        EditorResourceManager m_ResourceManager;
+        EditorTheme m_Theme;
+        EditorFrameResourceManager m_ResourceManager;
 	};
 
 }

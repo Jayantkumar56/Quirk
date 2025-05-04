@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "AssetManagerBase.h"
+#include "Core/Utility/TypeTraits.h"
 #include "AssetImporter/AssetImporter.h"
 
 #include <unordered_map>
@@ -10,61 +10,66 @@
 
 namespace Quirk {
 
-	class EditorAssetManager : public AssetManagerBase {
+	class EditorAssetManager {
 	public:
-		EditorAssetManager()          = default;
-		virtual ~EditorAssetManager() = default;
-
-		virtual inline AssetType GetAssetType(AssetHandle handle) override {
-            auto assetItr = m_AssetRegistry.find(handle);
-
-            if (assetItr == m_AssetRegistry.end()) {
-                QK_CORE_WARN("Given AssetHandle {0} does not exist!", static_cast<uint64_t>(handle));
-				return AssetType::None;
-            }
-
-			return assetItr->second.Type;
-		}
-
+        template<typename T>
         inline AssetHandle RegisterAsset(AssetMetadata metaData) {
-            Ref<Asset>  loadedAsset = AssetImporter::Import(metaData);    
-            AssetHandle handle      = loadedAsset->GetHandle();
+            Ref<T>  loadedAsset = AssetImporter::Import<T>(metaData);    
+            AssetHandle handle  = loadedAsset->GetHandle();
 
-            m_LoadedAssets.emplace(handle, loadedAsset);
-            m_AssetRegistry.emplace(handle, std::move(metaData));
+            GetStorage<T>().emplace(handle, loadedAsset);
+            GetRegistry<T>().emplace(handle, std::move(metaData));
 
             return handle;
         }
 
-		virtual Ref<Asset> GetAsset(AssetHandle handle) override {
-			if (!IsAssetHandleValid(handle)) {
-				QK_CORE_WARN("Requested Asset {0} do not exist in the registry", static_cast<uint64_t>(handle));
-				return nullptr;
-			}
+        template<typename T>
+        Ref<T> GetAsset(AssetHandle handle) {
+            if (!IsAssetHandleValid<T>(handle)) {
+                QK_CORE_WARN("Requested Asset {0} do not exist in the registry", static_cast<uint64_t>(handle));
+                return nullptr;
+            }
 
-			if (IsAssetLoaded(handle)) {
-				return m_LoadedAssets[handle];
-			}
-			else {
-				Ref<Asset> loadedAsset = AssetImporter::Import(m_AssetRegistry[handle]);
-				m_LoadedAssets.emplace(handle, loadedAsset);
-				return loadedAsset;
-			}
+            auto& assetStorage = GetStorage<T>();
 
-			return nullptr;
-		}
+            if (auto asset = assetStorage.find(handle); asset != assetStorage.end()) {
+                return asset->second;
+            }
+            else {
+                Ref<T> loadedAsset = AssetImporter::Import<T>(handle, GetRegistry<T>().at(handle));
+                assetStorage.emplace(handle, loadedAsset);
+                return loadedAsset;
+            }
 
-		virtual inline bool IsAssetHandleValid(AssetHandle handle) override {
-			return m_AssetRegistry.contains(handle);
-		}
+            return nullptr;
+        }
 
-		virtual inline bool IsAssetLoaded(AssetHandle handle) override {
-			return m_LoadedAssets.contains(handle);
-		}
+        template<typename T>
+		inline bool IsAssetHandleValid(AssetHandle handle) { return GetRegistry<T>().contains(handle); }
+
+        template<typename T>
+		bool IsAssetLoaded(AssetHandle handle) { return GetStorage<T>().contains(handle); }
+
+    private:
+        // ---------------------------------------------------------------------------------------------------------------------
+        // Storage per type access
+
+        template<typename T>
+        auto& GetStorage() { static_assert(AlwaysFalseV<T>, "Storage is not defined for the Type!"); }
+
+        template<> inline auto& GetStorage<Texture2D>() { return m_Texture2DStorage; }
+
+        // ---------------------------------------------------------------------------------------------------------------------
+        // Registry per type access
+
+        template<typename T>
+        auto& GetRegistry() { static_assert(AlwaysFalseV<T>, "Registry is not defined for the Type!"); }
+
+        template<> inline auto& GetRegistry<Texture2D>() { return m_Texture2DRegistry; }
 
 	private:
-		std::unordered_map<AssetHandle, Ref<Asset>>    m_LoadedAssets;
-		std::unordered_map<AssetHandle, AssetMetadata> m_AssetRegistry;
+        std::unordered_map<AssetHandle, Ref<Texture2D>> m_Texture2DStorage;
+		std::unordered_map<AssetHandle, AssetMetadata> m_Texture2DRegistry;
 	};
 
 }

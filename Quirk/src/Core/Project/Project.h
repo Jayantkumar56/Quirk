@@ -4,7 +4,7 @@
 
 #include "Core/Core.h"
 #include "Core/Project/ProjectSerializer.h"
-#include "Core/AssetManager/AssetManagerBase.h"
+#include "Core/AssetManager/AssetManager.h"
 
 #include <string>
 #include <filesystem>
@@ -45,21 +45,17 @@ namespace Quirk {
         // 
         // takes the ownership of the passed AssetManagerBase* in a Ref member varaible
         // should not be called directly (if called should consider ownership of the parameters)
-        inline Project(std::filesystem::path projRootDir, ProjectConfig config, AssetManagerBase* assetManager) noexcept :
+        inline Project(std::filesystem::path&& projRootDir, ProjectConfig&& config) noexcept :
                 m_Config              ( std::move(config)      ),
-                m_ProjectRootDirectory( std::move(projRootDir) ),
-                m_AssetManager        ( assetManager           )
+                m_ProjectRootDirectory( std::move(projRootDir) )
         {
         }
 
     public:
-        template<AssetManagerType T, typename PathType>
-        requires std::same_as<std::remove_cvref_t<PathType>, std::filesystem::path>
-        static inline Ref<Project> Create(PathType&& projRootDir, ProjectConfig&& config) {
-            return Ref<Project>(new Project(std::forward<PathType>(projRootDir), std::move(config), new T));
+        static inline Ref<Project> Create(std::filesystem::path projRootDir, ProjectConfig&& config) {
+            return Ref<Project>(new Project(std::move(projRootDir), std::move(config)));
         }
 
-        template<AssetManagerType T>
 		static inline Ref<Project> Load(const std::filesystem::path& projFilePath) {
             ProjectConfig config;
             if (!ProjectSerializer::DeserializeConfig(config, projFilePath)) {
@@ -67,7 +63,7 @@ namespace Quirk {
                 return nullptr;
             }
 
-            return Ref<Project>(new Project(projFilePath.parent_path(), std::move(config), new T));
+            return Ref<Project>(new Project(std::move(projFilePath.parent_path()), std::move(config)));
 		}
 
         static inline std::string_view GetProjFileExtenstion() noexcept { return ".qkproj"; }
@@ -101,8 +97,7 @@ namespace Quirk {
         inline const auto& GetConfig() const noexcept { return m_Config;               }
         inline const auto& GetDirectory()    noexcept { return m_ProjectRootDirectory; }
 
-        inline auto  GetAssetManager() const noexcept { return m_AssetManager; }
-        inline auto& GetAssetManager()       noexcept { return m_AssetManager; }
+        inline AssetManager& GetAssetManager() noexcept { return m_AssetManager; }
 
 		inline auto GetAssetDirectory() const noexcept { 
             return m_ProjectRootDirectory / m_Config.AssetDirectory; 
@@ -118,8 +113,8 @@ namespace Quirk {
 
 	private:
 		ProjectConfig		  m_Config;
+        AssetManager          m_AssetManager;
 		std::filesystem::path m_ProjectRootDirectory;
-        Ref<AssetManagerBase> m_AssetManager;
 	};
 
 }

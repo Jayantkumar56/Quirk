@@ -3,9 +3,9 @@
 #include "QkEditorpch.h"
 
 #include "EntityInspectorUI.h"
-#include "Base/Reflection/ComponentList.h"
+#include "Base/Reflection/Registrations/ComponentList.h"
 #include "Editor/EditorTheme.h"
-#include "Editor/EditorResourceManager.h"
+#include "Editor/EditorFrameResourceManager.h"
 
 #include "Core/Frame/FontManager.h"
 #include "Core/Assets/Geometry/PrimitiveMeshGenerator.h"

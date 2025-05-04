@@ -21,7 +21,7 @@ namespace QuirkEditor {
 
         CreateProjectDirectoryStructure(projMeta.ProjectRootDirectory, projConfig);
 
-        s_ActiveProject = Quirk::Project::Create<Quirk::EditorAssetManager>(projMeta.ProjectRootDirectory, std::move(projConfig));
+        s_ActiveProject = Quirk::Project::Create(projMeta.ProjectRootDirectory, std::move(projConfig));
         if (s_ActiveProject == nullptr) {
             return nullptr;
         }
@@ -53,7 +53,7 @@ namespace QuirkEditor {
             return nullptr;
         }
 
-        s_ActiveProject = Quirk::Project::Load<Quirk::EditorAssetManager>(projFilePath);
+        s_ActiveProject = Quirk::Project::Load(projFilePath);
 
         if (s_ActiveProject == nullptr) {
             QK_WARN("Unable to load project at {0}", projFilePath.string());
