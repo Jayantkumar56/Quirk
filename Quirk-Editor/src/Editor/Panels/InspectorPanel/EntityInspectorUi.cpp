@@ -8,7 +8,7 @@
 
 #include "Core/Assets/Geometry/PrimitiveMeshGenerator.h"
 #include "Core/Frame/FontManager.h"
-#include "Core/Utility/Reflection/Registrations/ComponentList.h"
+#include "Core/Reflection/Registrations/ComponentList.h"
 
 #include "imgui.h"
 #include "imgui_internal.h"
@@ -159,7 +159,7 @@ namespace QuirkEditor {
         	if (ImGui::BeginDragDropTarget()) {
         		const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("IMAGE_PATH");
         		if (payload) {
-        			component.Texture = Quirk::Texture2D::Create(**(std::filesystem::path**)payload->Data);
+        			component.Texture = Quirk::TextureImporter::CreateFromImage(**(std::filesystem::path**)payload->Data);
         		}
         
         		ImGui::EndDragDropTarget();
@@ -181,7 +181,7 @@ namespace QuirkEditor {
         
         		std::filesystem::path filePath;
         		if (Quirk::FileDialog::OpenFile(fileDialogSpec, filePath)) {
-        			component.Texture = Quirk::Texture2D::Create(filePath);
+        			component.Texture = Quirk::TextureImporter::CreateFromImage(filePath);
         		}
         	}
         	if (ImGui::IsItemHovered()) {

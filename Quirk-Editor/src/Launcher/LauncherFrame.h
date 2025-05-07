@@ -4,6 +4,7 @@
 
 #include "Quirk.h"
 #include "Launcher/LauncherTitleBar.h"
+#include "Core/AssetManager/AssetImporter/TextureImporter.h"
 
 #include "Base/ProjectManager.h"
 
@@ -27,9 +28,9 @@ namespace QuirkEditor {
 
 			SetTitleBar<LauncherTitleBar>(this);
 
-			m_ProjectIcon		= Quirk::Texture2D::Create("assets/Images/Launcher/project.png");
-			m_OpenProjectIcon   = Quirk::Texture2D::Create("assets/Images/Launcher/openFolder.png");
-			m_CreateProjectIcon = Quirk::Texture2D::Create("assets/Images/Launcher/createProject.png");
+			m_ProjectIcon		= Quirk::TextureImporter::CreateFromImage( "assets/Images/Launcher/project.png"       );
+			m_OpenProjectIcon   = Quirk::TextureImporter::CreateFromImage( "assets/Images/Launcher/openFolder.png"    );
+			m_CreateProjectIcon = Quirk::TextureImporter::CreateFromImage( "assets/Images/Launcher/createProject.png" );
 
             ProjectManager::LoadRecentProjectsList("RecentProjects.yaml");
 

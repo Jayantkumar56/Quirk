@@ -122,11 +122,6 @@ namespace Quirk {
 		virtual void Bind(uint32_t slot = 0)            const = 0;
 		virtual void SetData(void* data, uint32_t size) const = 0;
 
-		virtual AssetType GetAssetType() const noexcept override { return AssetType::Texture2D; }
-
-        // TODO: temporary, to be removed after proper assetmanager setup
-        static Ref<Texture2D> Create(const std::filesystem::path& filePath);
-
 		static Ref<Texture2D> Create(Buffer dataBuffer, const TextureSpecification& spec);
 	};
 

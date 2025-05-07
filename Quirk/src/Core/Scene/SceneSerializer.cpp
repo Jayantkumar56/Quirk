@@ -7,6 +7,8 @@
 #include "SceneSerializer.h"
 #include "Core/Assets/Geometry/PrimitiveMeshGenerator.h"
 
+#include "Core/AssetManager/AssetImporter/TextureImporter.h"
+
 namespace YAML {
 
 	static Emitter& operator << (Emitter& out, const glm::vec2& v) {
@@ -265,7 +267,7 @@ namespace Quirk {
 
 			std::filesystem::path texturefilePath = deserializedComponent["Texture"].as<std::string>();
 			if (std::filesystem::exists(texturefilePath))
-				component.Texture = Texture2D::Create(texturefilePath);
+                component.Texture = AssetImporter<Texture2D>::CreateFromImage(texturefilePath);
 		}
 
 		if (auto deserializedComponent = entityNode["CameraComponent"];			deserializedComponent) {

@@ -10,10 +10,6 @@
 
 namespace Quirk {
 
-    Ref<Texture2D> Texture2D::Create(const std::filesystem::path& filePath) {
-        return Texture2DImporter::Import(filePath);
-    }
-
     Ref<Texture2D> Texture2D::Create(Buffer dataBuffer, const TextureSpecification& spec) {
 		switch (Renderer::GetAPI()) {
 			case RendererAPI::API::None:    QK_CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;

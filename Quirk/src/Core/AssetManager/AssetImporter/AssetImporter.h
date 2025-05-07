@@ -4,59 +4,48 @@
 
 #include "Core/Core.h"
 #include "Core/Assets/Asset.h"
+#include "Core/Utility/TypeTraits.h"
 
-
-#include "TextureImporter.h"
+#include <filesystem>
 
 
 namespace Quirk {
 
 	struct AssetMetadata {
-		AssetType Type = AssetType::None;
 		std::filesystem::path Path;
 	};
 
-	class AssetImporter {
-	public:
-        static inline Ref<Asset> Import(const AssetMetadata& assetData) {
-            switch (assetData.Type) {
-                case AssetType::Texture2D: return Texture2DImporter::ImportFromMetadata(assetData.Path);
-            }
+    // base class template for all of the AssetImporter specializations
+    // 
+    // - can create assets with asset handle
+    //   (used to load pre registered assets)
 
-            QK_CORE_WARN("Invalid or unsupported AssetType \"{0}\" found!", static_cast<int>(assetData.Type));
-            return nullptr;
-        }
-
-        template<typename T>
-        static Ref<T> Import(AssetMetadata assetData) {
-            switch (assetData.Type) {
-                case AssetType::Texture2D: return Texture2DImporter::ImportFromMetadata(assetData.Path);
-            }
-
-            QK_CORE_WARN("Invalid or unsupported AssetType \"{0}\" found!", static_cast<int>(assetData.Type));
-            return nullptr;
-        }
-
-        static inline Ref<Asset> Import(const AssetHandle handle, const AssetMetadata& assetData) {
-            Ref<Asset> asset;
-
-            switch (assetData.Type) {
-                case AssetType::Texture2D: {
-                    asset = Texture2DImporter::ImportFromMetadata(assetData.Path); 
-                    break;
-                }
-
-                default: {
-                    QK_CORE_WARN("Invalid or unsupported AssetType \"{0}\" found!", static_cast<int>(assetData.Type)); 
-                    return asset;
-                }
-            }
-
-            if (asset != nullptr)
-                asset->SetHandle(handle);
-
+    template<typename Derived>
+    class AssetImporterBase {
+    public:
+        static auto Import(const AssetHandle handle, const AssetMetadata& assetMeta) {
+            auto asset = Derived::Import(assetMeta);
+            asset->SetHandle(handle);
             return asset;
         }
-	};
+    };
+
+    // NOTE:
+    //
+    // - every AssetImporter specialization must have the following signature and must define:
+    // 
+    //    static Ref<AssetType> Import(const AssetMetadata&);
+    // 
+    // - inheriting from the AssetImporterBase with crtp would provide common 
+    //   features to the AssetImporter specializations
+    //
+
+    template<typename T>
+    class AssetImporter : public AssetImporterBase<AssetImporter<T>> {
+    public:
+        static Ref<T> Import(const AssetMetadata& assetMeta) {
+            static_assert(AlwaysFalseV<T>, "No importer exist for given Asset type!");
+        }
+    };
 
 }

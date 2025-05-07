@@ -15,8 +15,8 @@ namespace QuirkEditor {
 	SceneViewportPanel::SceneViewportPanel(uint16_t width, uint16_t height) :
 			Panel              ("Scene Viewport"),
 			m_RuntimeScene	   (nullptr),
-			m_PlayButtonIcon   (Quirk::Texture2D::Create("assets/Images/play.png")),
-			m_PauseButtonIcon  (Quirk::Texture2D::Create("assets/Images/pause.png")),
+			m_PlayButtonIcon   (Quirk::TextureImporter::CreateFromImage("assets/Images/play.png")),
+			m_PauseButtonIcon  (Quirk::TextureImporter::CreateFromImage("assets/Images/pause.png")),
 			m_PanelWidth	   (width),
 			m_PanelHeight	   (height),
 			m_Frame			   (Quirk::FrameBuffer::Create({ m_PanelWidth, m_PanelHeight })),
@@ -105,7 +105,7 @@ namespace QuirkEditor {
 
 					if (entityId != -1) {
                         Quirk::Entity entity((entt::entity)entityId, scene.get());
-						entity.GetComponent<Quirk::SpriteRendererComponent>().Texture = Quirk::Texture2D::Create(**(std::filesystem::path**)imagePayload->Data);
+						entity.GetComponent<Quirk::SpriteRendererComponent>().Texture = Quirk::TextureImporter::CreateFromImage(**(std::filesystem::path**)imagePayload->Data);
 					}
 				}
 

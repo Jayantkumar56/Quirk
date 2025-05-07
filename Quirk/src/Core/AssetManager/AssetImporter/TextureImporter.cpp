@@ -8,12 +8,14 @@
 
 namespace Quirk {
 
-    Ref<Texture2D> Texture2DImporter::ImportFromMetadata(const std::filesystem::path& filePath) {
+    Ref<Texture2D> AssetImporter<Texture2D>::Import(const AssetMetadata& assetMeta) {
+        // deserialize texture yaml 
+        // pass the texture properties and image to CreateFromImage
         return Ref<Texture2D>();
     }
 
-    Ref<Texture2D> Texture2DImporter::Import(const std::filesystem::path& filePath, const TextureProperties& properties) {
-        stbi_uc* data    = nullptr;
+    Ref<Texture2D> AssetImporter<Texture2D>::CreateFromImage(const std::filesystem::path& filePath, const TextureProperties& properties) {
+        stbi_uc*    data = nullptr;
         std::string file = filePath.string();
 
         TextureSpecification textureSpec{
@@ -44,25 +46,25 @@ namespace Quirk {
 
         switch (textureSpec.Channels) {
             case 1: {
-                textureSpec.DataFormat        = ImageDataFormat::Red;
+                textureSpec.DataFormat = ImageDataFormat::Red;
                 textureSpec.GpuInternalFormat = ImageInternalFormat::R8;
                 break;
             }
 
             case 2: {
-                textureSpec.DataFormat        = ImageDataFormat::RG;
+                textureSpec.DataFormat = ImageDataFormat::RG;
                 textureSpec.GpuInternalFormat = ImageInternalFormat::RG8;
                 break;
             }
 
             case 3: {
-                textureSpec.DataFormat        = ImageDataFormat::RGB;
+                textureSpec.DataFormat = ImageDataFormat::RGB;
                 textureSpec.GpuInternalFormat = ImageInternalFormat::RGB8;
                 break;
             }
 
             case 4: {
-                textureSpec.DataFormat        = ImageDataFormat::RGBA;
+                textureSpec.DataFormat = ImageDataFormat::RGBA;
                 textureSpec.GpuInternalFormat = ImageInternalFormat::RGBA8;
                 break;
             }
@@ -80,7 +82,7 @@ namespace Quirk {
         return Texture2D::Create(std::move(dataBuffer), textureSpec);
     }
 
-    TextureSwizzle Texture2DImporter::GetDefaultSwizzleMask(ImageDataFormat format) noexcept {
+    TextureSwizzle AssetImporter<Texture2D>::GetDefaultSwizzleMask(ImageDataFormat format) noexcept {
         switch (format) {
             case ImageDataFormat::Red:  return { Swizzle::Red, Swizzle::Red,   Swizzle::Red,  Swizzle::One   };
             case ImageDataFormat::RG:   return { Swizzle::Red, Swizzle::Green, Swizzle::Zero, Swizzle::One   };

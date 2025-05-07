@@ -3,7 +3,7 @@
 #pragma once
 
 #include "Core/Utility/TypeTraits.h"
-#include "AssetImporter/AssetImporter.h"
+#include "AssetImporter/TextureImporter.h"
 
 #include <unordered_map>
 
@@ -14,7 +14,7 @@ namespace Quirk {
 	public:
         template<typename T>
         inline AssetHandle RegisterAsset(AssetMetadata metaData) {
-            Ref<T>  loadedAsset = AssetImporter::Import<T>(metaData);    
+            Ref<T>  loadedAsset = AssetImporter<T>::Import(metaData);    
             AssetHandle handle  = loadedAsset->GetHandle();
 
             GetStorage<T>().emplace(handle, loadedAsset);
@@ -36,7 +36,7 @@ namespace Quirk {
                 return asset->second;
             }
             else {
-                Ref<T> loadedAsset = AssetImporter::Import<T>(handle, GetRegistry<T>().at(handle));
+                Ref<T> loadedAsset = AssetImporter<T>::Import(handle, GetRegistry<T>().at(handle));
                 assetStorage.emplace(handle, loadedAsset);
                 return loadedAsset;
             }

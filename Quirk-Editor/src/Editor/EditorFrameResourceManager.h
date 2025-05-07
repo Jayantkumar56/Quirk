@@ -34,16 +34,16 @@ namespace QuirkEditor {
 
     private:
         void InitInspectorPanelIcons() {
-            m_IconRemove = Quirk::Texture2D::Create( "assets/Images/remove.png"      );
-            m_IconUpload = Quirk::Texture2D::Create( "assets/Images/uploadImage.png" );
+            m_IconRemove = Quirk::TextureImporter::CreateFromImage( "assets/Images/remove.png"      );
+            m_IconUpload = Quirk::TextureImporter::CreateFromImage( "assets/Images/uploadImage.png" );
         }
 
         void InitContentBrowserPanelIcons() {
-			m_IconFile     = Quirk::Texture2D::Create( "assets/Images/file.png"           );
-            m_IconFolder   = Quirk::Texture2D::Create( "assets/Images/folder.png"         );
-            m_IconBackward = Quirk::Texture2D::Create( "assets/Images/backward_arrow.png" );
-			m_IconForward  = Quirk::Texture2D::Create( "assets/Images/forward_arrow.png"  );
-			m_IconRefresh  = Quirk::Texture2D::Create( "assets/Images/refresh.png"        );
+			m_IconFile     = Quirk::TextureImporter::CreateFromImage( "assets/Images/file.png"           );
+            m_IconFolder   = Quirk::TextureImporter::CreateFromImage( "assets/Images/folder.png"         );
+            m_IconBackward = Quirk::TextureImporter::CreateFromImage( "assets/Images/backward_arrow.png" );
+			m_IconForward  = Quirk::TextureImporter::CreateFromImage( "assets/Images/forward_arrow.png"  );
+			m_IconRefresh  = Quirk::TextureImporter::CreateFromImage( "assets/Images/refresh.png"        );
         }
 
     private:

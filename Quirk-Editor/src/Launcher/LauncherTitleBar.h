@@ -2,6 +2,7 @@
 #pragma once
 
 #include "Quirk.h"
+#include "Core/AssetManager/AssetImporter/TextureImporter.h"
 
 namespace QuirkEditor {
 
@@ -9,9 +10,9 @@ namespace QuirkEditor {
 
 	public:
 		LauncherTitleBar() {
-			m_CloseIcon    = Quirk::Texture2D::Create("assets/Images/close.png");
-			m_MinimiseIcon = Quirk::Texture2D::Create("assets/Images/minus.png");
-			m_MaximiseIcon = Quirk::Texture2D::Create("assets/Images/maximize.png");
+			m_CloseIcon    = Quirk::TextureImporter::CreateFromImage( "assets/Images/close.png"    );
+			m_MinimiseIcon = Quirk::TextureImporter::CreateFromImage( "assets/Images/minus.png"    );
+			m_MaximiseIcon = Quirk::TextureImporter::CreateFromImage( "assets/Images/maximize.png" );
 		}
 
 		~LauncherTitleBar() = default;
