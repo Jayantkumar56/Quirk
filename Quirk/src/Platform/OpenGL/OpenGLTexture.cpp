@@ -50,13 +50,13 @@ namespace Quirk {
 
 
     OpenGLTexture2D::OpenGLTexture2D(Buffer dataBuffer, const TextureSpecification& spec) :
-        m_Specification(spec)
+            Texture2D(spec)
 	{
 		GLenum dataFormat     = ImageDataFormatToGLDataFormat(spec.DataFormat);
 		GLenum internalFormat = ImageInternalFormatToGLInternalFormat(spec.GpuInternalFormat);
 
 		glCreateTextures(GL_TEXTURE_2D, 1, &m_RendererId);
-		glTextureStorage2D(m_RendererId, 1, internalFormat, m_Specification.Width, m_Specification.Height);
+		glTextureStorage2D(m_RendererId, 1, internalFormat, spec.Width, spec.Height);
 
 		glTextureParameteri(m_RendererId, GL_TEXTURE_MIN_FILTER, TexutureFilterToOpenglFilter(spec.MinFilter));
 		glTextureParameteri(m_RendererId, GL_TEXTURE_MAG_FILTER, TexutureFilterToOpenglFilter(spec.MagFilter));
@@ -67,8 +67,8 @@ namespace Quirk {
 		glTextureSubImage2D(
             m_RendererId, 
             0, 0, 0, 
-            m_Specification.Width,
-            m_Specification.Height,
+            spec.Width,
+            spec.Height,
             dataFormat, 
             GL_UNSIGNED_BYTE, 
             (void*)dataBuffer.Data

@@ -12,14 +12,21 @@ namespace Quirk {
 
 	class EditorAssetManager {
 	public:
+        ~EditorAssetManager() noexcept {
+            try {
+                // saving logic
+                SaveAssets<Texture2D>();
+            }
+            catch (...) {
+                QK_CORE_ERROR("Error occurred while saving Assets");
+            }
+        }
+
         template<typename T>
-        inline AssetHandle RegisterAsset(AssetMetadata metaData) {
-            Ref<T>  loadedAsset = AssetImporter<T>::Import(metaData);    
-            AssetHandle handle  = loadedAsset->GetHandle();
+        AssetHandle RegisterAsset(EditorAsset<T>&& metaData) {
+            AssetHandle handle = AssetImporter<T>::Create(metaData);
 
-            GetStorage<T>().emplace(handle, loadedAsset);
-            GetRegistry<T>().emplace(handle, std::move(metaData));
-
+            GetStorage<T>().emplace(handle, std::move(metaData));
             return handle;
         }
 
@@ -30,25 +37,29 @@ namespace Quirk {
                 return nullptr;
             }
 
-            auto& assetStorage = GetStorage<T>();
+            EditorAsset<T>& asset = GetStorage<T>().at(handle);
 
-            if (auto asset = assetStorage.find(handle); asset != assetStorage.end()) {
-                return asset->second;
-            }
-            else {
-                Ref<T> loadedAsset = AssetImporter<T>::Import(handle, GetRegistry<T>().at(handle));
-                assetStorage.emplace(handle, loadedAsset);
-                return loadedAsset;
-            }
+            if (!asset->IsLoaded())
+                AssetImporter<T>::Import(asset);
 
-            return nullptr;
+            return asset.GetAsset();
         }
 
         template<typename T>
-		inline bool IsAssetHandleValid(AssetHandle handle) { return GetRegistry<T>().contains(handle); }
+        void SaveAssets() {
+            const auto& storage = GetStorage<T>();
+
+            for (const auto& asset : storage) {
+                if (asset.second.IsLoaded())
+                    AssetImporter<T>::Save(asset.second);
+            }
+        }
 
         template<typename T>
-		bool IsAssetLoaded(AssetHandle handle) { return GetStorage<T>().contains(handle); }
+		bool IsAssetHandleValid(AssetHandle handle) { return GetStorage<T>().contains(handle); }
+
+        template<typename T>
+		bool IsAssetLoaded(AssetHandle handle) { return GetStorage<T>().at(handle).IsLoaded(); }
 
     private:
         // ---------------------------------------------------------------------------------------------------------------------
@@ -59,17 +70,8 @@ namespace Quirk {
 
         template<> inline auto& GetStorage<Texture2D>() { return m_Texture2DStorage; }
 
-        // ---------------------------------------------------------------------------------------------------------------------
-        // Registry per type access
-
-        template<typename T>
-        auto& GetRegistry() { static_assert(AlwaysFalseV<T>, "Registry is not defined for the Type!"); }
-
-        template<> inline auto& GetRegistry<Texture2D>() { return m_Texture2DRegistry; }
-
 	private:
-        std::unordered_map<AssetHandle, Ref<Texture2D>> m_Texture2DStorage;
-		std::unordered_map<AssetHandle, AssetMetadata> m_Texture2DRegistry;
+		std::unordered_map<AssetHandle, EditorAsset<Texture2D>> m_Texture2DStorage;
 	};
 
 }

@@ -109,20 +109,28 @@ namespace Quirk {
         TextureSwizzle SwizzleMask{ };
     };
 
-	class Texture2D : public Asset {
-	public :
-		virtual ~Texture2D() = default;
+    class Texture2D : public Asset {
+    public:
+        Texture2D(const TextureSpecification& spec) : m_Specification(spec) {}
+        virtual ~Texture2D() = default;
 
-		virtual bool operator ==(const Texture2D& other) const = 0;
+        virtual bool operator ==(const Texture2D& other) const = 0;
 
-		virtual uint32_t GetRendererId() const noexcept = 0;
-		virtual uint32_t GetWidth()      const noexcept = 0;
-		virtual uint32_t GetHeight()     const noexcept = 0;
+        virtual uint32_t GetRendererId()                const noexcept = 0;
+        virtual void Bind(uint32_t slot = 0)            const = 0;
 
-		virtual void Bind(uint32_t slot = 0)            const = 0;
-		virtual void SetData(void* data, uint32_t size) const = 0;
+        // TODO: THINK ABOUT THIS
+        virtual void SetData(void* data, uint32_t size) const = 0;
 
-		static Ref<Texture2D> Create(Buffer dataBuffer, const TextureSpecification& spec);
-	};
+        inline uint32_t             GetWidth()  const noexcept { return m_Specification.Width; }
+        inline uint32_t             GetHeight() const noexcept { return m_Specification.Height; }
+        inline TextureSpecification GetSpec()   const noexcept { return m_Specification; }
+
+        // maybe think about this situation
+        static Ref<Texture2D> Create(Buffer dataBuffer, const TextureSpecification& spec);
+
+    protected:
+        TextureSpecification m_Specification;
+    };
 
 }

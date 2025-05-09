@@ -11,41 +11,42 @@
 
 namespace Quirk {
 
-	struct AssetMetadata {
-		std::filesystem::path Path;
-	};
-
-    // base class template for all of the AssetImporter specializations
+    // NOTE:
+    //
+    // - every EditorAsset specialization must have the following functions signatures:
     // 
-    // - can create assets with asset handle
-    //   (used to load pre registered assets)
+    //   inline Ref<T> GetAsset() noexcept { }
+    //   inline bool   IsLoaded() noexcept { }
+    // 
 
-    template<typename Derived>
-    class AssetImporterBase {
-    public:
-        static auto Import(const AssetHandle handle, const AssetMetadata& assetMeta) {
-            auto asset = Derived::Import(assetMeta);
-            asset->SetHandle(handle);
-            return asset;
-        }
+    template <typename T>
+    struct EditorAsset {
+        Ref<T> Asset;
+        std::filesystem::path AssetPath;
+
+        inline Ref<T> GetAsset() noexcept { return Asset;            }
+        inline bool   IsLoaded() noexcept { return Asset != nullptr; }
+
+        static_assert(AlwaysFalseV<T>, "No Specialization created for AssetType T, must have specialization to be used");
     };
 
     // NOTE:
     //
     // - every AssetImporter specialization must have the following signature and must define:
     // 
-    //    static Ref<AssetType> Import(const AssetMetadata&);
-    // 
-    // - inheriting from the AssetImporterBase with crtp would provide common 
-    //   features to the AssetImporter specializations
+    //   static AssetHandle Create(EditorAsset<T>& outAsset)  { }
+    //   static void        Import(EditorAsset<T>& outAsset)  { }
+    //   static void        Save(const EditorAsset<T>& asset) { }
     //
 
     template<typename T>
-    class AssetImporter : public AssetImporterBase<AssetImporter<T>> {
+    class AssetImporter {
     public:
-        static Ref<T> Import(const AssetMetadata& assetMeta) {
-            static_assert(AlwaysFalseV<T>, "No importer exist for given Asset type!");
-        }
+        static AssetHandle Create(EditorAsset<T>& outAsset)  { }
+        static void        Import(EditorAsset<T>& outAsset)  { }
+        static void        Save(const EditorAsset<T>& asset) { }
+
+        static_assert(AlwaysFalseV<T>, "No importer exist for given Asset type!");
     };
 
 }

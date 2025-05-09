@@ -16,6 +16,7 @@
 
 #define PARENS ()
 
+#define STRINGIFY(X) #X
 
 
 #define EXPAND(...) EXPAND4(EXPAND4(EXPAND4(EXPAND4(__VA_ARGS__))))

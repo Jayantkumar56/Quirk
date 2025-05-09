@@ -17,8 +17,24 @@ namespace Quirk {
     // ============================================================================================================================
     //
     // 1. Registering an enum:
+    // 
+    // REGISTER_ENUM_WITH_NAME(MyType,
+    //    Val1,
+    //    Val2,
+    //    ...
+    // )
+    // 
+    // Example:
     //
-    // REGISTER_ENUM(MyType, "TypeName",
+    // REGISTER_ENUM_WITH_NAME(Color,
+    //     Red,  
+    //     Green,
+    //     Blue, 
+    // )
+    // 
+    // 2. Registering an enum with custom name strings:
+    //
+    // REGISTER_ENUM_WITH_NAME(MyType, "TypeName",
     //    (Val1, "Val1Name"),
     //    (Val2, "Val2Name")
     //    ...
@@ -31,14 +47,14 @@ namespace Quirk {
     //
     // Example:
     //
-    // REGISTER_ENUM(Color, "Color",
-    //     (Red, "Red"),
-    //     (Green, "Green"),
-    //     (Blue, "Blue")
+    // REGISTER_ENUM_WITH_NAME(Color, "Color",
+    //     ( Red,   "Red"   ),
+    //     ( Green, "Green" ),
+    //     ( Blue,  "Blue"  )
     // )
     //
     //
-    // 2. EnumRegistry usage:
+    // 3. EnumRegistry usage:
     //
     // constexpr size_t count         = QuirkEditor::EnumRegistry<Color>::ValueCount;
     // constexpr std::string_view str = QuirkEditor::EnumRegistry<Color>::ToString(Color::Blue);
@@ -63,7 +79,7 @@ namespace Quirk {
 
 
 
-    // Default: not complex
+    // Default: enum not registered
     template<typename>
     struct IsEnumRegistered : std::false_type {};
 
@@ -78,15 +94,14 @@ namespace Quirk {
 
 
 
-#define ENUM_STR_TO_VAL_PAIR(...)                                                                                          \
+#define STR_ENUM_VAL_PAIR_EXPAND(...)                                                                                      \
         { TUPLE_GET_SECOND(__VA_ARGS__),  RegisteredType::TUPLE_GET_FIRST(__VA_ARGS__) }
 
-#define ENUM_VAL_TO_STR_PAIR(...)                                                                                          \
+#define ENUM_VAL_STR_PAIR_EXPAND(...)                                                                                      \
         case RegisteredType::TUPLE_GET_FIRST(__VA_ARGS__):   return TUPLE_GET_SECOND(__VA_ARGS__);
 
 
-
-#define REGISTER_ENUM(Enum, EnumTitle, ...)                                                                                \
+#define REGISTER_ENUM_WITH_NAME(Enum, EnumTitle, ...)                                                                      \
     template<>                                                                                                             \
     struct ::Quirk::EnumRegistry<Enum> {                                                                                   \
         using RegisteredType = Enum;                                                                                       \
@@ -96,7 +111,7 @@ namespace Quirk {
         static constexpr size_t           ValueCount     = ValueNamesCStr.size();                                          \
                                                                                                                            \
         static inline const std::unordered_map<std::string_view, RegisteredType> StringToValueMapping{                     \
-            FOR_EACH_SEP_COMMA(ENUM_STR_TO_VAL_PAIR, __VA_ARGS__)                                                          \
+            FOR_EACH_SEP_COMMA(STR_ENUM_VAL_PAIR_EXPAND, __VA_ARGS__)                                                      \
         };                                                                                                                 \
                                                                                                                            \
         static constexpr auto& GetValueNamesCStr() {                                                                       \
@@ -113,10 +128,18 @@ namespace Quirk {
                                                                                                                            \
         static constexpr std::string_view ToString(RegisteredType value) {                                                 \
             switch (value) {                                                                                               \
-                FOR_EACH(ENUM_VAL_TO_STR_PAIR, __VA_ARGS__)                                                                \
+                FOR_EACH(ENUM_VAL_STR_PAIR_EXPAND, __VA_ARGS__)                                                            \
             }                                                                                                              \
             return "Unknown";                                                                                              \
         }                                                                                                                  \
     };
+
+
+
+#define ENUM_VAL_TO_ENUM_VAL_STR_PAIR(EnumVal)                                                                            \
+    (EnumVal, #EnumVal)
+
+#define REGISTER_ENUM(Enum, ...)                                                                                          \
+    REGISTER_ENUM_WITH_NAME(Enum, #Enum, FOR_EACH_SEP_COMMA(ENUM_VAL_TO_ENUM_VAL_STR_PAIR, __VA_ARGS__))
 
 }

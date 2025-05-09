@@ -10,7 +10,7 @@ namespace Quirk {
 
 	class Asset {
         template<typename T>
-        friend class AssetImporterBase;
+        friend class AssetImporter;
 
 	public:
         inline AssetHandle GetHandle() const noexcept { return m_Handle; }

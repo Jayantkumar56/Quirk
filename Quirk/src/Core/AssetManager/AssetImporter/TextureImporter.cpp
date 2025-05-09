@@ -1,18 +1,13 @@
 
 
 #include "Qkpch.h"
-#include "TextureImporter.h"
 
-#include "stb_image.h"
+#include "TextureImporter.h"
 #include "Core/Utility/Buffer.h"
 
-namespace Quirk {
+#include "stb_image.h"
 
-    Ref<Texture2D> AssetImporter<Texture2D>::Import(const AssetMetadata& assetMeta) {
-        // deserialize texture yaml 
-        // pass the texture properties and image to CreateFromImage
-        return Ref<Texture2D>();
-    }
+namespace Quirk {
 
     Ref<Texture2D> AssetImporter<Texture2D>::CreateFromImage(const std::filesystem::path& filePath, const TextureProperties& properties) {
         stbi_uc*    data = nullptr;

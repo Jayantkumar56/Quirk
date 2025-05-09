@@ -18,16 +18,13 @@ namespace Quirk {
 
 		virtual bool operator ==(const Texture2D& other) const override { return m_RendererId == other.GetRendererId(); }
 
-		virtual uint32_t GetRendererId() const noexcept override { return m_RendererId;           }
-		virtual uint32_t GetWidth()		 const noexcept override { return m_Specification.Width;  }
-		virtual uint32_t GetHeight()	 const noexcept override { return m_Specification.Height; }
+		virtual uint32_t GetRendererId() const noexcept override { return m_RendererId; }
 
 		virtual void Bind(uint32_t slot = 0)            const override;
 		virtual void SetData(void* data, uint32_t size) const override;
 
 	private:
 		uint32_t m_RendererId;
-        TextureSpecification m_Specification;
 	};
 
 }
