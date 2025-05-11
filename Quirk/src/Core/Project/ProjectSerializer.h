@@ -8,14 +8,12 @@
 
 namespace Quirk {
 
-    class Project;
+    class  EditorProject;
     struct ProjectConfig;
 
-	class ProjectSerializer {
+	class EditorProjectSerializer {
 	public:
-		static bool Serialize(Ref<Project> project, const std::filesystem::path& filepath);
-		static bool Deserialize(Ref<Project> project, const std::filesystem::path& filepath);
-
+		static bool Serialize(Ref<EditorProject> project, const std::filesystem::path& filepath);
         static bool DeserializeConfig(ProjectConfig& config, const std::filesystem::path& filepath);
 	};
 

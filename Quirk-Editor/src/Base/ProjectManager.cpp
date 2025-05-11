@@ -39,7 +39,7 @@ namespace QuirkEditor {
             }
 
             std::filesystem::path projFilePath = projMeta.ProjectRootDirectory / projFile;
-            Quirk::ProjectSerializer::Serialize(s_ActiveProject, projFilePath);
+            Quirk::EditorProjectSerializer::Serialize(s_ActiveProject, projFilePath);
         }
 
         AddRecentProject(std::move(projMeta));

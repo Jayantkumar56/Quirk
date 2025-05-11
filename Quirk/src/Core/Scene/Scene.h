@@ -17,14 +17,14 @@ namespace Quirk {
 
 	public:
 		Scene(std::string name, uint16_t width, uint16_t height) : 
-				m_Name(std::move(name)), 
+				m_Name(std::move(name)),
 				m_ViewportWidth(width), 
 				m_ViewportHeight(height) 
 		{}
 		~Scene() = default;
 
 		static Ref<Scene> Copy(const Scene* other);
-		static Ref<Scene> Copy(const Ref<Scene>& other);
+        static inline Ref<Scene> Copy(const Ref<Scene>& other) { return Copy(other.get()); }
 
 		Entity CreateEntity(const std::string& name = std::string(), const uint64_t uuid = UUID());
 		void DestroyEntity(Entity entity);

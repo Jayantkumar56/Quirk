@@ -122,7 +122,7 @@ namespace Quirk {
             static_assert(                                                                                                  \
                 std::is_same_v<std::remove_cvref_t<Obj>, ReflectingType> ||                                                 \
                 std::is_same_v<std::remove_cvref_t<Obj>, ReflectingType*>,                                                  \
-                "Wrong object type passed to Set()"                                                                         \
+                "Wrong object type passed to Get()"                                                                         \
             );                                                                                                              \
                                                                                                                             \
             if constexpr (std::is_pointer_v<std::decay_t<Obj>>)                                                             \

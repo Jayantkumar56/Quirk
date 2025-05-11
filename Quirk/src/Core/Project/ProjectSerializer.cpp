@@ -3,14 +3,14 @@
 #include "Qkpch.h"
 #include "ProjectSerializer.h"
 
-#include "Project.h"
+#include "EditorProject.h"
 
 
 #include <fstream>
 
 namespace Quirk {
 
-	bool ProjectSerializer::Serialize(Ref<Project> project, const std::filesystem::path& filePath) {
+	bool EditorProjectSerializer::Serialize(Ref<EditorProject> project, const std::filesystem::path& filePath) {
         if (project == nullptr) {
             QK_WARN("No project is provided for Serialization!");
             return false;
@@ -41,19 +41,7 @@ namespace Quirk {
 		return true;
 	}
 
-	bool ProjectSerializer::Deserialize(Ref<Project> project, const std::filesystem::path& filePath) {
-        if (project == nullptr) {
-            QK_WARN("Must provide a non null project to deserialize into!");
-            return false;
-        }
-
-		auto& config = project->GetConfig();
-        DeserializeConfig(config, filePath);
-		
-		return true;
-	}
-
-    bool ProjectSerializer::DeserializeConfig(ProjectConfig& config, const std::filesystem::path& filePath) {
+    bool EditorProjectSerializer::DeserializeConfig(ProjectConfig& config, const std::filesystem::path& filePath) {
         YAML::Node data;
 		try {
 			data = YAML::LoadFile(filePath.string());

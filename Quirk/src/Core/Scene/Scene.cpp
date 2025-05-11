@@ -29,39 +29,8 @@ namespace Quirk {
                 auto view = scene->m_Registry.view<Component>();
 
                 for (auto entity : view) {
-                    auto& componentToCopy = scene->m_Registry.get<Component>(entity);
-                    auto uuidOriginalEntity = (uint64_t)scene->m_Registry.get<UUIDComponent>(entity).Uuid;
-
-                    entt::entity entityHandle = (entt::entity)entitiesMap[uuidOriginalEntity];
-                    newScene->m_Registry.emplace_or_replace<Component>(entityHandle, componentToCopy);
-                }
-            },
-            other, newScene, entitiesMap
-        );
-
-		return newScene;
-	}
-
-	Ref<Scene> Scene::Copy(const Ref<Scene>& other) {
-		Ref<Scene> newScene = CreateRef<Scene>(other->m_Name, other->m_ViewportWidth, other->m_ViewportWidth);
-		std::unordered_map<uint64_t, uint32_t> entitiesMap;
-
-		auto view = other->m_Registry.view<UUIDComponent>();
-		for (auto entity : view) {
-			auto& tag = other->m_Registry.get<TagComponent>(entity).Tag;
-			auto uuid = other->m_Registry.get<UUIDComponent>(entity).Uuid;
-
-			entitiesMap[uuid] = (uint32_t)newScene->CreateEntity(tag, uuid);
-		}
-
-        Quirk::ComponentsIterator<ComponentTypesNonIdentifiers>(
-            [] <typename Component>
-            (std::string_view, const Ref<Scene>& other, Ref<Scene>& newScene, std::unordered_map<uint64_t, uint32_t>& entitiesMap) {
-                auto view = other->m_Registry.view<Component>();
-
-                for (auto entity : view) {
-                    auto& componentToCopy = other->m_Registry.get<Component>(entity);
-                    auto uuidOriginalEntity = (uint64_t)other->m_Registry.get<UUIDComponent>(entity).Uuid;
+                    auto&    componentToCopy    = scene->m_Registry.get<Component>(entity);
+                    uint64_t uuidOriginalEntity = scene->m_Registry.get<UUIDComponent>(entity).Uuid;
 
                     entt::entity entityHandle = (entt::entity)entitiesMap[uuidOriginalEntity];
                     newScene->m_Registry.emplace_or_replace<Component>(entityHandle, componentToCopy);

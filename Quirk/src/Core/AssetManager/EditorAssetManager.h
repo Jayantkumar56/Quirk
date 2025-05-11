@@ -46,6 +46,13 @@ namespace Quirk {
         }
 
         template<typename T>
+		bool IsAssetHandleValid(AssetHandle handle) { return GetStorage<T>().contains(handle); }
+
+        template<typename T>
+		bool IsAssetLoaded(AssetHandle handle) { return GetStorage<T>().at(handle).IsLoaded(); }
+
+    private:
+        template<typename T>
         void SaveAssets() {
             const auto& storage = GetStorage<T>();
 
@@ -54,12 +61,6 @@ namespace Quirk {
                     AssetImporter<T>::Save(asset.second);
             }
         }
-
-        template<typename T>
-		bool IsAssetHandleValid(AssetHandle handle) { return GetStorage<T>().contains(handle); }
-
-        template<typename T>
-		bool IsAssetLoaded(AssetHandle handle) { return GetStorage<T>().at(handle).IsLoaded(); }
 
     private:
         // ---------------------------------------------------------------------------------------------------------------------
