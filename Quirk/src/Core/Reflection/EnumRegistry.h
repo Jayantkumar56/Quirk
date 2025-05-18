@@ -85,12 +85,14 @@ namespace Quirk {
 
     // Specialized: if EnumRegistry<T>::RegisteredType exists and matches T, it's a reflected enum
     template<typename T>
-        requires std::is_same_v<T, typename EnumRegistry<T>::RegisteredType>
-    struct IsEnumRegistered< T > : std::true_type {};
+    requires std::is_same_v<T, typename EnumRegistry<T>::RegisteredType>
+    struct IsEnumRegistered<T> : std::true_type {};
 
     template<typename T>
-    constexpr bool HasEnumReflection = IsEnumRegistered<T>::value;
+    constexpr bool HasEnumReflection_V = IsEnumRegistered<T>::value;
 
+    template<class T>
+    concept EnumReflectable = HasEnumReflection_V<T>;
 
 
 

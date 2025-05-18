@@ -20,7 +20,7 @@ namespace QuirkEditor {
     private:
         template<typename T>
         static void ComponentDraw(EditorFrame* frame, T& component) {
-            static_assert(Quirk::AlwaysFalseV<T>, "Draw for the component is not supported yet!");
+            static_assert(Quirk::AlwaysFalse_V<T>, "Draw for the component is not supported yet!");
         }
 
         // Specializations for each component to draw

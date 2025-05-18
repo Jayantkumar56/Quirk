@@ -6,6 +6,40 @@
 #include "yaml-cpp/yaml.h"
 
 #include <string_view>
+#include <vector>
+
+
+namespace Quirk {
+
+    template<typename T>
+    T SafeRead(const YAML::Node& node, const std::string& key) {
+        if (node[key])
+            return node[key].as<T>();
+        return T{};
+    }
+
+    template<typename T>
+    T SafeRead(const YAML::Node& node, const std::string& key, const T& defaultValue) {
+        if (node[key])
+            return node[key].as<T>();
+        return defaultValue;
+    }
+
+    template<typename T>
+    T SafeRead(const YAML::Node& node, const char* key) {
+        if (node[key])
+            return node[key].as<T>();
+        return T{};
+    }
+
+    template<typename T>
+    T SafeRead(const YAML::Node& node, const char* key, const T& defaultValue) {
+        if (node[key])
+            return node[key].as<T>();
+        return defaultValue;
+    }
+
+}
 
 
 namespace YAML {

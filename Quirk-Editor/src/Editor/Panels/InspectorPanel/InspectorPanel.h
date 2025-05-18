@@ -15,7 +15,7 @@ namespace QuirkEditor {
     class InspectorDraw {
         // Note: general draw is not yet supported 
         // (must define a specialization for the type to be drawn)
-        static_assert(Quirk::AlwaysFalseV<T>, "Draw is not defined for provided type!");
+        static_assert(Quirk::AlwaysFalse_V<T>, "Draw is not defined for provided type!");
 
         // Note: 
         // 

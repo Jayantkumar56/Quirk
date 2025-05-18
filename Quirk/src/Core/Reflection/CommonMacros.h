@@ -18,6 +18,8 @@
 
 #define STRINGIFY(X) #X
 
+#define IDENTITY(X) X
+ 
 
 #define EXPAND(...) EXPAND4(EXPAND4(EXPAND4(EXPAND4(__VA_ARGS__))))
 #define EXPAND4(...) EXPAND3(EXPAND3(EXPAND3(EXPAND3(__VA_ARGS__))))
@@ -50,6 +52,8 @@
 #define FOR_EACH_SEP_COMMA_AGAIN() FOR_EACH_SEP_COMMA_HELPER
 
 
+#define UNPACK(...) __VA_ARGS__
+#define UNPACK_TUPLE(TUPLE_) UNPACK TUPLE_
 
 
 // 2-element tuple (a, b, c)
@@ -86,3 +90,23 @@
 
 #define EXPAND_TUPLE_4(t) TUPLE_GET_FIRST_4(t), TUPLE_GET_SECOND_4(t), TUPLE_GET_THIRD_4(t), TUPLE_GET_FOURTH_4(t)
 
+// 5-element tuple (a, b, c, d, e)
+#define TUPLE_FIRST_5(a, b, c, d, e) a
+#define TUPLE_SECOND_5(a, b, c, d, e) b
+#define TUPLE_THIRD_5(a, b, c, d, e) c
+#define TUPLE_FOURTH_5(a, b, c, d, e) d
+#define TUPLE_FIFTH_5(a, b, c, d, e) e
+
+#define TUPLE_GET_FIRST_5(t) TUPLE_FIRST_5 t
+#define TUPLE_GET_SECOND_5(t) TUPLE_SECOND_5 t
+#define TUPLE_GET_THIRD_5(t) TUPLE_THIRD_5 t
+#define TUPLE_GET_FOURTH_5(t) TUPLE_FOURTH_5 t
+#define TUPLE_GET_FIFTH_5(t) TUPLE_FIFTH_5 t
+
+
+#define EXPAND_TUPLE_5(t)      \
+    TUPLE_GET_FIRST_5(t),      \
+    TUPLE_GET_SECOND_5(t),     \
+    TUPLE_GET_THIRD_5(t),      \
+    TUPLE_GET_FOURTH_5(t),     \
+    TUPLE_GET_FIFTH_5(t)

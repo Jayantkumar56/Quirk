@@ -67,7 +67,7 @@ namespace Quirk {
         // Storage per type access
 
         template<typename T>
-        auto& GetStorage() { static_assert(AlwaysFalseV<T>, "Storage is not defined for the Type!"); }
+        auto& GetStorage() { static_assert(AlwaysFalse_V<T>, "Storage is not defined for the Type!"); }
 
         template<> inline auto& GetStorage<Texture2D>() { return m_Texture2DStorage; }
 

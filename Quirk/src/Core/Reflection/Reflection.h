@@ -26,47 +26,46 @@ namespace Quirk {
     // - "TypeName":       Title/Display name.
     // - PropertyName:     Unique identifier for the property struct.
     // - Getter/Setter:    Member function pointers (no & needed).
-    // - AccessMode:       Use PropertyAccess::ReadOnly, ReadWrite, etc.
+    // - PropertyFlags_:   Use PropertyFlags::Editable, PropertyFlags::Serializable, etc.
     //
     // Example:
     //
-    // REGISTER_REFLECTION(Player, "Player",
-    //     (Health, GetHealth, SetHealth, PropertyAccess::ReadWrite),
-    //     (Name,   GetName,   SetName,   PropertyAccess::ReadWrite)
+    // REGISTER_REFLECTION(HealthBar, "HealthBar", (CONSTRUCTOR),
+    //     (IsHealthy,    GetIsHealthy,    SetIsHealthy,    Quirk::PropertyFlag::Editable | Quirk::PropertyFlag::Serializable),
+    //     (HealthStatus, GetHealthStatus, SetHealthStatus, Quirk::PropertyFlag::Editable | Quirk::PropertyFlag::Serializable)
     // )
     //
-    //
-    // 2. Reflecting over properties:
-    //
-    // Reflect<Player>::ForEach([&]<typename Property>() {
-    //     auto value = Property::Get(&player);
-    //     std::cout << Property::PropertyName << " = " << value << "\n";
-    // });
-    //
-    //
-    // 3. Enums (optional):
-    //
-    // REGISTER_ENUM(MyEnumType, "EnumName",
-    //     (EnumVal1, "Label 1"),
-    //     (EnumVal2, "Label 2")
+    // 
+    // 2. In case of ReadOnly property put a DUMMY placeholder in set
+    // 
+    // Example:
+    // 
+    // REGISTER_REFLECTION(HealthBar, "HealthBar", (CONSTRUCTOR),
+    //     (IsHealthy,    GetIsHealthy,    DUMMY,           Quirk::PropertyFlag::Serializable                                ),
+    //     (HealthStatus, GetHealthStatus, SetHealthStatus, Quirk::PropertyFlag::Editable | Quirk::PropertyFlag::Serializable)
     // )
     //
-    // - Adds support for EnumRegistry<MyEnumType>::ToString(value)
-    //   and FromString("Label 1").
     //
     // ----------------------------------------------------------------------------------------------------------------------------
     // Notes:
     // - Avoid naming a property "Name", as it may collide with internal identifiers.
-    // - All macros resolve to valid C++11+ templates; however, IntelliSense may struggle.
+    // - All macros resolve to valid  templates, IntelliSense may struggle, and not work in generic ForEach.
     // - Only getter is required for ReadOnly. Setter required for ReadWrite.
     // - Use only 4-element tuples for REGISTER_REFLECTION.
     // ============================================================================================================================
     // ============================================================================================================================
 
-    enum class PropertyAccess {
-        ReadWrite,
-        ReadOnly
+
+    enum class PropertyFlag : uint32_t {
+        None         = 0,
+        Serializable = 1 << 0,
+        Editable     = 1 << 1
     };
+
+    constexpr bool HasPropertyFlag(uint32_t value, PropertyFlag flag) {
+        return (value & static_cast<uint32_t>(flag)) != 0;
+    }
+
 
     // Fallback Reflect<T> stub (used when no reflection is registered).
     // NOTE: No static_assert here!
@@ -74,7 +73,7 @@ namespace Quirk {
     // cause eager instantiation, which would always trigger the static_assert.
     // Reflection validity should be checked separately using IsComplexReflectable<T>.
     template<typename T>
-    struct Reflect {
+    class Reflect {
         // static_assert(false, "No Registered Reflection!"); // Do not enable
     };
 
@@ -86,25 +85,31 @@ namespace Quirk {
 
     // Specialized: if Reflect<T>::ReflectingType exists and matches T, then it's a complex (reflected) type
     template<typename T>
-        requires std::is_same_v<T, typename Reflect<T>::ReflectingType>
+    requires std::is_same_v<T, typename Reflect<T>::ReflectingType>
     struct IsComplexReflectable<T> : std::true_type {};
 
     template<typename T>
-    constexpr bool HasReflection = IsComplexReflectable<T>::value;
+    constexpr bool HasReflection_V = IsComplexReflectable<T>::value;
+
+    template<class T>
+    concept ComplexReflectable = HasReflection_V<T>;
 
 
 
-#define REGISTER_PROPERTY_ACCESS(PropName, Getter, Setter, AccessMode)                                                      \
-    struct PropName {                                                                                                       \
-        using Type = std::remove_cvref_t<decltype(((ReflectingType*)nullptr)->Getter())>;                                   \
+    //=============================================================================================================================
+    //--------- Property Registry for Reflecting Type -----------------------------------------------------------------------------
+
+#define REGISTER_PROPERTY_ACCESS(PropName_, Getter_, Setter_, PropertyFlags_)                                               \
+    struct PropName_ {                                                                                                      \
+        using Type = RemoveAllWrapperTypes_T<decltype(((ReflectingType*)nullptr)->Getter_())>;                              \
                                                                                                                             \
-        static constexpr std::string_view PropertyName  = #PropName;                                                        \
-        static constexpr auto   Accessibility           = AccessMode;                                                       \
-        static constexpr bool   Writable                = (Accessibility == ::QuirkEditor::PropertyAccess::ReadWrite);      \
+        static constexpr std::string_view PropertyName  = #PropName_;                                                       \
+        static constexpr uint32_t         PropFlags     = static_cast<uint32_t>(PropertyFlags_);                            \
+        static constexpr bool             Writable      = HasPropertyFlag(PropertyFlags_, ::Quirk::PropertyFlag::Editable); \
                                                                                                                             \
         template<typename Obj, typename... Args>                                                                            \
         requires (Writable)                                                                                                 \
-        static inline void Set(Obj&& obj, Args&&... args) {                                                                 \
+        static void Set(Obj&& obj, Args&&... args) {                                                                        \
             static_assert(                                                                                                  \
                 std::is_same_v<std::remove_cvref_t<Obj>, ReflectingType> ||                                                 \
                 std::is_same_v<std::remove_cvref_t<Obj>, ReflectingType*>,                                                  \
@@ -112,13 +117,13 @@ namespace Quirk {
             );                                                                                                              \
                                                                                                                             \
             if constexpr (std::is_pointer_v<std::decay_t<Obj>>)                                                             \
-                (*obj).Setter(std::forward<Args>(args)...);                                                                 \
+                (*obj).Setter_(std::forward<Args>(args)...);                                                                \
             else                                                                                                            \
-                obj.Setter(std::forward<Args>(args)...);                                                                    \
+                obj.Setter_(std::forward<Args>(args)...);                                                                   \
         }                                                                                                                   \
                                                                                                                             \
         template<typename Obj>                                                                                              \
-        static inline decltype(auto) Get(Obj&& obj) {                                                                       \
+        static decltype(auto) Get(Obj&& obj) {                                                                              \
             static_assert(                                                                                                  \
                 std::is_same_v<std::remove_cvref_t<Obj>, ReflectingType> ||                                                 \
                 std::is_same_v<std::remove_cvref_t<Obj>, ReflectingType*>,                                                  \
@@ -126,32 +131,140 @@ namespace Quirk {
             );                                                                                                              \
                                                                                                                             \
             if constexpr (std::is_pointer_v<std::decay_t<Obj>>)                                                             \
-                return (*obj).Getter();                                                                                     \
+                return (*obj).Getter_();                                                                                    \
             else                                                                                                            \
-                return obj.Getter();                                                                                        \
+                return obj.Getter_();                                                                                       \
         }                                                                                                                   \
     };
 
-    // deligating to multiple macro to delay the macro expansion for next phase
-#define REGISTER_PROP_TUPLE_4(...) REGISTER_PROPERTY_ACCESS(__VA_ARGS__)
-#define REGISTER_PROP_TUPLE(t)     REGISTER_PROP_TUPLE_4(EXPAND_TUPLE_4(t))
+    //_____________________________________________________________________________________________________________________________
 
-#define REGISTER_REFLECTION(TYPE_, TITLE_, ...)                                                                             \
+
+
+    //=============================================================================================================================
+    //--------- Factory Function Macros for Reflecting Type -----------------------------------------------------------------------
+
+#define REGISTER_FACTORY(FACTORY_FUNC_NAME_, FACTORY_FUNC_)                                                                 \
+    struct FACTORY_FUNC_NAME_ {                                                                                             \
+        static auto Invoke(auto&&... args) { return FACTORY_FUNC_(std::forward<decltype(args)>(args)...); }                 \
+    };
+
+#define CONSTRUCTOR                       REGISTER_FACTORY( Create,            ReflectingType )
+#define FACTORY(FACTORY_FUNC_)            REGISTER_FACTORY( CreateWithFactory, FACTORY_FUNC_  )
+#define FACTORY_PTR(FACTORY_FUNC_)        REGISTER_FACTORY( CreatePtr,         FACTORY_FUNC_  )
+#define FACTORY_REF(FACTORY_FUNC_)        REGISTER_FACTORY( CreateRef,         FACTORY_FUNC_  )
+#define FACTORY_SCOPE(FACTORY_FUNC_)      REGISTER_FACTORY( CreateScope,       FACTORY_FUNC_  )
+
+
+
+#define REGISTER_FACTORY_FUC_CHECK(FACTORY_FUNC_)                                                                           \
+    template<typename T, typename = void>                                                                                   \
+    struct FACTORY_FUNC_##OrVoid { using type = void; };                                                                    \
+                                                                                                                            \
+    template<typename T>                                                                                                    \
+    struct FACTORY_FUNC_##OrVoid<T, std::void_t<typename T::FACTORY_FUNC_>> { using type = typename T::FACTORY_FUNC_; };
+
+
+    REGISTER_FACTORY_FUC_CHECK( Create            )
+    REGISTER_FACTORY_FUC_CHECK( CreateWithFactory )
+    REGISTER_FACTORY_FUC_CHECK( CreatePtr         )
+    REGISTER_FACTORY_FUC_CHECK( CreateRef         )
+    REGISTER_FACTORY_FUC_CHECK( CreateScope       )
+    
+    //_____________________________________________________________________________________________________________________________
+    
+
+
+    //=============================================================================================================================
+    //--------- Reflect on Type ---------------------------------------------------------------------------------------------------
+
+    // deligating to multiple macro to delay the macro expansion for next phase
+#define REGISTER_PROPERTY_HELPER(...)       REGISTER_PROPERTY_ACCESS(__VA_ARGS__)
+#define REGISTER_PROPERTY_TUPLE(TUPLE_)     REGISTER_PROPERTY_HELPER(EXPAND_TUPLE_4(TUPLE_))
+
+#define REGISTER_REFLECTION(TYPE_, TITLE_, FACTORY_FUNCS_, ...)                                                             \
     template<>                                                                                                              \
-    struct ::Quirk::Reflect<TYPE_> {                                                                                        \
-        using ReflectingType  = TYPE_;                                                                                      \
+    class ::Quirk::Reflect<TYPE_> {                                                                                         \
+    public:                                                                                                                 \
+        using ReflectingType = TYPE_;                                                                                       \
+                                                                                                                            \
         static constexpr std::string_view TypeName = TITLE_;                                                                \
+        FOR_EACH(REGISTER_PROPERTY_TUPLE, __VA_ARGS__)                                                                      \
                                                                                                                             \
-        FOR_EACH(REGISTER_PROP_TUPLE, __VA_ARGS__)                                                                          \
+    private:                                                                                                                \
+        using PropertyList = ::Quirk::TypeList < FOR_EACH_SEP_COMMA(TUPLE_GET_FIRST_4, __VA_ARGS__) >;                      \
                                                                                                                             \
-        using PropertyList = Quirk::TypeList <                                                                              \
-            FOR_EACH_SEP_COMMA(TUPLE_GET_FIRST_4, __VA_ARGS__)                                                              \
-        >;                                                                                                                  \
+        template<typename Property, ::Quirk::PropertyFlag Flag>                                                             \
+        struct PropertyFlagCondition {                                                                                      \
+            static constexpr bool value = ::Quirk::HasPropertyFlag(Property::PropFlags, Flag);                              \
+        };                                                                                                                  \
+                                                                                                                            \
+        template<::Quirk::PropertyFlag FilterFlags>                                                                         \
+        struct FilteredWithTypesInvoker {                                                                                   \
+            template<typename Property>                                                                                     \
+            using FilterCondition = PropertyFlagCondition<Property, FilterFlags>;                                           \
+                                                                                                                            \
+            template<typename Function, typename... Args>                                                                   \
+            static decltype(auto) Invoke(Function&& func, Args&&... args) {                                                 \
+                using FilteredProperties = ::Quirk::FilterTypes_T<FilterCondition, PropertyList>;                           \
+                return FilteredProperties::InvokeWithTypes(std::forward<Function>(func), std::forward<Args>(args)...);      \
+            }                                                                                                               \
+        };                                                                                                                  \
+                                                                                                                            \
+        template<::Quirk::PropertyFlag FilterFlags>                                                                         \
+        struct FilteredForEachInvoker {                                                                                     \
+            template<typename Property>                                                                                     \
+            using FilterCondition = PropertyFlagCondition<Property, FilterFlags>;                                           \
+                                                                                                                            \
+            template<typename Function, typename... Args>                                                                   \
+            static void Invoke(Function&& func, Args&&... args) {                                                           \
+                using FilteredProperties = ::Quirk::FilterTypes_T<FilterCondition, PropertyList>;                           \
+                FilteredProperties::InvokeWithTypes(std::forward<Function>(func), std::forward<Args>(args)...);             \
+            }                                                                                                               \
+        };                                                                                                                  \
+                                                                                                                            \
+    public:                                                                                                                 \
+        FOR_EACH(IDENTITY, UNPACK_TUPLE(FACTORY_FUNCS_))                                                                    \
+                                                                                                                            \
+        using CreateOrVoid_T            = typename ::Quirk::CreateOrVoid            <Reflect>::type;                        \
+        using CreateWithFactoryOrVoid_T = typename ::Quirk::CreateWithFactoryOrVoid <Reflect>::type;                        \
+        using CreatePtrOrVoid_T         = typename ::Quirk::CreatePtrOrVoid         <Reflect>::type;                        \
+        using CreateRefOrVoid_T         = typename ::Quirk::CreateRefOrVoid         <Reflect>::type;                        \
+        using CreateScopeOrVoid_T       = typename ::Quirk::CreateScopeOrVoid       <Reflect>::type;                        \
                                                                                                                             \
         template<typename Function, typename ...Args>                                                                       \
         static void ForEach(Function&& func, Args&& ...args) {                                                              \
             PropertyList::ForEach(std::forward<Function>(func), std::forward<Args>(args)...);                               \
         }                                                                                                                   \
+                                                                                                                            \
+        template<typename Function, typename ...Args>                                                                       \
+        static decltype(auto) InvokeWithTypes(Function&& func, Args&& ...args) {                                            \
+            return PropertyList::InvokeWithTypes(std::forward<Function>(func), std::forward<Args>(args)...);                \
+        }                                                                                                                   \
+                                                                                                                            \
+        template<::Quirk::PropertyFlag FilterFlags, typename Function, typename... Args>                                    \
+        static void ForEachFiltered(Function&& func, Args& ...args) {                                                       \
+            FilteredForEachInvoker<FilterFlags>::Invoke(std::forward<Function>(func), std::forward<Args>(args)...);         \
+        }                                                                                                                   \
+                                                                                                                            \
+        template<::Quirk::PropertyFlag FilterFlags, typename Function, typename... Args>                                    \
+        static decltype(auto) InvokeWithTypesFiltered(Function&& func, Args& ...args) {                                     \
+            return FilteredWithTypesInvoker<FilterFlags>::Invoke(std::forward<Function>(func), std::forward<Args>(args)...);\
+        }                                                                                                                   \
+                                                                                                                            \
+        template<typename Function, typename ...Args>                                                                       \
+        static void ForEachSerializable(Function&& func, Args&& ...args) {                                                  \
+            FilteredForEachInvoker<::Quirk::PropertyFlag::Serializable>                                                     \
+                ::Invoke(std::forward<Function>(func), std::forward<Args>(args)...);                                        \
+        }                                                                                                                   \
+                                                                                                                            \
+        template<typename Function, typename ...Args>                                                                       \
+        static decltype(auto) InvokeWithSerializables(Function&& func, Args&& ...args) {                                    \
+            return FilteredWithTypesInvoker<::Quirk::PropertyFlag::Serializable>                                            \
+                ::Invoke(std::forward<Function>(func), std::forward<Args>(args)...);                                        \
+        }                                                                                                                   \
     };
+    
+    //_____________________________________________________________________________________________________________________________
 
 }
