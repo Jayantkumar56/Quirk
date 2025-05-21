@@ -7,8 +7,8 @@
 
 namespace Quirk {
 
-    struct ProjectConfig {
-        std::string Name;
+    struct EditorProjectConfig {
+        std::string ProjectName;
 
         // paths are relative to the project directory
         // must be converted into relative to the working directory before use
@@ -19,19 +19,15 @@ namespace Quirk {
         std::filesystem::path ScriptModulePath;
         std::filesystem::path AssetRegistryPath;
 
-        static inline ProjectConfig GetDefaultConfig(std::string&& title = std::string("Untitled")) {
-            return ProjectConfig{
-                .Name              { std::move(title)     },
+        static inline EditorProjectConfig GetDefaultConfig(std::string title = std::string("Untitled")) {
+            return EditorProjectConfig{
+                .ProjectName       { std::move(title)     },
                 .StartScene        { ""                   },
                 .AssetDirectory    { "Assets"             },
                 .SceneDirectory    { "Assets/Scenes"      },
                 .ScriptModulePath  { "Scripts"            },
                 .AssetRegistryPath { "AssetRegistry.yaml" }
             };
-        }
-
-        static inline ProjectConfig GetDefaultConfig(const std::string& title) {
-            return GetDefaultConfig(std::string(title));
         }
     };
 

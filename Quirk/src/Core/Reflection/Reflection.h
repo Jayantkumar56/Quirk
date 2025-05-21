@@ -57,21 +57,48 @@ namespace Quirk {
 
 
     enum class PropertyFlag : uint32_t {
-        None         = 0,
-        Serializable = 1 << 0,
-        Editable     = 1 << 1
+        None                = 0,
+        Serializable        = 1 << 0,
+        Editable            = 1 << 1,
+        DirectMemberAccess  = 1 << 2,
+        Setter              = 1 << 3
     };
 
-    constexpr bool HasPropertyFlag(uint32_t value, PropertyFlag flag) {
+
+    // PropertyFlag macros to be used in the REGISTER_PROPERTY macro
+#define PROPFLAG_NONE                   ::Quirk::PropertyFlag::None
+#define PROPFLAG_SERIALIZABLE           ::Quirk::PropertyFlag::Serializable
+#define PROPFLAG_EDITABLE               ::Quirk::PropertyFlag::Editable
+#define PROPFLAG_DIRECT_MEMBER          ::Quirk::PropertyFlag::DirectMemberAccess
+#define PROPFLAG_GET_SET                ::Quirk::PropertyFlag::Setter
+
+
+    constexpr inline uint32_t operator|(PropertyFlag flag1, PropertyFlag flag2) noexcept {
+        return static_cast<uint32_t>(flag1) | static_cast<uint32_t>(flag2);
+    }
+
+    constexpr inline uint32_t operator|(uint32_t flag1, PropertyFlag flag2) noexcept {
+        return flag1 | static_cast<uint32_t>(flag2);
+    }
+
+    constexpr inline uint32_t operator|(PropertyFlag flag1, uint32_t flag2) noexcept {
+        return static_cast<uint32_t>(flag1) | flag2;
+    }
+
+    constexpr inline bool HasPropertyFlag(uint32_t value, PropertyFlag flag) noexcept {
         return (value & static_cast<uint32_t>(flag)) != 0;
     }
 
 
-    // Fallback Reflect<T> stub (used when no reflection is registered).
-    // NOTE: No static_assert here!
-    // In MSVC, even SFINAE/concepts-based checks like IsComplexReflectable
-    // cause eager instantiation, which would always trigger the static_assert.
-    // Reflection validity should be checked separately using IsComplexReflectable<T>.
+
+    // Fallback Reflect<T> (used when no reflection is registered).
+    // 
+    // NOTE: 
+    // 
+    // - No static_assert here!
+    //   In MSVC, even when template instantiation results in substitution faliure,
+    //   still the static_assert always hits.
+    //   Reflection validity should be checked separately using IsComplexReflectable<T>.
     template<typename T>
     class Reflect {
         // static_assert(false, "No Registered Reflection!"); // Do not enable
@@ -99,41 +126,61 @@ namespace Quirk {
     //=============================================================================================================================
     //--------- Property Registry for Reflecting Type -----------------------------------------------------------------------------
 
-#define REGISTER_PROPERTY_ACCESS(PropName_, Getter_, Setter_, PropertyFlags_)                                               \
+    // dummy setter for reflection property with no PropertyFlag::Editable flag
+#define DUMMY_SETTER NON_CALLABLE_DUMMY_SETTER
+
+
+#define REGISTER_PROPERTY(PropName_, Getter_, Setter_, PropertyFlags_)                                                      \
     struct PropName_ {                                                                                                      \
-        using Type = RemoveAllWrapperTypes_T<decltype(((ReflectingType*)nullptr)->Getter_())>;                              \
+        using Type = UnwrappedPropertyType_T<                                                                               \
+            ReflectingType,                                                                                                 \
+            &ReflectingType::Getter_,                                                                                       \
+            ::Quirk::HasPropertyFlag(static_cast<uint32_t>(PropertyFlags_), ::Quirk::PropertyFlag::DirectMemberAccess)      \
+        >;                                                                                                                  \
                                                                                                                             \
         static constexpr std::string_view PropertyName  = #PropName_;                                                       \
         static constexpr uint32_t         PropFlags     = static_cast<uint32_t>(PropertyFlags_);                            \
-        static constexpr bool             Writable      = HasPropertyFlag(PropertyFlags_, ::Quirk::PropertyFlag::Editable); \
                                                                                                                             \
-        template<typename Obj, typename... Args>                                                                            \
+        static constexpr bool Writable = ::Quirk::HasPropertyFlag(                                                          \
+            static_cast<uint32_t>(PropertyFlags_),                                                                          \
+            ::Quirk::PropertyFlag::Editable                                                                                 \
+        );                                                                                                                  \
+                                                                                                                            \
+        template<typename Obj, typename Arg, typename... Args>                                                              \
         requires (Writable)                                                                                                 \
-        static void Set(Obj&& obj, Args&&... args) {                                                                        \
-            static_assert(                                                                                                  \
-                std::is_same_v<std::remove_cvref_t<Obj>, ReflectingType> ||                                                 \
-                std::is_same_v<std::remove_cvref_t<Obj>, ReflectingType*>,                                                  \
-                "Wrong object type passed to Set()"                                                                         \
-            );                                                                                                              \
+        static void Set(Obj&& obj, Arg&& arg, Args&&... args) {                                                             \
+            using type = RemoveAllWrapperTypes_T<PointingType_T<Obj>>;                                                      \
+            static_assert(std::is_same_v<type, ReflectingType>, "Wrong object type passed to Set()");                       \
                                                                                                                             \
-            if constexpr (std::is_pointer_v<std::decay_t<Obj>>)                                                             \
-                (*obj).Setter_(std::forward<Args>(args)...);                                                                \
-            else                                                                                                            \
-                obj.Setter_(std::forward<Args>(args)...);                                                                   \
+            if constexpr (                                                                                                  \
+                ::Quirk::HasPropertyFlag(static_cast<uint32_t>(PropertyFlags_), ::Quirk::PropertyFlag::DirectMemberAccess)  \
+            ) {                                                                                                             \
+                if constexpr (IsPointer_V<Obj>)   (*obj).*&type::Setter_ = std::forward<Arg>(arg);                          \
+                else                              obj.*&type::Setter_ = std::forward<Arg>(arg);                             \
+            }                                                                                                               \
+            else if constexpr (                                                                                             \
+                ::Quirk::HasPropertyFlag(static_cast<uint32_t>(PropertyFlags_), ::Quirk::PropertyFlag::Setter)              \
+            ) {                                                                                                             \
+                if constexpr (IsPointer_V<Obj>)   (*obj).Setter_(std::forward<Arg>(arg), std::forward<Args>(args)...);      \
+                else                              obj.Setter_(std::forward<Arg>(arg), std::forward<Args>(args)...);         \
+            }                                                                                                               \
         }                                                                                                                   \
                                                                                                                             \
         template<typename Obj>                                                                                              \
         static decltype(auto) Get(Obj&& obj) {                                                                              \
-            static_assert(                                                                                                  \
-                std::is_same_v<std::remove_cvref_t<Obj>, ReflectingType> ||                                                 \
-                std::is_same_v<std::remove_cvref_t<Obj>, ReflectingType*>,                                                  \
-                "Wrong object type passed to Get()"                                                                         \
-            );                                                                                                              \
+            using type = RemoveAllWrapperTypes_T<PointingType_T<Obj>>;                                                      \
+            static_assert(std::is_same_v<type, ReflectingType>, "Wrong object type passed to Set()");                       \
                                                                                                                             \
-            if constexpr (std::is_pointer_v<std::decay_t<Obj>>)                                                             \
-                return (*obj).Getter_();                                                                                    \
-            else                                                                                                            \
-                return obj.Getter_();                                                                                       \
+            if constexpr (                                                                                                  \
+                ::Quirk::HasPropertyFlag(static_cast<uint32_t>(PropertyFlags_), ::Quirk::PropertyFlag::DirectMemberAccess)  \
+            ) {                                                                                                             \
+                if constexpr (IsPointer_V<Obj>)   return (*obj).*&type::Getter_;                                            \
+                else                              return obj.*&type::Getter_;                                               \
+            }                                                                                                               \
+            else {                                                                                                          \
+                if constexpr (IsPointer_V<Obj>)   return (*obj).Getter_();                                                  \
+                else                              return obj.Getter_();                                                     \
+            }                                                                                                               \
         }                                                                                                                   \
     };
 
@@ -170,23 +217,23 @@ namespace Quirk {
     REGISTER_FACTORY_FUC_CHECK( CreatePtr         )
     REGISTER_FACTORY_FUC_CHECK( CreateRef         )
     REGISTER_FACTORY_FUC_CHECK( CreateScope       )
-    
+
     //_____________________________________________________________________________________________________________________________
-    
+
 
 
     //=============================================================================================================================
     //--------- Reflect on Type ---------------------------------------------------------------------------------------------------
 
-    // deligating to multiple macro to delay the macro expansion for next phase
-#define REGISTER_PROPERTY_HELPER(...)       REGISTER_PROPERTY_ACCESS(__VA_ARGS__)
+        // deligating to multiple macro to delay the macro expansion for next phase
+#define REGISTER_PROPERTY_HELPER(...)       REGISTER_PROPERTY(__VA_ARGS__)
 #define REGISTER_PROPERTY_TUPLE(TUPLE_)     REGISTER_PROPERTY_HELPER(EXPAND_TUPLE_4(TUPLE_))
 
 #define REGISTER_REFLECTION(TYPE_, TITLE_, FACTORY_FUNCS_, ...)                                                             \
     template<>                                                                                                              \
     class ::Quirk::Reflect<TYPE_> {                                                                                         \
     public:                                                                                                                 \
-        using ReflectingType = TYPE_;                                                                                       \
+        using ReflectingType = std::remove_cvref_t<PointingType_T<TYPE_>>;                                                  \
                                                                                                                             \
         static constexpr std::string_view TypeName = TITLE_;                                                                \
         FOR_EACH(REGISTER_PROPERTY_TUPLE, __VA_ARGS__)                                                                      \
@@ -219,7 +266,7 @@ namespace Quirk {
             template<typename Function, typename... Args>                                                                   \
             static void Invoke(Function&& func, Args&&... args) {                                                           \
                 using FilteredProperties = ::Quirk::FilterTypes_T<FilterCondition, PropertyList>;                           \
-                FilteredProperties::InvokeWithTypes(std::forward<Function>(func), std::forward<Args>(args)...);             \
+                FilteredProperties::ForEach(std::forward<Function>(func), std::forward<Args>(args)...);                     \
             }                                                                                                               \
         };                                                                                                                  \
                                                                                                                             \
@@ -244,12 +291,14 @@ namespace Quirk {
                                                                                                                             \
         template<::Quirk::PropertyFlag FilterFlags, typename Function, typename... Args>                                    \
         static void ForEachFiltered(Function&& func, Args& ...args) {                                                       \
-            FilteredForEachInvoker<FilterFlags>::Invoke(std::forward<Function>(func), std::forward<Args>(args)...);         \
+            FilteredForEachInvoker<FilterFlags>                                                                             \
+                ::Invoke(std::forward<Function>(func), std::forward<Args>(args)...);                                        \
         }                                                                                                                   \
                                                                                                                             \
         template<::Quirk::PropertyFlag FilterFlags, typename Function, typename... Args>                                    \
         static decltype(auto) InvokeWithTypesFiltered(Function&& func, Args& ...args) {                                     \
-            return FilteredWithTypesInvoker<FilterFlags>::Invoke(std::forward<Function>(func), std::forward<Args>(args)...);\
+            return FilteredWithTypesInvoker<FilterFlags>                                                                    \
+                ::Invoke(std::forward<Function>(func), std::forward<Args>(args)...);                                        \
         }                                                                                                                   \
                                                                                                                             \
         template<typename Function, typename ...Args>                                                                       \
@@ -264,7 +313,7 @@ namespace Quirk {
                 ::Invoke(std::forward<Function>(func), std::forward<Args>(args)...);                                        \
         }                                                                                                                   \
     };
-    
+
     //_____________________________________________________________________________________________________________________________
 
 }

@@ -4,6 +4,7 @@
 
 #include "Core/Utility/YamlUtility.h"
 #include "Deserializer.h"
+#include "Core/Utility/UUID.h"
 
 namespace Quirk {
 
@@ -40,5 +41,18 @@ namespace Quirk {
     DEFINE_PRIMITIVE_DESERIALIZER( glm::vec4 )
 
     DEFINE_PRIMITIVE_DESERIALIZER( std::string )
+    DEFINE_PRIMITIVE_DESERIALIZER( std::filesystem::path )
+
+
+    template<>
+    struct Deserializer<UUID> {
+        static inline UUID Deserialize(const YAML::Node& node) {
+            if (!node) {
+                throw std::runtime_error{ std::string{"YAML node is null for type UUID"} };
+            }
+            
+            return UUID{ node.as<uint64_t>() };
+        }
+    };
 
 }

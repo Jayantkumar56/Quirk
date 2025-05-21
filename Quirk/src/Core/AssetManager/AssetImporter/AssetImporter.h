@@ -27,7 +27,7 @@ namespace Quirk {
         inline Ref<T> GetAsset() noexcept { return Asset;            }
         inline bool   IsLoaded() noexcept { return Asset != nullptr; }
 
-        static_assert(AlwaysFalseV<T>, "No Specialization created for AssetType T, must have specialization to be used");
+        static_assert(AlwaysFalse_V<T>, "No Specialization created for AssetType T, must have specialization to be used");
     };
 
     // NOTE:
@@ -46,7 +46,7 @@ namespace Quirk {
         static void        Import(EditorAsset<T>& outAsset)  { }
         static void        Save(const EditorAsset<T>& asset) { }
 
-        static_assert(AlwaysFalseV<T>, "No importer exist for given Asset type!");
+        static_assert(AlwaysFalse_V<T>, "No importer exist for given Asset type!");
     };
 
 }

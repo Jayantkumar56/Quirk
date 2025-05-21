@@ -47,19 +47,18 @@ namespace Quirk {
             bool isOk = true;
 
             Reflect<T>::ForEachSerializable(
-                [] <typename Property> (const T& data, YAML::Emitter& outEmitter, bool& isOk) -> bool {
+                [] <typename Property> (const T& data, YAML::Emitter& outEmitter, bool& isOk) {
                     if (!isOk)
-                        return false;
+                        return;
 
                     outEmitter << YAML::Key   << Property::PropertyName;
                     outEmitter << YAML::Value;
 
                     isOk = Serializer<typename Property::Type>::Serialize(Property::Get(data), outEmitter);
-                    return isOk;
                 },
                 data,
                 outEmitter,
-                isOk
+                std::ref<bool>(isOk)
             );
 
             outEmitter << YAML::EndMap;

@@ -7,12 +7,47 @@
 
 namespace Quirk {
 
+    //=============================================================================================================================
+    //--------- compile time string literal ---------------------------------------------------------------------------------------
+
+    template <size_t N>
+    struct StringLiteral {
+        char value[N]{};
+
+        constexpr StringLiteral(const char(&str)[N]) noexcept {
+            for (size_t i = 0; i < N; ++i)
+                value[i] = str[i];
+        }
+
+        constexpr const char* Data()                    const noexcept { return value; }
+        constexpr std::string_view View()               const noexcept { return { value, N }; }
+        constexpr size_t           Size()               const noexcept { return N - 1; }
+        constexpr char             operator[](size_t i) const noexcept { return value[i]; }
+
+        constexpr bool operator==(const StringLiteral& other) const noexcept {
+            for (size_t i = 0; i < N; ++i) {
+                if (value[i] != other.value[i])
+                    return false;
+            }
+
+            return true;
+        }
+    };
+
+    template <size_t N>
+    StringLiteral(const char(&str)[N]) -> StringLiteral<N>;
+
+    //_____________________________________________________________________________________________________________________________
+
+
+
     template<typename T>
     struct AlwaysFalse : std::false_type {};
 
     template<typename T>
     inline constexpr bool AlwaysFalse_V = AlwaysFalse<T>::value;
 
+    // removes cv qualifiers and pointer from the type
     template<typename T>
     using RemoveAllWrapperTypes_T = std::remove_cvref_t<std::remove_pointer_t<std::remove_cvref_t<T>>>;
 
@@ -45,8 +80,19 @@ namespace Quirk {
     };
 
 
+
     //=============================================================================================================================
     //--------- Pointer Detection -------------------------------------------------------------------------------------------------
+
+    // NOTE:
+    // 
+    // - must use _V versions, the raw traits are not meant to be used
+    // 
+    // - _V version applies remove_cvref_t to normalize the types
+    //   thus traits work correctly with references and qualifiers
+    //   The base trait remains unnormalized for clarity and specialization control
+    // 
+    // - concepts uses _V internally thus it automatically normalize the types
 
     template<typename T>
     struct IsSmartPointer : std::false_type {};
@@ -58,7 +104,7 @@ namespace Quirk {
     struct IsSmartPointer<std::unique_ptr<T>> : std::true_type {};
 
     template<typename T>
-    constexpr bool IsSmartPointer_V = IsSmartPointer<T>::value;
+    constexpr bool IsSmartPointer_V = IsSmartPointer<std::remove_cvref_t<T>>::value;
 
     template<typename T>                                                     // Concept
     concept SmartPointer = IsSmartPointer_V<T>;
@@ -69,7 +115,7 @@ namespace Quirk {
     struct IsRawPointer : std::is_pointer<T> {};
 
     template<typename T>
-    constexpr bool IsRawPointer_V = IsRawPointer<T>::value;
+    constexpr bool IsRawPointer_V = IsRawPointer<std::remove_cvref_t<T>>::value;
 
     template<typename T>                                                     // Concept
     concept RawPointer = IsRawPointer_V<T>;
@@ -80,7 +126,7 @@ namespace Quirk {
     struct IsPointer : std::bool_constant<IsRawPointer_V<T> || IsSmartPointer_V<T>> {};
 
     template<typename T>
-    constexpr bool IsPointer_V = IsPointer<T>::value;
+    constexpr bool IsPointer_V = IsPointer<std::remove_cvref_t<T>>::value;
 
     template<typename T>                                                     // Concept
     concept Pointer = IsPointer_V<T>;
@@ -97,7 +143,52 @@ namespace Quirk {
     struct PointingType<std::unique_ptr<T>> { using type = T; };
 
     template<typename T>
-    using PointingType_T = typename PointingType<T>::type;
+    using PointingType_T = typename PointingType<std::remove_cvref_t<T>>::type;
+
+
+    // Pointer type conversion
+
+    template<Pointer To, Pointer From>
+    To ConvertPointer(From&& ptr) noexcept {
+        using ToType   = std::remove_cvref_t<To>;
+        using FromType = std::remove_cvref_t<From>;
+
+        if constexpr (std::is_same_v<ToType, FromType>) {
+            return std::forward<FromType>(ptr);
+        }
+        else {
+            if constexpr (IsRawPointer_V<ToType>) {
+                return std::forward<FromType>(ptr).get();
+            }
+            else if constexpr (IsSmartPointer_V<FromType>) {
+                return ToType(std::forward<FromType>(ptr).get());
+            }
+            else {
+                return ToType(std::forward<FromType>(ptr));
+            }
+        }
+    }
+
+    //_____________________________________________________________________________________________________________________________
+
+
+
+    //=============================================================================================================================
+    //--------- Member type detection ---------------------------------------------------------------------------------------------
+
+    // getter for member
+    template<typename T, auto Getter, bool DirectMemberAccess = false>
+    struct PropertyGetterTypeImpl { using type = decltype((std::declval<T>().*Getter)()); };
+
+    // member pointer 
+    template<typename T, auto Member>
+    struct PropertyGetterTypeImpl<T, Member, true> { using type = decltype(std::declval<T>().*Member); };
+
+    template<typename T, auto Getter, bool DirectMemberAccess>
+    using PropertyType_T = typename PropertyGetterTypeImpl<T, Getter, DirectMemberAccess>::type;
+
+    template<typename T, auto Getter, bool DirectMemberAccess>
+    using UnwrappedPropertyType_T = RemoveAllWrapperTypes_T<PropertyType_T<T, Getter, DirectMemberAccess>>;
 
     //_____________________________________________________________________________________________________________________________
 

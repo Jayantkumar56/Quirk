@@ -1,7 +1,15 @@
 Project:
-    Name: Example
-    StartScene: physics_example.yaml
-    AssetDirectory: Assets
-    SceneDirectory: Assets/Scenes
-    ScriptModulePath: Scripts
-    AssetRegistryPath: AssetRegistry.yaml
+    ProjectConfigs:
+        ProjectName: Example
+        StartScene: physics_example.yaml
+        AssetDirectory: Assets
+        SceneDirectory: Assets/Scenes
+        ScriptModulePath: Scripts
+        AssetRegistryPath: AssetRegistry.yaml
+    AssetManager:
+      AssetRegistry:
+        {}
+    SceneManager:
+        ActiveSceneName: ""
+        SceneRegistry:
+        {}

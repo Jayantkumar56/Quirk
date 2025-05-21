@@ -2,6 +2,10 @@
 
 #pragma once
 
+#include "Core/AssetManager/EditorAssetManager.h"
+#include "Core/Scene/EditorSceneManager.h"
+#include "Core/Project/EditorProject.h"
+
 namespace Quirk {
 
     // ------------------- Build Configs --------------------------------------------------------------//
@@ -12,12 +16,9 @@ namespace Quirk {
     // - try to check the requrements met or not, maybe with concepts
     //
 
-    class EditorAssetManager;
-    class EditorSceneManager;
-    class EditorProject;
-
-    using AssetManager = EditorAssetManager;
-    using SceneManager = EditorSceneManager;
-    using Project      = EditorProject;
+    using ProjectConfig = EditorProjectConfig;
+    using AssetManager  = EditorAssetManager;
+    using SceneManager  = EditorSceneManager;
+    using Project       = EditorProject;
 
 }

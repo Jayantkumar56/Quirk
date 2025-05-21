@@ -3,68 +3,45 @@
 #pragma once
 
 #include "Core/Core.h"
-#include "Core/Config.h"
-#include "ProjectConfig.h"
-#include "Core/Project/ProjectSerializer.h"
-#include "Core/Scene/EditorSceneManager.h"
+#include "EditorProjectConfig.h"
 #include "Core/AssetManager/EditorAssetManager.h"
+#include "Core/Scene/EditorSceneManager.h"
 
-#include <string>
 #include <filesystem>
 
 namespace Quirk {
 
     class EditorProject {
-    private:
-        // Private constructor to prevent direct instantiation. Use Create() or Load() instead.
-        inline EditorProject(std::filesystem::path&& projRootDir, ProjectConfig&& config) noexcept :
-            m_Config(std::move(config)),
-            m_ProjectRootDirectory(std::move(projRootDir))
+        friend class ProjectManager;
+
+    public:
+        inline EditorProject(EditorProjectConfig config, EditorAssetManager assetManager, EditorSceneManager sceneManager) noexcept :
+                m_Config       ( std::move(config)       ),
+                m_AssetManager ( std::move(assetManager) ),
+                m_SceneManager ( std::move(sceneManager) )
         {
+            // NOTE:
+            // 
+            // - m_ProjectRootDirectory must be initialized by the Project manager (or the creator of this object)
+            //   use SetProjectRootDirectory to initialize it. This function is private to prevent unrelated code from accessing it
+            //   thus the creator must be friend of this class
         }
 
-    public:
-        static inline Ref<EditorProject> Create(std::filesystem::path projRootDir, ProjectConfig&& config) {
-            return Ref<EditorProject>(new EditorProject(std::move(projRootDir), std::move(config)));
+        inline EditorProject(EditorProjectConfig config) noexcept :
+                m_Config ( std::move(config) )
+        {
+            // NOTE:
+            // 
+            // - m_ProjectRootDirectory must be initialized by the Project manager (or the creator of this object)
+            //   use SetProjectRootDirectory to initialize it. This function is private to prevent unrelated code from accessing it
+            //   thus the creator must be friend of this class
         }
 
-        static inline Ref<EditorProject> Load(const std::filesystem::path& projFilePath) {
-            ProjectConfig config;
-            if (!EditorProjectSerializer::DeserializeConfig(config, projFilePath)) {
-                QK_WARN("Unable to Deserialize proj file!");
-                return nullptr;
-            }
-
-            return Ref<EditorProject>(new EditorProject(std::move(projFilePath.parent_path()), std::move(config)));
-        }
-
-        static inline std::string_view GetProjFileExtenstion() noexcept { return ".qkproj"; }
-
-    public:
-        inline bool Save(const std::filesystem::path& projDirectory) {
-            std::filesystem::path projRootDir = projDirectory / m_Config.Name;
-            std::string projFile;
-
-            // setting projfile name
-            {
-                std::string_view extension = EditorProject::GetProjFileExtenstion();
-                projFile.reserve(m_Config.Name.size() + extension.size());
-                projFile += m_Config.Name;
-                projFile += extension;
-            }
-
-            if (EditorProjectSerializer::Serialize(Ref<EditorProject>(this), projRootDir / projFile)) {
-                m_ProjectRootDirectory = projRootDir;
-                return true;
-            }
-
-            return false;
-        }
-
-        inline const auto& GetTitle()        const noexcept { return m_Config.Name; }
-        inline const auto& GetConfig()       const noexcept { return m_Config; }
+        inline const auto& GetTitle()        const noexcept { return m_Config.ProjectName;   }
+        inline const auto& GetConfig()       const noexcept { return m_Config;               }
         inline const auto& GetDirectory()    const noexcept { return m_ProjectRootDirectory; }
-        inline const auto& GetAssetManager() const noexcept { return m_AssetManager; }
+        inline const auto& GetAssetManager() const noexcept { return m_AssetManager;         }
+        inline const auto& GetSceneManager() const noexcept { return m_SceneManager;         }
 
         inline auto GetAssetDirectory() const noexcept {
             return m_ProjectRootDirectory / m_Config.AssetDirectory;
@@ -78,11 +55,20 @@ namespace Quirk {
             m_ProjectRootDirectory = projRoot;
         }
 
+    public:
+        static inline std::string_view GetProjFileExtenstion() noexcept { return ".qkproj"; }
+
     private:
-        ProjectConfig m_Config;
-        AssetManager  m_AssetManager;
-        SceneManager  m_SceneManager;
+        inline void SetProjectRootDirectory(std::filesystem::path directory) noexcept { 
+            m_ProjectRootDirectory = std::move(directory); 
+        }
+
+    private:
+        EditorProjectConfig   m_Config;
         std::filesystem::path m_ProjectRootDirectory;
+
+        EditorAssetManager    m_AssetManager;
+        EditorSceneManager    m_SceneManager;
     };
 
 }

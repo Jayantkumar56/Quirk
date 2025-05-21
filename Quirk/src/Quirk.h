@@ -55,6 +55,5 @@
 
 #include "Core/AssetManager/EditorAssetManager.h"
 
-#include "Core/Project/ProjectSerializer.h"
 #include "Core/Project/EditorProject.h"
 

@@ -6,6 +6,7 @@
 
 #include "Core/AssetManager/EditorAssetManager.h"
 #include "Core/Project/EditorProject.h"
+#include "Core/Config.h"
 
 
 namespace QuirkEditor {
@@ -51,19 +52,19 @@ namespace QuirkEditor {
         static inline void UnloadActive() noexcept { s_ActiveProject = nullptr; }
         static inline auto GetActive()    noexcept { return s_ActiveProject;    }
 
-        static inline bool SaveActive(const std::filesystem::path& projDirectory) {
-            return s_ActiveProject->Save(projDirectory);
-        }
+        //static inline bool SaveActive(const std::filesystem::path& projDirectory) {
+        //    return s_ActiveProject->Save(projDirectory);
+        //}
 
         // === End:   API related to active project ===
 
     private:
         static void CreateProjectDirectoryStructure(const std::filesystem::path& projFilePath, const Quirk::ProjectConfig& projConfig);
 
-        static void AddRecentProject(ProjectMetadata&& projMeta);
+        static void AddRecentProject(ProjectMetadata projMeta);
 
     private:
-        static Quirk::Ref<Quirk::Project> s_ActiveProject;
+        static Quirk::Ref<Quirk::Project>   s_ActiveProject;
         static std::vector<ProjectMetadata> s_RecentProjectsList;
     };
 

@@ -133,4 +133,26 @@ namespace YAML {
         }
     };
 
+    static Emitter& operator<<(Emitter& out, const std::filesystem::path& p) {
+        out << p.string();
+        return out;
+    }
+
+    template<>
+    struct convert<std::filesystem::path> {
+        static Node encode(const std::filesystem::path& p) {
+            Node node;
+            node = p.string();
+            return node;
+        }
+
+        static bool decode(const Node& node, std::filesystem::path& p) {
+            if (!node.IsScalar())
+                return false;
+
+            p = node.as<std::string>();
+            return true;
+        }
+    };
+
 }

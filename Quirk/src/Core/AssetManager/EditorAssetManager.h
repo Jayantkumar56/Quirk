@@ -10,17 +10,21 @@
 
 namespace Quirk {
 
+    // NOTE:
+    //
+    // - this AssetManager works on the principle that
+    //   "The caller knows what type of data they're working with."
+    //
+
 	class EditorAssetManager {
+        friend class Reflect<EditorAssetManager>;
+
 	public:
-        ~EditorAssetManager() noexcept {
-            try {
-                // saving logic
-                SaveAssets<Texture2D>();
-            }
-            catch (...) {
-                QK_CORE_ERROR("Error occurred while saving Assets");
-            }
-        }
+        EditorAssetManager() noexcept = default;
+
+        EditorAssetManager(std::unordered_map<AssetHandle, std::filesystem::path> registry) noexcept :
+                m_AssetRegistry(std::move(registry))
+        {}
 
         template<typename T>
         AssetHandle RegisterAsset(EditorAsset<T>&& metaData) {
@@ -51,28 +55,22 @@ namespace Quirk {
         template<typename T>
 		bool IsAssetLoaded(AssetHandle handle) { return GetStorage<T>().at(handle).IsLoaded(); }
 
-    private:
-        template<typename T>
-        void SaveAssets() {
-            const auto& storage = GetStorage<T>();
-
-            for (const auto& asset : storage) {
-                if (asset.second.IsLoaded())
-                    AssetImporter<T>::Save(asset.second);
-            }
-        }
+        inline const auto& GetAssetRegistry() const noexcept{ return m_AssetRegistry; }
 
     private:
-        // ---------------------------------------------------------------------------------------------------------------------
-        // Storage per type access
+        // === Begin: Per type Storage Access ===
 
         template<typename T>
         auto& GetStorage() { static_assert(AlwaysFalse_V<T>, "Storage is not defined for the Type!"); }
 
         template<> inline auto& GetStorage<Texture2D>() { return m_Texture2DStorage; }
 
+        // === End:   Per type Storage Access ===
+
 	private:
-		std::unordered_map<AssetHandle, EditorAsset<Texture2D>> m_Texture2DStorage;
+        std::unordered_map<AssetHandle, EditorAsset<Texture2D>> m_Texture2DStorage;
+
+        std::unordered_map<AssetHandle, std::filesystem::path> m_AssetRegistry;
 	};
 
 }

@@ -4,6 +4,7 @@
 
 #include "Core/Utility/YamlUtility.h"
 #include "Serializer.h"
+#include "Core/Utility/UUID.h"
 
 
 namespace Quirk {
@@ -57,6 +58,21 @@ namespace Quirk {
     DEFINE_PRIMITIVE_SERIALIZER_REF( glm::vec4 )
 
     DEFINE_PRIMITIVE_SERIALIZER_REF( std::string )
+    DEFINE_PRIMITIVE_SERIALIZER_REF( std::filesystem::path )
+
+
+    template<>
+    struct Serializer<UUID> {
+        static inline bool Serialize(const UUID data, YAML::Emitter& outEmitter) {
+            if (!outEmitter.good()) {
+                QK_CORE_WARN("Emitter is corrupted while serializing type: UUID");
+                return false;
+            }
+            
+            outEmitter << static_cast<uint64_t>(data);
+            return true;
+        }
+    };
 
 }
 

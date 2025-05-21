@@ -28,31 +28,45 @@ namespace Quirk {
     // 
     // TODO:
     // 
-    // - think about this probable peak from raw pointer
+    // - think about this probable leak from raw pointer
     //
 
-    template<ComplexReflectable T, typename ...FactoryFuncs>
-    static T DeserializeReflectableImpl(const YAML::Node& node) {
-        using DeserializingType      = std::remove_cvref_t<std::conditional_t<IsPointer_V<T>, PointingType_T<T>, T>>;
-        using PrioritisedFactoryFunc = FirstNonVoid_T<FactoryFuncs...>;
+    template<ComplexReflectable T, typename FactoryFunc>
+    static auto DeserializeReflectableImpl(const YAML::Node& node) {
+        static_assert(!std::is_void_v<FactoryFunc>, "No Create or Factory for DeserializingType is Provided");
 
-        // done this way to get DeserializingType in the compiler error message when it fails
-        if constexpr (std::is_void_v<PrioritisedFactoryFunc>) {
-            static_assert(AlwaysFalse_V<DeserializingType>, "No Create or Factory for DeserializingType is Provided");
-        }
+        using DeserializingType = PointingType_T<T>;
 
         if (!node) {
             throw std::runtime_error{ std::string{"YAML node is null for type "} + typeid(T).name() };
         }
 
-        return Reflect<DeserializingType>::InvokeWithSerializables(
-            []<typename ...Properties> (const YAML::Node & node) -> T {
-                return PrioritisedFactoryFunc::Invoke(
-                    Deserializer<typename Properties::Type>::Deserialize(node[Properties::PropertyName])...
-                );
-            }, 
-            node
+        constexpr bool isPtrFactory = (
+            std::is_same_v < FactoryFunc, typename Reflect<DeserializingType>::CreatePtrOrVoid_T   > ||
+            std::is_same_v < FactoryFunc, typename Reflect<DeserializingType>::CreateRefOrVoid_T   > ||
+            std::is_same_v < FactoryFunc, typename Reflect<DeserializingType>::CreateScopeOrVoid_T >
         );
+
+        if constexpr (isPtrFactory) {
+            return *( Reflect<DeserializingType>::InvokeWithSerializables(
+                []<typename ...Properties> (const YAML::Node & node) {
+                    return FactoryFunc::Invoke(
+                        Deserializer<typename Properties::Type>::Deserialize(node[Properties::PropertyName])...
+                    );
+                }, 
+                node
+            ));
+        }
+        else {
+            return Reflect<DeserializingType>::InvokeWithSerializables(
+                []<typename ...Properties> (const YAML::Node & node) {
+                    return FactoryFunc::Invoke(
+                        Deserializer<typename Properties::Type>::Deserialize(node[Properties::PropertyName])...
+                    );
+                }, 
+                node
+            );
+        }
     }
 
 
@@ -72,30 +86,60 @@ namespace Quirk {
     struct Deserializer<T> {
     public:
         static T Deserialize(const YAML::Node& node) {
-            return DeserializeReflectableImpl<T, 
-                Reflect<T>::CreateWithFactoryOrVoid_T, 
-                Reflect<T>::CreateOrVoid_T 
-            >(node);
+            using factory = FirstNonVoid_T<
+                Reflect<T>::CreateWithFactoryOrVoid_T,
+                Reflect<T>::CreateOrVoid_T,
+                Reflect<T>::CreatePtrOrVoid_T,
+                Reflect<T>::CreateRefOrVoid_T,
+                Reflect<T>::CreateScopeOrVoid_T
+            >;
+
+            return DeserializeReflectableImpl<T, factory>(node);
         }
     };
+
+    template<Pointer T, typename FactoryFunc>
+    static auto DeserializePtrImpl(const YAML::Node& node) {
+        static_assert(!std::is_void_v<FactoryFunc>, "No factory Provided!");
+
+        using DeserializingType = PointingType_T<T>;
+
+        if constexpr (std::is_same_v<FactoryFunc, typename Reflect<DeserializingType>::CreateWithFactoryOrVoid_T>) {
+            return ConvertPointer<T>(new T(DeserializeReflectableImpl<T, FactoryFunc>(node)));
+        }
+        if constexpr (std::is_same_v<FactoryFunc, typename Reflect<DeserializingType>::CreateOrVoid_T>) {
+            return ConvertPointer<T>( Reflect<DeserializingType>::InvokeWithSerializables (
+                [] <typename ...Properties> (const YAML::Node & node) {
+                    return new DeserializingType(Deserializer<typename Properties::Type>::Deserialize(node[Properties::PropertyName])...);
+                },
+                node
+            ));
+        }
+        else {
+            return ConvertPointer<T>( Reflect<DeserializingType>::InvokeWithSerializables (
+                [] <typename ...Properties> (const YAML::Node & node) {
+                    return FactoryFunc::Invoke(
+                        Deserializer<typename Properties::Type>::Deserialize(node[Properties::PropertyName])...
+                    );
+                },
+                node
+            ));
+        }
+    }
 
     template<ComplexReflectable T>
     struct Deserializer<T*> {
     public:
         static T* Deserialize(const YAML::Node& node) {
-            auto data = DeserializeReflectableImpl < T*,
+            using factory = FirstNonVoid_T<
                 Reflect<T>::CreatePtrOrVoid_T,
                 Reflect<T>::CreateRefOrVoid_T,
-                Reflect<T>::CreateScopeOrVoid_T
-            >(node);
+                Reflect<T>::CreateScopeOrVoid_T,
+                Reflect<T>::CreateWithFactoryOrVoid_T,
+                Reflect<T>::CreateOrVoid_T
+            >;
 
-            if constexpr (IsRawPointer_V<decltype(data)>) {
-                return data;
-            }
-            else {
-                static_assert(IsSmartPointer_V<decltype(data)>, "Unexpected factory return type");
-                return data.get();
-            }
+            return DeserializePtrImpl<T*, factory>(node);
         }
     };
 
@@ -103,22 +147,15 @@ namespace Quirk {
     struct Deserializer<Ref<T>> {
     public:
         static Ref<T> Deserialize(const YAML::Node& node) {
-            auto data = DeserializeReflectableImpl < Ref<T>,
+            using factory = FirstNonVoid_T<
                 Reflect<T>::CreateRefOrVoid_T,
                 Reflect<T>::CreatePtrOrVoid_T,
-                Reflect<T>::CreateScopeOrVoid_T
-            >(node);
+                Reflect<T>::CreateScopeOrVoid_T,
+                Reflect<T>::CreateWithFactoryOrVoid_T,
+                Reflect<T>::CreateOrVoid_T
+            >;
 
-            if constexpr (std::is_same_v<decltype(data), Ref<T>>) {
-                return data;
-            }
-            else if constexpr (IsRawPointer_V<decltype(data)>) {
-                return Ref<T>(data);
-            }
-            else {
-                static_assert(std::is_same_v<decltype(data), Scope<T>>, "Unexpected factory return type");
-                return Ref<T>(data.get());
-            }
+            return DeserializePtrImpl<Ref<T>, factory>(node);
         }
     };
 
@@ -126,22 +163,15 @@ namespace Quirk {
     struct Deserializer<Scope<T>> {
     public:
         static Scope<T> Deserialize(const YAML::Node& node) {
-            auto data = DeserializeReflectableImpl < Scope<T>,
+            using factory = FirstNonVoid_T<
                 Reflect<T>::CreateScopeOrVoid_T,
                 Reflect<T>::CreatePtrOrVoid_T,
-                Reflect<T>::CreateRefOrVoid_T
-            >(node);
+                Reflect<T>::CreateRefOrVoid_T,
+                Reflect<T>::CreateWithFactoryOrVoid_T,
+                Reflect<T>::CreateOrVoid_T
+            >;
 
-            if constexpr (std::is_same_v<decltype(data), Scope<T>>) {
-                return data;
-            }
-            else if constexpr (IsRawPointer_V<decltype(data)>) {
-                return Scope<T>(data);
-            }
-            else {
-                static_assert(std::is_same_v<decltype(data), Ref<T>>, "Unexpected factory return type");
-                return Scope<T>(data.get());
-            }
+            return DeserializePtrImpl<Scope<T>, factory>(node);
         }
     };
 
