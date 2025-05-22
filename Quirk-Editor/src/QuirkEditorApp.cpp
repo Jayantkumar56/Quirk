@@ -47,17 +47,8 @@ namespace QuirkEditor {
 	}
 
 	void QuirkEditorApp::LaunchEditor() {
-        Quirk::WindowSpecification tempSpec{
-			.Title             {"Quirk Editor"},
-			.Width             {1600},				   .Height    {900},
-			.MinWidth          {1600},				   .MinHeight {900},
-			.PosX              {200},				   .PosY      {50},
-			.VSyncOn           {true},				   .Maximized {true},
-			.CustomTitleBar    {true}
-		};
-
 		// AddFrame adds the frame and makes that context to be current
-		AddFrame<EditorFrame>(tempSpec);
+		AddFrame<EditorFrame>();
 	}
 
 	void QuirkEditorApp::LoadFontFiles() {

@@ -12,7 +12,7 @@ namespace Quirk {
 	public:
 		static void Init(HINSTANCE hInstance);
 		static void Terminate();
-		static inline const std::wstring_view GetWindowClassName()  { return m_WindClassName; }
+		static inline const std::wstring_view GetWindowClassName()  { return s_WindClassName; }
 		static inline const HINSTANCE GetApplicationHInstance()     { return s_HInstance;     }
 
 	public:
@@ -48,9 +48,9 @@ namespace Quirk {
 
 	private:
 		static HINSTANCE s_HInstance;
-		static DWORD	 m_WindowStyle;
-		static DWORD	 m_WindowExStyle;
-		static std::wstring_view m_WindClassName;
+		static DWORD	 s_WindowStyle;
+		static DWORD	 s_WindowExStyle;
+		static std::wstring_view s_WindClassName;
 
 		HWND m_WindowHandle;
 	};

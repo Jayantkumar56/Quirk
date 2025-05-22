@@ -12,8 +12,6 @@
 namespace Quirk {
 
     class EditorProject {
-        friend class ProjectManager;
-
     public:
         inline EditorProject(EditorProjectConfig config, EditorAssetManager assetManager, EditorSceneManager sceneManager) noexcept :
                 m_Config       ( std::move(config)       ),
@@ -43,25 +41,28 @@ namespace Quirk {
         inline const auto& GetAssetManager() const noexcept { return m_AssetManager;         }
         inline const auto& GetSceneManager() const noexcept { return m_SceneManager;         }
 
-        inline auto GetAssetDirectory() const noexcept {
-            return m_ProjectRootDirectory / m_Config.AssetDirectory;
+        // === Begin: Utility Getters =======
+
+        inline auto& GetActiveSceneRefView() noexcept { 
+            return m_SceneManager.GetActiveSceneRefView(); 
         }
 
-        inline auto GetAssetFileSystemPath(const std::filesystem::path& path) const noexcept {
-            return GetAssetDirectory() / path;
+        inline auto GetAssetDirectory() const noexcept { 
+            return m_ProjectRootDirectory / m_Config.AssetDirectory; 
         }
 
-        inline void SetRootDirectory(const std::filesystem::path& projRoot) noexcept {
-            m_ProjectRootDirectory = projRoot;
+        inline auto GetAssetFileSystemPath(const std::filesystem::path& path) const noexcept { 
+            return GetAssetDirectory() / path; 
+        }
+
+        // === End:   Utility Getters =======
+
+        inline void SetProjectRootDirectory(std::filesystem::path directory) noexcept { 
+            m_ProjectRootDirectory = std::move(directory); 
         }
 
     public:
         static inline std::string_view GetProjFileExtenstion() noexcept { return ".qkproj"; }
-
-    private:
-        inline void SetProjectRootDirectory(std::filesystem::path directory) noexcept { 
-            m_ProjectRootDirectory = std::move(directory); 
-        }
 
     private:
         EditorProjectConfig   m_Config;

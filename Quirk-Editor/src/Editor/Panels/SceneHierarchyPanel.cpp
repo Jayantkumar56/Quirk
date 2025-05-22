@@ -21,7 +21,7 @@ namespace QuirkEditor {
 	void SceneHierarchyPanel::OnUiUpdate(){
         EditorFrame* frame = GetParentFrameAs<EditorFrame>();
 
-        Quirk::Ref<Quirk::Scene>& scene = frame->GetMainScene();
+        Quirk::Ref<Quirk::Scene>& scene = frame->GetActiveSceneRefView();
 
 		ImGui::PushStyleColor(ImGuiCol_Border, frame->GetTheme().GetColor(ColorName::PopupBorder));
 

@@ -35,9 +35,9 @@ extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam
 namespace Quirk {
 
 	HINSTANCE WindowsWindow::s_HInstance     = 0;
-	DWORD	  WindowsWindow::m_WindowStyle   = 0;
-	DWORD	  WindowsWindow::m_WindowExStyle = 0;
-	std::wstring_view WindowsWindow::m_WindClassName;
+	DWORD	  WindowsWindow::s_WindowStyle   = 0;
+	DWORD	  WindowsWindow::s_WindowExStyle = 0;
+	std::wstring_view WindowsWindow::s_WindClassName;
 
     void WindowsWindow::Init(HINSTANCE hInstance) {
 		QK_CORE_ASSERT(hInstance, "Didn't got initial HINSTANCE from windows api!");
@@ -49,9 +49,9 @@ namespace Quirk {
 			"Unable to set Dpi Awareness to DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2"
 		);
 
-		m_WindowStyle   = WS_OVERLAPPEDWINDOW | WS_VISIBLE;
-		m_WindowExStyle = WS_EX_ACCEPTFILES;
-		m_WindClassName = L"QuirkApp";
+		s_WindowStyle   = WS_OVERLAPPEDWINDOW | WS_VISIBLE;
+		s_WindowExStyle = WS_EX_ACCEPTFILES;
+		s_WindClassName = L"QuirkApp";
 
 		WNDCLASSEXW wc   = {};
 		wc.cbSize        = sizeof(WNDCLASSEXW);
@@ -64,7 +64,7 @@ namespace Quirk {
 		wc.hCursor       = LoadCursorW(NULL, IDC_ARROW);
 		wc.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
 		wc.lpszMenuName  = 0;
-		wc.lpszClassName = m_WindClassName.data();
+		wc.lpszClassName = s_WindClassName.data();
 		wc.hIconSm       = 0;
 
 		QK_CORE_ASSERTEX(RegisterClassExW(&wc), "Failed to Register the window class! {0}", GetLastError());
@@ -77,12 +77,12 @@ namespace Quirk {
 	void WindowsWindow::Terminate() {
 		// Closes the COM library on the current thread
 		CoUninitialize();
-		UnregisterClassW(m_WindClassName.data(), s_HInstance);
+		UnregisterClassW(s_WindClassName.data(), s_HInstance);
 	}
 
 	WindowsWindow::WindowsWindow(const WindowSpecification& spec, Window* window) {
-		DWORD windExStyles = m_WindowExStyle;
-		DWORD windStyles   = m_WindowStyle;
+		DWORD windExStyles = s_WindowExStyle;
+		DWORD windStyles   = s_WindowStyle;
 		if (spec.Maximized) 
 			windStyles |= WS_MAXIMIZE;
 
@@ -98,7 +98,7 @@ namespace Quirk {
 
 		m_WindowHandle = CreateWindowExW(
 			windExStyles,								// The window accepts drag-drop files.
-			m_WindClassName.data(),						// Window class
+			s_WindClassName.data(),						// Window class
 			title.c_str(),								// Window text
 			windStyles,									// Window style
 			spec.PosX,			spec.PosY,				// Postion of window on the screen
@@ -554,7 +554,7 @@ namespace Quirk {
 		RECT rect = { 0, 0, width, height };
 
 		QK_ASSERTEX(
-			AdjustWindowRectExForDpi(&rect, m_WindowStyle, false, m_WindowExStyle, GetDpiForSystem()),
+			AdjustWindowRectExForDpi(&rect, s_WindowStyle, false, s_WindowExStyle, GetDpiForSystem()),
 			"Failed to Adjust window rectangle for client area in dpi aware window!"
 		);
 

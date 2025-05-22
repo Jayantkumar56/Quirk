@@ -15,10 +15,10 @@ namespace QuirkEditor {
 
 	class ContentBrowserPanel : public Quirk::Panel {
 	public:
-		ContentBrowserPanel() : 
-                Quirk::Panel("Content Browser")
+		ContentBrowserPanel(std::filesystem::path assetDirectory) noexcept : 
+                Quirk::Panel       ( "Content Browser"         ),
+                m_CurrentDirectory ( std::move(assetDirectory) )
 		{
-			m_CurrentDirectory = ProjectManager::GetActive()->GetAssetDirectory();
 			FetchCurrentDirectoryContent();
 		}
 

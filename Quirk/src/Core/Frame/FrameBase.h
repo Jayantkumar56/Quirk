@@ -11,10 +11,10 @@ namespace Quirk {
 		friend class FrameManager;
 
 	public:
-		FrameBase(WindowSpecification& spec) :
+		FrameBase(const WindowSpecification& spec) :
 			m_Window(spec),
 			m_Context(GraphicalContext::Create(m_Window)),
-			m_Title(std::move(spec.Title))
+			m_Title(spec.Title)
 		{
 			m_Context->SetVSync(spec.VSyncOn);
 		}

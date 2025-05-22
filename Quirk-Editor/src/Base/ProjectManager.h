@@ -5,7 +5,7 @@
 #include "ProjectManagerSerializer.h"
 
 #include "Core/AssetManager/EditorAssetManager.h"
-#include "Core/Project/EditorProject.h"
+#include "Core/Application/EditorProject.h"
 #include "Core/Config.h"
 
 

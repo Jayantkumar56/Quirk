@@ -4,7 +4,7 @@
 
 #include "Core/AssetManager/EditorAssetManager.h"
 #include "Core/Scene/EditorSceneManager.h"
-#include "Core/Project/EditorProject.h"
+#include "Core/Application/EditorProject.h"
 
 namespace Quirk {
 

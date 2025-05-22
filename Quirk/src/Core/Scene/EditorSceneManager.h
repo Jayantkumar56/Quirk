@@ -29,6 +29,7 @@ namespace Quirk {
             m_ActiveScene     = std::move( scene );
         }
 
+        inline auto&              GetActiveSceneRefView()    noexcept { return m_ActiveScene;     }
         inline       Ref<Scene>   GetActiveScene()           noexcept { return m_ActiveScene;     }
         inline const std::string& GetActiveSceneName() const noexcept { return m_ActiveSceneName; }
         inline const auto&        GetSceneRegistry()   const noexcept { return m_SceneRegistry;   }

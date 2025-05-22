@@ -66,7 +66,7 @@ namespace QuirkEditor {
 
         try {
             s_ActiveProject = Quirk::Serialization::Deserialize<Quirk::Ref<Quirk::Project>>(projFilePath);
-            s_ActiveProject->SetRootDirectory(projFilePath.parent_path());
+            s_ActiveProject->SetProjectRootDirectory(projFilePath.parent_path());
 
             std::string title = s_ActiveProject->GetTitle();
 

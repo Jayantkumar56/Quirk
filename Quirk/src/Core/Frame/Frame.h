@@ -21,7 +21,7 @@ namespace Quirk {
         using TitleBarManagerType = EnumPolicyToType<PTitleBar>::Type;
 
 	public:
-		Frame(WindowSpecification& spec) : FrameBase(spec) {
+		Frame(const WindowSpecification& spec) : FrameBase(spec) {
 			m_ImguiUI.Init(GetWindow(), GetGraphicalContext());
 		}
 

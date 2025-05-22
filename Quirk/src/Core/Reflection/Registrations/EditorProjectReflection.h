@@ -3,10 +3,10 @@
 #pragma once
 
 #include "Core/Reflection/Reflection.h"
-#include "Core/Project/EditorProjectConfig.h"
+#include "Core/Application/EditorProjectConfig.h"
 #include "Core/AssetManager/EditorAssetManager.h"
 #include "Core/Scene/EditorSceneManager.h"
-#include "Core/Project/EditorProject.h"
+#include "Core/Application/EditorProject.h"
 
 
 namespace Quirk {

@@ -55,7 +55,7 @@ namespace QuirkEditor {
 	}
 
 	void SceneViewportPanel::OnUpdate() {
-        Quirk::Ref<Quirk::Scene>& scene = GetParentFrameAs<EditorFrame>()->GetMainScene();
+        Quirk::Ref<Quirk::Scene>& scene = GetParentFrameAs<EditorFrame>()->GetActiveSceneRefView();
 
 		if (m_IsInFocus && m_SceneState == SceneState::Edit)
 			m_ControllingCamera = m_Camera.OnUpdate();
@@ -65,7 +65,7 @@ namespace QuirkEditor {
 	}
 
 	void SceneViewportPanel::OnUiUpdate() {
-        Quirk::Ref<Quirk::Scene>& scene = GetParentFrameAs<EditorFrame>()->GetMainScene();
+        Quirk::Ref<Quirk::Scene>& scene = GetParentFrameAs<EditorFrame>()->GetActiveSceneRefView();
 
 		//MenuBar(scene);
 

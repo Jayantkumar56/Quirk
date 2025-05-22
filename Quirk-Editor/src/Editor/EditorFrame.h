@@ -3,17 +3,15 @@
 #pragma once
 
 
+#include "EditorTitleBar.h"
 #include "Panels/SceneViewportPanel.h"
 #include "Panels/SceneHierarchyPanel.h"
 #include "Panels/InspectorPanel/InspectorPanel.h"
 #include "Panels/ContentBrowserPanel.h"
-
-#include "EditorTitleBar.h"
 #include "EditorTheme.h"
 #include "EditorFrameResourceManager.h"
 
 #include "Core/Frame/Frame.h"
-
 
 namespace QuirkEditor {
 
@@ -24,10 +22,11 @@ namespace QuirkEditor {
         >
     {
 	public:
-		EditorFrame(Quirk::WindowSpecification& spec) :
-				Frame       (spec),
-				m_MainScene (Quirk::CreateRef<Quirk::Scene>("New Scene", 0, 0))
+		EditorFrame() :
+				Frame     ( GetEditorFrameWindowSpec()  ),
+                m_Project ( ProjectManager::GetActive() )
 		{
+
 			Quirk::Renderer::InitRenderer();
 			Quirk::Renderer2D::InitRenderer();
 
@@ -38,7 +37,7 @@ namespace QuirkEditor {
 			AddPanel<SceneViewportPanel> (this);
 			AddPanel<SceneHierarchyPanel>(this);
 			AddPanel<InspectorPanel>     (this);
-			AddPanel<ContentBrowserPanel>(this);
+			AddPanel<ContentBrowserPanel>(this, m_Project->GetAssetDirectory());
 		}
 
 		virtual void OnImguiUiUpdate() override {
@@ -46,13 +45,27 @@ namespace QuirkEditor {
 			ImGui::SetKeyOwner(ImGuiKey_LeftAlt, ImGuiKeyOwner_Any, ImGuiInputFlags_LockThisFrame);
 		}
 
-		inline Quirk::Ref<Quirk::Scene>&  GetMainScene() { return m_MainScene; }
+        inline auto& GetProjectRefView()     noexcept { return m_Project;                          }
+        inline auto& GetActiveSceneRefView() noexcept { return m_Project->GetActiveSceneRefView(); }
 
         inline EditorTheme& GetTheme() noexcept { return m_Theme; }
         inline EditorFrameResourceManager& GetResourceManager() noexcept { return m_ResourceManager; }
 
+    private:
+        inline Quirk::WindowSpecification GetEditorFrameWindowSpec() {
+            return Quirk::WindowSpecification{
+			    .Title             {"Quirk Editor"},
+			    .Width             {1600},				   .Height    {900},
+			    .MinWidth          {1600},				   .MinHeight {900},
+			    .PosX              {200},				   .PosY      {50},
+			    .VSyncOn           {true},				   .Maximized {true},
+			    .CustomTitleBar    {true}
+		    };
+        }
+
 	private:
 		Quirk::Ref<Quirk::Scene> m_MainScene;
+        Quirk::Ref<Quirk::Project> m_Project;
 
         EditorTheme m_Theme;
         EditorFrameResourceManager m_ResourceManager;
