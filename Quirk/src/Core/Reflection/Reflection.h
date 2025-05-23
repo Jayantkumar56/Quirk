@@ -149,14 +149,14 @@ namespace Quirk {
         template<typename Obj, typename Arg, typename... Args>                                                              \
         requires (Writable)                                                                                                 \
         static void Set(Obj&& obj, Arg&& arg, Args&&... args) {                                                             \
-            using type = RemoveAllWrapperTypes_T<PointingType_T<Obj>>;                                                      \
-            static_assert(std::is_same_v<type, ReflectingType>, "Wrong object type passed to Set()");                       \
+            using ObjType = RemoveAllWrapperTypes_T<PointingType_T<Obj>>;                                                   \
+            static_assert(std::is_same_v<ObjType, ReflectingType>, "Wrong object type passed to Set()");                    \
                                                                                                                             \
             if constexpr (                                                                                                  \
                 ::Quirk::HasPropertyFlag(static_cast<uint32_t>(PropertyFlags_), ::Quirk::PropertyFlag::DirectMemberAccess)  \
             ) {                                                                                                             \
-                if constexpr (IsPointer_V<Obj>)   (*obj).*&type::Setter_ = std::forward<Arg>(arg);                          \
-                else                              obj.*&type::Setter_ = std::forward<Arg>(arg);                             \
+                if constexpr (IsPointer_V<Obj>)   (*obj).Setter_ = std::forward<Arg>(arg);                                  \
+                else                              obj.Setter_ = std::forward<Arg>(arg);                                     \
             }                                                                                                               \
             else if constexpr (                                                                                             \
                 ::Quirk::HasPropertyFlag(static_cast<uint32_t>(PropertyFlags_), ::Quirk::PropertyFlag::Setter)              \
@@ -168,14 +168,14 @@ namespace Quirk {
                                                                                                                             \
         template<typename Obj>                                                                                              \
         static decltype(auto) Get(Obj&& obj) {                                                                              \
-            using type = RemoveAllWrapperTypes_T<PointingType_T<Obj>>;                                                      \
-            static_assert(std::is_same_v<type, ReflectingType>, "Wrong object type passed to Set()");                       \
+            using ObjType = RemoveAllWrapperTypes_T<PointingType_T<Obj>>;                                                   \
+            static_assert(std::is_same_v<ObjType, ReflectingType>, "Wrong object type passed to Set()");                    \
                                                                                                                             \
             if constexpr (                                                                                                  \
                 ::Quirk::HasPropertyFlag(static_cast<uint32_t>(PropertyFlags_), ::Quirk::PropertyFlag::DirectMemberAccess)  \
             ) {                                                                                                             \
-                if constexpr (IsPointer_V<Obj>)   return (*obj).*&type::Getter_;                                            \
-                else                              return obj.*&type::Getter_;                                               \
+                if constexpr (IsPointer_V<Obj>)   return (*obj).Getter_;                                                    \
+                else                              return obj.Getter_;                                                       \
             }                                                                                                               \
             else {                                                                                                          \
                 if constexpr (IsPointer_V<Obj>)   return (*obj).Getter_();                                                  \
@@ -225,7 +225,7 @@ namespace Quirk {
     //=============================================================================================================================
     //--------- Reflect on Type ---------------------------------------------------------------------------------------------------
 
-        // deligating to multiple macro to delay the macro expansion for next phase
+    // deligating to multiple macro to delay the macro expansion for next phase
 #define REGISTER_PROPERTY_HELPER(...)       REGISTER_PROPERTY(__VA_ARGS__)
 #define REGISTER_PROPERTY_TUPLE(TUPLE_)     REGISTER_PROPERTY_HELPER(EXPAND_TUPLE_4(TUPLE_))
 

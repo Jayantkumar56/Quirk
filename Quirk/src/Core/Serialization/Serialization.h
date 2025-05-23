@@ -16,10 +16,7 @@ namespace Quirk {
 
 
     struct Serialization {
-        static bool Serialize(const auto& data, const std::filesystem::path& path) {
-            using DataType        = std::remove_cvref_t<decltype(data)>;
-            using SerializingType = std::conditional_t<IsPointer_V<DataType>, std::remove_cvref_t<decltype(*data)>, DataType>;
-
+        static bool SerializeWithFieldName(std::string_view fieldName, const auto& data, const std::filesystem::path& path) {
             const auto parentPath = path.parent_path();
 
             if (!parentPath.empty() && !std::filesystem::exists(parentPath)) {
@@ -34,21 +31,11 @@ namespace Quirk {
             YAML::Emitter outEmitter;
 
             outEmitter << YAML::BeginMap;
-
-            if constexpr (HasReflection_V<SerializingType>) {
-                outEmitter << YAML::Key << Reflect<SerializingType>::TypeName; 
-            }
-            else if constexpr (HasEnumReflection_V<SerializingType>) {
-                outEmitter << YAML::Key << EnumRegistry<SerializingType>::EnumName;
-            }
-            else {
-                static_assert(AlwaysFalse_V<SerializingType>, "Unsupported type provided for Serialization!");
-            }
-
+            outEmitter << YAML::Key << fieldName;
             outEmitter << YAML::Value;
 
             // when serialization failed not saving the corrupted yaml data in file
-            if (!Serializer<DataType>::Serialize(data, outEmitter)) {
+            if (!Serializer<std::remove_cvref_t<decltype(data)>>::Serialize(data, outEmitter)) {
                 return false;
             }
 
@@ -60,10 +47,22 @@ namespace Quirk {
             return true;
         }
 
-        template<typename T>
-        static auto Deserialize(const std::filesystem::path& path) {
-            using SerializingType = std::conditional_t<IsPointer_V<T>, std::remove_cvref_t<PointingType_T<T>>, std::remove_cvref_t<T>>;
+        static bool Serialize(const auto& data, const std::filesystem::path& path) {
+            using SerializingType = PointingType_T<decltype(data)>;
 
+            if constexpr (HasReflection_V<SerializingType>) {
+                return SerializeWithFieldName(Reflect<SerializingType>::TypeName, data, path);
+            }
+            else if constexpr (HasEnumReflection_V<SerializingType>) {
+                return SerializeWithFieldName(EnumRegistry<SerializingType>::EnumName, data, path);
+            }
+            else {
+                static_assert(AlwaysFalse_V<SerializingType>, "Unsupported type provided for Serialization!");
+            }
+        }
+
+        template<typename T>
+        static auto DeserializeWithFieldName(std::string_view fieldName, const std::filesystem::path& path) {
             const auto parentPath = path.parent_path();
 
             if (!parentPath.empty() && !std::filesystem::exists(parentPath)) {
@@ -88,11 +87,18 @@ namespace Quirk {
                 };
             }
 
+            return Deserializer<T>::Deserialize(node[fieldName]);
+        }
+
+        template<typename T>
+        static auto Deserialize(const std::filesystem::path& path) {
+            using SerializingType = PointingType_T<T>;
+
             if constexpr (HasReflection_V<SerializingType>) {
-                return Deserializer<T>::Deserialize(node[Reflect<SerializingType>::TypeName]);
+                return DeserializeWithFieldName<T>(Reflect<SerializingType>::TypeName, path);
             }
             else if constexpr (HasEnumReflection_V<SerializingType>) {
-                return Deserializer<T>::Deserialize(node[EnumRegistry<SerializingType>::EnumName]);
+                return DeserializeWithFieldName<T>(EnumRegistry<SerializingType>::EnumName, path);
             }
             else {
                 static_assert(AlwaysFalse_V<SerializingType>, "Unsupported type provided for Serialization!");

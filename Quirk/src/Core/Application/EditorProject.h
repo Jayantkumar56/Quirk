@@ -11,28 +11,25 @@
 
 namespace Quirk {
 
+    // NOTE:
+    // 
+    // - Init must be called after construction EditorProject object
+
     class EditorProject {
     public:
         inline EditorProject(EditorProjectConfig config, EditorAssetManager assetManager, EditorSceneManager sceneManager) noexcept :
                 m_Config       ( std::move(config)       ),
                 m_AssetManager ( std::move(assetManager) ),
                 m_SceneManager ( std::move(sceneManager) )
-        {
-            // NOTE:
-            // 
-            // - m_ProjectRootDirectory must be initialized by the Project manager (or the creator of this object)
-            //   use SetProjectRootDirectory to initialize it. This function is private to prevent unrelated code from accessing it
-            //   thus the creator must be friend of this class
-        }
+        {}
 
         inline EditorProject(EditorProjectConfig config) noexcept :
                 m_Config ( std::move(config) )
-        {
-            // NOTE:
-            // 
-            // - m_ProjectRootDirectory must be initialized by the Project manager (or the creator of this object)
-            //   use SetProjectRootDirectory to initialize it. This function is private to prevent unrelated code from accessing it
-            //   thus the creator must be friend of this class
+        {}
+
+        inline void Init(std::filesystem::path directory) noexcept {
+            m_ProjectRootDirectory = std::move(directory);
+            m_SceneManager.Init(m_ProjectRootDirectory, &m_AssetManager);
         }
 
         inline const auto& GetTitle()        const noexcept { return m_Config.ProjectName;   }
@@ -56,10 +53,6 @@ namespace Quirk {
         }
 
         // === End:   Utility Getters =======
-
-        inline void SetProjectRootDirectory(std::filesystem::path directory) noexcept { 
-            m_ProjectRootDirectory = std::move(directory); 
-        }
 
     public:
         static inline std::string_view GetProjFileExtenstion() noexcept { return ".qkproj"; }

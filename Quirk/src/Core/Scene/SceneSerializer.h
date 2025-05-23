@@ -6,6 +6,9 @@
 
 namespace Quirk {
 
+    class Scene;
+    class Entity;
+
 	class SceneSerializer {
 	public: 
 		static void Serialize(const Ref<Scene>& scene, const std::filesystem::path& filePath);

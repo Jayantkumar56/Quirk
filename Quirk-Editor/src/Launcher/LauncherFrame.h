@@ -19,8 +19,9 @@ namespace QuirkEditor {
 		};
 
 	public:
-		LauncherFrame(Quirk::WindowSpecification& spec) :
-			Frame(spec)
+		LauncherFrame(ProjectManager& projManager) :
+			Frame            ( GetEditorFrameWindowSpec() ),
+            m_ProjectManager ( projManager                )
 		{
 			// initailly MainMenu will be loaded
 			m_State = LauncherState::MainMenu;
@@ -32,16 +33,11 @@ namespace QuirkEditor {
 			m_OpenProjectIcon   = Quirk::TextureImporter::CreateFromImage( "assets/Images/Launcher/openFolder.png"    );
 			m_CreateProjectIcon = Quirk::TextureImporter::CreateFromImage( "assets/Images/Launcher/createProject.png" );
 
-            ProjectManager::LoadRecentProjectsList("RecentProjects.yaml");
 
 			// reserving some storage to get input through imgui
 			m_TempProject.Title = "Untitled";
 			m_TempProject.Title.resize(32);
 			m_TempProjPath.resize(512);
-		}
-
-		virtual ~LauncherFrame() {
-            ProjectManager::SaveRecentProjectsList("RecentProjects.yaml");
 		}
 
 		virtual bool OnEvent(Quirk::Event& event) override { return false; }
@@ -52,6 +48,17 @@ namespace QuirkEditor {
 		void DrawMainMenu();
 		void DrawProjectCreationForm();
 		void SetColorTheme();
+
+        inline Quirk::WindowSpecification GetEditorFrameWindowSpec() {
+            return Quirk::WindowSpecification{
+                .Title             { "Quirk Engine" },
+			    .Width             { 1100           },      .Height    { 780   },
+			    .MinWidth          { 1100           },      .MinHeight { 780   },
+			    .PosX              { 200            },      .PosY      { 50    },
+			    .VSyncOn           { true           },      .Maximized { false },
+			    .CustomTitleBar    { true           }
+            };
+        }
 
 	private:
 		Quirk::Ref<Quirk::Texture2D> m_ProjectIcon;
@@ -64,6 +71,7 @@ namespace QuirkEditor {
 		// so that it could be used for input from imgui
         ProjectMetadata m_TempProject;
 		std::string     m_TempProjPath;
+        ProjectManager& m_ProjectManager;
 	};
 
 }

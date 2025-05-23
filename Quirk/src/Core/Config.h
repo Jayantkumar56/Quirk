@@ -2,9 +2,6 @@
 
 #pragma once
 
-#include "Core/AssetManager/EditorAssetManager.h"
-#include "Core/Scene/EditorSceneManager.h"
-#include "Core/Application/EditorProject.h"
 
 namespace Quirk {
 
@@ -15,6 +12,16 @@ namespace Quirk {
     // - switch to Runtime versions for Runtime maybe using macros at build time
     // - try to check the requrements met or not, maybe with concepts
     //
+
+    // NOTE:
+    // 
+    // - forward declaring to avoid cyclic dependency
+    // - include actual header for concrete types
+
+    struct EditorProjectConfig;
+    class  EditorAssetManager;
+    class  EditorSceneManager;
+    class  EditorProject;
 
     using ProjectConfig = EditorProjectConfig;
     using AssetManager  = EditorAssetManager;

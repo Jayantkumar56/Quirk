@@ -3,10 +3,9 @@
 #include "QkEditorpch.h"
 
 #include "QuirkEditorApp.h"
-#include "Editor/EditorFrame.h"
 #include "Launcher/LauncherFrame.h"
+#include "Editor/EditorFrame.h"
 
-#include "Quirk.h"
 #include "Core/Application/EntryPoint.h"
 
 
@@ -16,42 +15,32 @@ namespace Quirk {
 	// Create app object inside this function and call Run method
 	void LaunchApp() {
         QuirkEditor::QuirkEditorApp app;
+        app.Init();
 		app.Run();
+        app.Terminate();
 	}
 
 }
 
 namespace QuirkEditor {
 
-
-	QuirkEditorApp::QuirkEditorApp() :
-		Application(L"Quirk Engine", Quirk::RendererAPI::API::OpenGL)
-	{
-		LoadFontFiles();
-
-        Quirk::WindowSpecification tempSpec{
-			.Title             {"Quirk Engine"},
-			.Width             {1100},				   .Height    {780},
-			.MinWidth          {1100},				   .MinHeight {780},
-			.PosX              {200},				   .PosY      {50},
-			.VSyncOn           {true},				   .Maximized {false},
-			.CustomTitleBar    {true}
-		};
-
-		AddFrame<LauncherFrame>(tempSpec);
-
-		// NOTE: Temporary            directly opening the editor
-		//std::filesystem::path path = "../Example/Example.qkproj";
-		//Project::Load<EditorAssetManager>(path);
-		//LaunchEditor();
-	}
-
 	void QuirkEditorApp::LaunchEditor() {
 		// AddFrame adds the frame and makes that context to be current
-		AddFrame<EditorFrame>();
+		AddFrame<EditorFrame>(m_ProjManager);
 	}
 
-	void QuirkEditorApp::LoadFontFiles() {
+    void QuirkEditorApp::Init() {
+        m_ProjManager.LoadRecentProjectsList("RecentProjects.yaml");
+		LoadFontFiles();
+
+		AddFrame<LauncherFrame>(m_ProjManager);
+    }
+
+    void QuirkEditorApp::Terminate() {
+        m_ProjManager.SaveRecentProjectsList("RecentProjects.yaml");
+    }
+
+    void QuirkEditorApp::LoadFontFiles() {
         using namespace Quirk;
 
 		//FontManager::SetFontFileToFontWeight(FontWeight::Regular, std::string("assets/Fonts/Schibsted_Grotesk/static/SchibstedGrotesk-Regular.ttf"));

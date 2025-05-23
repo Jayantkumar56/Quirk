@@ -205,7 +205,6 @@ namespace QuirkEditor {
 	void SceneViewportPanel::OnSceneEdit(const Quirk::Ref<Quirk::Scene>& scene) {
 		m_SceneState = SceneState::Edit;
 
-		m_RuntimeScene->OnRuntimeStop();
 		m_RuntimeScene = nullptr;
 	}
 
@@ -213,7 +212,6 @@ namespace QuirkEditor {
 		m_SceneState = SceneState::Play;
 
 		m_RuntimeScene = Quirk::Scene::Copy(scene);
-		m_RuntimeScene->OnRuntimeStart();
 	}
 
 }

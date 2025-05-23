@@ -1,6 +1,9 @@
 
 
+
 #pragma once
+
+#include "Base/ProjectManager.h"
 
 #include "Core/Reflection/Reflection.h"
 #include "Core/Application/EditorProjectConfig.h"
@@ -10,7 +13,15 @@
 
 
 namespace Quirk {
+
+    REGISTER_REFLECTION(QuirkEditor::ProjectMetadata, "Project Meta", (CONSTRUCTOR),
+        ( Title,         Title,                 DUMMY_SETTER, PROPFLAG_DIRECT_MEMBER | PROPFLAG_SERIALIZABLE ),
+        ( RootDirectory, ProjectRootDirectory,  DUMMY_SETTER, PROPFLAG_DIRECT_MEMBER | PROPFLAG_SERIALIZABLE )
+    );
     
+    //=============================================================================================================================
+    //--------- Editor Project Related Reflection Registrations -------------------------------------------------------------------
+
     REGISTER_REFLECTION(EditorProject, "Project", (CONSTRUCTOR),
         ( ProjectConfigs, GetConfig,       DUMMY_SETTER, PROPFLAG_SERIALIZABLE ),
         ( RootDirectory,  GetDirectory,    DUMMY_SETTER, PROPFLAG_NONE         ),
@@ -41,5 +52,6 @@ namespace Quirk {
         ( LoadedScenes,    GetLoadedScenes,    DUMMY_SETTER, PROPFLAG_NONE         )
     );
 
-}
+    //_____________________________________________________________________________________________________________________________
 
+}

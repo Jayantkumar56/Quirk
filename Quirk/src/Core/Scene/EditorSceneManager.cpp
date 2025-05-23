@@ -1,4 +1,5 @@
 
+
 #include "Qkpch.h"
 
 #include "EditorSceneManager.h"
@@ -6,17 +7,15 @@
 
 namespace Quirk {
 
-    EditorSceneManager::EditorSceneManager(std::string activeSceneName, std::unordered_map<std::string, std::filesystem::path> scenesRegistry) :
-        m_ActiveSceneName ( std::move(activeSceneName)                ),
-        m_ActiveScene     ( CreateRef<Scene>(m_ActiveSceneName, 0, 0) ),
-        m_SceneRegistry   ( std::move(scenesRegistry)                 )
-    {
+    void EditorSceneManager::Init(std::filesystem::path projRootDirectory, EditorAssetManager* assetManager) noexcept {
+        m_ProjRootDirectory = std::move(projRootDirectory);
+        m_AssetManager      = assetManager;
+
         // loading the active scene
         {
-            auto itr = m_SceneRegistry.find(m_ActiveSceneName);
-
-            if (itr != m_SceneRegistry.end()) {
-                SceneSerializer::Deserialize(m_ActiveScene, itr->second);
+            if (auto path = GetScenePath(m_ActiveSceneName)) {
+                SceneSerializer::Deserialize(m_ActiveScene, path.value());
+                m_ActiveScene->Init(m_AssetManager);
             }
             else {
                 QK_CORE_ERROR("Invalid SceneName {0} for Last Active Scene Provided!", m_ActiveSceneName);
@@ -42,6 +41,7 @@ namespace Quirk {
             {
                 SetActiveScene(sceneName, CreateRef<Scene>(sceneName, 0, 0));
                 SceneSerializer::Deserialize(m_ActiveScene, m_SceneRegistry.at(sceneName));
+                m_ActiveScene->Init(m_AssetManager);
                 m_LoadedScenes.emplace(sceneName, m_ActiveScene);
             }
 
@@ -77,6 +77,7 @@ namespace Quirk {
 
             SetActiveScene(sceneName, std::move(CreateRef<Scene>(sceneName, 0, 0)));
             SceneSerializer::Deserialize(m_ActiveScene, itr->second);
+            m_ActiveScene->Init(m_AssetManager);
             m_LoadedScenes.emplace(sceneName, m_ActiveScene);
         }
 

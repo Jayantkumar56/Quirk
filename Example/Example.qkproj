@@ -1,7 +1,7 @@
 Project:
     ProjectConfigs:
         ProjectName: Example
-        StartScene: physics_example.yaml
+        StartScene: newTest3D.yaml
         AssetDirectory: Assets
         SceneDirectory: Assets/Scenes
         ScriptModulePath: Scripts
@@ -10,6 +10,7 @@ Project:
       AssetRegistry:
         {}
     SceneManager:
-        ActiveSceneName: ""
+        ActiveSceneName: "test3D"
         SceneRegistry:
-        {}
+            newTest3D: Assets/Scenes/newTest3D.yaml
+            test3D: Assets/Scenes/test3D.yaml

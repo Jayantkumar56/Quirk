@@ -4,6 +4,8 @@
 
 #include "Core/core.h"
 #include "Core/Scene/Components.h"
+#include "Core/AssetManager/EditorAssetManager.h"
+#include "Core/Config.h"
 
 #include "entt.hpp"
 
@@ -11,17 +13,24 @@ namespace Quirk {
 
 	class Entity;
 
+    // NOTE:
+    // 
+    // - Init must be called after construction Scene object
+
 	class Scene {
 		friend class Entity;
 		friend class SceneSerializer;
 
 	public:
-		Scene(std::string name, uint16_t width, uint16_t height) : 
-				m_Name(std::move(name)),
-				m_ViewportWidth(width), 
-				m_ViewportHeight(height) 
+		Scene(std::string name, uint16_t width, uint16_t height) noexcept : 
+				m_Name           ( std::move(name) ),
+				m_ViewportWidth  ( width           ),
+				m_ViewportHeight ( height          ) 
 		{}
-		~Scene() = default;
+
+        inline void Init(AssetManager* assetManager) noexcept {
+            m_AssetManager = assetManager;
+        }
 
 		static Ref<Scene> Copy(const Scene* other);
         static inline Ref<Scene> Copy(const Ref<Scene>& other) { return Copy(other.get()); }
@@ -33,9 +42,6 @@ namespace Quirk {
 
 		void OnUpdate();
 
-		void OnRuntimeStart() { }
-		void OnRuntimeStop()  { }
-
 		void RenderSceneEditor(const glm::mat4& projectionViewMat, glm::vec3 cameraPos);
 		void RenderSceneRuntime();
 
@@ -44,13 +50,11 @@ namespace Quirk {
 		Entity FindEntityByName(std::string_view name);
 		Entity GetPrimaryCameraEntity();
 
-		std::string& GetName()          { return m_Name;         }
-		const auto& GetRegistry() const { return m_Registry;     }
+		std::string& GetName()           { return m_Name;     }
+		const auto&  GetRegistry() const { return m_Registry; }
 
 		template<typename... Components>
-		auto GetAllEntitiesWith() {
-			return m_Registry.view<Components...>();
-		}
+		auto GetAllEntitiesWith() { return m_Registry.view<Components...>(); }
 
 	private:
 		void RenderScene(const glm::mat4& projectionViewMat, glm::vec3 cameraPos);
@@ -69,6 +73,8 @@ namespace Quirk {
 		entt::registry m_Registry;
 		uint16_t       m_ViewportWidth;
 		uint16_t       m_ViewportHeight;
+        
+        AssetManager*  m_AssetManager = nullptr;
 	};
 
 }

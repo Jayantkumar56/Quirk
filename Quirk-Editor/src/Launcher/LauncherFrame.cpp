@@ -90,7 +90,7 @@ namespace QuirkEditor {
                 }
 
 				// All of the contents (Recent Porjects)
-				if (!ProjectManager::HaveRecentProjects()) {
+				if (!m_ProjectManager.HaveRecentProjects()) {
 					ImGui::PushFont(Quirk::FontManager::GetFont(Quirk::FontWeight::Regular, 23));
 					ImGui::TextColored({ 0.812f, 0.816f, 0.78f, 1.0f }, "No Recent Projects!");
 					ImGui::PopFont();
@@ -107,7 +107,7 @@ namespace QuirkEditor {
 					    ImGui::BeginChild("ScrollingRegion", ImVec2(availRgn.x, availRgn.y - 50));
                     }
 
-					for (const auto& projectMeta : ProjectManager::GetRecentProjectsList()) {
+					for (const auto& projectMeta : m_ProjectManager.GetRecentProjectsList()) {
 						std::string projPath = projectMeta.ProjectRootDirectory.string();
 
 						buttonParameters.label = projectMeta.Title.c_str();
@@ -116,7 +116,7 @@ namespace QuirkEditor {
 
 						// Recent project button
 						if (ImageTextButton(buttonParameters)) {
-                            auto project = ProjectManager::LoadProject(projectMeta);
+                            auto project = m_ProjectManager.LoadProject(projectMeta);
 
                             if (project != nullptr) {
                                 auto& app = Quirk::Application::GetAs<QuirkEditorApp>();
@@ -182,7 +182,7 @@ namespace QuirkEditor {
 
 						std::filesystem::path projfilePath;
 						if (Quirk::FileDialog::OpenFile(fileDialogSpec, projfilePath)) {
-                            const auto& proj = ProjectManager::LoadProject(projfilePath);
+                            const auto& proj = m_ProjectManager.LoadProject(projfilePath);
 
 							if (proj != nullptr) {
                                 auto& app = Quirk::Application::GetAs<QuirkEditorApp>();
@@ -287,7 +287,7 @@ namespace QuirkEditor {
 			m_TempProject.ProjectRootDirectory = m_TempProjPath;
 
 			if (std::filesystem::is_directory(m_TempProject.ProjectRootDirectory.parent_path())) {
-                const auto& proj = ProjectManager::CreateInDirectory(
+                const auto& proj = m_ProjectManager.CreateInDirectory(
                     std::move(m_TempProject.Title), 
                     std::move(m_TempProject.ProjectRootDirectory)
                 );

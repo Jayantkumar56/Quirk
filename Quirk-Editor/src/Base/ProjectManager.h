@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "ProjectManagerSerializer.h"
 
 #include "Core/AssetManager/EditorAssetManager.h"
 #include "Core/Application/EditorProject.h"
@@ -11,61 +10,61 @@
 
 namespace QuirkEditor {
 
+    // NOTE:
+    //
+    // - ProjFilePath : path of the proj file (**.qkproj file) of the project
+    // 
+    // - ProjRootDirectory : directory in which proj file (**.qkproj file) of the project lives
+    //                       (i.e. the root directory of the project)
+    // 
+    // - ProjDirectory : directory in which the folder containing proj file lives
+    //
+    // - Overall structure:  **/ProjDirectory/ProjRootDirectory/ProjFile
+    // 
+    //       example (ProjFilePath):- D:/Dev/Quirk/Example/Example.qkproj
+    //       here we have:-
+    //          ProjDirectory     = Quirk
+    //          ProjRootDirectory = Example
+    //          ProjFile          = Example.qkproj
+    
+
 	struct ProjectMetadata {
 		std::string Title;
-
-        // directory of the **.qkproj file (i.e. the root directory of the project)
 		std::filesystem::path ProjectRootDirectory;
 	};
 
     class ProjectManager {
     public:
-        // takes path of the yaml file which contains the recent projects list
-        static inline bool LoadRecentProjectsList(const std::filesystem::path& filePath) {
-            return ProjectManagerSerializer::DeserializeRecentProjectsList(s_RecentProjectsList, filePath);
-        }
+        void LoadRecentProjectsList(const std::filesystem::path& projListfilePath) noexcept;
+        void SaveRecentProjectsList(const std::filesystem::path& projListfilePath) const;
 
-        // takes path of the file where recent list should be stored
-        static inline bool SaveRecentProjectsList(const std::filesystem::path& filePath) {
-            return ProjectManagerSerializer::SerializeRecentProjectsList(s_RecentProjectsList, filePath);
-        }
+        inline const auto& GetRecentProjectsList() const noexcept { return m_RecentProjectsList; }
 
-        static inline const std::vector<ProjectMetadata>& GetRecentProjectsList() noexcept { return s_RecentProjectsList; }
+        Quirk::Ref<Quirk::Project> LoadProject       ( const std::filesystem::path& projFilePath                            );
+        Quirk::Ref<Quirk::Project> LoadProject       ( const std::string& title, const std::filesystem::path& projRootDir   );
+        Quirk::Ref<Quirk::Project> CreateInDirectory ( std::string&& title,      const std::filesystem::path& projDirectory );
 
-        // projectDirectory is the directory where project root directory will be created
-        static Quirk::Ref<Quirk::Project> CreateInDirectory(std::string&& title, const std::filesystem::path& projDirectory);
-
-        // takes in path of the **.qkproj in the project root directory
-        static Quirk::Ref<Quirk::Project> LoadProject(const std::filesystem::path& projFilePath);
-
-        // takes in path of the **.qkproj in the project root directory
-        static Quirk::Ref<Quirk::Project> LoadProject(const std::string& title, const std::filesystem::path& projRootDir);
-
-        static inline Quirk::Ref<Quirk::Project> LoadProject(const ProjectMetadata& projMeta) {
+        inline Quirk::Ref<Quirk::Project> LoadProject(const ProjectMetadata& projMeta) {
             return LoadProject(projMeta.Title, projMeta.ProjectRootDirectory);
         }
 
-        static inline bool HaveRecentProjects() noexcept { return !s_RecentProjectsList.empty(); }
+        inline bool HaveRecentProjects() noexcept { return !m_RecentProjectsList.empty(); }
 
         // === Begin: API related to active project ===
 
-        static inline void UnloadActive() noexcept { s_ActiveProject = nullptr; }
-        static inline auto GetActive()    noexcept { return s_ActiveProject;    }
-
-        //static inline bool SaveActive(const std::filesystem::path& projDirectory) {
-        //    return s_ActiveProject->Save(projDirectory);
-        //}
+        inline void UnloadActive() noexcept { m_ActiveProject = nullptr; }
+        inline auto GetActive()    noexcept { return m_ActiveProject;    }
 
         // === End:   API related to active project ===
 
     private:
-        static void CreateProjectDirectoryStructure(const std::filesystem::path& projFilePath, const Quirk::ProjectConfig& projConfig);
+        void CreateProjectDirectoryStructure(const std::filesystem::path& projFilePath, const Quirk::ProjectConfig& projConfig);
 
-        static void AddRecentProject(ProjectMetadata projMeta);
+        void AddRecentProject(ProjectMetadata projMeta);
 
     private:
-        static Quirk::Ref<Quirk::Project>   s_ActiveProject;
-        static std::vector<ProjectMetadata> s_RecentProjectsList;
+        Quirk::Ref<Quirk::Project>   m_ActiveProject;
+        std::vector<ProjectMetadata> m_RecentProjectsList;
     };
 
 }

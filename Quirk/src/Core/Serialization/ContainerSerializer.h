@@ -22,7 +22,7 @@ namespace Quirk {
             for (const auto& data : vec) {
                 if (!Serializer<T>::Serialize(data, outEmitter)) {
                     QK_CORE_WARN(
-                        "Error occured while deserializing: std::vector of {0}, {1}",
+                        "Error occured while deserializing: std::vector of {0}",
                         typeid(T).name()
                     );
                     return false;

@@ -22,9 +22,9 @@ namespace QuirkEditor {
         >
     {
 	public:
-		EditorFrame() :
-				Frame     ( GetEditorFrameWindowSpec()  ),
-                m_Project ( ProjectManager::GetActive() )
+		EditorFrame(ProjectManager& projManager) :
+				Frame     ( GetEditorFrameWindowSpec() ),
+                m_Project ( projManager.GetActive()    )
 		{
 
 			Quirk::Renderer::InitRenderer();
@@ -54,20 +54,19 @@ namespace QuirkEditor {
     private:
         inline Quirk::WindowSpecification GetEditorFrameWindowSpec() {
             return Quirk::WindowSpecification{
-			    .Title             {"Quirk Editor"},
-			    .Width             {1600},				   .Height    {900},
-			    .MinWidth          {1600},				   .MinHeight {900},
-			    .PosX              {200},				   .PosY      {50},
-			    .VSyncOn           {true},				   .Maximized {true},
-			    .CustomTitleBar    {true}
+			    .Title             { "Quirk Editor" },
+			    .Width             { 1600           },		.Height    { 900  },
+			    .MinWidth          { 1600           },		.MinHeight { 900  },
+			    .PosX              { 200            },		.PosY      { 50   },
+			    .VSyncOn           { true           },		.Maximized { true },
+			    .CustomTitleBar    { true           }
 		    };
         }
 
 	private:
-		Quirk::Ref<Quirk::Scene> m_MainScene;
         Quirk::Ref<Quirk::Project> m_Project;
 
-        EditorTheme m_Theme;
+        EditorTheme                m_Theme;
         EditorFrameResourceManager m_ResourceManager;
 	};
 

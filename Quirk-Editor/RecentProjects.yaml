@@ -1,5 +1,3 @@
 Recent Projects:
-  Projects Count: 1
-  Projects:
-    - Title: Example
-      Path: D:\Dev\Quirk\Example
+  - Title: Example
+    RootDirectory: D:\Dev\Quirk\Example
