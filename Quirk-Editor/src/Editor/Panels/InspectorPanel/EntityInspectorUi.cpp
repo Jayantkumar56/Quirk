@@ -17,7 +17,7 @@
 namespace QuirkEditor {
 
     void InspectorDraw<Quirk::Entity>::Draw(EditorFrame* frame, Quirk::Entity entity) {
-        if (entity.IsInvalidEntity())
+        if (!entity.IsValidEntity())
             return;
 
         ComponentDraw(frame, entity.GetComponent<Quirk::UUIDComponent>());

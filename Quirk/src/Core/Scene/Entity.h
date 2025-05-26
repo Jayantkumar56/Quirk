@@ -1,18 +1,23 @@
 
+
 #pragma once
 
-#include "entt.hpp"
 #include "Core/core.h"
 #include "Core/Scene/Scene.h"
 #include "Core/Scene/Components.h"
+
+#include "entt.hpp"
+
 
 namespace Quirk {
 
 	class Entity {
 	public:
-		Entity() = default;
-		Entity(entt::entity handle, Scene* scene): m_EntityHandle(handle), m_Scene(scene) {}
-		Entity(const Entity& other) = default;
+		Entity() noexcept = default;
+		Entity(entt::entity handle, Scene* scene) noexcept : 
+                m_Scene        ( scene  ),
+                m_EntityHandle ( handle ) 
+        {}
 
 		template<typename T, typename... Args>
 		T& AddComponent(Args&&... args) {
@@ -46,25 +51,25 @@ namespace Quirk {
 			m_Scene->m_Registry.remove<T>(m_EntityHandle);
 		}
 
-		inline operator bool()			const { return m_EntityHandle != entt::null; }
-		inline operator entt::entity()  const { return m_EntityHandle; }
-		inline operator uint32_t()		const { return (uint32_t)m_EntityHandle; }
-		inline operator Scene* ()		const { return m_Scene; }
+		inline operator bool()			const noexcept { return m_EntityHandle != entt::null; }
+		inline operator entt::entity()  const noexcept { return m_EntityHandle;               }
+		inline operator uint32_t()		const noexcept { return (uint32_t)m_EntityHandle;     }
+		inline operator Scene* ()		const noexcept { return m_Scene;                      }
 
-		bool operator==(const Entity& other) const {
+		bool operator==(const Entity& other) const noexcept {
 			return m_EntityHandle == other.m_EntityHandle && m_Scene == other.m_Scene;
 		}
 
-		bool operator!=(const Entity& other) const {
+		bool operator!=(const Entity& other) const noexcept {
 			return !(*this == other);
 		}
 
-		inline std::string& GetName() { return GetComponent<TagComponent>().Tag; }
-		inline bool IsInvalidEntity() { return m_Scene == NULL || m_EntityHandle == entt::null; }
+		inline std::string& GetName()                      { return GetComponent<TagComponent>().Tag; }
+		inline bool         IsValidEntity() const noexcept { return m_EntityHandle != entt::null;     }
 
 	private:
+		Scene* m_Scene              = nullptr;
 		entt::entity m_EntityHandle = entt::null;
-		Scene* m_Scene = nullptr;
 	};
 
 }

@@ -12,7 +12,7 @@
 namespace Quirk {
 
     // ============================================================================================================================
-    //                                           REFLECTION SYSTEM USAGE GUIDE
+    //                                               REFLECTION SYSTEM USAGE
     // ============================================================================================================================
     //
     // 1. Registering a reflected class:
@@ -96,7 +96,7 @@ namespace Quirk {
     // NOTE: 
     // 
     // - No static_assert here!
-    //   In MSVC, even when template instantiation results in substitution faliure,
+    //   even when template instantiation results in substitution faliure,
     //   still the static_assert always hits.
     //   Reflection validity should be checked separately using IsComplexReflectable<T>.
     template<typename T>
@@ -135,7 +135,7 @@ namespace Quirk {
         using Type = UnwrappedPropertyType_T<                                                                               \
             ReflectingType,                                                                                                 \
             &ReflectingType::Getter_,                                                                                       \
-            ::Quirk::HasPropertyFlag(static_cast<uint32_t>(PropertyFlags_), ::Quirk::PropertyFlag::DirectMemberAccess)      \
+            ::Quirk::HasPropertyFlag(static_cast<uint32_t>(PropertyFlags_), PROPFLAG_DIRECT_MEMBER)                         \
         >;                                                                                                                  \
                                                                                                                             \
         static constexpr std::string_view PropertyName  = #PropName_;                                                       \
@@ -143,7 +143,7 @@ namespace Quirk {
                                                                                                                             \
         static constexpr bool Writable = ::Quirk::HasPropertyFlag(                                                          \
             static_cast<uint32_t>(PropertyFlags_),                                                                          \
-            ::Quirk::PropertyFlag::Editable                                                                                 \
+            PROPFLAG_EDITABLE                                                                                               \
         );                                                                                                                  \
                                                                                                                             \
         template<typename Obj, typename Arg, typename... Args>                                                              \
@@ -153,7 +153,7 @@ namespace Quirk {
             static_assert(std::is_same_v<ObjType, ReflectingType>, "Wrong object type passed to Set()");                    \
                                                                                                                             \
             if constexpr (                                                                                                  \
-                ::Quirk::HasPropertyFlag(static_cast<uint32_t>(PropertyFlags_), ::Quirk::PropertyFlag::DirectMemberAccess)  \
+                ::Quirk::HasPropertyFlag(static_cast<uint32_t>(PropertyFlags_), PROPFLAG_DIRECT_MEMBER)                     \
             ) {                                                                                                             \
                 if constexpr (IsPointer_V<Obj>)   (*obj).Setter_ = std::forward<Arg>(arg);                                  \
                 else                              obj.Setter_ = std::forward<Arg>(arg);                                     \
@@ -172,7 +172,7 @@ namespace Quirk {
             static_assert(std::is_same_v<ObjType, ReflectingType>, "Wrong object type passed to Set()");                    \
                                                                                                                             \
             if constexpr (                                                                                                  \
-                ::Quirk::HasPropertyFlag(static_cast<uint32_t>(PropertyFlags_), ::Quirk::PropertyFlag::DirectMemberAccess)  \
+                ::Quirk::HasPropertyFlag(static_cast<uint32_t>(PropertyFlags_), PROPFLAG_DIRECT_MEMBER)                     \
             ) {                                                                                                             \
                 if constexpr (IsPointer_V<Obj>)   return (*obj).Getter_;                                                    \
                 else                              return obj.Getter_;                                                       \
@@ -303,13 +303,13 @@ namespace Quirk {
                                                                                                                             \
         template<typename Function, typename ...Args>                                                                       \
         static void ForEachSerializable(Function&& func, Args&& ...args) {                                                  \
-            FilteredForEachInvoker<::Quirk::PropertyFlag::Serializable>                                                     \
+            FilteredForEachInvoker<PROPFLAG_SERIALIZABLE>                                                                   \
                 ::Invoke(std::forward<Function>(func), std::forward<Args>(args)...);                                        \
         }                                                                                                                   \
                                                                                                                             \
         template<typename Function, typename ...Args>                                                                       \
         static decltype(auto) InvokeWithSerializables(Function&& func, Args&& ...args) {                                    \
-            return FilteredWithTypesInvoker<::Quirk::PropertyFlag::Serializable>                                            \
+            return FilteredWithTypesInvoker<PROPFLAG_SERIALIZABLE>                                                          \
                 ::Invoke(std::forward<Function>(func), std::forward<Args>(args)...);                                        \
         }                                                                                                                   \
     };

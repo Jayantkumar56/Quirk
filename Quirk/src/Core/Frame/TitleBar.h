@@ -66,16 +66,14 @@ namespace Quirk {
 
     class TitleBarManager {
     public:
-        virtual ~TitleBarManager() { delete m_TitleBar; }
-
-        // lifetime of the titlebar is managed by the frame
         template<TitleBarType T, typename ...Args>
         inline void SetTitleBar(FrameBase* frame, Args&& ... args) {
             // TODO: think about this static_cast
-            m_TitleBar = static_cast<T*>(new T(std::forward<Args>(args)...));
+            m_TitleBar = Scope<TitleBar>(static_cast<T*>(new T(std::forward<Args>(args)...)));
             m_TitleBar->m_ParentFrame = frame;
         }
 
+    protected:
         inline void UpdateTitleBarUI() {
             m_TitleBar->OnUiUpdate();
         }
@@ -85,7 +83,7 @@ namespace Quirk {
         }
 
     private:
-        TitleBar* m_TitleBar = nullptr;
+        Scope<TitleBar> m_TitleBar;
     };
 
 }

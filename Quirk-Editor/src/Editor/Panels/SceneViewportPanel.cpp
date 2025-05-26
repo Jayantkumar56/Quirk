@@ -5,6 +5,7 @@
 #include "SceneViewportPanel.h"
 #include "Editor/EditorFrame.h"
 #include "Base/SelectionContext.h"
+#include "Editor/EditorFrameResourceManager.h"
 
 #include "Core/Input/Input.h"
 
@@ -13,33 +14,40 @@
 namespace QuirkEditor {
 
 	SceneViewportPanel::SceneViewportPanel(uint16_t width, uint16_t height) :
-			Panel              ("Scene Viewport"),
-			m_RuntimeScene	   (nullptr),
-			m_PlayButtonIcon   (Quirk::TextureImporter::CreateFromImage("assets/Images/play.png")),
-			m_PauseButtonIcon  (Quirk::TextureImporter::CreateFromImage("assets/Images/pause.png")),
-			m_PanelWidth	   (width),
-			m_PanelHeight	   (height),
-			m_Frame			   (Quirk::FrameBuffer::Create({ m_PanelWidth, m_PanelHeight })),
-			m_RendererStats	   ({ 0, 0 }),
-			m_IsInFocus		   (false),
-			m_ControllingCamera(false),
-			m_Camera		   (45.0f, (float)width / (float)height, 1.0f, 100.0f),
-		    m_SceneState	   (SceneState::Edit)
+			Panel              ( "Scene Viewport"                                            ),
+			m_PanelWidth	   ( width                                                       ),
+			m_PanelHeight	   ( height                                                      ),
+			m_Frame			   ( Quirk::FrameBuffer::Create({ m_PanelWidth, m_PanelHeight }) ),
+			m_IsInFocus		   ( false                                                       ),
+			m_ControllingCamera( false                                                       ),
+			m_Camera		   ( 45.0f, (float)width / (float)height, 1.0f, 100.0f           )
 	{
         Quirk::RenderCommands::UpdateViewPort(m_PanelWidth, m_PanelHeight);
 		m_Frame->SetAttachments({
 			{ Quirk::FrameBufferTextureType::RGBA_8,			 { .RGBA = {0.10156f, 0.17968f, 0.20703f, 1.0f} } },
-			{ Quirk::FrameBufferTextureType::RED_INTEGER,        { .RedInteger = -1   }						   },
-			{ Quirk::FrameBufferTextureType::DEPTH_24_STENCIL_8, { .DepthValue = 1.0f }						   }
+			{ Quirk::FrameBufferTextureType::RED_INTEGER,        { .RedInteger = -1   }						      },
+			{ Quirk::FrameBufferTextureType::DEPTH_24_STENCIL_8, { .DepthValue = 1.0f }						      }
 		});
 	}
 
 	bool SceneViewportPanel::OnEvent(Quirk::Event& event) {
-		if (m_IsInFocus && m_SceneState == SceneState::Edit) {
+        auto editorMode = GetParentFrameAs<EditorFrame>()->GetEditorMode();
+
+		if (m_IsInFocus && editorMode == EditorMode::Edit) {
 			return m_Camera.OnEvent(event);
 		}
 
 		return false;
+	}
+
+	void SceneViewportPanel::OnUpdate() {
+        auto editorMode = GetParentFrameAs<EditorFrame>()->GetEditorMode();
+
+		if (m_IsInFocus && editorMode == EditorMode::Edit)
+			m_ControllingCamera = m_Camera.OnUpdate();
+
+		if(editorMode == EditorMode::Play)
+			m_RuntimeScene->OnUpdate();
 	}
 
 	void SceneViewportPanel::SetUiProperties() {
@@ -54,18 +62,10 @@ namespace QuirkEditor {
 		ImGui::PopStyleVar();
 	}
 
-	void SceneViewportPanel::OnUpdate() {
-        Quirk::Ref<Quirk::Scene>& scene = GetParentFrameAs<EditorFrame>()->GetActiveSceneRefView();
-
-		if (m_IsInFocus && m_SceneState == SceneState::Edit)
-			m_ControllingCamera = m_Camera.OnUpdate();
-
-		if(m_SceneState == SceneState::Play)
-			m_RuntimeScene->OnUpdate();
-	}
-
 	void SceneViewportPanel::OnUiUpdate() {
-        Quirk::Ref<Quirk::Scene>& scene = GetParentFrameAs<EditorFrame>()->GetActiveSceneRefView();
+        auto* editorFrame = GetParentFrameAs<EditorFrame>();
+        auto  editorMode  = editorFrame->GetEditorMode();
+        auto& scene       = editorFrame->GetActiveSceneRefView();
 
 		//MenuBar(scene);
 
@@ -90,7 +90,7 @@ namespace QuirkEditor {
 		ImGui::PopStyleColor(2);
 		ImGui::PopStyleVar();
 
-		if (m_SceneState == SceneState::Edit) {
+		if (editorMode == EditorMode::Edit) {
 			if (ImGui::BeginDragDropTarget()) {
 				const ImGuiPayload* scenePayload = ImGui::AcceptDragDropPayload("SCENE_PATH");
 				if (scenePayload) {
@@ -124,6 +124,10 @@ namespace QuirkEditor {
 	}
 
 	void SceneViewportPanel::MenuBar(const Quirk::Ref<Quirk::Scene>& scene) {
+        auto* editorFrame     = GetParentFrameAs<EditorFrame>();
+        auto  editorMode      = editorFrame->GetEditorMode();
+        auto& resourceManager = editorFrame->GetResourceManager();
+
 		ImGuiWindowClass window_class;
 		window_class.DockNodeFlagsOverrideSet = ImGuiDockNodeFlags_NoTabBar;
 		ImGui::SetNextWindowClass(&window_class);
@@ -132,16 +136,16 @@ namespace QuirkEditor {
 		ImGuiWindowFlags flags = ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoDecoration;
 		ImGui::Begin("Scene Viewport MenuBar", NULL, flags);
 
-		ImTextureID playButtonIconId = (ImTextureID)(intptr_t)m_PlayButtonIcon->GetRendererId();
-		if (m_SceneState == SceneState::Play)
-			playButtonIconId = (ImTextureID)(intptr_t)m_PauseButtonIcon->GetRendererId();
+		ImTextureID playButtonIconId = resourceManager.GetIconPlay();
+		if (editorMode == EditorMode::Play)
+			playButtonIconId = resourceManager.GetIconPause();
 
 		float buttonHeight = ImGui::GetContentRegionAvail().y - 4.0f;
 		if (ImGui::ImageButton("playButton", playButtonIconId, { buttonHeight, buttonHeight }, { 0, 1 }, { 1, 0 })) {
 			// on click transition from one state to other (from edit to play)
-			switch (m_SceneState) {
-				case SceneState::Edit: OnScenePlay(scene); break;
-				case SceneState::Play: OnSceneEdit(scene); break;
+			switch (editorMode) {
+				case EditorMode::Edit: OnScenePlay(scene); break;
+				case EditorMode::Play: OnSceneEdit(scene); break;
 			}
 		}
 
@@ -171,18 +175,19 @@ namespace QuirkEditor {
 	}
 
 	void SceneViewportPanel::RenderViewport(const Quirk::Ref<Quirk::Scene>& scene) {
+        auto editorMode = GetParentFrameAs<EditorFrame>()->GetEditorMode();
+
 		m_Frame->Bind();
 		m_Frame->ClearAttachments();
 
         Quirk::Renderer2D::ResetStats();
 
-		switch (m_SceneState) {
-			case SceneState::Edit: scene->RenderSceneEditor(m_Camera.GetProjectionView(), m_Camera.GetPosition()); break;
-			case SceneState::Play: m_RuntimeScene->RenderSceneRuntime(); break;
+		switch (editorMode) {
+			case EditorMode::Edit: scene->RenderSceneEditor(m_Camera.GetProjectionView(), m_Camera.GetPosition()); break;
+			case EditorMode::Play: m_RuntimeScene->RenderSceneRuntime(); break;
 		}
 
 		m_Frame->Unbind();
-		m_RendererStats = Quirk::Renderer2D::GetStats();
 	}
 
 	int SceneViewportPanel::GetEntityIdOnClick(const ImVec2& imagePos) {
@@ -203,13 +208,15 @@ namespace QuirkEditor {
 	}
 
 	void SceneViewportPanel::OnSceneEdit(const Quirk::Ref<Quirk::Scene>& scene) {
-		m_SceneState = SceneState::Edit;
+        auto editorFrame = GetParentFrameAs<EditorFrame>();
+        editorFrame->SetEditorMode(EditorMode::Edit);
 
 		m_RuntimeScene = nullptr;
 	}
 
 	void SceneViewportPanel::OnScenePlay(const Quirk::Ref<Quirk::Scene>& scene) {
-		m_SceneState = SceneState::Play;
+        auto editorFrame = GetParentFrameAs<EditorFrame>();
+        editorFrame->SetEditorMode(EditorMode::Play);
 
 		m_RuntimeScene = Quirk::Scene::Copy(scene);
 	}

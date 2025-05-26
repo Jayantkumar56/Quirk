@@ -40,9 +40,7 @@ namespace QuirkEditor {
 			m_TempProjPath.resize(512);
 		}
 
-		virtual bool OnEvent(Quirk::Event& event) override { return false; }
-		virtual void OnUpdate()			   override {}
-		virtual void OnImguiUiUpdate()     override;
+		virtual void OnImguiUiUpdate() override;
 
 	private:
 		void DrawMainMenu();

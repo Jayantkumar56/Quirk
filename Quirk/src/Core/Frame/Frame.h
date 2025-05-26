@@ -14,11 +14,11 @@ namespace Quirk {
     template<PanelPolicy PPanel, TitleBarPolicy PTitleBar>
 	class Frame : 
             public FrameBase, 
-            public EnumPolicyToType<PPanel>::Type,
-            public EnumPolicyToType<PTitleBar>::Type
+            public FramePolicyToType< PPanel    >::type,
+            public FramePolicyToType< PTitleBar >::type
     {
-        using PanelManagerType    = EnumPolicyToType<PPanel>::Type;
-        using TitleBarManagerType = EnumPolicyToType<PTitleBar>::Type;
+        using PanelManagerType    = FramePolicyToType< PPanel    >::type;
+        using TitleBarManagerType = FramePolicyToType< PTitleBar >::type;
 
 	public:
 		Frame(const WindowSpecification& spec) : FrameBase(spec) {

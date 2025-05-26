@@ -22,16 +22,16 @@ namespace Quirk {
 
     template<auto V> 
     requires std::is_enum_v<decltype(V)>
-    struct EnumPolicyToType {
+    struct FramePolicyToType {
         static constexpr bool AlwaysFalse = false;
         static_assert(AlwaysFalse, "EnumPolicyToType not specialized for this policy value.");
     };
 
-    template<> struct EnumPolicyToType<PanelPolicy::Enabled>  { using Type = PanelManager; };
-    template<> struct EnumPolicyToType<PanelPolicy::Disabled> { using Type = NoPanel; };
+    template<> struct FramePolicyToType<PanelPolicy::Enabled>  { using type = PanelManager; };
+    template<> struct FramePolicyToType<PanelPolicy::Disabled> { using type = NoPanel;      };
 
-    template<> struct EnumPolicyToType<TitleBarPolicy::Enabled>  { using Type = TitleBarManager;   };
-    template<> struct EnumPolicyToType<TitleBarPolicy::Disabled> { using Type = NoTitleBar; };
+    template<> struct FramePolicyToType<TitleBarPolicy::Enabled>  { using type = TitleBarManager; };
+    template<> struct FramePolicyToType<TitleBarPolicy::Disabled> { using type = NoTitleBar;      };
 
 }
 

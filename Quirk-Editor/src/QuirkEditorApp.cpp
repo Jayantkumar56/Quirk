@@ -8,6 +8,8 @@
 
 #include "Core/Application/EntryPoint.h"
 
+#include <vector>
+
 
 namespace Quirk {
 
@@ -25,7 +27,6 @@ namespace Quirk {
 namespace QuirkEditor {
 
 	void QuirkEditorApp::LaunchEditor() {
-		// AddFrame adds the frame and makes that context to be current
 		AddFrame<EditorFrame>(m_ProjManager);
 	}
 

@@ -2,7 +2,6 @@
 
 #pragma once
 
-
 #include "EditorTitleBar.h"
 #include "Panels/SceneViewportPanel.h"
 #include "Panels/SceneHierarchyPanel.h"
@@ -13,18 +12,25 @@
 
 #include "Core/Frame/Frame.h"
 
+
 namespace QuirkEditor {
+
+    enum class EditorMode {
+        Edit,
+        Play
+    };
 
 	class EditorFrame : 
         public Quirk::Frame<
-            Quirk::PanelPolicy::Enabled, 
+            Quirk::PanelPolicy::Enabled,
             Quirk::TitleBarPolicy::Enabled
         >
     {
 	public:
 		EditorFrame(ProjectManager& projManager) :
-				Frame     ( GetEditorFrameWindowSpec() ),
-                m_Project ( projManager.GetActive()    )
+				Frame        ( GetEditorFrameWindowSpec() ),
+                m_EditorMode ( EditorMode::Edit           ),
+                m_Project    ( projManager.GetActive()    )
 		{
 
 			Quirk::Renderer::InitRenderer();
@@ -45,11 +51,14 @@ namespace QuirkEditor {
 			ImGui::SetKeyOwner(ImGuiKey_LeftAlt, ImGuiKeyOwner_Any, ImGuiInputFlags_LockThisFrame);
 		}
 
-        inline auto& GetProjectRefView()     noexcept { return m_Project;                          }
-        inline auto& GetActiveSceneRefView() noexcept { return m_Project->GetActiveSceneRefView(); }
+        inline const auto& GetProjectRefView() const noexcept { return m_Project;    }
+        inline const auto  GetEditorMode()     const noexcept { return m_EditorMode; }
 
-        inline EditorTheme& GetTheme() noexcept { return m_Theme; }
-        inline EditorFrameResourceManager& GetResourceManager() noexcept { return m_ResourceManager; }
+        inline auto& GetActiveSceneRefView() noexcept { return m_Project->GetActiveSceneRefView(); }
+        inline auto& GetTheme()              noexcept { return m_Theme;                            }
+        inline auto& GetResourceManager()    noexcept { return m_ResourceManager;                  }
+
+        inline void SetEditorMode(EditorMode mode) noexcept { m_EditorMode = mode; }
 
     private:
         inline Quirk::WindowSpecification GetEditorFrameWindowSpec() {
@@ -65,7 +74,7 @@ namespace QuirkEditor {
 
 	private:
         Quirk::Ref<Quirk::Project> m_Project;
-
+        EditorMode                 m_EditorMode;
         EditorTheme                m_Theme;
         EditorFrameResourceManager m_ResourceManager;
 	};

@@ -14,8 +14,12 @@ namespace Quirk {
         friend class PanelManager;
 
 	public:
-		Panel(const char* title, ImGuiWindowFlags flags = 0) : m_Title(title), m_WindowFlags(flags) { }
-		virtual ~Panel() = default;
+		Panel(std::string title, ImGuiWindowFlags flags = 0) noexcept : 
+                m_Title       ( std::move(title) ),
+                m_WindowFlags ( flags            ) 
+        {}
+
+		virtual ~Panel() noexcept = default;
 
 		virtual void OnUpdate()            { }
 		virtual void OnUiUpdate()          { }
@@ -44,7 +48,7 @@ namespace Quirk {
 		inline void UpdateUi() {
             SetUiProperties();
 
-			ImGui::Begin(m_Title, &m_PanelOpen, m_WindowFlags);
+			ImGui::Begin(m_Title.c_str(), &m_PanelOpen, m_WindowFlags);
             OnUiUpdate();
 			ImGui::End();
 
@@ -57,7 +61,7 @@ namespace Quirk {
 		ImGuiWindowFlags m_WindowFlags;
 
 		// title for the ImGui Window
-		const char* m_Title;
+		std::string m_Title;
 
 		// to communicate with the parent Frame obj which manages this panel
 		FrameBase* m_ParentFrame = nullptr;
@@ -68,33 +72,16 @@ namespace Quirk {
 
     class PanelManager {
     public:
-        virtual ~PanelManager() {
-            for (size_t i = 0; i < m_Panels.size(); ++i)
-                delete m_Panels[i];
-        }
-
-        // lifetime of the panel is managed by the frame
         template<PanelType P, typename ...Args>
-        inline void AddPanel(FrameBase* frame, Args&& ... args) {
-            P* panel = new P(std::forward<Args>(args)...);
+        void AddPanel(FrameBase* frame, Args&& ... args) {
+            auto& panel = m_Panels.emplace_back(new P(std::forward<Args>(args)...));
             panel->m_ParentFrame = frame;
-            m_Panels.push_back(static_cast<Panel*>(panel));
         }
 
-        inline Panel* GetPanel(const std::string_view panelName) {
-            for (auto panel : m_Panels) {
-                if (panelName == panel->GetTitle())
-                    return panel;
-            }
-
-            QK_WARN("Specified Panel \"{0}\" does not exist!", panelName);
-            return nullptr;
-        }
-
+    protected:
         inline void UpdatePanels() {
             for (size_t i = 0; i < m_Panels.size(); ++i) {
                 if (!m_Panels[i]->m_PanelOpen) {
-                    delete m_Panels[i];
                     m_Panels.erase(m_Panels.begin() + i--);
                     continue;
                 }
@@ -104,20 +91,19 @@ namespace Quirk {
         }
 
         inline void UpdatePanelsUI() {
-            for (size_t j = 0; j < m_Panels.size(); ++j) {
-                m_Panels[j]->UpdateUi();
-            }
+            for (auto& panel : m_Panels)
+                panel->UpdateUi();
         }
 
         inline bool HandlePanelsEvent(Event& event) {
-            for (auto panel : m_Panels)
+            for (auto& panel : m_Panels)
                 panel->OnEvent(event);
 
             return false;
         }
 
     private:
-        std::vector<Panel*> m_Panels;
+        std::vector<Scope<Panel>> m_Panels;
     };
 
 }

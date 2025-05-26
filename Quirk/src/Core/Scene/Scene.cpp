@@ -77,7 +77,7 @@ namespace Quirk {
 	void Scene::RenderSceneRuntime() {
 		Entity primaryCamera = GetPrimaryCameraEntity();
 
-		if (primaryCamera.IsInvalidEntity()) {
+		if (!primaryCamera.IsValidEntity()) {
 			QK_CORE_WARN("No primary camera exist in the scene");
 			return;
 		}
