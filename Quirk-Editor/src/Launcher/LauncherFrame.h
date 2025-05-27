@@ -2,15 +2,21 @@
 
 #pragma once
 
-#include "Quirk.h"
+#include "Base/ProjectManager.h"
 #include "Launcher/LauncherTitleBar.h"
+
+#include "Core/Frame/Frame.h"
 #include "Core/AssetManager/AssetImporter/TextureImporter.h"
 
-#include "Base/ProjectManager.h"
 
 namespace QuirkEditor {
 
-	class LauncherFrame : public Quirk::Frame<Quirk::PanelPolicy::Disabled, Quirk::TitleBarPolicy::Enabled> {
+	class LauncherFrame : 
+        public Quirk::Frame <
+            Quirk::PanelPolicy::Disabled, 
+            Quirk::TitleBarPolicy::Enabled
+        > 
+    {
 	private:
 		// two different states for two different ui
 		enum class LauncherState {
