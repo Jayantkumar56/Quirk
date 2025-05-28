@@ -2,10 +2,11 @@
 
 #pragma once
 
-#include <Quirk.h>
 
-#include "Core/Assets/RenderAssets/Texture.h"
 #include "Base/ProjectManager.h"
+#include "Editor/EditorFrame.h"
+
+#include "Core/Frame/Panel.h"
 
 #include <vector>
 #include <stack>
@@ -15,8 +16,8 @@ namespace QuirkEditor {
 
 	class ContentBrowserPanel : public Quirk::Panel {
 	public:
-		ContentBrowserPanel(std::filesystem::path assetDirectory) noexcept : 
-                Quirk::Panel       ( "Content Browser"         ),
+		ContentBrowserPanel(EditorFrame* frame, std::filesystem::path assetDirectory) noexcept :
+                Quirk::Panel       ( frame, "Content Browser"  ),
                 m_CurrentDirectory ( std::move(assetDirectory) )
 		{
 			FetchCurrentDirectoryContent();

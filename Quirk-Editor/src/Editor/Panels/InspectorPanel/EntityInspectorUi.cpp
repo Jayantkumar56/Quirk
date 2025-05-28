@@ -16,7 +16,7 @@
 
 namespace QuirkEditor {
 
-    void InspectorDraw<Quirk::Entity>::Draw(EditorFrame* frame, Quirk::Entity entity) {
+    void InspectorDraw<Quirk::Entity>::Draw(Quirk::View<EditorFrame> frame, Quirk::Entity entity) {
         if (!entity.IsValidEntity())
             return;
 
@@ -24,7 +24,7 @@ namespace QuirkEditor {
         ComponentDraw(frame, entity.GetComponent<Quirk::TagComponent>());
 
         Quirk::ComponentsIterator<Quirk::ComponentTypesNonIdentifiers>(
-            [] <typename Component> (std::string_view label, EditorFrame * frame, Quirk::Entity entity) {
+            [] <typename Component> (std::string_view label, Quirk::View<EditorFrame> frame, Quirk::Entity entity) {
                 if (!entity.HasComponent<Component>()) {
                     return;
                 }
@@ -32,7 +32,7 @@ namespace QuirkEditor {
 		        ImGuiTreeNodeFlags treeNodeFlags = ImGuiTreeNodeFlags_Framed           | ImGuiTreeNodeFlags_SpanAvailWidth;
 		        treeNodeFlags                   |= ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_DefaultOpen;
 
-		        ImGui::PushStyleColor(ImGuiCol_Text, frame->GetTheme().GetColor(ColorName::DarkText));
+		        ImGui::PushStyleColor(ImGuiCol_Text, frame->GetTheme()->GetColor(ColorName::DarkText));
 		        ImGui::PushFont(Quirk::FontManager::GetFont("ComponentTreeNode"));
 
                 if ( ImGui::TreeNodeEx((void*)typeid(Component).hash_code(), treeNodeFlags, label.data()) ) {
@@ -82,12 +82,12 @@ namespace QuirkEditor {
     }
 
     template<>
-    static void InspectorDraw<Quirk::Entity>::ComponentDraw(EditorFrame* frame, Quirk::UUIDComponent& component) {
+    static void InspectorDraw<Quirk::Entity>::ComponentDraw(Quirk::View<EditorFrame> frame, Quirk::UUIDComponent& component) {
 
     }
 
     template<>
-    static void InspectorDraw<Quirk::Entity>::ComponentDraw(EditorFrame* frame, Quirk::TagComponent& component) {
+    static void InspectorDraw<Quirk::Entity>::ComponentDraw(Quirk::View<EditorFrame> frame, Quirk::TagComponent& component) {
         std::string& tag = component.Tag;
         ImFont* labelFont = Quirk::FontManager::GetFont("PropertyLabel");
 
@@ -103,7 +103,7 @@ namespace QuirkEditor {
     }
 
     template<>
-    static void InspectorDraw<Quirk::Entity>::ComponentDraw(EditorFrame* frame, Quirk::TransformComponent& component) {
+    static void InspectorDraw<Quirk::Entity>::ComponentDraw(Quirk::View<EditorFrame> frame, Quirk::TransformComponent& component) {
         ImFont* buttonFont = Quirk::FontManager::GetFont(Quirk::FontWeight::Bold, 18);
         ImFont* valuesFont = Quirk::FontManager::GetFont("DragFloatValue");
         ImFont* labelFont  = Quirk::FontManager::GetFont("PropertyLabel");
@@ -122,7 +122,7 @@ namespace QuirkEditor {
     }
 
     template<>
-    static void InspectorDraw<Quirk::Entity>::ComponentDraw(EditorFrame* frame, Quirk::SpriteRendererComponent& component) {
+    static void InspectorDraw<Quirk::Entity>::ComponentDraw(Quirk::View<EditorFrame> frame, Quirk::SpriteRendererComponent& component) {
         std::string texturePathStr = "No Texture";
         ImFont* labelFont = Quirk::FontManager::GetFont("PropertyLabel");
         if (component.Texture != nullptr) {
@@ -166,7 +166,7 @@ namespace QuirkEditor {
         	}
         
         	ImGui::SameLine(0.0f, 0.0f);
-        	ImTextureID uploadImageIconId = frame->GetResourceManager().GetIconUpload();
+        	ImTextureID uploadImageIconId = frame->GetResourceManager()->GetIconUpload();
         	if (ImGui::ImageButton("uploadImageButton", uploadImageIconId, { columnHeight -6.0f, columnHeight -6.0f }, { 0, 1 }, { 1, 0 })) {
                 Quirk::FileFilter filters[] = {
         			{L"image",		L"*.png;*.JPG;*.JPEG*.jpg;*.jpeg"}
@@ -189,7 +189,7 @@ namespace QuirkEditor {
         	}
         
         	ImGui::SameLine(0.0f, 0.0f);
-        	ImTextureID removeImageIconId = frame->GetResourceManager().GetIconRemove();
+        	ImTextureID removeImageIconId = frame->GetResourceManager()->GetIconRemove();
         	ImGui::ImageButton("removeImageButton", removeImageIconId, { columnHeight - 6.0f, columnHeight - 6.0f }, { 0, 1 }, { 1, 0 });
         	if (ImGui::IsItemHovered()) {
         		ImGui::SetTooltip("Remove Image");
@@ -211,7 +211,7 @@ namespace QuirkEditor {
     }
 
     template<>
-    static void InspectorDraw<Quirk::Entity>::ComponentDraw(EditorFrame* frame, Quirk::CameraComponent& component) {
+    static void InspectorDraw<Quirk::Entity>::ComponentDraw(Quirk::View<EditorFrame> frame, Quirk::CameraComponent& component) {
         int currentProjection = component.Camera.GetProjectionType();
         const char* projectionTypes[] = { "Perspective", "Orthographic" };
         ImFont* labelFont = Quirk::FontManager::GetFont("PropertyLabel");
@@ -243,7 +243,7 @@ namespace QuirkEditor {
         	ImGui::TableNextColumn();
         
         	ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(10, ImGui::GetStyle().FramePadding.y));
-        	ImGui::PushStyleColor(ImGuiCol_Button, frame->GetTheme().GetColor(ColorName::DropdownButton));
+        	ImGui::PushStyleColor(ImGuiCol_Button, frame->GetTheme()->GetColor(ColorName::DropdownButton));
         	if (ImGui::Combo("##projectionTypeSelection", &currentProjection, projectionTypes, IM_ARRAYSIZE(projectionTypes))) {
         		auto projectionType = (currentProjection == 1) ? Quirk::SceneCamera::ProjectionType::Orthographic : Quirk::SceneCamera::ProjectionType::Perspective;
         		component.Camera.SetProjectionType(projectionType);
@@ -319,12 +319,12 @@ namespace QuirkEditor {
     }
 
     template<>
-    static void InspectorDraw<Quirk::Entity>::ComponentDraw(EditorFrame* frame, Quirk::NativeScriptComponent& component) {
+    static void InspectorDraw<Quirk::Entity>::ComponentDraw(Quirk::View<EditorFrame> frame, Quirk::NativeScriptComponent& component) {
 
     }
 
     template<>
-    static void InspectorDraw<Quirk::Entity>::ComponentDraw(EditorFrame* frame, Quirk::MeshRendererComponent& component) {
+    static void InspectorDraw<Quirk::Entity>::ComponentDraw(Quirk::View<EditorFrame> frame, Quirk::MeshRendererComponent& component) {
         component.MeshObject.Type;
         const char* meshTypes[] = { "Select", "Cube" };
         int currentType = (int)component.MeshObject.Type;
@@ -355,7 +355,7 @@ namespace QuirkEditor {
     }
 
     template<>
-    static void InspectorDraw<Quirk::Entity>::ComponentDraw(EditorFrame* frame, Quirk::LightComponent& component) {
+    static void InspectorDraw<Quirk::Entity>::ComponentDraw(Quirk::View<EditorFrame> frame, Quirk::LightComponent& component) {
         const char* lightTypes[] = { "Select", "Point" };
         int currentType = (int)component.Type;
         

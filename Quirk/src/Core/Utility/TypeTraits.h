@@ -2,6 +2,9 @@
 
 #pragma once
 
+#include "SmartPointer.h"
+#include "View.h"
+
 #include <type_traits>
 #include <filesystem>
 
@@ -78,6 +81,25 @@ namespace Quirk {
     concept ConditionTrait = requires {
         { Condition<T>::value } -> std::convertible_to<bool>;
     };
+
+
+
+    //=============================================================================================================================
+    //--------- View Detection ----------------------------------------------------------------------------------------------------
+
+    template<typename T>
+    struct IsView : std::false_type {};
+
+    template<typename T>
+    struct IsView<View<T>> : std::true_type {};
+
+    template<typename T>
+    constexpr bool IsView_V = IsView<T>::value;
+
+    template<typename T>
+    concept ViewType = IsView_V<T>;
+
+    //_____________________________________________________________________________________________________________________________
 
 
 

@@ -16,10 +16,18 @@ namespace Quirk {
     // NOTE:
     // 
     // - Init must be called after construction Scene object
+    //
+    // - since Scene contains a view of AssetManager, it must not oulive
+    //   AssetManager (also since AssetManager is contained in Project,
+    //   Scene should not outlive the Project.)
 
 	class Scene {
 		friend class Entity;
 		friend class SceneSerializer;
+
+    public:
+		static        Ref<Scene> Copy(const Scene* other);
+        static inline Ref<Scene> Copy(const Ref<Scene>& other) { return Copy(other.get()); }
 
 	public:
 		Scene(std::string name, uint16_t width, uint16_t height) noexcept : 
@@ -28,12 +36,9 @@ namespace Quirk {
 				m_ViewportHeight ( height          ) 
 		{}
 
-        inline void Init(AssetManager* assetManager) noexcept {
+        inline void Init(View<AssetManager> assetManager) noexcept {
             m_AssetManager = assetManager;
         }
-
-		static Ref<Scene> Copy(const Scene* other);
-        static inline Ref<Scene> Copy(const Ref<Scene>& other) { return Copy(other.get()); }
 
 		Entity CreateEntity(const std::string& name = std::string(), const uint64_t uuid = UUID());
 		void DestroyEntity(Entity entity);
@@ -41,9 +46,6 @@ namespace Quirk {
 		inline void DestroyAllEntities() { m_Registry.clear(); }
 
 		void OnUpdate();
-
-		void RenderSceneEditor(const glm::mat4& projectionViewMat, glm::vec3 cameraPos);
-		void RenderSceneRuntime();
 
 		void OnViewportResize(uint32_t width, uint32_t height);
 
@@ -57,8 +59,6 @@ namespace Quirk {
 		auto GetAllEntitiesWith() { return m_Registry.view<Components...>(); }
 
 	private:
-		void RenderScene(const glm::mat4& projectionViewMat, glm::vec3 cameraPos);
-
 		template<typename T>
 		void OnComponentAdded(entt::entity entity, T& component) { }
 
@@ -74,7 +74,7 @@ namespace Quirk {
 		uint16_t       m_ViewportWidth;
 		uint16_t       m_ViewportHeight;
         
-        AssetManager*  m_AssetManager = nullptr;
+        View<AssetManager>  m_AssetManager;
 	};
 
 }

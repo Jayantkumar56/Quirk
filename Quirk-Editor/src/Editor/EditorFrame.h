@@ -2,13 +2,10 @@
 
 #pragma once
 
-#include "EditorTitleBar.h"
-#include "Panels/SceneViewportPanel.h"
-#include "Panels/SceneHierarchyPanel.h"
-#include "Panels/InspectorPanel/InspectorPanel.h"
-#include "Panels/ContentBrowserPanel.h"
+
 #include "EditorTheme.h"
 #include "EditorFrameResourceManager.h"
+#include "Base/ProjectManager.h"
 
 #include "Core/Frame/Frame.h"
 
@@ -27,41 +24,30 @@ namespace QuirkEditor {
         >
     {
 	public:
-		EditorFrame(ProjectManager& projManager) :
+		EditorFrame(Quirk::Scope<Quirk::Project> project) noexcept :
 				Frame        ( GetEditorFrameWindowSpec() ),
                 m_EditorMode ( EditorMode::Edit           ),
-                m_Project    ( projManager.GetActive()    )
-		{
+                m_Project    ( std::move(project)         )
+		{}
 
-			Quirk::Renderer::InitRenderer();
-			Quirk::Renderer2D::InitRenderer();
-
-            m_Theme.SetTheme(ThemeName::DarkTheme);
-
-			SetTitleBar<EditorTitleBar>(this);
-
-			AddPanel<SceneViewportPanel> (this);
-			AddPanel<SceneHierarchyPanel>(this);
-			AddPanel<InspectorPanel>     (this);
-			AddPanel<ContentBrowserPanel>(this, m_Project->GetAssetDirectory());
-		}
+        void Init() noexcept;
 
 		virtual void OnImguiUiUpdate() override {
 			// Disabling alt key for imgui to prevent navigation with alt key (problems when using editor cotrols)
 			ImGui::SetKeyOwner(ImGuiKey_LeftAlt, ImGuiKeyOwner_Any, ImGuiInputFlags_LockThisFrame);
 		}
 
-        inline const auto& GetProjectRefView() const noexcept { return m_Project;    }
-        inline const auto  GetEditorMode()     const noexcept { return m_EditorMode; }
+        inline Quirk::View<Quirk::Scene> GetActiveSceneView() noexcept { return m_Project->GetActiveSceneRefView(); }
+        inline Quirk::Ref<Quirk::Scene>  GetActiveScene()     noexcept { return m_Project->GetActiveSceneRefView(); }
 
-        inline auto& GetActiveSceneRefView() noexcept { return m_Project->GetActiveSceneRefView(); }
-        inline auto& GetTheme()              noexcept { return m_Theme;                            }
-        inline auto& GetResourceManager()    noexcept { return m_ResourceManager;                  }
+        inline const EditorMode GetEditorMode()    const noexcept { return m_EditorMode; }
+        inline void SetEditorMode(EditorMode mode)       noexcept { m_EditorMode = mode; }
 
-        inline void SetEditorMode(EditorMode mode) noexcept { m_EditorMode = mode; }
+        inline Quirk::ConstView<EditorTheme>                GetTheme()           const noexcept { return &m_Theme;           }
+        inline Quirk::ConstView<EditorFrameResourceManager> GetResourceManager() const noexcept { return &m_ResourceManager; }
 
     private:
-        inline Quirk::WindowSpecification GetEditorFrameWindowSpec() {
+        inline Quirk::WindowSpecification GetEditorFrameWindowSpec() const noexcept {
             return Quirk::WindowSpecification{
 			    .Title             { "Quirk Editor" },
 			    .Width             { 1600           },		.Height    { 900  },
@@ -73,10 +59,10 @@ namespace QuirkEditor {
         }
 
 	private:
-        Quirk::Ref<Quirk::Project> m_Project;
-        EditorMode                 m_EditorMode;
-        EditorTheme                m_Theme;
-        EditorFrameResourceManager m_ResourceManager;
+        Quirk::Scope<Quirk::Project> m_Project;
+        EditorMode                   m_EditorMode;
+        EditorTheme                  m_Theme;
+        EditorFrameResourceManager   m_ResourceManager;
 	};
 
 }

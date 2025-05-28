@@ -7,7 +7,7 @@
 
 namespace Quirk {
 
-    void EditorSceneManager::Init(std::filesystem::path projRootDirectory, EditorAssetManager* assetManager) noexcept {
+    void EditorSceneManager::Init(std::filesystem::path projRootDirectory, View<EditorAssetManager> assetManager) noexcept {
         m_ProjRootDirectory = std::move(projRootDirectory);
         m_AssetManager      = assetManager;
 

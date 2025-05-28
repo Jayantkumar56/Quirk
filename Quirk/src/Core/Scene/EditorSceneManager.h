@@ -21,7 +21,7 @@ namespace Quirk {
                 m_SceneRegistry   ( std::move(scenesRegistry)                 )
         {}
 
-        void Init(std::filesystem::path projRootDirectory, EditorAssetManager* assetManager) noexcept;
+        void Init(std::filesystem::path projRootDirectory, View<EditorAssetManager> assetManager) noexcept;
 
         Ref<Scene> CreateEmptyScene(const std::string& sceneName, const std::filesystem::path& scenePath);
         Ref<Scene> LoadScene(const std::string& sceneName);
@@ -51,14 +51,14 @@ namespace Quirk {
         }
 
     private:
-        std::string           m_ActiveSceneName;
-        Ref<Scene>            m_ActiveScene;
+        std::string m_ActiveSceneName;
+        Ref<Scene>  m_ActiveScene;
 
         std::unordered_map<std::string, std::filesystem::path> m_SceneRegistry;
         std::unordered_map<std::string, Ref<Scene>>            m_LoadedScenes;
 
-        std::filesystem::path m_ProjRootDirectory;
-        EditorAssetManager*   m_AssetManager = nullptr;
+        std::filesystem::path    m_ProjRootDirectory;
+        View<EditorAssetManager> m_AssetManager;
     };
 
 }

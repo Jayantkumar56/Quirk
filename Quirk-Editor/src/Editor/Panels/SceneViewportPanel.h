@@ -2,14 +2,20 @@
 
 #pragma once
 
-#include "Quirk.h"
 #include "Editor/EditorCamera.h"
+
+#include "Core/Frame/Panel.h"
+#include "Core/Scene/Scene.h"
+#include "Core/Renderer/RendererPrimitives/FrameBuffer.h"
+#include "Core/Scene/EditorSceneRenderer.h"
 
 namespace QuirkEditor {
 
+    class EditorFrame;
+
 	class SceneViewportPanel : public Quirk::Panel {
 	public:
-		SceneViewportPanel(uint16_t width = 1, uint16_t height = 1);
+		SceneViewportPanel(EditorFrame* frame);
 
 		virtual void OnUpdate()                   override;
 		virtual bool OnEvent(Quirk::Event& event) override;
@@ -18,25 +24,21 @@ namespace QuirkEditor {
 		virtual void OnUiUpdate()                 override;
 
 	private:
-		void MenuBar              (const Quirk::Ref<Quirk::Scene>& scene);
-		void CheckAndHandleResize (const Quirk::Ref<Quirk::Scene>& scene);
-		void RenderViewport       (const Quirk::Ref<Quirk::Scene>& scene);
-		int  GetEntityIdOnClick   (const ImVec2& imagePos               );
-
-		void OnSceneEdit(const Quirk::Ref<Quirk::Scene>& scene);
-		void OnScenePlay(const Quirk::Ref<Quirk::Scene>& scene);
+		void MenuBar              (Quirk::View<Quirk::Scene> scene);
+		void CheckAndHandleResize (Quirk::View<Quirk::Scene> scene);
+		int  GetEntityIdOnClick   (const ImVec2& imagePos         );
 
 	private:
-        uint16_t m_PanelWidth;
-        uint16_t m_PanelHeight;
-		bool     m_IsInFocus;
+        // dummy size value for initialization untill actual values are fetched in the ui update
+        ImVec2 m_PanelSize{250.0f, 350.0f};
 
-        Quirk::Ref<Quirk::FrameBuffer> m_Frame;
+		bool m_IsInFocus         = false;
+		bool m_ControllingCamera = false;
 
-		bool         m_ControllingCamera;
 		EditorCamera m_Camera;
 
-		Quirk::Ref<Quirk::Scene> m_RuntimeScene;
+        Quirk::Ref<Quirk::FrameBuffer> m_Frame;
+        Quirk::EditorSceneRenderer     m_SceneRenderer;
 	};
 
 }

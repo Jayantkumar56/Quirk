@@ -53,7 +53,7 @@ namespace QuirkEditor {
 		void DrawProjectCreationForm();
 		void SetColorTheme();
 
-        inline Quirk::WindowSpecification GetEditorFrameWindowSpec() {
+        inline Quirk::WindowSpecification GetEditorFrameWindowSpec() const noexcept {
             return Quirk::WindowSpecification{
                 .Title             { "Quirk Engine" },
 			    .Width             { 1100           },      .Height    { 780   },

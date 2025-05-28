@@ -19,11 +19,10 @@ namespace QuirkEditor {
 	}
 
 	void SceneHierarchyPanel::OnUiUpdate(){
-        EditorFrame* frame = GetParentFrameAs<EditorFrame>();
+        auto frame = GetParentFrameAs<EditorFrame>();
+        auto scene = frame->GetActiveSceneView();
 
-        Quirk::Ref<Quirk::Scene>& scene = frame->GetActiveSceneRefView();
-
-		ImGui::PushStyleColor(ImGuiCol_Border, frame->GetTheme().GetColor(ColorName::PopupBorder));
+		ImGui::PushStyleColor(ImGuiCol_Border, frame->GetTheme()->GetColor(ColorName::PopupBorder));
 
 		ImVec2 framePadding{ 5.0f, 5.0f };
 		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, framePadding);
@@ -41,7 +40,7 @@ namespace QuirkEditor {
 		ImGui::PopStyleVar();
 
 		for (auto entity : scene->GetRegistry().view<entt::entity>()) {
-			DrawEntityNode({ entity, scene.get() });
+			DrawEntityNode({ entity, scene.Get() });
 		}
 
 		if (ImGui::BeginPopupContextWindow(0, ImGuiPopupFlags_MouseButtonRight | ImGuiPopupFlags_NoOpenOverItems)) {
@@ -65,11 +64,11 @@ namespace QuirkEditor {
 	}
 
 	void SceneHierarchyPanel::DrawEntityNode(Quirk::Entity entity) {
-        EditorFrame* frame      = GetParentFrameAs<EditorFrame>();
-		bool shouldDeleteEntity = false;
-		float windowPadding		= GImGui->Style.WindowPadding.x;
-		const std::string& tag	= entity.GetComponent<Quirk::TagComponent>().Tag;
-		uint64_t uuid			= entity.GetComponent<Quirk::UUIDComponent>().Uuid;
+        Quirk::View<EditorFrame> frame = GetParentFrameAs<EditorFrame>();
+		bool shouldDeleteEntity        = false;
+		float windowPadding		       = GImGui->Style.WindowPadding.x;
+		const std::string& tag	       = entity.GetComponent<Quirk::TagComponent>().Tag;
+		uint64_t uuid			       = entity.GetComponent<Quirk::UUIDComponent>().Uuid;
 		ImGui::PushID((int)uuid);
 
         Quirk::Entity selectedEntity = m_SelectionHandle.Get<Quirk::Entity>();
@@ -121,7 +120,7 @@ namespace QuirkEditor {
 			ImGui::EndPopup();
 		}
 
-		if (entity == selectedEntity) { ImGui::PushStyleColor(ImGuiCol_Text, frame->GetTheme().GetColor(ColorName::DarkText)); }
+		if (entity == selectedEntity) { ImGui::PushStyleColor(ImGuiCol_Text, frame->GetTheme()->GetColor(ColorName::DarkText)); }
 		bool buttonClicked = ImGui::Button("x", { lineHeight, lineHeight });
 		if (entity == selectedEntity) { ImGui::PopStyleColor(); }
 

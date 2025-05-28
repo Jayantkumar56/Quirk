@@ -12,7 +12,7 @@
 
 namespace Quirk {
 
-	void SceneSerializer::Serialize(const Ref<Scene>& scene, const std::filesystem::path& filePath) {
+	void SceneSerializer::Serialize(View<Scene> scene, const std::filesystem::path& filePath) {
 		YAML::Emitter out;
 
 		out << YAML::BeginMap;
@@ -21,7 +21,7 @@ namespace Quirk {
 		out << YAML::Key << "Entities" << YAML::BeginSeq;
 
 		for (auto entity : scene->m_Registry.view<entt::entity>()) {
-			Entity entityToSerialize = { entity, scene.get() };
+			Entity entityToSerialize = { entity, scene.Get() };
 			if (!entityToSerialize)
 				break;
 
@@ -40,7 +40,7 @@ namespace Quirk {
 		outFile << out.c_str();
 	}
 
-	bool SceneSerializer::Deserialize(const Ref<Scene>& scene, const std::filesystem::path& filePath) {
+	bool SceneSerializer::Deserialize(View<Scene> scene, const std::filesystem::path& filePath) {
 		std::ifstream fileStream(filePath);
 		std::stringstream strStream;
 

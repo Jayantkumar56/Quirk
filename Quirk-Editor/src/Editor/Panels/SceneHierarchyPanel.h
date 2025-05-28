@@ -2,16 +2,19 @@
 
 #pragma once
 
-#include "Quirk.h"
+#include "Editor/EditorFrame.h"
 #include "Base/SelectionContext.h"
 
+#include "Core/Frame/Panel.h"
+#include "Core/Scene/Entity.h"
 
 namespace QuirkEditor {
 
 	class SceneHierarchyPanel : public Quirk::Panel {
 	public:
-		SceneHierarchyPanel() : Quirk::Panel("Scene Hierarchy") { }
-		~SceneHierarchyPanel() = default;
+		SceneHierarchyPanel(EditorFrame* frame) : 
+                Panel(frame, "Scene Hierarchy")
+        {}
 
 		virtual void SetUiProperties() override;
 		virtual void OnUiUpdate()    override;

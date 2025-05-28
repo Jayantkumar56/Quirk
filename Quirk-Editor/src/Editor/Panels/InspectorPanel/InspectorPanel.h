@@ -3,6 +3,7 @@
 #pragma once
 
 #include "Base/SelectionContext.h"
+#include "Editor/EditorFrame.h"
 
 #include "Core/Frame/Panel.h"
 #include "Core/Scene/Entity.h"
@@ -28,8 +29,8 @@ namespace QuirkEditor {
 
     class InspectorPanel : public Quirk::Panel {
     public:
-        InspectorPanel() :
-                Quirk::Panel( "Inspector"     )
+        InspectorPanel(EditorFrame* frame) :
+                Panel( frame, "Inspector" )
         {}
 
         ~InspectorPanel() = default;

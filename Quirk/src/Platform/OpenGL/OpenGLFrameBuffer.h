@@ -27,7 +27,7 @@ namespace Quirk {
 			return m_ColorAttachmentsSpec;
 		}
 
-		virtual void Resize(uint16_t width, uint16_t height) override;
+		virtual void Resize(uint32_t width, uint32_t height) override;
 		virtual void GetColorPixelData(size_t index, int x, int y, int width, int height, void* outputData, int size) override;
 
 	private:

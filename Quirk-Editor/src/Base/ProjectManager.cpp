@@ -38,7 +38,7 @@ namespace QuirkEditor {
         }
     }
 
-    Quirk::Ref<Quirk::Project> ProjectManager::CreateInDirectory(std::string&& title, const std::filesystem::path& projDirectory) {
+    bool ProjectManager::CreateInDirectory(std::string&& title, const std::filesystem::path& projDirectory) {
         ProjectMetadata projMeta{
             .Title                { std::move(title)               },
             .ProjectRootDirectory { projDirectory / projMeta.Title }
@@ -48,9 +48,9 @@ namespace QuirkEditor {
 
         CreateProjectDirectoryStructure(projMeta.ProjectRootDirectory, projConfig);
 
-        m_ActiveProject = Quirk::CreateRef<Quirk::Project>(std::move(projConfig));
+        m_ActiveProject = Quirk::CreateScope<Quirk::Project>(std::move(projConfig));
         if (m_ActiveProject == nullptr) {
-            return nullptr;
+            return false;
         }
 
         // saving the .qkproj file
@@ -80,17 +80,17 @@ namespace QuirkEditor {
 
         AddRecentProject(std::move(projMeta));
 
-        return m_ActiveProject;
+        return true;
     }
 
-    Quirk::Ref<Quirk::Project> ProjectManager::LoadProject(const std::filesystem::path& projFilePath) {
+    bool ProjectManager::LoadProject(const std::filesystem::path& projFilePath) {
         if (!std::filesystem::is_regular_file(projFilePath)) {
             QK_WARN("Project file is not valid: {0}", projFilePath.string());
-            return nullptr;
+            return false;
         }
 
         try {
-            m_ActiveProject = Quirk::Serialization::Deserialize<Quirk::Ref<Quirk::Project>>(projFilePath);
+            m_ActiveProject = Quirk::Serialization::Deserialize<Quirk::Scope<Quirk::Project>>(projFilePath);
             m_ActiveProject->Init(projFilePath.parent_path());
 
             std::string title = m_ActiveProject->GetTitle();
@@ -100,19 +100,20 @@ namespace QuirkEditor {
                 .ProjectRootDirectory { m_ActiveProject->GetDirectory() }
             });
 
-            return m_ActiveProject;
+            return true;
         }
         catch (const std::exception& e) {
             QK_ERROR("Deserialization of Project with path {0} failed with error: {1}", projFilePath.string(), e.what());
             m_ActiveProject = nullptr;
-            return nullptr;
+            return false;
         }
         catch (...) {
             QK_ERROR("Deserialization of Active Project failed with some unknown error.");
+            return false;
         }
     }
 
-    Quirk::Ref<Quirk::Project> ProjectManager::LoadProject(const std::string& title, const std::filesystem::path& projRootDir) {
+    bool ProjectManager::LoadProject(const std::string& title, const std::filesystem::path& projRootDir) {
         std::string projFile;
 
         // setting projfile name

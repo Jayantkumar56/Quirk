@@ -50,7 +50,7 @@ namespace Quirk {
 		CreateAttachments();
 	}
 
-    void OpenGLFrameBuffer::Resize(uint16_t width, uint16_t height) {
+    void OpenGLFrameBuffer::Resize(uint32_t width, uint32_t height) {
 		m_FrameBufferSpec.Width  = width;
 		m_FrameBufferSpec.Height = height;
 

@@ -45,7 +45,7 @@ namespace Quirk {
 	};
 
 	struct FrameBufferSpecification {
-		uint16_t Width = 0, Height = 0;
+		uint32_t Width = 0, Height = 0;
 	};
 
 	class FrameBuffer {
@@ -79,7 +79,7 @@ namespace Quirk {
 		virtual inline FrameBufferAttachmentSpecification GetDepthAttachmentSpecification() const = 0;
 		virtual inline const std::vector<FrameBufferAttachmentSpecification>& GetColorAttachmentSpecification() const = 0;
 
-		virtual void Resize(uint16_t width, uint16_t height) = 0;
+		virtual void Resize(uint32_t width, uint32_t height) = 0;
 		virtual void GetColorPixelData(size_t index, int x, int y, int width, int height, void* outputData, int size) = 0;
 	};
 

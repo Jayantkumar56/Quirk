@@ -116,9 +116,7 @@ namespace QuirkEditor {
 
 						// Recent project button
 						if (ImageTextButton(buttonParameters)) {
-                            auto project = m_ProjectManager.LoadProject(projectMeta);
-
-                            if (project != nullptr) {
+                            if (m_ProjectManager.LoadProject(projectMeta)) {
                                 auto& app = Quirk::Application::GetAs<QuirkEditorApp>();
 							    app.LaunchEditor();
 
@@ -163,9 +161,9 @@ namespace QuirkEditor {
 
 				// All of the contents
 				{
-					buttonParameters.label = "Open a project";
+					buttonParameters.label       = "Open a project";
 					buttonParameters.description = "Navigate and open an existing project from local disk.";
-					buttonParameters.imgId = (ImTextureID)(intptr_t)m_OpenProjectIcon->GetRendererId();
+					buttonParameters.imgId       = (ImTextureID)(intptr_t)m_OpenProjectIcon->GetRendererId();
 
 					// Open project button
 					if (ImageTextButton(buttonParameters)) {
@@ -173,18 +171,19 @@ namespace QuirkEditor {
                             {L"Proj File",		L"*.qkproj"}
                         };
 
-                        Quirk::FileDialogSpecification fileDialogSpec;
-						fileDialogSpec.Title         = L"Open Project";
-						fileDialogSpec.FileNameLabel = L"Project Folder";
-						fileDialogSpec.ParentWindow  = &GetWindow();
-                        fileDialogSpec.Filters       = filters;
-                        fileDialogSpec.NoOfFilters   = sizeof(filters) / sizeof(Quirk::FileFilter);
+                        Quirk::FileDialogSpecification fileDialogSpec{
+                            .Title           { L"Open Project"                             },
+                            .DefaultPath     { nullptr                                     },
+                            .FileNameLabel   { L"Project Folder"                           },
+                            .DefaultFileName { nullptr                                     },
+                            .ParentWindow    { &GetWindow()                                },
+                            .Filters         { filters                                     },
+                            .NoOfFilters     { sizeof(filters) / sizeof(Quirk::FileFilter) }
+                        };
 
 						std::filesystem::path projfilePath;
 						if (Quirk::FileDialog::OpenFile(fileDialogSpec, projfilePath)) {
-                            const auto& proj = m_ProjectManager.LoadProject(projfilePath);
-
-							if (proj != nullptr) {
+							if (m_ProjectManager.LoadProject(projfilePath)) {
                                 auto& app = Quirk::Application::GetAs<QuirkEditorApp>();
 								app.LaunchEditor();
 
@@ -197,9 +196,9 @@ namespace QuirkEditor {
 						}
 					}
 
-					buttonParameters.label = "Create a new project";
+					buttonParameters.label       = "Create a new project";
 					buttonParameters.description = "Select name and settings to get started.";
-					buttonParameters.imgId = (ImTextureID)(intptr_t)m_CreateProjectIcon->GetRendererId();
+					buttonParameters.imgId       = (ImTextureID)(intptr_t)m_CreateProjectIcon->GetRendererId();
 
 					// Create project button
 					if (ImageTextButton(buttonParameters)) {
@@ -287,12 +286,12 @@ namespace QuirkEditor {
 			m_TempProject.ProjectRootDirectory = m_TempProjPath;
 
 			if (std::filesystem::is_directory(m_TempProject.ProjectRootDirectory.parent_path())) {
-                const auto& proj = m_ProjectManager.CreateInDirectory(
-                    std::move(m_TempProject.Title), 
+                bool projectLoaded = m_ProjectManager.CreateInDirectory(
+                    std::move(m_TempProject.Title),
                     std::move(m_TempProject.ProjectRootDirectory)
                 );
 
-				if (proj != nullptr) {
+				if (projectLoaded) {
                     auto& app = Quirk::Application::GetAs<QuirkEditorApp>();
 					app.LaunchEditor();
 

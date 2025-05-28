@@ -31,11 +31,7 @@ namespace Quirk {
             QK_WARN("Trying to remove {0} frame which doesn't exist in the manager!", frameName);
         }
 
-        inline FrameBase*   GetCurrentFrame()    { return m_CurrentFrame;            }
         inline ImFontAtlas* GetFontAtlas() const { return m_FontManager.m_FontAtlas; }
-
-        template<FrameType T>
-        inline T* GetCurrentFrameAs() { return static_cast<T*>(m_CurrentFrame); }
 
         void UpdateFrames() {
             // if there are no frames in the application we can terminate the Application
@@ -45,8 +41,6 @@ namespace Quirk {
             }
 
             for (size_t i = 0; i < m_Frames.size(); ++i) {
-                m_CurrentFrame = m_Frames[i].get();
-
                 // setting graphical and imgui context for currrent frame
                 m_Frames[i]->MakeContextCurrent();
 
@@ -72,7 +66,6 @@ namespace Quirk {
 
         bool HandleEvent(Event& event) {
             for (auto& frame : m_Frames) {
-                m_CurrentFrame = frame.get();
                 frame->OnEvent(event);
             }
 
@@ -80,8 +73,7 @@ namespace Quirk {
         }
 
     private:
-        FrameBase* m_CurrentFrame;
-        std::vector<Ref<FrameBase>> m_Frames;
+        std::vector<Scope<FrameBase>> m_Frames;
         FontManager m_FontManager;
     };
 

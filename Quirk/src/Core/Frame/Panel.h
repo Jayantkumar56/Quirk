@@ -5,6 +5,7 @@
 #include "FrameBase.h"
 #include "Window.h"
 #include "Core/Input/Events.h"
+#include "Core/Utility/View.h"
 
 #include "imgui.h"
 
@@ -14,9 +15,10 @@ namespace Quirk {
         friend class PanelManager;
 
 	public:
-		Panel(std::string title, ImGuiWindowFlags flags = 0) noexcept : 
+		Panel(FrameBase* parentframe, std::string title, ImGuiWindowFlags flags = 0) noexcept : 
                 m_Title       ( std::move(title) ),
-                m_WindowFlags ( flags            ) 
+                m_WindowFlags ( flags            ),
+                m_ParentFrame ( parentframe      )
         {}
 
 		virtual ~Panel() noexcept = default;
@@ -42,7 +44,7 @@ namespace Quirk {
 		inline void       SetWindowFlags(ImGuiWindowFlags flags) noexcept { m_WindowFlags = flags; }
 
         template<FrameType T>
-		inline T* GetParentFrameAs() noexcept { return static_cast<T*>(m_ParentFrame); }
+        inline View<T> GetParentFrameAs() noexcept { return m_ParentFrame; }
 
 	private:
 		inline void UpdateUi() {
@@ -64,7 +66,7 @@ namespace Quirk {
 		std::string m_Title;
 
 		// to communicate with the parent Frame obj which manages this panel
-		FrameBase* m_ParentFrame = nullptr;
+        View<FrameBase> m_ParentFrame;
 	};
 
 	template <typename T>
@@ -73,9 +75,8 @@ namespace Quirk {
     class PanelManager {
     public:
         template<PanelType P, typename ...Args>
-        void AddPanel(FrameBase* frame, Args&& ... args) {
-            auto& panel = m_Panels.emplace_back(new P(std::forward<Args>(args)...));
-            panel->m_ParentFrame = frame;
+        void AddPanel(Args&& ... args) {
+            m_Panels.emplace_back(new P(std::forward<Args>(args)...));
         }
 
     protected:

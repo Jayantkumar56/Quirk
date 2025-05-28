@@ -1,12 +1,11 @@
 
 
 #include "Qkpch.h"
+
 #include "Core/Scene/Scene.h"
 #include "Core/Scene/Entity.h"
 #include "Core/Scene/ScriptableEntity.h"
 #include "Core/Utility/Time.h"
-#include "Core/Renderer/Renderer.h"
-#include "Core/Renderer/Renderer2D.h"
 #include "Core/Reflection/Registrations/ComponentList.h"
 
 namespace Quirk {
@@ -70,25 +69,6 @@ namespace Quirk {
 		});
 	}
 
-	void Scene::RenderSceneEditor(const glm::mat4& projectionViewMat, glm::vec3 cameraPos) {
-		RenderScene(projectionViewMat, cameraPos);
-	}
-
-	void Scene::RenderSceneRuntime() {
-		Entity primaryCamera = GetPrimaryCameraEntity();
-
-		if (!primaryCamera.IsValidEntity()) {
-			QK_CORE_WARN("No primary camera exist in the scene");
-			return;
-		}
-
-		const auto& projection	     = primaryCamera.GetComponent<CameraComponent>().Camera.GetProjection();
-		const auto& cameraTransform  = primaryCamera.GetComponent<TransformComponent>();
-		const auto projectionViewMat = projection * glm::inverse(cameraTransform.GetTransform());
-
-		RenderScene(projectionViewMat, cameraTransform.Translation);
-	}
-
 	void Scene::OnViewportResize(uint32_t width, uint32_t height) {
 		if (m_ViewportWidth == width && m_ViewportHeight == height)
 			return;
@@ -115,36 +95,6 @@ namespace Quirk {
 		}
 
 		return {};
-	}
-
-	void Scene::RenderScene(const glm::mat4& projectionViewMat, glm::vec3 cameraPos) {
-		// rendering the 2D quads
-		Renderer2D::BeginScene(projectionViewMat);
-
-		auto renderables = m_Registry.view<TransformComponent, SpriteRendererComponent>();
-		for (auto entity : renderables) {
-			Renderer2D::SubmitQuadEntity({ entity, this });
-		}
-
-		Renderer2D::EndScene();
-
-		// rendering the 3D meshes
-		Renderer::BeginScene(projectionViewMat, cameraPos);
-		{
-			std::vector<Entity> lightSourceEntities;
-
-			auto lightSources = m_Registry.view<LightComponent>();
-			for (auto entity : lightSources) {
-				lightSourceEntities.emplace_back(entity, this);
-				Renderer::SubmitLightSource({ entity, this });
-			}
-
-			auto renderables = m_Registry.view<TransformComponent, MeshRendererComponent>();
-			for (auto entity : renderables) {
-				Renderer::Submit({ entity, this }, lightSourceEntities);
-			}
-		}
-		Renderer::EndScene();
 	}
 
 	Entity Scene::FindEntityByName(std::string_view name) {

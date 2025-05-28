@@ -23,7 +23,7 @@ namespace QuirkEditor {
 			}
 		}
 
-		ImVec4 GetColor(ColorName color);
+		ImVec4 GetColor(ColorName color) const noexcept;
 
 	private:
 		void SetDarkTheme();

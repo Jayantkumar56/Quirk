@@ -6,7 +6,7 @@
 
 namespace QuirkEditor {
 
-	ImVec4 EditorTheme::GetColor(ColorName color) {
+	ImVec4 EditorTheme::GetColor(ColorName color) const noexcept {
 		switch (color) {
 			case ColorName::PopupBorder:			return ImVec4(0.259f, 0.42f, 0.412f, 1.0f);
 			case ColorName::DarkText:				return ImVec4{ 0.0f, 0.0f, 0.0f, 1.0f };

@@ -40,11 +40,11 @@ namespace QuirkEditor {
 
         inline const auto& GetRecentProjectsList() const noexcept { return m_RecentProjectsList; }
 
-        Quirk::Ref<Quirk::Project> LoadProject       ( const std::filesystem::path& projFilePath                            );
-        Quirk::Ref<Quirk::Project> LoadProject       ( const std::string& title, const std::filesystem::path& projRootDir   );
-        Quirk::Ref<Quirk::Project> CreateInDirectory ( std::string&& title,      const std::filesystem::path& projDirectory );
+        bool LoadProject       ( const std::filesystem::path& projFilePath                            );
+        bool LoadProject       ( const std::string& title, const std::filesystem::path& projRootDir   );
+        bool CreateInDirectory ( std::string&& title,      const std::filesystem::path& projDirectory );
 
-        inline Quirk::Ref<Quirk::Project> LoadProject(const ProjectMetadata& projMeta) {
+        inline bool LoadProject(const ProjectMetadata& projMeta) {
             return LoadProject(projMeta.Title, projMeta.ProjectRootDirectory);
         }
 
@@ -52,8 +52,7 @@ namespace QuirkEditor {
 
         // === Begin: API related to active project ===
 
-        inline void UnloadActive() noexcept { m_ActiveProject = nullptr; }
-        inline auto GetActive()    noexcept { return m_ActiveProject;    }
+        inline Quirk::Scope<Quirk::Project> GetActive() noexcept { return std::move(m_ActiveProject); }
 
         // === End:   API related to active project ===
 
@@ -63,7 +62,7 @@ namespace QuirkEditor {
         void AddRecentProject(ProjectMetadata projMeta);
 
     private:
-        Quirk::Ref<Quirk::Project>   m_ActiveProject;
+        Quirk::Scope<Quirk::Project>   m_ActiveProject;
         std::vector<ProjectMetadata> m_RecentProjectsList;
     };
 

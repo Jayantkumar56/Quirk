@@ -12,56 +12,26 @@
 namespace Quirk {
 
     // ============================================================================================================================
-    //                                               REFLECTION SYSTEM USAGE
+    //                                                        NOTE
     // ============================================================================================================================
     //
-    // 1. Registering a reflected class:
-    //
-    // REGISTER_REFLECTION(MyType, "TypeName",
-    //     (PropertyName, Getter, Setter, AccessMode),
-    //     ...
-    // )
-    //
-    // - MyType:           The type to reflect.
-    // - "TypeName":       Title/Display name.
-    // - PropertyName:     Unique identifier for the property struct.
-    // - Getter/Setter:    Member function pointers (no & needed).
-    // - PropertyFlags_:   Use PropertyFlags::Editable, PropertyFlags::Serializable, etc.
-    //
-    // Example:
-    //
-    // REGISTER_REFLECTION(HealthBar, "HealthBar", (CONSTRUCTOR),
-    //     (IsHealthy,    GetIsHealthy,    SetIsHealthy,    Quirk::PropertyFlag::Editable | Quirk::PropertyFlag::Serializable),
-    //     (HealthStatus, GetHealthStatus, SetHealthStatus, Quirk::PropertyFlag::Editable | Quirk::PropertyFlag::Serializable)
-    // )
-    //
+    // - serialization system assumes that the return type of a registered getter reflects the actual type 
+    //   of the object being serialized and deserialized.This is critical, as the deserializer uses the return type
+    //   to infer what type of object to construct and populate.
     // 
-    // 2. In case of ReadOnly property put a DUMMY placeholder in set
-    // 
-    // Example:
-    // 
-    // REGISTER_REFLECTION(HealthBar, "HealthBar", (CONSTRUCTOR),
-    //     (IsHealthy,    GetIsHealthy,    DUMMY,           Quirk::PropertyFlag::Serializable                                ),
-    //     (HealthStatus, GetHealthStatus, SetHealthStatus, Quirk::PropertyFlag::Editable | Quirk::PropertyFlag::Serializable)
-    // )
+    // - since a type with View<T> / ConstView<T> doesn't make sense to be stored in an object (since non owning)
+    //   thus the reflection also don't allow to register getters with return type as View<T> / ConstView<T>.
     //
-    //
-    // ----------------------------------------------------------------------------------------------------------------------------
-    // Notes:
-    // - Avoid naming a property "Name", as it may collide with internal identifiers.
-    // - All macros resolve to valid  templates, IntelliSense may struggle, and not work in generic ForEach.
-    // - Only getter is required for ReadOnly. Setter required for ReadWrite.
-    // - Use only 4-element tuples for REGISTER_REFLECTION.
     // ============================================================================================================================
     // ============================================================================================================================
 
 
     enum class PropertyFlag : uint32_t {
         None                = 0,
-        Serializable        = 1 << 0,
-        Editable            = 1 << 1,
-        DirectMemberAccess  = 1 << 2,
-        Setter              = 1 << 3
+        Serializable        = BIT(0),
+        Editable            = BIT(1),
+        DirectMemberAccess  = BIT(2),
+        Setter              = BIT(3)
     };
 
 
@@ -137,6 +107,11 @@ namespace Quirk {
             &ReflectingType::Getter_,                                                                                       \
             ::Quirk::HasPropertyFlag(static_cast<uint32_t>(PropertyFlags_), PROPFLAG_DIRECT_MEMBER)                         \
         >;                                                                                                                  \
+                                                                                                                            \
+        static_assert(                                                                                                      \
+            !IsView_V<Type>,                                                                                                \
+            "Cannot register a getter that returns a View<T>. Views are non-owning and cannot be deserialized."             \
+        );                                                                                                                  \
                                                                                                                             \
         static constexpr std::string_view PropertyName  = #PropName_;                                                       \
         static constexpr uint32_t         PropFlags     = static_cast<uint32_t>(PropertyFlags_);                            \
