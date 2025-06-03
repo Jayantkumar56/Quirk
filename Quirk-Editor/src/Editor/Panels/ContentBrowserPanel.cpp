@@ -24,7 +24,7 @@ namespace QuirkEditor {
 	}
 
 	void ContentBrowserPanel::OnUiUpdate() {
-        auto resourceManager = GetParentFrameAs<EditorFrame>()->GetResourceManager();
+        auto resourceManager = m_EditorFrame->GetResourceManager();
 		bool updatedCurrentDirectory = false;
 
 		// menubar contains all the navigation buttons and current directory
@@ -87,7 +87,7 @@ namespace QuirkEditor {
 	}
 
 	void ContentBrowserPanel::DrawMenuBar() {
-        auto resourceManager = GetParentFrameAs<EditorFrame>()->GetResourceManager();
+        auto resourceManager = m_EditorFrame->GetResourceManager();
 
 		ImVec2 menuBarSize    = { ImGui::GetWindowWidth(), 30.0f };
 		ImVec2 menuBarPadding = { 20.0f, 5.0f };

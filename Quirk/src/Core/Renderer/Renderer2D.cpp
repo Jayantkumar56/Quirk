@@ -70,7 +70,7 @@ namespace Quirk {
                 *whiteTextureData = 0xffffffff;
 
                 Buffer whiteTextureDataBuffer((void*)whiteTextureData, sizeof(uint32_t));
-                s_Data.WhiteTexture = Texture2D::Create(whiteTextureDataBuffer, TextureSpecification{});
+                s_Data.WhiteTexture = Texture2D::Create(std::move(whiteTextureDataBuffer), TextureSpecification{});
             }
         }
 

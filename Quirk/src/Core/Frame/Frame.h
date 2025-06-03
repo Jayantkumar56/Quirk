@@ -2,83 +2,107 @@
 
 #pragma once
 
-#include "TitleBar.h"
-#include "Panel.h"
 #include "FrameBase.h"
-#include "FontManager.h"
-
 #include "FrameTraits.h"
 
 namespace Quirk {
 
-    template<PanelPolicy PPanel, TitleBarPolicy PTitleBar>
+    template<FrameFeature ...Features>
 	class Frame : 
-            public FrameBase, 
-            public FramePolicyToType< PPanel    >::type,
-            public FramePolicyToType< PTitleBar >::type
+            public FrameBase,
+            public InheritFromTypeList<InheritanceVisibility::Public, SortedFramePolicies_T<Features...>>
     {
-        using PanelManagerType    = FramePolicyToType< PPanel    >::type;
-        using TitleBarManagerType = FramePolicyToType< PTitleBar >::type;
+        using PolicyList = SortedFramePolicies_T<Features...>;
+
+        // all the policies are contained in a TypeList<PolicyType...>
+        using Policies = InheritFromTypeList<InheritanceVisibility::Public, PolicyList>;
+
+        static constexpr bool HaveWindowPolicy   = IsEnumValuePresent_V<FrameFeature::Window,       Features...>;
+        static constexpr bool HaveImguiPolicy    = IsEnumValuePresent_V<FrameFeature::ImGuiContext, Features...>;
+        static constexpr bool HavePanelPolicy    = IsEnumValuePresent_V<FrameFeature::Panels,       Features...>;
+        static constexpr bool HaveTitleBarPolicy = IsEnumValuePresent_V<FrameFeature::TitleBar,     Features...>;
 
 	public:
-		Frame(const WindowSpecification& spec) : FrameBase(spec) {
-			m_ImguiUI.Init(GetWindow(), GetGraphicalContext());
-		}
+        Frame(const WindowSpecification& spec) :
+                FrameBase(),
+                Policies(
+                    ConstructFromTypeList<
+                        Policies, 
+                        FramePolicyTupleGetterAdapter<Frame>::Getter,
+                        PolicyList
+                    >(*this, spec)
+                )
+        {}
 
-		inline void MakeContextCurrent() noexcept override {
-            GetGraphicalContext()->MakeContextCurrent();
-			m_ImguiUI.MakeImguiUIContextCurrent();
+		inline void MakeContextCurrent() noexcept final override {
+            Policies::GetGraphicalContext()->MakeContextCurrent();
+
+            if (HaveImguiPolicy) {
+			    Policies::GetImguiContext().MakeImguiUIContextCurrent();
+            }
 		}
 
     private:
-        virtual void UpdateFrame() override {
-            GetWindow().OnUpdate();
-            m_ImguiUI.UpdateViewPorts();
-            OnUpdate();
+        virtual void UpdateFrame() final override {
+            Policies::GetWindow().OnUpdate();
 
-            if constexpr (PPanel == PanelPolicy::Enabled) {
-                PanelManagerType::UpdatePanels();
+            if (HaveImguiPolicy) {
+                Policies::GetImguiContext().UpdateViewPorts();
+            }
+
+            if constexpr (HavePanelPolicy) {
+                Policies::UpdatePanels();
+            }
+
+            // updating the ui
+            {
+                RenderCommands::Clear();
+
+                UpdateFrameUI();
+
+                Policies::SwapBuffer();
             }
         }
 
-        virtual void UpdateFrameUI() override {
+        void UpdateFrameUI() {
             // updating imgui ui of the current frame and it's panels
-            m_ImguiUI.Begin();
+            if (HaveImguiPolicy) {
+                Policies::GetImguiContext().Begin();
+            }
 
             // resetting if the cursor is hovering over titlebar
             // thus it should be set by the titlebar in every frame 
             // titlebar should only set true in the requred condition
-            GetWindow().SetCanMoveWithCursor(false);
+            Policies::GetWindow().SetCanMoveWithCursor(false);
 
             OnImguiUiUpdate();
 
-            if constexpr (PTitleBar == TitleBarPolicy::Enabled) {
-                TitleBarManagerType::UpdateTitleBarUI();
+            if constexpr (HaveTitleBarPolicy) {
+                Policies::UpdateTitleBarUI();
             }
 
-            if constexpr (PPanel == PanelPolicy::Enabled) {
-                PanelManagerType::UpdatePanelsUI();
+            if constexpr (HavePanelPolicy) {
+                Policies::UpdatePanelsUI();
             }
 
-            m_ImguiUI.End(GetGraphicalContext());
+            if (HaveImguiPolicy) {
+                Policies::GetImguiContext().End(Policies::GetGraphicalContext());
+            }
         }
 
-        virtual bool HandleEvent(Event& event) override {
+        virtual bool HandleEvent(Event& event) final override {
             OnEvent(event);
 
-            if constexpr (PTitleBar == TitleBarPolicy::Enabled) {
-                TitleBarManagerType::TitleBarHandleEvents(event);
+            if constexpr (HaveTitleBarPolicy) {
+                Policies::TitleBarHandleEvents(event);
             }
 
-            if constexpr (PPanel == PanelPolicy::Enabled) {
-                PanelManagerType::HandlePanelsEvent(event);
+            if constexpr (HavePanelPolicy) {
+                Policies::HandlePanelsEvent(event);
             }
 
             return false;
         }
-
-	private:
-		ImguiUI m_ImguiUI;
 	};
 
 }

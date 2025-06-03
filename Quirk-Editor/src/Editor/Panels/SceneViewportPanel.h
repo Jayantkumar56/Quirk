@@ -7,13 +7,13 @@
 #include "Core/Frame/Panel.h"
 #include "Core/Scene/Scene.h"
 #include "Core/Renderer/RendererPrimitives/FrameBuffer.h"
-#include "Core/Scene/EditorSceneRenderer.h"
+#include "Core/Renderer/EditorSceneRenderer.h"
 
 namespace QuirkEditor {
 
     class EditorFrame;
 
-	class SceneViewportPanel : public Quirk::Panel {
+	class SceneViewportPanel final : public Quirk::Panel {
 	public:
 		SceneViewportPanel(EditorFrame* frame);
 
@@ -39,6 +39,8 @@ namespace QuirkEditor {
 
         Quirk::Ref<Quirk::FrameBuffer> m_Frame;
         Quirk::EditorSceneRenderer     m_SceneRenderer;
+
+        Quirk::View<EditorFrame> m_EditorFrame;
 	};
 
 }

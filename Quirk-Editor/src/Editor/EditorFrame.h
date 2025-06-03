@@ -19,8 +19,10 @@ namespace QuirkEditor {
 
 	class EditorFrame : 
         public Quirk::Frame<
-            Quirk::PanelPolicy::Enabled,
-            Quirk::TitleBarPolicy::Enabled
+            Quirk::FrameFeature::Window,
+            Quirk::FrameFeature::ImGuiContext,
+            Quirk::FrameFeature::Panels,
+            Quirk::FrameFeature::TitleBar
         >
     {
 	public:

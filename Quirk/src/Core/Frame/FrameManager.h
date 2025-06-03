@@ -5,7 +5,6 @@
 #include "Core/Core.h"
 #include "FrameBase.h"
 #include "FontManager.h"
-#include "Core/Renderer/RenderCommands.h"
 
 #include <vector>
 #include <string_view>
@@ -33,7 +32,7 @@ namespace Quirk {
 
         inline ImFontAtlas* GetFontAtlas() const { return m_FontManager.m_FontAtlas; }
 
-        void UpdateFrames() {
+        inline void UpdateFrames() {
             // if there are no frames in the application we can terminate the Application
             if (!m_Frames.size()) {
                 WindowCloseEvent e;
@@ -52,19 +51,15 @@ namespace Quirk {
                     continue;
                 }
 
-                // clearing the backbuffer
-                RenderCommands::Clear();
 
                 m_Frames[i]->UpdateFrame();
-                m_Frames[i]->UpdateFrameUI();
-                m_Frames[i]->SwapBuffer();
             }
         }
 
         // right now HandleEvent called only when window is updated so no need to set context here
         // as window is updated only after setting the proper current contexts
 
-        bool HandleEvent(Event& event) {
+        inline bool HandleEvent(Event& event) {
             for (auto& frame : m_Frames) {
                 frame->OnEvent(event);
             }
@@ -73,8 +68,8 @@ namespace Quirk {
         }
 
     private:
-        std::vector<Scope<FrameBase>> m_Frames;
         FontManager m_FontManager;
+        std::vector<Scope<FrameBase>> m_Frames;
     };
 
 }

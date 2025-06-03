@@ -6,6 +6,7 @@
 #include "Core/Input/Events.h"
 #include "Core/Input/MouseEvents.h"
 #include "Core/Application/Application.h"
+#include "Core/Frame/GraphicalContext.h"
 
 #include "Core/Renderer/Renderer.h"
 #include "Core/Renderer/Renderer2D.h"

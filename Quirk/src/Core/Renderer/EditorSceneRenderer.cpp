@@ -6,9 +6,14 @@
 #include "Core/Renderer/Renderer2D.h"
 #include "Core/Renderer/Renderer.h"
 
+
 namespace Quirk {
 
     void Quirk::EditorSceneRenderer::Render(const glm::mat4& projectionViewMat, glm::vec3 cameraPos) {
+        if (!m_FrameBuffer) {
+            return;
+        }
+
         auto& entityRegistry = m_Scene->GetRegistry();
 
         m_FrameBuffer->Bind();

@@ -71,7 +71,7 @@ namespace Quirk {
             spec.Height,
             dataFormat, 
             GL_UNSIGNED_BYTE, 
-            (void*)dataBuffer.Data
+            (void*)dataBuffer.Get()
         );
     }
 

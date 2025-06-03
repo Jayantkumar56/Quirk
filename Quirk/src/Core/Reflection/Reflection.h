@@ -78,15 +78,15 @@ namespace Quirk {
 
     // Default: not complex type
     template<typename>
-    struct IsComplexReflectable : std::false_type {};
+    struct IsComplexReflectable : FalseType {};
 
     // Specialized: if Reflect<T>::ReflectingType exists and matches T, then it's a complex (reflected) type
     template<typename T>
     requires std::is_same_v<T, typename Reflect<T>::ReflectingType>
-    struct IsComplexReflectable<T> : std::true_type {};
+    struct IsComplexReflectable<T> : TrueType {};
 
     template<typename T>
-    constexpr bool HasReflection_V = IsComplexReflectable<T>::value;
+    constexpr bool HasReflection_V = IsComplexReflectable<T>::Value;
 
     template<class T>
     concept ComplexReflectable = HasReflection_V<T>;
@@ -218,7 +218,7 @@ namespace Quirk {
                                                                                                                             \
         template<typename Property, ::Quirk::PropertyFlag Flag>                                                             \
         struct PropertyFlagCondition {                                                                                      \
-            static constexpr bool value = ::Quirk::HasPropertyFlag(Property::PropFlags, Flag);                              \
+            static constexpr bool Value = ::Quirk::HasPropertyFlag(Property::PropFlags, Flag);                              \
         };                                                                                                                  \
                                                                                                                             \
         template<::Quirk::PropertyFlag FilterFlags>                                                                         \

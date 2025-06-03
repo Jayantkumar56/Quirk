@@ -13,9 +13,10 @@ namespace QuirkEditor {
 
 	class LauncherFrame : 
         public Quirk::Frame <
-            Quirk::PanelPolicy::Disabled, 
-            Quirk::TitleBarPolicy::Enabled
-        > 
+            Quirk::FrameFeature::Window, 
+            Quirk::FrameFeature::ImGuiContext,
+            Quirk::FrameFeature::TitleBar
+        >
     {
 	private:
 		// two different states for two different ui

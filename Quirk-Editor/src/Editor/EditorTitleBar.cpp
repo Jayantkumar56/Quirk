@@ -20,7 +20,7 @@ namespace QuirkEditor {
 	}
 
 	void EditorTitleBar::OnImguiUiUpdate() {
-        EditorFrame* frame = GetParentFrameAs<EditorFrame>();
+        EditorFrame* frame = m_EditorFrame.Get();
 
         auto scene = frame->GetActiveSceneView();
 		ImGui::PushStyleColor(ImGuiCol_Border, frame->GetTheme()->GetColor(ColorName::PopupBorder));
@@ -42,7 +42,7 @@ namespace QuirkEditor {
 				fileDialogSpec.FileNameLabel = L"Scene Name";
 				fileDialogSpec.Filters		 = filters;
 				fileDialogSpec.NoOfFilters	 = sizeof(filters) / sizeof(Quirk::FileFilter);
-				fileDialogSpec.ParentWindow  = &GetWindow();
+				fileDialogSpec.ParentWindow  = GetWindow().Get();
 
 				std::filesystem::path filePath;
 				if (Quirk::FileDialog::OpenFile(fileDialogSpec, filePath)) {
@@ -62,7 +62,7 @@ namespace QuirkEditor {
 				fileDialogSpec.FileNameLabel = L"Scene Name";
 				fileDialogSpec.Filters		 = filters;
 				fileDialogSpec.NoOfFilters	 = sizeof(filters) / sizeof(Quirk::FileFilter);
-				fileDialogSpec.ParentWindow  = &GetWindow();
+				fileDialogSpec.ParentWindow  = GetWindow().Get();
 
 				std::filesystem::path filePath;
 				if (Quirk::FileDialog::SaveFile(fileDialogSpec, filePath)) {

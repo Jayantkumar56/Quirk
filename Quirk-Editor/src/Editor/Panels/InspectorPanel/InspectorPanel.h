@@ -27,19 +27,20 @@ namespace QuirkEditor {
         //   This function will be called to draw the UI for the given type.
     };
 
-    class InspectorPanel : public Quirk::Panel {
+    class InspectorPanel final : public Quirk::Panel {
     public:
         InspectorPanel(EditorFrame* frame) :
-                Panel( frame, "Inspector" )
+                Panel         ( "Inspector" ),
+                m_EditorFrame ( frame       )
         {}
-
-        ~InspectorPanel() = default;
 
         virtual void SetUiProperties() override;
         virtual void OnUiUpdate()      override;
 
     private:
         UniqueSelectionHandle<Quirk::Entity> m_SelectionHandle;
+
+        Quirk::View<EditorFrame> m_EditorFrame;
     };
 
 }

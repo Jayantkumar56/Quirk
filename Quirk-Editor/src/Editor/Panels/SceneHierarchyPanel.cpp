@@ -19,7 +19,7 @@ namespace QuirkEditor {
 	}
 
 	void SceneHierarchyPanel::OnUiUpdate(){
-        auto frame = GetParentFrameAs<EditorFrame>();
+        auto frame = m_EditorFrame;
         auto scene = frame->GetActiveSceneView();
 
 		ImGui::PushStyleColor(ImGuiCol_Border, frame->GetTheme()->GetColor(ColorName::PopupBorder));
@@ -64,7 +64,7 @@ namespace QuirkEditor {
 	}
 
 	void SceneHierarchyPanel::DrawEntityNode(Quirk::Entity entity) {
-        Quirk::View<EditorFrame> frame = GetParentFrameAs<EditorFrame>();
+        Quirk::View<EditorFrame> frame = m_EditorFrame;
 		bool shouldDeleteEntity        = false;
 		float windowPadding		       = GImGui->Style.WindowPadding.x;
 		const std::string& tag	       = entity.GetComponent<Quirk::TagComponent>().Tag;

@@ -3,11 +3,13 @@
 
 #include "Quirk.h"
 
+#include "Editor/EditorFrame.h"
+
 namespace QuirkEditor {
 
 	class EditorTitleBar : public Quirk::TitleBar{
 	public:
-		EditorTitleBar() {
+		EditorTitleBar(EditorFrame* editor) : m_EditorFrame(editor) {
 			m_CloseIcon    = Quirk::TextureImporter::CreateFromImage("assets/Images/close.png");
 			m_MinimiseIcon = Quirk::TextureImporter::CreateFromImage("assets/Images/minus.png");
 			m_MaximiseIcon = Quirk::TextureImporter::CreateFromImage("assets/Images/maximize.png");
@@ -25,6 +27,8 @@ namespace QuirkEditor {
 		Quirk::Ref<Quirk::Texture2D> m_CloseIcon;
 		Quirk::Ref<Quirk::Texture2D> m_MinimiseIcon;
 		Quirk::Ref<Quirk::Texture2D> m_MaximiseIcon;
+
+        Quirk::View<EditorFrame> m_EditorFrame;
 	};
 
 }

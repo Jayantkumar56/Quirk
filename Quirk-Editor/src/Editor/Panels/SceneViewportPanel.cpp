@@ -14,7 +14,7 @@
 namespace QuirkEditor {
 
 	SceneViewportPanel::SceneViewportPanel(EditorFrame* frame) :
-			Panel    ( frame, "Scene Viewport"                            ),
+			Panel    ( "Scene Viewport"                                   ),
 			m_Camera ( 45.0f, m_PanelSize.x / m_PanelSize.y, 1.0f, 100.0f ),
 			m_Frame  ( 
                 Quirk::FrameBuffer::Create({ 
@@ -22,7 +22,8 @@ namespace QuirkEditor {
                     static_cast<uint32_t>(m_PanelSize.y) 
                 }) 
             ),
-            m_SceneRenderer ( frame->GetActiveSceneView(), m_Frame )
+            m_SceneRenderer ( frame->GetActiveSceneView(), m_Frame ),
+            m_EditorFrame   ( frame                                )
 	{
         Quirk::RenderCommands::UpdateViewPort(
             static_cast<uint32_t>(m_PanelSize.x),
@@ -37,7 +38,7 @@ namespace QuirkEditor {
 	}
 
 	bool SceneViewportPanel::OnEvent(Quirk::Event& event) {
-        auto editorMode = GetParentFrameAs<EditorFrame>()->GetEditorMode();
+        auto editorMode = m_EditorFrame->GetEditorMode();
 
 		if (m_IsInFocus && editorMode == EditorMode::Edit) {
 			return m_Camera.OnEvent(event);
@@ -47,7 +48,7 @@ namespace QuirkEditor {
 	}
 
 	void SceneViewportPanel::OnUpdate() {
-        auto editorMode = GetParentFrameAs<EditorFrame>()->GetEditorMode();
+        auto editorMode = m_EditorFrame->GetEditorMode();
 
 		if (m_IsInFocus && editorMode == EditorMode::Edit)
 			m_ControllingCamera = m_Camera.OnUpdate();
@@ -66,7 +67,7 @@ namespace QuirkEditor {
 	}
 
 	void SceneViewportPanel::OnUiUpdate() {
-        auto editorFrame = GetParentFrameAs<EditorFrame>();
+        auto editorFrame = m_EditorFrame;
         auto editorMode  = editorFrame->GetEditorMode();
         auto scene       = editorFrame->GetActiveSceneView();
 
@@ -129,7 +130,7 @@ namespace QuirkEditor {
 	}
 
 	void SceneViewportPanel::MenuBar(Quirk::View<Quirk::Scene> scene) {
-        auto editorFrame     = GetParentFrameAs<EditorFrame>();
+        auto editorFrame     = m_EditorFrame;
         auto editorMode      = editorFrame->GetEditorMode();
         auto resourceManager = editorFrame->GetResourceManager();
 
@@ -178,7 +179,7 @@ namespace QuirkEditor {
 	}
 
 	int SceneViewportPanel::GetEntityIdOnClick(const ImVec2& imagePos) {
-        Quirk::Window& window   = GetWindow();
+        Quirk::Window& window   = m_EditorFrame->GetWindow();
 		ImVec2 windowPos = ImGui::GetWindowPos();
 		windowPos        = { windowPos.x - window.GetPosX(), windowPos.y - window.GetPosY() };
 		ImVec2 mousePos  = { Quirk::Input::MouseCurrentX() - windowPos.x, Quirk::Input::MouseCurrentY() - windowPos.y };

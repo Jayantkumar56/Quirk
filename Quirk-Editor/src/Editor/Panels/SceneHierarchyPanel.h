@@ -13,7 +13,8 @@ namespace QuirkEditor {
 	class SceneHierarchyPanel : public Quirk::Panel {
 	public:
 		SceneHierarchyPanel(EditorFrame* frame) : 
-                Panel(frame, "Scene Hierarchy")
+                Panel         ( "Scene Hierarchy"),
+                m_EditorFrame ( frame            )
         {}
 
 		virtual void SetUiProperties() override;
@@ -24,6 +25,8 @@ namespace QuirkEditor {
 
     private:
         PerTypeSelectionHandle<Quirk::Entity> m_SelectionHandle;
+
+        Quirk::View<EditorFrame> m_EditorFrame;
 	};
 
 }

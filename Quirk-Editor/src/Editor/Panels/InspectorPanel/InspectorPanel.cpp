@@ -21,7 +21,7 @@ namespace QuirkEditor {
 
     void InspectorPanel::OnUiUpdate() {
         if (m_SelectionHandle.Has<Quirk::Entity>()) {
-            InspectorDraw<Quirk::Entity>::Draw(GetParentFrameAs<EditorFrame>(), m_SelectionHandle.Get<Quirk::Entity>());
+            InspectorDraw<Quirk::Entity>::Draw(m_EditorFrame, m_SelectionHandle.Get<Quirk::Entity>());
         }
     }
 

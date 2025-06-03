@@ -10,10 +10,9 @@
 namespace Quirk {
 
 	class TitleBar {
-		friend class FrameManager;
+        friend class TitleBarManager;
 
 	public:
-		TitleBar()          = default;
 		virtual ~TitleBar() = default;
 
 		virtual void OnImguiUiUpdate()     { }
@@ -27,16 +26,13 @@ namespace Quirk {
 		// thus could be used to unset Imgui properties which are set in SetImguiProperties()
 		virtual void UnSetImguiProperties() { }
 
-		Window& GetWindow() noexcept { return m_ParentFrame->GetWindow(); }
+        Quirk::View<Window> GetWindow() const noexcept { return m_Window; }
 
-        template<FrameType T>
-        inline T* GetParentFrameAs() noexcept { return static_cast<T*>(m_ParentFrame); }
+		inline void SetCursorOverMinimiseButton (bool toggle) noexcept { m_Window->SetCursorOverMinimiseButton(toggle); }
+		inline void SetCursorOverMaximiseButton (bool toggle) noexcept { m_Window->SetCursorOverMaximiseButton(toggle); }
+		inline void SetCursorOverCloseButton    (bool toggle) noexcept { m_Window->SetCursorOverCloseButton(toggle);    }
 
-		inline void SetCursorOverMinimiseButton (bool toggle) noexcept { GetWindow().SetCursorOverMinimiseButton(toggle); }
-		inline void SetCursorOverMaximiseButton (bool toggle) noexcept { GetWindow().SetCursorOverMaximiseButton(toggle); }
-		inline void SetCursorOverCloseButton    (bool toggle) noexcept { GetWindow().SetCursorOverCloseButton(toggle);    }
-
-	public:
+	private:
 		inline void OnUiUpdate() {
 			SetImguiProperties();
 
@@ -47,7 +43,7 @@ namespace Quirk {
 				// should only set true in requred condition since resetting is done 
 				// in every cycle in the OnUpdate() of the FrameManager
 				if (ImGui::IsWindowHovered() && !ImGui::IsAnyItemHovered())
-					GetWindow().SetCanMoveWithCursor(true);
+                    m_Window->SetCanMoveWithCursor(true);
 
 				ImGui::EndMainMenuBar();
 			}
@@ -55,35 +51,11 @@ namespace Quirk {
 			UnSetImguiProperties();
 		}
 
-	public:
-		// to communicate with the parent Frame obj which manages this titlebar
-		FrameBase* m_ParentFrame = nullptr;
+	private:
+        Quirk::View<Window> m_Window;
 	};
 
 	template <typename T>
 	concept TitleBarType = std::derived_from<T, TitleBar>;
-
-
-    class TitleBarManager {
-    public:
-        template<TitleBarType T, typename ...Args>
-        inline void SetTitleBar(FrameBase* frame, Args&& ... args) {
-            // TODO: think about this static_cast
-            m_TitleBar = Scope<TitleBar>(static_cast<T*>(new T(std::forward<Args>(args)...)));
-            m_TitleBar->m_ParentFrame = frame;
-        }
-
-    protected:
-        inline void UpdateTitleBarUI() {
-            m_TitleBar->OnUiUpdate();
-        }
-
-        inline bool TitleBarHandleEvents(Event& event) {
-            return m_TitleBar->OnEvent(event);
-        }
-
-    private:
-        Scope<TitleBar> m_TitleBar;
-    };
 
 }
