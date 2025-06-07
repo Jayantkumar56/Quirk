@@ -26,7 +26,70 @@ namespace QuirkEditor {
 	static bool ImageTextButton(ImageTextButtonParameters& p);
 	static bool TextColorButton(const char* label, ImVec2 buttonSize, ImU32 color, ImU32 hoverColor, ImU32 activeColor, ImU32 borderColor = 0);
 
-	void LauncherFrame::OnImguiUiUpdate() {
+    void LauncherFrame::Init() noexcept {
+        // initailly MainMenu will be loaded
+		m_State = LauncherState::MainMenu;
+		SetColorTheme();
+
+		SetTitleBar<LauncherTitleBar>(this);
+
+		m_ProjectIcon		= Quirk::TextureImporter::CreateFromImage( "assets/Images/Launcher/project.png"       );
+		m_OpenProjectIcon   = Quirk::TextureImporter::CreateFromImage( "assets/Images/Launcher/openFolder.png"    );
+		m_CreateProjectIcon = Quirk::TextureImporter::CreateFromImage( "assets/Images/Launcher/createProject.png" );
+
+		// reserving some storage to get input through imgui
+		m_TempProject.Title = "Untitled";
+		m_TempProject.Title.resize(32);
+		m_TempProjPath.resize(512);
+
+        // loading fonts
+        {
+            using namespace Quirk;
+            View<FontManager> fontManager = GetFontManager();
+
+            fontManager->SetFontFileToFontWeight(
+                FontWeight::Regular,
+                "assets/Fonts/Schibsted_Grotesk/static/SchibstedGrotesk-Regular.ttf"
+            );
+
+            fontManager->SetFontFileToFontWeight(
+                FontWeight::Medium,
+                "assets/Fonts/Schibsted_Grotesk/static/SchibstedGrotesk-Medium.ttf"
+            );
+
+            fontManager->SetFontFileToFontWeight(
+                FontWeight::SemiBold,
+                "assets/Fonts/Schibsted_Grotesk/static/SchibstedGrotesk-SemiBold.ttf"
+            );
+
+            fontManager->SetFontFileToFontWeight(
+                FontWeight::Bold,
+                "assets/Fonts/Schibsted_Grotesk/static/SchibstedGrotesk-Bold.ttf"
+            );
+
+            fontManager->SetFontFileToFontWeight(
+                FontWeight::ExtraBold,
+                "assets/Fonts/Schibsted_Grotesk/static/SchibstedGrotesk-ExtraBold.ttf"
+            );
+
+            fontManager->SetFontFileToFontWeight(
+                FontWeight::Black,
+                "assets/Fonts/Schibsted_Grotesk/static/SchibstedGrotesk-Black.ttf"
+            );
+
+            fontManager->LoadFont(FontWeight::Medium,  50);     // for Main Title (Quirk Game Engine)
+            fontManager->LoadFont(FontWeight::Medium,  29);		// for section title ()
+            fontManager->LoadFont(FontWeight::Medium,  25);
+            fontManager->LoadFont(FontWeight::Regular, 20);
+            fontManager->LoadFont(FontWeight::Regular, 23);
+        }
+    }
+
+    void LauncherFrame::Terminate() noexcept {
+        // Currently empty — all cleanup is handled by destructors.
+    }
+
+    void LauncherFrame::OnImguiUiUpdate() {
         // setting window properties for imgui window
         {
 		    ImGuiWindowClass windowClass;
@@ -47,7 +110,7 @@ namespace QuirkEditor {
 		    // should only set true in requred condition since resetting is done 
 		    // in every cycle in the OnUpdate() of the FrameManager
 		    if (ImGui::IsWindowHovered() && !ImGui::IsAnyItemHovered()) {
-			    GetWindow().SetCanMoveWithCursor(true);
+			    GetWindow()->SetCanMoveWithCursor(true);
 		    }
 
 		    ImGui::End();
@@ -57,9 +120,11 @@ namespace QuirkEditor {
 	}
 
 	void LauncherFrame::DrawMainMenu() {
+        Quirk::View<Quirk::FontManager> fontManager = GetFontManager();
+
 		// main title 
         {
-		    Quirk::ImguiUIUtility::Text("Quirk Game Engine", Quirk::FontManager::GetFont(Quirk::FontWeight::Medium, 50));
+		    Quirk::ImguiUIUtility::Text("Quirk Game Engine", fontManager->GetFont(Quirk::FontWeight::Medium, 50));
 
 		    // padding between main title of the window and rest content
 		    ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 30.0f);
@@ -71,8 +136,8 @@ namespace QuirkEditor {
 		if (ImGui::BeginTable("Main Table", 2)) {
 			// paramters object used to create button with customised parameters
 			ImageTextButtonParameters buttonParameters;
-			buttonParameters.labelFont           = Quirk::FontManager::GetFont(Quirk::FontWeight::Medium, 29);
-			buttonParameters.descriptionFont     = Quirk::FontManager::GetFont(Quirk::FontWeight::Regular, 20);
+			buttonParameters.labelFont           = fontManager->GetFont(Quirk::FontWeight::Medium, 29);
+			buttonParameters.descriptionFont     = fontManager->GetFont(Quirk::FontWeight::Regular, 20);
 			buttonParameters.imageSize.x         = 35.0f;
 			buttonParameters.imageSize.y         = 35.0f;
 			buttonParameters.buttonColor         = 0xff2a2822;
@@ -83,7 +148,7 @@ namespace QuirkEditor {
 			{
                 //Recent Project List heading
                 {
-                    Quirk::ImguiUIUtility::Text("Recent Projects", Quirk::FontManager::GetFont(Quirk::FontWeight::Medium, 29));
+                    Quirk::ImguiUIUtility::Text("Recent Projects", fontManager->GetFont(Quirk::FontWeight::Medium, 29));
 
 				    // padding betwen title "Recent Projects" and content
 				    ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 20.0f);
@@ -91,7 +156,7 @@ namespace QuirkEditor {
 
 				// All of the contents (Recent Porjects)
 				if (!m_ProjectManager.HaveRecentProjects()) {
-					ImGui::PushFont(Quirk::FontManager::GetFont(Quirk::FontWeight::Regular, 23));
+					ImGui::PushFont(fontManager->GetFont(Quirk::FontWeight::Regular, 23));
 					ImGui::TextColored({ 0.812f, 0.816f, 0.78f, 1.0f }, "No Recent Projects!");
 					ImGui::PopFont();
 				}
@@ -135,7 +200,7 @@ namespace QuirkEditor {
 					// should only set true in requred condition since resetting is done 
 					// in every cycle in the OnUpdate() of the FrameManager
 					if (ImGui::IsWindowHovered() && !ImGui::IsAnyItemHovered()) {
-						GetWindow().SetCanMoveWithCursor(true);
+						GetWindow()->SetCanMoveWithCursor(true);
 					}
 
 					ImGui::EndChild();
@@ -154,7 +219,7 @@ namespace QuirkEditor {
 
 			ImGui::TableNextColumn();   // 2nd Column
 			{
-                Quirk::ImguiUIUtility::Text("Get Started", Quirk::FontManager::GetFont(Quirk::FontWeight::Medium, 29));
+                Quirk::ImguiUIUtility::Text("Get Started", fontManager->GetFont(Quirk::FontWeight::Medium, 29));
 
 				// padding betwen title "Get Started" and content
 				ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 20.0f);
@@ -176,7 +241,7 @@ namespace QuirkEditor {
                             .DefaultPath     { nullptr                                     },
                             .FileNameLabel   { L"Project Folder"                           },
                             .DefaultFileName { nullptr                                     },
-                            .ParentWindow    { &GetWindow()                                },
+                            .ParentWindow    { GetWindow().Get()                           },
                             .Filters         { filters                                     },
                             .NoOfFilters     { sizeof(filters) / sizeof(Quirk::FileFilter) }
                         };
@@ -215,8 +280,10 @@ namespace QuirkEditor {
 	}
 
 	void LauncherFrame::DrawProjectCreationForm() {
+        Quirk::View<Quirk::FontManager> fontManager = GetFontManager();
+
 		// main title 
-        Quirk::ImguiUIUtility::Text("Create your new project", Quirk::FontManager::GetFont(Quirk::FontWeight::Medium, 50));
+        Quirk::ImguiUIUtility::Text("Create your new project", fontManager->GetFont(Quirk::FontWeight::Medium, 50));
 
 		// padding between main title of the window and rest content
 		ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 30.0f);
@@ -228,14 +295,14 @@ namespace QuirkEditor {
 		ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize,   1.0f             );
 
 		// Project Name field
-        Quirk::ImguiUIUtility::Text("Project Name", Quirk::FontManager::GetFont(Quirk::FontWeight::Regular, 23));
+        Quirk::ImguiUIUtility::Text("Project Name", fontManager->GetFont(Quirk::FontWeight::Regular, 23));
 		ImGui::InputText("##ProjectName", (char*)m_TempProject.Title.c_str(), m_TempProject.Title.length());
 
 		// padding between the two fields
 		ImGui::SetCursorPosY(ImGui::GetCursorPosY() + 20.0f);
 
 		// Project Path field
-        Quirk::ImguiUIUtility::Text("Project Path", Quirk::FontManager::GetFont(Quirk::FontWeight::Regular, 23));
+        Quirk::ImguiUIUtility::Text("Project Path", fontManager->GetFont(Quirk::FontWeight::Regular, 23));
 		ImGui::InputText("##ProjectPath", (char*)m_TempProjPath.c_str(), m_TempProjPath.length());
 
 		ImGui::SameLine();
@@ -244,7 +311,7 @@ namespace QuirkEditor {
             Quirk::FileDialogSpecification fileDialogSpec;
 			fileDialogSpec.Title = L"Open Project";
 			fileDialogSpec.FileNameLabel = L"Project Folder";
-			fileDialogSpec.ParentWindow = &GetWindow();
+			fileDialogSpec.ParentWindow  = GetWindow().Get();
 
 			std::filesystem::path filePath;
 			if (Quirk::FileDialog::OpenFolder(fileDialogSpec, filePath)) {

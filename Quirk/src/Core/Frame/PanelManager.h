@@ -3,12 +3,15 @@
 #pragma once
 
 #include "Panel.h"
+#include "FrameInitContext.h"
 
 
-namespace Quirk {
+namespace Quirk::Internals {
 
     class PanelManager {
     public:
+        PanelManager(const FrameInitContext& initContext, auto& frame) noexcept {}
+
         template<PanelType P, typename ...Args>
         void AddPanel(Args&& ... args) {
             m_Panels.emplace_back(new P(std::forward<Args>(args)...));

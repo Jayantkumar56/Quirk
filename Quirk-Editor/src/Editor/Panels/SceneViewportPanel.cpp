@@ -179,9 +179,9 @@ namespace QuirkEditor {
 	}
 
 	int SceneViewportPanel::GetEntityIdOnClick(const ImVec2& imagePos) {
-        Quirk::Window& window   = m_EditorFrame->GetWindow();
+        Quirk::View<Quirk::Window> window = m_EditorFrame->GetWindow();
 		ImVec2 windowPos = ImGui::GetWindowPos();
-		windowPos        = { windowPos.x - window.GetPosX(), windowPos.y - window.GetPosY() };
+		windowPos        = { windowPos.x - window->GetPosX(), windowPos.y - window->GetPosY() };
 		ImVec2 mousePos  = { Quirk::Input::MouseCurrentX() - windowPos.x, Quirk::Input::MouseCurrentY() - windowPos.y };
 
 		// mouse position on the image button

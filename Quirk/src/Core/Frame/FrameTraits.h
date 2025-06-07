@@ -13,27 +13,51 @@
 
 namespace Quirk {
 
+    // NOTE: 
+    //
+    // - the value of these enums decides
+    //   the order of inheritance of respective policy in the Frame
+    //   (i.e. the feature policies are sorted on the basis of these enum values)
+
     enum class FrameFeature {
-        Window,
-        ImGuiContext,
-        TitleBar,
-        Panels
+        Window            = 0,
+        GraphicalContext  = 1,
+        ImGuiContext      = 2,
+        TitleBar          = 3,
+        Panels            = 4
     };
+
+}
+
+
+namespace Quirk::Internals {
+
+    template<FrameFeature Feature>
+    struct FramePolicyType {
+        static_assert(AlwaysFalse_V<Feature>, "FramePolicyType not specialized for this policy value.");
+    };
+
+    template<> struct FramePolicyType<FrameFeature::Window>           { using Type = WindowManager;           };
+    template<> struct FramePolicyType<FrameFeature::GraphicalContext> { using Type = GraphicalContextManager; };
+    template<> struct FramePolicyType<FrameFeature::ImGuiContext>     { using Type = ImguiContextManager;     };
+    template<> struct FramePolicyType<FrameFeature::Panels>           { using Type = PanelManager;            };
+    template<> struct FramePolicyType<FrameFeature::TitleBar>         { using Type = TitleBarManager;         };
+
+    template<FrameFeature Feature>
+    using FramePolicyType_T = FramePolicyType<Feature>::Type;
 
 
 
     template<FrameFeature ...Features>
-    constexpr bool ValidImguiFeature_V = (
-        IsEnumValuePresent_V<FrameFeature::Window,       Features...> &&
-        IsEnumValuePresent_V<FrameFeature::ImGuiContext, Features...>
+    concept ValidImguiFeature = (
+        IsEnumValuePresent_V<FrameFeature::Window,       Features...>
     ) || (
         !IsEnumValuePresent_V<FrameFeature::Window,       Features...> &&
         !IsEnumValuePresent_V<FrameFeature::ImGuiContext, Features...>
     );
 
     template<FrameFeature ...Features>
-    constexpr bool ValidPanelFeature_V = (
-        IsEnumValuePresent_V<FrameFeature::Panels,       Features...> &&
+    concept ValidPanelFeature = (
         IsEnumValuePresent_V<FrameFeature::ImGuiContext, Features...>
     ) || (
         !IsEnumValuePresent_V<FrameFeature::Panels,       Features...> &&
@@ -41,8 +65,7 @@ namespace Quirk {
     );
 
     template<FrameFeature ...Features>
-    constexpr bool ValidTitleBarFeature_V = (
-        IsEnumValuePresent_V<FrameFeature::TitleBar,     Features...> &&
+    concept ValidTitleBarFeature = (
         IsEnumValuePresent_V<FrameFeature::ImGuiContext, Features...>
     ) || (
         !IsEnumValuePresent_V<FrameFeature::TitleBar,     Features...> &&
@@ -50,122 +73,9 @@ namespace Quirk {
     );
 
     template<FrameFeature ...Features>
-    concept ValidFrameFeatureSet = !DuplicatesInEnumValues_V <Features...> &&
-                                   ValidImguiFeature_V       <Features...> &&
-                                   ValidPanelFeature_V       <Features...> &&
-                                   ValidTitleBarFeature_V    <Features...>;
-
-
-
-    template<FrameFeature Feature>
-    struct FramePolicyType {
-        static_assert(AlwaysFalse_V<Feature>, "EnumPolicyToType not specialized for this policy value.");
-    };
-
-    template<> struct FramePolicyType<FrameFeature::Window>       { using Type = WindowManager;       };
-    template<> struct FramePolicyType<FrameFeature::ImGuiContext> { using Type = ImguiContextManager; };
-    template<> struct FramePolicyType<FrameFeature::Panels>       { using Type = PanelManager;        };
-    template<> struct FramePolicyType<FrameFeature::TitleBar>     { using Type = TitleBarManager;     };
-
-    template<FrameFeature Feature>
-    using FramePolicyType_T = FramePolicyType<Feature>::Type;
-
-
-
-    template<FrameFeature Feature, typename FeatureList, FrameFeature... Features>
-    struct InsertIfContainFeature;
-
-    template<FrameFeature Feature, typename... Ts, FrameFeature... Features>
-    struct InsertIfContainFeature<Feature, TypeList<Ts...>, Features...> {
-        using Type = std::conditional_t<
-            IsEnumValuePresent_V<Feature, Features...>,
-            TypeList<FramePolicyType_T<Feature>, Ts...>,
-            TypeList<Ts...>
-        >;
-    };
-
-    template<FrameFeature Feature, typename FeatureList, FrameFeature ...Features>
-    using InsertIfContainFeature_T = InsertIfContainFeature<Feature, FeatureList, Features...>::Type;
-
-
-
-    template<FrameFeature ...Features>
-    struct SortedFramePolicies {
-        using Type = InsertIfContainFeature_T<
-            FrameFeature::Window,
-            PushFront_T<
-                InsertIfContainFeature_T<
-                    FrameFeature::ImGuiContext,
-                    InsertIfContainFeature_T<
-                        FrameFeature::Panels,
-                        InsertIfContainFeature_T<
-                            FrameFeature::TitleBar, TypeList<>, Features...
-                        >,
-                        Features...
-                    >,
-                    Features...
-                >,
-                GraphicalContextManager
-            >,
-            Features...
-        >;
-    };
-
-    template<FrameFeature ...Features>
-    using SortedFramePolicies_T = SortedFramePolicies<Features...>::Type;
-
-
-
-    template<typename FramePolicy, typename FrameT>
-    struct PolicyConstructorArgs;
-
-    template<typename FrameT>
-    struct PolicyConstructorArgs<FramePolicyType_T<FrameFeature::Window>, FrameT> {
-        using Tuple = std::tuple<const WindowSpecification&>;
-        static Tuple Get(FrameT& frame, const WindowSpecification& spec) {
-            return Tuple(spec);
-        }
-    };
-
-    template<typename FrameT>
-    struct PolicyConstructorArgs<GraphicalContextManager, FrameT> {
-        using Tuple = std::tuple<Window&>;
-        static Tuple Get(FrameT& frame, const WindowSpecification& spec) {
-            return Tuple(frame.GetWindow());
-        }
-    };
-
-    template<typename FrameT>
-    struct PolicyConstructorArgs<FramePolicyType_T<FrameFeature::ImGuiContext>, FrameT> {
-        using Tuple = std::tuple<FrameT&>;
-        static Tuple Get(FrameT& frame, const WindowSpecification&) {
-            return Tuple(frame);
-        }
-    };
-
-    template<typename FrameT>
-    struct PolicyConstructorArgs<FramePolicyType_T<FrameFeature::Panels>, FrameT> {
-        using Tuple = std::tuple<>;
-        static Tuple Get(FrameT&, const WindowSpecification&) {
-            return Tuple();
-        }
-    };
-
-    template<typename FrameT>
-    struct PolicyConstructorArgs<FramePolicyType_T<FrameFeature::TitleBar>, FrameT> {
-        using Tuple = std::tuple<>;
-        static Tuple Get(FrameT&, const WindowSpecification&) {
-            return Tuple();
-        }
-    };
-
-
-
-    template<typename FrameT>
-    struct FramePolicyTupleGetterAdapter {
-        template<typename Policy>
-        using Getter = PolicyConstructorArgs<Policy, FrameT>;
-    };
+    concept ValidFrameFeatureSet = NoDuplicatesInEnumValues <Features...> &&
+                                   ValidImguiFeature        <Features...> &&
+                                   ValidPanelFeature        <Features...> &&
+                                   ValidTitleBarFeature     <Features...>;
 
 }
-

@@ -4,7 +4,7 @@
 #include "Core/Core.h"
 #include "Core/Renderer/RendererAPI.h"
 #include "Platform/OpenGL/OpenGLContext.h"
-#include "Core/Imgui/ImguiUI.h"
+#include "Core/Frame/ImguiUI.h"
 
 #include "Core/Frame/Window.h"
 #include "Core/Frame/GraphicalContext.h"
@@ -27,15 +27,13 @@ namespace Quirk {
 
 #ifdef QK_PLATFORM_WINDOWS
 
-	void ImguiUI::Init(Window& window, const GraphicalContext* context) {
-		// getting the common fontAtlas
-		// TODO: maybe find a good way of doing this
-		ImFontAtlas* fontAtlas = Application::Get().GetFrameManager().GetFontAtlas();
+	void ImguiContext::Init(View<Window> window, ConstView<GraphicalContext> context) {
+        m_GraphicalContext = context;
 
 		// Setup Dear ImGui context with the fontAtlas
 		IMGUI_CHECKVERSION();
-		m_Context = ImGui::CreateContext(fontAtlas);
-		ImGui::SetCurrentContext(m_Context);
+        m_ImguiContext = ImGui::CreateContext();
+		ImGui::SetCurrentContext(m_ImguiContext);
 
 		ImGuiIO& io = ImGui::GetIO();
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;   // Enable Keyboard Controls
@@ -58,25 +56,23 @@ namespace Quirk {
 		InitForOpenGL(window, context);
 	}
 
-	void ImguiUI::Terminate() {
+	void ImguiContext::Terminate() {
 		// Cleanup
 		ImGui_ImplOpenGL3_Shutdown();
 		ImGui_ImplWin32_Shutdown();
-		ImGui::DestroyContext(m_Context);
+		ImGui::DestroyContext(m_ImguiContext);
 	}
 
-	void ImguiUI::Begin() const {
+	void ImguiContext::Begin() const {
 		// Start the Dear ImGui frame
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplWin32_NewFrame();
 		ImGui::NewFrame();
 
-		if (m_DockingEnabled) {
-			ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport());
-		}
+	    ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport());
 	}
 
-	void ImguiUI::End(const GraphicalContext* context) const {
+	void ImguiContext::End() const {
 		ImGuiIO& io = ImGui::GetIO();
 
 		ImGui::Render();
@@ -88,14 +84,15 @@ namespace Quirk {
 			ImGui::RenderPlatformWindowsDefault();
 
 			// Restore the OpenGL rendering context to the main window DC, since platform windows might have changed it.
-			context->MakeContextCurrent();
+			m_GraphicalContext->MakeContextCurrent();
 		}
 	}
 
-	void ImguiUI::UpdateViewPorts() const {
-		for (auto viewport : m_Context->Viewports) {
+	void ImguiContext::UpdateViewPorts() const {
+		for (auto* viewport : m_ImguiContext->Viewports) {
 			if (viewport->PlatformHandle) {
 				MSG msg;
+
 				while (PeekMessageW(&msg, (HWND)viewport->PlatformHandle, 0, 0, PM_REMOVE) > 0) {
 					TranslateMessage(&msg);
 					DispatchMessage(&msg);
@@ -104,10 +101,10 @@ namespace Quirk {
 		}
 	}
 
-	void ImguiUI::InitForOpenGL(Window& window, const GraphicalContext* context) {
+	void ImguiContext::InitForOpenGL(View<Window> window, ConstView<GraphicalContext> context) {
 		const char* glsl_version = "#version 410";
 
-		ImGui_ImplWin32_InitForOpenGL((HWND)window.GetNativeHandle());
+		ImGui_ImplWin32_InitForOpenGL((HWND)window->GetNativeHandle());
 		ImGui_ImplOpenGL3_Init(glsl_version);
 
 		// Win32+GL needs specific hooks for viewport, as there are specific things needed to tie Win32 and GL api.
@@ -116,11 +113,11 @@ namespace Quirk {
 			ImGuiPlatformIO& platform_io = ImGui::GetPlatformIO();
 
 			// TO DO: make a permanent solution to save the GraphicalContext in ImguiContext
-			io.UserData = (void*)((OpenGLContext*)context)->GetGLContext();
+			io.UserData = (void*)((OpenGLContext*)context.Get())->GetGLContext();
 
 			platform_io.Renderer_CreateWindow = [] (ImGuiViewport* viewport) {
 				QK_CORE_ASSERT(viewport->RendererUserData == NULL, "Non Empty RendererUserData (from imgui)");
-				ImguiUI::ContextData* data = IM_NEW(ImguiUI::ContextData);
+                ImguiContext::ContextData* data = IM_NEW(ImguiContext::ContextData);
 
 				DWM_WINDOW_CORNER_PREFERENCE preference = DWMWCP_ROUND;
 				DwmSetWindowAttribute((HWND)viewport->PlatformHandle, DWMWA_WINDOW_CORNER_PREFERENCE, &preference, sizeof(preference));
@@ -157,7 +154,7 @@ namespace Quirk {
 
 			platform_io.Renderer_DestroyWindow = [] (ImGuiViewport* viewport) {
 				if (viewport->RendererUserData != NULL) {
-					ImguiUI::ContextData* data = (ImguiUI::ContextData*)viewport->RendererUserData;
+                    ImguiContext::ContextData* data = (ImguiContext::ContextData*)viewport->RendererUserData;
 
 					wglMakeCurrent(nullptr, nullptr);
 					ReleaseDC((HWND)viewport->PlatformHandle, data->DeviceContext);
@@ -168,13 +165,13 @@ namespace Quirk {
 			};
 
 			platform_io.Renderer_SwapBuffers = [] (ImGuiViewport* viewport, void*) {
-				if (ImguiUI::ContextData* data = (ImguiUI::ContextData*)viewport->RendererUserData; data) {
+				if (ImguiContext::ContextData* data = (ImguiContext::ContextData*)viewport->RendererUserData; data) {
 					SwapBuffers(data->DeviceContext);
 				}
 			};
 
 			platform_io.Platform_RenderWindow = [] (ImGuiViewport* viewport, void*) {
-				if (ImguiUI::ContextData* data = (ImguiUI::ContextData*)viewport->RendererUserData; data) {
+				if (ImguiContext::ContextData* data = (ImguiContext::ContextData*)viewport->RendererUserData; data) {
 					auto& io = ImGui::GetIO();
 					wglMakeCurrent(data->DeviceContext, (HGLRC)io.UserData);
 				}

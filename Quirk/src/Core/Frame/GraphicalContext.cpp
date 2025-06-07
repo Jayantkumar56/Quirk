@@ -8,7 +8,7 @@
 
 namespace Quirk{
 
-	GraphicalContext* GraphicalContext::Create(Window& window) {
+	GraphicalContext* GraphicalContext::Create(View<Window> window) {
 		RendererAPI::API rendererAPI = RendererAPI::GetAPI();
 
 		switch (rendererAPI) {
@@ -20,7 +20,7 @@ namespace Quirk{
 		return nullptr;
 	}
 
-	Scope<GraphicalContext> GraphicalContext::Create(Window& window, RendererAPI::API rendererAPI) {
+	Scope<GraphicalContext> GraphicalContext::Create(View<Window> window, RendererAPI::API rendererAPI) {
 		switch (rendererAPI) {
 			case RendererAPI::API::None:    QK_CORE_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
 			case RendererAPI::API::OpenGL:  return CreateScope<OpenGLContext>(window);

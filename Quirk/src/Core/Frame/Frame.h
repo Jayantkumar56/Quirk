@@ -4,105 +4,147 @@
 
 #include "FrameBase.h"
 #include "FrameTraits.h"
+#include "FrameInitContext.h"
 
-namespace Quirk {
+namespace Quirk::Internals {
 
-    template<FrameFeature ...Features>
-	class Frame : 
+    template<typename PolicyList>
+    class FrameImpl {};
+
+    template<typename ...Policy>
+    class FrameImpl<TypeList<Policy...>> :
             public FrameBase,
-            public InheritFromTypeList<InheritanceVisibility::Public, SortedFramePolicies_T<Features...>>
+            public Policy...
     {
-        using PolicyList = SortedFramePolicies_T<Features...>;
+        using GraphicalContextPolicy = GraphicalContextManager;
 
-        // all the policies are contained in a TypeList<PolicyType...>
-        using Policies = InheritFromTypeList<InheritanceVisibility::Public, PolicyList>;
+        using WindowPolicy   = FramePolicyType_T<FrameFeature::Window      >;
+        using ImguiPolicy    = FramePolicyType_T<FrameFeature::ImGuiContext>;
+        using PanelPolicy    = FramePolicyType_T<FrameFeature::Panels      >;
+        using TitleBarPolicy = FramePolicyType_T<FrameFeature::TitleBar    >;
 
-        static constexpr bool HaveWindowPolicy   = IsEnumValuePresent_V<FrameFeature::Window,       Features...>;
-        static constexpr bool HaveImguiPolicy    = IsEnumValuePresent_V<FrameFeature::ImGuiContext, Features...>;
-        static constexpr bool HavePanelPolicy    = IsEnumValuePresent_V<FrameFeature::Panels,       Features...>;
-        static constexpr bool HaveTitleBarPolicy = IsEnumValuePresent_V<FrameFeature::TitleBar,     Features...>;
+        static constexpr bool HaveWindowPolicy   = IsPresent_V<WindowPolicy,   Policy...>;
+        static constexpr bool HaveImguiPolicy    = IsPresent_V<ImguiPolicy,    Policy...>;
+        static constexpr bool HavePanelPolicy    = IsPresent_V<PanelPolicy,    Policy...>;
+        static constexpr bool HaveTitleBarPolicy = IsPresent_V<TitleBarPolicy, Policy...>;
 
-	public:
-        Frame(const WindowSpecification& spec) :
-                FrameBase(),
-                Policies(
-                    ConstructFromTypeList<
-                        Policies, 
-                        FramePolicyTupleGetterAdapter<Frame>::Getter,
-                        PolicyList
-                    >(*this, spec)
-                )
+    public:
+        FrameImpl(const FrameInitContext& initContext) noexcept :
+                Policy(initContext, *this)...
         {}
+        
+        inline void MakeContextCurrent() noexcept final override {
+            GraphicalContextPolicy::GetGraphicalContext()->MakeContextCurrent();
 
-		inline void MakeContextCurrent() noexcept final override {
-            Policies::GetGraphicalContext()->MakeContextCurrent();
-
-            if (HaveImguiPolicy) {
-			    Policies::GetImguiContext().MakeImguiUIContextCurrent();
+            if constexpr (HaveImguiPolicy) {
+                ImguiPolicy::MakeImguiContextCurrent();
             }
-		}
-
+        }
+        
     private:
         virtual void UpdateFrame() final override {
-            Policies::GetWindow().OnUpdate();
+            GraphicalContextPolicy::GetGraphicalContext()->MakeContextCurrent();
 
-            if (HaveImguiPolicy) {
-                Policies::GetImguiContext().UpdateViewPorts();
+            FrameBase::OnUpdate();
+
+            if constexpr (HaveImguiPolicy) {
+                ImguiPolicy::MakeImguiContextCurrent();
+            }
+
+            if constexpr (HaveWindowPolicy) {
+                WindowPolicy::GetWindow()->OnUpdate();
+            }
+
+            if constexpr (HaveImguiPolicy) {
+                ImguiPolicy::GetImguiContext().UpdateViewPorts();
             }
 
             if constexpr (HavePanelPolicy) {
-                Policies::UpdatePanels();
+                PanelPolicy::UpdatePanels();
             }
 
-            // updating the ui
-            {
-                RenderCommands::Clear();
-
-                UpdateFrameUI();
-
-                Policies::SwapBuffer();
-            }
+            UpdateFrameUI();
         }
 
         void UpdateFrameUI() {
+            RenderCommands::Clear();
+
             // updating imgui ui of the current frame and it's panels
-            if (HaveImguiPolicy) {
-                Policies::GetImguiContext().Begin();
+            if constexpr (HaveImguiPolicy) {
+                ImguiPolicy::GetImguiContext().Begin();
             }
 
-            // resetting if the cursor is hovering over titlebar
-            // thus it should be set by the titlebar in every frame 
-            // titlebar should only set true in the requred condition
-            Policies::GetWindow().SetCanMoveWithCursor(false);
+            if constexpr (HaveWindowPolicy) {
+                // resetting if the cursor is hovering over titlebar
+                // thus it should be set by the titlebar in every frame 
+                // titlebar should only set true in the requred condition
+                WindowPolicy::GetWindow()->SetCanMoveWithCursor(false);
+            }
 
-            OnImguiUiUpdate();
+            if constexpr (HaveImguiPolicy) {
+                static_cast<ImguiPolicy*>(this)->OnImguiUiUpdate();
+            }
 
             if constexpr (HaveTitleBarPolicy) {
-                Policies::UpdateTitleBarUI();
+                TitleBarPolicy::UpdateTitleBarUI();
             }
 
             if constexpr (HavePanelPolicy) {
-                Policies::UpdatePanelsUI();
+                PanelPolicy::UpdatePanelsUI();
             }
 
-            if (HaveImguiPolicy) {
-                Policies::GetImguiContext().End(Policies::GetGraphicalContext());
+            if constexpr (HaveImguiPolicy) {
+                ImguiPolicy::GetImguiContext().End();
             }
+
+            GraphicalContextPolicy::SwapBuffer();
         }
 
         virtual bool HandleEvent(Event& event) final override {
-            OnEvent(event);
+            FrameBase::OnEvent(event);
 
             if constexpr (HaveTitleBarPolicy) {
-                Policies::TitleBarHandleEvents(event);
+                TitleBarPolicy::TitleBarHandleEvents(event);
             }
 
             if constexpr (HavePanelPolicy) {
-                Policies::HandlePanelsEvent(event);
+                PanelPolicy::HandlePanelsEvent(event);
             }
 
             return false;
         }
-	};
+    };
+
+
+
+    template<FrameFeature ...Features>
+    requires ValidFrameFeatureSet<Features...>
+    using FrameBaseType = FrameImpl<EnumValueListToTypeList_T<FramePolicyType, SortEnumValues_T<Features...>>>;
+
+    template<FrameFeature ...Features>
+    requires ValidFrameFeatureSet<FrameFeature::Window, FrameFeature::GraphicalContext, FrameFeature::ImGuiContext, Features...>
+    using ImguiFrameBaseType = FrameImpl<EnumValueListToTypeList_T<
+        FramePolicyType, 
+        SortEnumValues_T<FrameFeature::Window, FrameFeature::GraphicalContext, FrameFeature::ImGuiContext, Features...>
+    >>;
+
+}
+
+
+namespace Quirk {
+
+    template<FrameFeature ...Features>
+    struct Frame : public Internals::FrameBaseType<Features...> {
+        Frame(const FrameInitContext& initContext) : 
+                Internals::FrameBaseType<Features...>(initContext)
+        {}
+    };
+
+    template<FrameFeature ...Features>
+    struct ImguiFrame : public Internals::ImguiFrameBaseType<Features...> {
+        ImguiFrame(const FrameInitContext& initContext) :
+                Internals::ImguiFrameBaseType<Features...>(initContext)
+        {}
+    };
 
 }

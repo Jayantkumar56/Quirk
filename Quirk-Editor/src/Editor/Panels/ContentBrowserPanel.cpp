@@ -5,8 +5,8 @@
 #include "ContentBrowserPanel.h"
 #include "Editor/EditorFrame.h"
 
-#include "Core/Imgui/ImguiUI.h"
-#include "Core/Imgui/ImguiUIUtility.h"
+#include "Core/Frame/ImguiUI.h"
+#include "Core/Utility/ImguiUIUtility.h"
 
 namespace QuirkEditor {
 
@@ -88,6 +88,7 @@ namespace QuirkEditor {
 
 	void ContentBrowserPanel::DrawMenuBar() {
         auto resourceManager = m_EditorFrame->GetResourceManager();
+        auto fontManager     = m_EditorFrame->GetFontManager();
 
 		ImVec2 menuBarSize    = { ImGui::GetWindowWidth(), 30.0f };
 		ImVec2 menuBarPadding = { 20.0f, 5.0f };
@@ -182,7 +183,7 @@ namespace QuirkEditor {
 			cursorPos.x += 15.0f;
 
 			std::string directory = m_CurrentDirectory.string();
-			ImFont* directoryFont = Quirk::FontManager::GetFont(Quirk::FontWeight::Regular, 22);
+			ImFont* directoryFont = fontManager->GetFont(Quirk::FontWeight::Regular, 22);
 			drawList->AddText(directoryFont, directoryFont->FontSize, cursorPos, 0xFFFFFFFF, directory.c_str(), NULL);
 		}
 	}

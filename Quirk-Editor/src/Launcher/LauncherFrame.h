@@ -11,13 +11,7 @@
 
 namespace QuirkEditor {
 
-	class LauncherFrame : 
-        public Quirk::Frame <
-            Quirk::FrameFeature::Window, 
-            Quirk::FrameFeature::ImGuiContext,
-            Quirk::FrameFeature::TitleBar
-        >
-    {
+	class LauncherFrame final : public Quirk::ImguiFrame<Quirk::FrameFeature::TitleBar> {
 	private:
 		// two different states for two different ui
 		enum class LauncherState {
@@ -26,26 +20,13 @@ namespace QuirkEditor {
 		};
 
 	public:
-		LauncherFrame(ProjectManager& projManager) :
-			Frame            ( GetEditorFrameWindowSpec() ),
-            m_ProjectManager ( projManager                )
-		{
-			// initailly MainMenu will be loaded
-			m_State = LauncherState::MainMenu;
-			SetColorTheme();
+		LauncherFrame(ProjectManager& projManager) noexcept :
+                ImguiFrame       ( GetFrameSpec() ),
+                m_ProjectManager ( projManager    )
+		{}
 
-			SetTitleBar<LauncherTitleBar>(this);
-
-			m_ProjectIcon		= Quirk::TextureImporter::CreateFromImage( "assets/Images/Launcher/project.png"       );
-			m_OpenProjectIcon   = Quirk::TextureImporter::CreateFromImage( "assets/Images/Launcher/openFolder.png"    );
-			m_CreateProjectIcon = Quirk::TextureImporter::CreateFromImage( "assets/Images/Launcher/createProject.png" );
-
-
-			// reserving some storage to get input through imgui
-			m_TempProject.Title = "Untitled";
-			m_TempProject.Title.resize(32);
-			m_TempProjPath.resize(512);
-		}
+        virtual void Init()      noexcept override;
+        virtual void Terminate() noexcept override;
 
 		virtual void OnImguiUiUpdate() override;
 
@@ -54,14 +35,16 @@ namespace QuirkEditor {
 		void DrawProjectCreationForm();
 		void SetColorTheme();
 
-        inline Quirk::WindowSpecification GetEditorFrameWindowSpec() const noexcept {
-            return Quirk::WindowSpecification{
-                .Title             { "Quirk Engine" },
-			    .Width             { 1100           },      .Height    { 780   },
-			    .MinWidth          { 1100           },      .MinHeight { 780   },
-			    .PosX              { 200            },      .PosY      { 50    },
-			    .VSyncOn           { true           },      .Maximized { false },
-			    .CustomTitleBar    { true           }
+        inline Quirk::FrameInitContext GetFrameSpec() const noexcept {
+            return Quirk::FrameInitContext{
+                .WindowSpec{
+                    .Title             { "Quirk Engine" },
+                    .Width             { 1100           },      .Height    { 780   },
+                    .MinWidth          { 1100           },      .MinHeight { 780   },
+                    .PosX              { 200            },      .PosY      { 50    },
+                    .VSyncOn           { true           },      .Maximized { false },
+                    .CustomTitleBar    { true           }
+                }
             };
         }
 

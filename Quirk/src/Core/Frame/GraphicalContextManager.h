@@ -4,16 +4,19 @@
 
 #include "GraphicalContext.h"
 #include "Core/Utility/View.h"
+#include "FrameInitContext.h"
 
-namespace Quirk {
+namespace Quirk::Internals {
 
     class GraphicalContextManager {
     public:
-        GraphicalContextManager(Window& window) : 
-                m_Context(GraphicalContext::Create(window)) 
-        {}
+        GraphicalContextManager(const FrameInitContext& initContext, auto& frame) :
+                m_Context(GraphicalContext::Create(frame.GetWindow()))
+        {
+            m_Context->MakeContextCurrent();
+        }
 
-        inline GraphicalContext* GetGraphicalContext() const noexcept {
+        inline View<GraphicalContext> GetGraphicalContext() const noexcept {
             return m_Context.get();
         }
 

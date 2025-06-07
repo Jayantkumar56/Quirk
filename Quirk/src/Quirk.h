@@ -50,8 +50,8 @@
 #include "Core/Frame/Window.h"
 #include "Core/Frame/Frame.h"
 
-#include "Core/Imgui/ImguiUI.h"
-#include "Core/Imgui/ImguiUIUtility.h"
+#include "Core/Frame/ImguiUI.h"
+#include "Core/Utility/ImguiUIUtility.h"
 
 #include "Core/AssetManager/EditorAssetManager.h"
 

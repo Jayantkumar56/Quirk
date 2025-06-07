@@ -30,9 +30,9 @@ namespace Quirk {
 
         // ==== END:   Conversion functions ===========
 
-        inline T* operator->() noexcept { return m_Ptr;  }
-        inline T& operator*()  noexcept { return *m_Ptr; }
-        inline T* Get()        noexcept { return m_Ptr;  }
+        inline T* operator->()       noexcept { return m_Ptr;  }
+        inline T& operator*()        noexcept { return *m_Ptr; }
+        inline T* Get()        const noexcept { return m_Ptr;  }
 
         inline operator bool() const noexcept { return m_Ptr != nullptr; }
 

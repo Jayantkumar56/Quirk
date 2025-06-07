@@ -92,8 +92,8 @@ namespace Quirk {
 		QK_CORE_ASSERTEX(DestroyWindow(tempWindowHandle),                "Failed to destroy window!");
 	}
 
-	OpenGLContext::OpenGLContext(Window& window){
-		WindowsWindow* nativeWndObj = (WindowsWindow*)window.GetNativeWindowObject();
+	OpenGLContext::OpenGLContext(View<Window> window){
+		WindowsWindow* nativeWndObj = (WindowsWindow*)window->GetNativeWindowObject();
 		m_DeviceContext = GetDC((HWND)nativeWndObj->GetNativeHandle());
 		QK_CORE_ASSERT(m_DeviceContext, "Windows failed to provide a device context!");
 
@@ -140,9 +140,9 @@ namespace Quirk {
 		QK_CORE_ASSERTEX(wglMakeCurrent(m_DeviceContext, m_GLContext), "Failed to make GL context current!");
 	}
 
-	void OpenGLContext::DestroyContext(Window& window) {
+	void OpenGLContext::DestroyContext(View<Window> window) {
 		QK_CORE_ASSERTEX(wglDeleteContext(m_GLContext), "Failed to delete context!");
-		QK_CORE_ASSERTEX(ReleaseDC((HWND)window.GetNativeHandle(), m_DeviceContext), "Failed to release DC!");
+		QK_CORE_ASSERTEX(ReleaseDC((HWND)window->GetNativeHandle(), m_DeviceContext), "Failed to release DC!");
 	}
 
 #endif // QK_PLATFORM_WINDOWS

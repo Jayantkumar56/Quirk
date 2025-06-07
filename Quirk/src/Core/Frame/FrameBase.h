@@ -6,13 +6,27 @@
 
 namespace Quirk {
 
+    class FrameManager;
+
+}
+
+namespace Quirk::Internals {
+
 	class FrameBase {
-		friend class FrameManager;
+		friend class ::Quirk::FrameManager;
 
 	public:
         virtual ~FrameBase() noexcept = default;
 
-		virtual void OnImguiUiUpdate()     { }
+        // called once when the frame is being created (after the constructor is called)
+        virtual void Init()      noexcept = 0;
+
+        // called once when the frame is being deleted (before the destructor is called)
+        virtual void Terminate() noexcept = 0;
+
+		virtual void OnUpdate()            { }
+        // will get called between Imgui::Begin() and Imgui::End()
+        //virtual void OnImguiUiUpdate() = 0;
 		virtual bool OnEvent(Event& event) { return false; }
 
 		// since frames are managed by the frame manager 
@@ -33,7 +47,11 @@ namespace Quirk {
 		std::string m_Title;
 	};
 
+}
+
+namespace Quirk {
+
     template <typename T>
-    concept FrameType = std::derived_from<T, FrameBase>;
+    concept FrameType = std::derived_from<T, Internals::FrameBase>;
 
 }

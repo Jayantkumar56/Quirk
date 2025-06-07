@@ -17,22 +17,16 @@ namespace QuirkEditor {
         Play
     };
 
-	class EditorFrame : 
-        public Quirk::Frame<
-            Quirk::FrameFeature::Window,
-            Quirk::FrameFeature::ImGuiContext,
-            Quirk::FrameFeature::Panels,
-            Quirk::FrameFeature::TitleBar
-        >
-    {
+    class EditorFrame final : public Quirk::ImguiFrame<Quirk::FrameFeature::Panels, Quirk::FrameFeature::TitleBar> {
 	public:
 		EditorFrame(Quirk::Scope<Quirk::Project> project) noexcept :
-				Frame        ( GetEditorFrameWindowSpec() ),
-                m_EditorMode ( EditorMode::Edit           ),
-                m_Project    ( std::move(project)         )
+                ImguiFrame   ( GetFrameSpec()     ),
+                m_EditorMode ( EditorMode::Edit   ),
+                m_Project    ( std::move(project) )
 		{}
 
-        void Init() noexcept;
+        virtual void Init()      noexcept override;
+        virtual void Terminate() noexcept override;
 
 		virtual void OnImguiUiUpdate() override {
 			// Disabling alt key for imgui to prevent navigation with alt key (problems when using editor cotrols)
@@ -49,15 +43,17 @@ namespace QuirkEditor {
         inline Quirk::ConstView<EditorFrameResourceManager> GetResourceManager() const noexcept { return &m_ResourceManager; }
 
     private:
-        inline Quirk::WindowSpecification GetEditorFrameWindowSpec() const noexcept {
-            return Quirk::WindowSpecification{
-			    .Title             { "Quirk Editor" },
-			    .Width             { 1600           },		.Height    { 900  },
-			    .MinWidth          { 1600           },		.MinHeight { 900  },
-			    .PosX              { 200            },		.PosY      { 50   },
-			    .VSyncOn           { true           },		.Maximized { true },
-			    .CustomTitleBar    { true           }
-		    };
+        inline Quirk::FrameInitContext GetFrameSpec() const noexcept {
+            return Quirk::FrameInitContext {
+                .WindowSpec{
+                    .Title             { "Quirk Editor" },
+                    .Width             { 1600           },		.Height    { 900  },
+                    .MinWidth          { 1600           },		.MinHeight { 900  },
+                    .PosX              { 200            },		.PosY      { 50   },
+                    .VSyncOn           { true           },		.Maximized { true },
+                    .CustomTitleBar    { true           }
+                }
+            };
         }
 
 	private:

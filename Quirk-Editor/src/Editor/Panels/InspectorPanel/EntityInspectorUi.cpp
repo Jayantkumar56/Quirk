@@ -33,7 +33,7 @@ namespace QuirkEditor {
 		        treeNodeFlags                   |= ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_DefaultOpen;
 
 		        ImGui::PushStyleColor(ImGuiCol_Text, frame->GetTheme()->GetColor(ColorName::DarkText));
-		        ImGui::PushFont(Quirk::FontManager::GetFont("ComponentTreeNode"));
+		        ImGui::PushFont(frame->GetFontManager()->GetFont("ComponentTreeNode"));
 
                 if ( ImGui::TreeNodeEx((void*)typeid(Component).hash_code(), treeNodeFlags, label.data()) ) {
                     ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
@@ -88,8 +88,10 @@ namespace QuirkEditor {
 
     template<>
     static void InspectorDraw<Quirk::Entity>::ComponentDraw(Quirk::View<EditorFrame> frame, Quirk::TagComponent& component) {
+        Quirk::View<Quirk::FontManager> fontManager = frame->GetFontManager();
+
         std::string& tag = component.Tag;
-        ImFont* labelFont = Quirk::FontManager::GetFont("PropertyLabel");
+        ImFont* labelFont = fontManager->GetFont("PropertyLabel");
 
         ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(10, ImGui::GetStyle().FramePadding.y));
 
@@ -104,9 +106,11 @@ namespace QuirkEditor {
 
     template<>
     static void InspectorDraw<Quirk::Entity>::ComponentDraw(Quirk::View<EditorFrame> frame, Quirk::TransformComponent& component) {
-        ImFont* buttonFont = Quirk::FontManager::GetFont(Quirk::FontWeight::Bold, 18);
-        ImFont* valuesFont = Quirk::FontManager::GetFont("DragFloatValue");
-        ImFont* labelFont  = Quirk::FontManager::GetFont("PropertyLabel");
+        Quirk::View<Quirk::FontManager> fontManager = frame->GetFontManager();
+
+        ImFont* buttonFont = fontManager->GetFont(Quirk::FontWeight::Bold, 18);
+        ImFont* valuesFont = fontManager->GetFont("DragFloatValue");
+        ImFont* labelFont  = fontManager->GetFont("PropertyLabel");
 
         // width of word "Position" is largest among the three also took extra 3 letters space as "xxx" for padding 
         auto size = ImGui::CalcTextSize("Positionxxx");
@@ -123,8 +127,10 @@ namespace QuirkEditor {
 
     template<>
     static void InspectorDraw<Quirk::Entity>::ComponentDraw(Quirk::View<EditorFrame> frame, Quirk::SpriteRendererComponent& component) {
+        Quirk::View<Quirk::FontManager> fontManager = frame->GetFontManager();
+
         std::string texturePathStr = "No Texture";
-        ImFont* labelFont = Quirk::FontManager::GetFont("PropertyLabel");
+        ImFont* labelFont = fontManager->GetFont("PropertyLabel");
         if (component.Texture != nullptr) {
         	//texturePathStr = component.Texture->GetPath().filename().string();
         }
@@ -140,7 +146,7 @@ namespace QuirkEditor {
             Quirk::ImguiUIUtility::Text("Color", labelFont);
         
         	ImGui::TableNextColumn();
-        	ImGui::PushFont(Quirk::FontManager::GetFont("DragFloatValue"));
+        	ImGui::PushFont(fontManager->GetFont("DragFloatValue"));
         	ImGui::ColorEdit4("##color", glm::value_ptr(component.Color));
         	ImGui::PopFont();
         
@@ -173,11 +179,11 @@ namespace QuirkEditor {
         		};
         
                 Quirk::FileDialogSpecification fileDialogSpec;
-        		fileDialogSpec.Title = L"Select Texture";
+        		fileDialogSpec.Title         = L"Select Texture";
         		fileDialogSpec.FileNameLabel = L"Texture Name";
-        		fileDialogSpec.Filters = filters;
-        		fileDialogSpec.NoOfFilters = sizeof(filters) / sizeof(Quirk::FileFilter);
-        		fileDialogSpec.ParentWindow = &(frame->GetWindow());
+        		fileDialogSpec.Filters       = filters;
+        		fileDialogSpec.NoOfFilters   = sizeof(filters) / sizeof(Quirk::FileFilter);
+        		fileDialogSpec.ParentWindow  = frame->GetWindow().Get();
         
         		std::filesystem::path filePath;
         		if (Quirk::FileDialog::OpenFile(fileDialogSpec, filePath)) {
@@ -212,9 +218,11 @@ namespace QuirkEditor {
 
     template<>
     static void InspectorDraw<Quirk::Entity>::ComponentDraw(Quirk::View<EditorFrame> frame, Quirk::CameraComponent& component) {
+        Quirk::View<Quirk::FontManager> fontManager = frame->GetFontManager();
+
         int currentProjection = component.Camera.GetProjectionType();
         const char* projectionTypes[] = { "Perspective", "Orthographic" };
-        ImFont* labelFont = Quirk::FontManager::GetFont("PropertyLabel");
+        ImFont* labelFont = fontManager->GetFont("PropertyLabel");
         
         if (ImGui::BeginTable("Propertycheckbox", 3)) {
         	ImGui::TableNextRow();

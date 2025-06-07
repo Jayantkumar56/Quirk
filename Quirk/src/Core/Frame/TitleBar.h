@@ -5,12 +5,18 @@
 #include "FrameBase.h"
 #include "Window.h"
 #include "Core/Input/Events.h"
-#include "Core/Imgui/ImguiUI.h"
+#include "Core/Frame/ImguiUI.h"
+
+namespace Quirk::Internals {
+    
+    class TitleBarManager;
+
+}
 
 namespace Quirk {
 
 	class TitleBar {
-        friend class TitleBarManager;
+        friend class ::Quirk::Internals::TitleBarManager;
 
 	public:
 		virtual ~TitleBar() = default;

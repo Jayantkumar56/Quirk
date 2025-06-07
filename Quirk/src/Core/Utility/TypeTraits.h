@@ -28,9 +28,6 @@ namespace Quirk {
     using TrueType  = BoolConstant<true>;
     using FalseType = BoolConstant<false>;
 
-    constexpr bool TrueType_V  = TrueType::Value;
-    constexpr bool FalseType_V = FalseType::Value;
-
 
 
     template<typename T>
@@ -106,45 +103,123 @@ namespace Quirk {
 
 
 
-    template<auto Val1, auto Val2, auto ...ValList>
-    requires EnumValue<Val1> && EnumValue<Val2> && (EnumValue<ValList> && ...)
-    struct SameEnumType {
-        using Type1 = std::decay_t<decltype(Val1)>;
-        using Type2 = std::decay_t<decltype(Val2)>;
-        static constexpr bool Value = std::is_same_v<Type1, Type2> && (SameEnumType<Val1, ValList>::Value && ...);
+    template<auto Val>
+    requires EnumValue<Val>
+    struct EnumType { using Type = std::decay_t<decltype(Val)>; };
+
+    template<auto Val>
+    requires EnumValue<Val>
+    using EnumType_T = EnumType<Val>::Type;
+
+
+
+    template<auto ...List>
+    requires (EnumValue<List> && ...)
+    struct SameEnumType {};
+
+    template<>
+    struct SameEnumType<> : TrueType {};
+
+    template<auto Element>
+    requires EnumValue<Element>
+    struct SameEnumType<Element> : TrueType {};
+
+    template<auto Element1, auto ...List>
+    requires EnumValue<Element1> && (EnumValue<List> && ...)
+    struct SameEnumType<Element1, List...> {
+        static constexpr bool Value = (std::is_same_v<std::decay_t<decltype(Element1)>, std::decay_t<decltype(List)>> && ...);
     };
 
-    template<auto Val1, auto Val2, auto ...ValList>
-    constexpr bool SameEnumType_V = SameEnumType<Val1, Val2, ValList...>::Value;
+    template<auto ...List>
+    requires (EnumValue<List> && ...)
+    constexpr bool SameEnumType_V = SameEnumType<List...>::Value;
 
-    template<auto Val1, auto Val2, auto ...ValList>
-    concept SameEnum = SameEnumType_V<Val1, Val2, ValList...>;
-
-
-
-    template<auto Key, auto ListVal1, auto ...List>
-    requires SameEnum<Key, ListVal1, List...>
-    struct IsEnumValuePresent { static constexpr bool Value = (Key == ListVal1) || ((Key == List) || ...); };
-
-    template<auto Key, auto ListVal1, auto ...List>
-    requires SameEnum<Key, ListVal1, List...>
-    constexpr bool IsEnumValuePresent_V = IsEnumValuePresent<Key, ListVal1, List...>::Value;
+    template<auto ...List>
+    concept SameEnum = SameEnumType_V<List...>;
 
 
 
-    template<auto Type1, auto ...List>
-    requires EnumValue<Type1> && (EnumValue<List> && ...)
-    struct DuplicatesInEnumValues {
-        static constexpr bool Value = ((Type1 == List) || ...) || DuplicatesInEnumValues<List...>::Value;
+    template<auto Key, auto ...List>
+    requires SameEnum<Key, List...>
+    struct IsEnumValuePresent { static constexpr bool Value = ((Key == List) || ...); };
+
+    template<auto Key>
+    requires EnumValue<Key>
+    struct IsEnumValuePresent<Key> : FalseType {};
+
+    template<auto Key, auto ...List>
+    requires SameEnum<Key, List...>
+    constexpr bool IsEnumValuePresent_V = IsEnumValuePresent<Key, List...>::Value;
+
+
+
+    template<auto ...List>
+    requires SameEnum<List...>
+    struct DuplicatesInEnumValues;
+
+    template<auto Element1, auto ...List>
+    requires EnumValue<Element1> && (EnumValue<List> && ...)
+    struct DuplicatesInEnumValues<Element1, List...> {
+        static constexpr bool Value = ((Element1 == List) || ...) || DuplicatesInEnumValues<List...>::Value;
     };
 
-    template<auto Type>
-    requires EnumValue<Type>
-    struct DuplicatesInEnumValues<Type> : FalseType {};
+    template<auto Element>
+    requires EnumValue<Element>
+    struct DuplicatesInEnumValues<Element> : FalseType {}; 
 
-    template<auto Type1, auto ...List>
-    requires EnumValue<Type1> && (EnumValue<List> && ...)
+    template<>
+    struct DuplicatesInEnumValues<> : FalseType {};
+
+    template<auto ...List>
+    requires (EnumValue<List> && ...)
     constexpr bool DuplicatesInEnumValues_V = DuplicatesInEnumValues<List...>::Value;
+
+    template<auto ...List>
+    concept NoDuplicatesInEnumValues = !DuplicatesInEnumValues_V<List...>;
+
+
+
+    template<auto ...Elements>
+    requires (EnumValue<Elements> && ...)
+    struct EnumValueList {};
+
+
+    // TODO: think about use of the Sort function and it's performance at compile time
+    template<auto Element1, auto ...List>
+    requires SameEnumType_V<Element1, List...>
+    struct SortEnumValues {
+    private:
+        using ArrayType = std::array<EnumType_T<Element1>, sizeof...(List) + 1>;
+
+        static consteval ArrayType Sort() {
+            ArrayType values = { Element1, List... };
+
+            // labmda for ascending order sort
+            std::ranges::sort(values, [](auto lhs, auto rhs) {
+                return static_cast<int>(lhs) < static_cast<int>(rhs);
+            });
+
+            return values;
+        }
+
+        template<ArrayType Array, typename IndexSequence>
+        struct EnumValueListGetterImpl;
+
+        template<ArrayType Array, size_t ...Idx>
+        struct EnumValueListGetterImpl<Array, std::index_sequence<Idx...>> {
+            using Type = EnumValueList<Array[Idx]...>;
+        };
+
+        template<ArrayType Array>
+        using EnumValueListGetter = EnumValueListGetterImpl<Array, std::make_index_sequence<Array.size()>>;
+        
+    public:
+        using Type = EnumValueListGetter<Sort()>::Type;
+    };
+
+    template<auto ...List>
+    requires SameEnumType_V<List...>
+    using SortEnumValues_T = SortEnumValues<List...>::Type;
 
     //_____________________________________________________________________________________________________________________________
 
@@ -305,7 +380,7 @@ namespace Quirk {
     struct IsPresent { static constexpr bool Value = (std::is_same_v<Key, ListVal1> || (std::is_same_v<Key, List> || ...)); };
 
     template<typename Key, typename ListVal1, typename ...List>
-    constexpr bool IsPresent_V = IsPresent<Key, ListVal1, List>::Value;
+    constexpr bool IsPresent_V = IsPresent<Key, ListVal1, List...>::Value;
 
 
 
@@ -353,6 +428,19 @@ namespace Quirk {
 
 
 
+    template<template<auto> typename Converter, typename EnumValList>
+    struct EnumValueListToTypeList;
+
+    template<template<auto> typename Converter, auto ...Elements>
+    struct EnumValueListToTypeList<Converter, EnumValueList<Elements...>> {
+        using Type = TypeList<typename Converter<Elements>::Type...>;
+    };
+
+    template<template<auto> typename Converter, typename EnumValList>
+    using EnumValueListToTypeList_T = EnumValueListToTypeList<Converter, EnumValList>::Type;
+
+
+
     template<typename List1, typename List2>
     struct IsSameTypeList : FalseType {};
 
@@ -367,24 +455,6 @@ namespace Quirk {
 
     template<typename List1, typename List2>
     constexpr bool IsSameTypeList_V = IsSameTypeList<List1, List2>::Value;
-
-
-
-    template<typename T, template<typename> typename TupleGetter, typename List>
-    struct Creator;
-
-    template<typename T, template<typename> typename TupleGetter, typename... Elements>
-    struct Creator<T, TupleGetter, TypeList<Elements...>> {
-        template<typename... Args>
-        static T Create(Args&&... args) {
-            return T(TupleGetter<Elements>::Get(std::forward<Args>(args)...)...);
-        }
-    };
-
-    template<typename T, template<typename> typename TupleGetter, typename List, typename... Args>
-    T ConstructFromTypeList(Args&&... args) {
-        return Creator<T, TupleGetter, List>::Create(std::forward<Args>(args)...);
-    }
 
 
 
@@ -470,51 +540,6 @@ namespace Quirk {
     template<template<typename> typename Condition, typename List>
     using FilterTypes_T = typename FilterTypesImpl<Condition, TypeList<>, List>::Type;
 
-    //_____________________________________________________________________________________________________________________________
-
-
-
-    //=============================================================================================================================
-    //--------- Inheritance Traits ------------------------------------------------------------------------------------------------
-
-    enum class InheritanceVisibility {
-        Public,
-        Protected,
-        Private
-    };
-
-
-
-    template<InheritanceVisibility Visibility, typename List>
-    struct InheritFromTypeList;
-
-    template<typename... Elements>
-    struct InheritFromTypeList<InheritanceVisibility::Public, TypeList<Elements...>> : public Elements... {
-        template<TupleType ...Tuples>
-        requires (sizeof...(Tuples) == sizeof...(Elements))
-        InheritFromTypeList(Tuples&& ...tuples) : 
-                Elements(std::make_from_tuple<Elements>(std::forward<Tuples>(tuples)))...
-        {}
-    };
-
-    template<typename... Elements>
-    struct InheritFromTypeList<InheritanceVisibility::Protected, TypeList<Elements...>> : protected Elements... {
-        template<TupleType ...Tuples>
-        requires (sizeof...(Tuples) == sizeof...(Elements))
-        InheritFromTypeList(Tuples&& ...tuples) :
-                Elements(std::make_from_tuple<Elements>(std::forward<Tuples>(tuples)))...
-        {}
-    };
-
-    template<typename... Elements>
-    struct InheritFromTypeList<InheritanceVisibility::Private, TypeList<Elements...>> : private Elements... {
-        template<TupleType ...Tuples>
-        requires (sizeof...(Tuples) == sizeof...(Elements))
-        InheritFromTypeList(Tuples&& ...tuples) :
-                Elements(std::make_from_tuple<Elements>(std::forward<Tuples>(tuples)))...
-        {}
-    };
-    
     //_____________________________________________________________________________________________________________________________
 
 }

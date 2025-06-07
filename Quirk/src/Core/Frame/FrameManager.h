@@ -13,24 +13,30 @@ namespace Quirk {
 
     class FrameManager {
     public:
+        ~FrameManager() {
+            for (auto& frame : m_Frames) {
+                frame->Terminate();
+            }
+        }
+
         template<FrameType T, typename ...Args>
         inline T* AddFrame(Args&& ...args) {
             T* frame = new T(std::forward<Args>(args)...);
-            m_Frames.emplace_back(static_cast<FrameBase*>(frame));
+            frame->Init();
+            m_Frames.emplace_back(static_cast<Internals::FrameBase*>(frame));
             return frame;
         }
 
         inline void RemoveFrame(std::string_view frameName) {
-            for (size_t i = 0; i < m_Frames.size(); ++i) {
-                if (m_Frames[i]->m_Title == frameName) {
-                    m_Frames.erase(m_Frames.begin() + i);
+            for (auto& frame : m_Frames) {
+                if (frame->m_Title == frameName) {
+                    frame->CloseFrame();
+                    return;
                 }
             }
 
             QK_WARN("Trying to remove {0} frame which doesn't exist in the manager!", frameName);
         }
-
-        inline ImFontAtlas* GetFontAtlas() const { return m_FontManager.m_FontAtlas; }
 
         inline void UpdateFrames() {
             // if there are no frames in the application we can terminate the Application
@@ -40,17 +46,14 @@ namespace Quirk {
             }
 
             for (size_t i = 0; i < m_Frames.size(); ++i) {
-                // setting graphical and imgui context for currrent frame
-                m_Frames[i]->MakeContextCurrent();
-
-                // if frame->m_Runing is set false that means the frame should be deleted
-                // decremented i because the (i+1)th element will now be (i)th element which needs to be processed
-                // continued this iteration as there might be no next element in the vector
                 if (!m_Frames[i]->m_Running) {
+                    // on destruction titlebar and panel deletes some gpu resources 
+                    // thus correct context must be set before deleting any resource
+                    m_Frames[i]->MakeContextCurrent();
+                    m_Frames[i]->Terminate();
                     m_Frames.erase(m_Frames.begin() + i--);
                     continue;
                 }
-
 
                 m_Frames[i]->UpdateFrame();
             }
@@ -68,8 +71,7 @@ namespace Quirk {
         }
 
     private:
-        FontManager m_FontManager;
-        std::vector<Scope<FrameBase>> m_Frames;
+        std::vector<Scope<Internals::FrameBase>> m_Frames;
     };
 
 }

@@ -3,17 +3,18 @@
 #pragma once
 
 #include "Window.h"
+#include "FrameInitContext.h"
 
 
-namespace Quirk {
+namespace Quirk::Internals {
 
     class WindowManager {
     public:
-        WindowManager(const WindowSpecification& spec) : 
-                m_Window(spec) 
+        WindowManager(const FrameInitContext& initContext, auto& frame) noexcept : 
+                m_Window(initContext.WindowSpec) 
         {}
 
-        inline Window& GetWindow() noexcept { return m_Window; }
+        inline View<Window> GetWindow() noexcept { return &m_Window; }
 
     private:
         Window m_Window;

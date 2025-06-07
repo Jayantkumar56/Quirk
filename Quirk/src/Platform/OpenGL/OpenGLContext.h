@@ -32,10 +32,10 @@ namespace Quirk {
 		inline static WGL s_WGL;
 
 	public:
-		OpenGLContext(Window& window);
+		OpenGLContext(View<Window> window);
 		~OpenGLContext() = default;
 
-		virtual void DestroyContext(Window& window) override;
+		virtual void DestroyContext(View<Window> window) override;
 
 		virtual inline void MakeContextCurrent() const override {
 			QK_CORE_ASSERTEX(wglMakeCurrent(m_DeviceContext, m_GLContext), "Failed to make GL context current!");

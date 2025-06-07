@@ -3,12 +3,15 @@
 #pragma once
 
 #include "TitleBar.h"
+#include "FrameInitContext.h"
 
 
-namespace Quirk {
+namespace Quirk::Internals {
 
     class TitleBarManager {
     public:
+        TitleBarManager(const FrameInitContext& initContext, auto& frame) noexcept {}
+
         template<TitleBarType T, typename ...Args>
         inline void SetTitleBar(auto* frame, Args&& ... args) {
             // TODO: refactor it for proper error logging and checking
@@ -20,7 +23,7 @@ namespace Quirk {
                 m_TitleBar = Scope<TitleBar>(static_cast<TitleBar*>(new T(std::forward<Args>(args)...)));
             }
 
-            m_TitleBar->m_Window = &frame->GetWindow();
+            m_TitleBar->m_Window = frame->GetWindow();
         }
 
     protected:
