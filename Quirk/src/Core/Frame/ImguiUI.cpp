@@ -3,11 +3,9 @@
 
 #include "Core/Core.h"
 #include "Core/Renderer/RendererAPI.h"
-#include "Platform/OpenGL/OpenGLContext.h"
 #include "Core/Frame/ImguiUI.h"
 
 #include "Core/Frame/Window.h"
-#include "Core/Frame/GraphicalContext.h"
 
 #ifdef QK_PLATFORM_WINDOWS
 #include "wglext.h"
@@ -18,6 +16,7 @@
 #include "backends/imgui_impl_opengl3.h"
 
 #include "Core/Application/Application.h"
+#include "Platform/OpenGL/WGLExtensions.h"
 
 // From Glad.h
 #define GL_FALSE 0
@@ -27,7 +26,7 @@ namespace Quirk {
 
 #ifdef QK_PLATFORM_WINDOWS
 
-	void ImguiContext::Init(View<Window> window, ConstView<GraphicalContext> context) {
+	void ImguiContext::Init(View<Window> window, View<RHI::GraphicalContext> context) {
         m_GraphicalContext = context;
 
 		// Setup Dear ImGui context with the fontAtlas
@@ -57,13 +56,16 @@ namespace Quirk {
 	}
 
 	void ImguiContext::Terminate() {
+        if (!m_ImguiContext)
+            return;
+
 		// Cleanup
 		ImGui_ImplOpenGL3_Shutdown();
 		ImGui_ImplWin32_Shutdown();
 		ImGui::DestroyContext(m_ImguiContext);
 	}
 
-	void ImguiContext::Begin() const {
+	void ImguiContext::Begin() {
 		// Start the Dear ImGui frame
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplWin32_NewFrame();
@@ -72,7 +74,7 @@ namespace Quirk {
 	    ImGui::DockSpaceOverViewport(0, ImGui::GetMainViewport());
 	}
 
-	void ImguiContext::End() const {
+	void ImguiContext::End() {
 		ImGuiIO& io = ImGui::GetIO();
 
 		ImGui::Render();
@@ -88,7 +90,7 @@ namespace Quirk {
 		}
 	}
 
-	void ImguiContext::UpdateViewPorts() const {
+	void ImguiContext::UpdateViewPorts()  {
 		for (auto* viewport : m_ImguiContext->Viewports) {
 			if (viewport->PlatformHandle) {
 				MSG msg;
@@ -101,7 +103,7 @@ namespace Quirk {
 		}
 	}
 
-	void ImguiContext::InitForOpenGL(View<Window> window, ConstView<GraphicalContext> context) {
+	void ImguiContext::InitForOpenGL(View<Window> window, View<RHI::GraphicalContext> context) {
 		const char* glsl_version = "#version 410";
 
 		ImGui_ImplWin32_InitForOpenGL((HWND)window->GetNativeHandle());
@@ -113,7 +115,7 @@ namespace Quirk {
 			ImGuiPlatformIO& platform_io = ImGui::GetPlatformIO();
 
 			// TO DO: make a permanent solution to save the GraphicalContext in ImguiContext
-			io.UserData = (void*)((OpenGLContext*)context.Get())->GetGLContext();
+			io.UserData = (void*)((OpenGL::GraphicalContext*)context.Get())->GetGLContext();
 
 			platform_io.Renderer_CreateWindow = [] (ImGuiViewport* viewport) {
 				QK_CORE_ASSERT(viewport->RendererUserData == NULL, "Non Empty RendererUserData (from imgui)");
@@ -141,7 +143,7 @@ namespace Quirk {
 				};
 
 				QK_CORE_ASSERTEX(
-					OpenGLContext::s_WGL.ChoosePixelFormatARB(data->DeviceContext, pixelAttribs, NULL, 1, &pixelFormat, &numPixelFormat),
+					OpenGL::WindowsOpenGLContext::GetWGLExtensions().ChoosePixelFormatARB(data->DeviceContext, pixelAttribs, NULL, 1, &pixelFormat, &numPixelFormat),
 					"Failed to choose pixel format!"
 				);
 

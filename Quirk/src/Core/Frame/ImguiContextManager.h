@@ -17,6 +17,10 @@ namespace Quirk::Internals {
                 m_FontManager      ( ImGui::GetIO().Fonts                                      )
         {}
 
+        ~ImguiContextManager() {
+            m_ImguiContext.Terminate();
+        }
+
         inline void MakeImguiContextCurrent() noexcept {
             m_ImguiContext.MakeImguiContextCurrent();
         }
@@ -33,7 +37,7 @@ namespace Quirk::Internals {
         virtual void OnImguiUiUpdate() = 0;
 
     private:
-        inline ImguiContext CreateImguiContext(View<Window> window, View<GraphicalContext> graphicalContext) {
+        inline ImguiContext CreateImguiContext(View<Window> window, View<RHI::GraphicalContext> graphicalContext) {
             ImguiContext context;
             context.Init(window, graphicalContext);
             return context;
@@ -42,7 +46,7 @@ namespace Quirk::Internals {
     private:
         // the graphical context on which imgui context is created 
         // must live longer than the imgui context 
-        View<GraphicalContext> m_GraphicalContext;
+        View<RHI::GraphicalContext> m_GraphicalContext;
 
         ImguiContext m_ImguiContext;
         FontManager  m_FontManager;

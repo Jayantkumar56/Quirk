@@ -19,7 +19,7 @@ namespace QuirkEditor {
 
     class EditorFrame final : public Quirk::ImguiFrame<Quirk::FrameFeature::Panels, Quirk::FrameFeature::TitleBar> {
 	public:
-		EditorFrame(Quirk::Scope<Quirk::Project> project) noexcept :
+		inline EditorFrame(Quirk::Scope<Quirk::Project> project) noexcept :
                 ImguiFrame   ( GetFrameSpec()     ),
                 m_EditorMode ( EditorMode::Edit   ),
                 m_Project    ( std::move(project) )
@@ -52,6 +52,9 @@ namespace QuirkEditor {
                     .PosX              { 200            },		.PosY      { 50   },
                     .VSyncOn           { true           },		.Maximized { true },
                     .CustomTitleBar    { true           }
+                },
+                .GraphicsAPI{
+                    Quirk::RHI::GraphicsAPI::OpenGL
                 }
             };
         }

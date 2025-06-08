@@ -1,25 +1,119 @@
 
 
 #include "Qkpch.h"
-#include "Core/Core.h"
 
-#include "OpenGLContext.h"
-#include "glad/glad.h"
-
-#include "Core/Frame/Window.h"
-
-namespace Quirk {
 
 #ifdef QK_PLATFORM_WINDOWS
 
-	Wglproc OpenGLContext::GetProcAddressWGL(const char* procName) {	
-		if (const Wglproc proc = (Wglproc)wglGetProcAddress(procName); proc) {
-			return proc;
-		}
-		return (Wglproc)GetProcAddress(OpenGLContext::s_WGL.OpenGL32DLL, procName);
-	}
+#include "WindowsOpenGLContext.h"
+#include "WGLExtensions.h"
 
-	void OpenGLContext::Init() {
+#include "glad/glad.h"
+
+
+
+namespace Quirk::OpenGL {
+
+    typedef void (*Wglproc)(void);
+
+    static Wglproc GetProcAddressWGL(const char* procName);
+
+    Internals::WGLExtensions WindowsOpenGLContext::s_WGL{};
+
+
+    void WindowsOpenGLContext::CreateContext(View<Window> window) noexcept {
+        WindowsWindow* nativeWndObj = (WindowsWindow*)window->GetNativeWindowObject();
+		m_DeviceContext = GetDC((HWND)nativeWndObj->GetNativeHandle());
+		QK_CORE_ASSERT(m_DeviceContext, "Windows failed to provide a device context!");
+
+		int pixelFormat = 0;
+		unsigned int numPixelFormat = 0;
+
+		const int pixelAttribs[] = {
+			WGL_DRAW_TO_WINDOW_ARB,		GL_TRUE,
+			WGL_SUPPORT_OPENGL_ARB,		GL_TRUE,
+			WGL_DOUBLE_BUFFER_ARB,		GL_TRUE,
+			WGL_ACCELERATION_ARB,		WGL_FULL_ACCELERATION_ARB,
+			WGL_PIXEL_TYPE_ARB,			WGL_TYPE_RGBA_ARB,
+			WGL_COLOR_BITS_ARB,			32,
+			WGL_DEPTH_BITS_ARB,			24,
+			WGL_STENCIL_BITS_ARB,		8,
+			WGL_SAMPLE_BUFFERS_ARB,		GL_TRUE,
+			WGL_SAMPLES_ARB,			4,
+			0, // End
+		};
+
+		QK_CORE_ASSERTEX(
+			s_WGL.ChoosePixelFormatARB(m_DeviceContext, pixelAttribs, NULL, 1, &pixelFormat, &numPixelFormat),
+			"Failed to choose pixel format!"
+		);
+
+		PIXELFORMATDESCRIPTOR PFD;
+		QK_CORE_ASSERTEX(
+			DescribePixelFormat(m_DeviceContext, pixelFormat, sizeof(PFD), &PFD),
+			"Failed to describe pixel format!"
+		);
+		QK_CORE_ASSERTEX(SetPixelFormat(m_DeviceContext, pixelFormat, &PFD), "Unable to set pixel format!");
+
+		const int attribs[] = {
+			WGL_CONTEXT_MAJOR_VERSION_ARB, 4,
+			WGL_CONTEXT_MINOR_VERSION_ARB, 6,
+			WGL_CONTEXT_LAYER_PLANE_ARB,   0, // main plane
+			WGL_CONTEXT_FLAGS_ARB,         WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB | WGL_CONTEXT_DEBUG_BIT_ARB,
+			WGL_CONTEXT_PROFILE_MASK_ARB,  WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
+			0
+		};
+
+		m_GLContext = s_WGL.CreateContextAttribsARB(m_DeviceContext, NULL, attribs);
+		QK_CORE_ASSERT(m_GLContext, "Could not create wgl context!");
+		QK_CORE_ASSERTEX(wglMakeCurrent(m_DeviceContext, m_GLContext), "Failed to make GL context current!");
+    }
+
+    void WindowsOpenGLContext::DestroyContext(View<Window> window) noexcept {
+        QK_CORE_ASSERTEX(
+            wglDeleteContext(m_GLContext),
+            "Failed to delete context!"
+        );
+
+        QK_CORE_ASSERTEX(
+            ReleaseDC((HWND)window->GetNativeHandle(), m_DeviceContext),
+            "Failed to release DC!"
+        );
+    }
+
+    void WindowsOpenGLContext::SwapBuffer() noexcept {
+        QK_CORE_ASSERTEX(
+            SwapBuffers(m_DeviceContext), 
+            "Failed to Swap Buffer"
+        );
+    }
+
+    void WindowsOpenGLContext::SetVSync(int interval) noexcept {
+        QK_CORE_ASSERTEX(
+            s_WGL.SwapIntervalEXT(interval), 
+            "Failed to Set VSync!"
+        );
+    }
+
+    void WindowsOpenGLContext::MakeContextCurrent() noexcept {
+        QK_CORE_ASSERTEX(
+            wglMakeCurrent(m_DeviceContext, m_GLContext),
+            "Failed to make GL context current!"
+        );
+    }
+
+    static Wglproc GetProcAddressWGL(const char* procName) {
+        if (Wglproc proc = (Wglproc)wglGetProcAddress(procName); proc) {
+            return proc;
+        }
+
+        return (Wglproc)GetProcAddress(WindowsOpenGLContext::GetWGLExtensions().OpenGL32DLL, procName);
+    }
+
+    void WindowsOpenGLContext::Init() {
+        if (s_WGL.OpenGL32DLL)
+            return;
+
 		// Creating a temporary window
 		HWND tempWindowHandle = ::CreateWindowExW(
 			0,
@@ -92,60 +186,6 @@ namespace Quirk {
 		QK_CORE_ASSERTEX(DestroyWindow(tempWindowHandle),                "Failed to destroy window!");
 	}
 
-	OpenGLContext::OpenGLContext(View<Window> window){
-		WindowsWindow* nativeWndObj = (WindowsWindow*)window->GetNativeWindowObject();
-		m_DeviceContext = GetDC((HWND)nativeWndObj->GetNativeHandle());
-		QK_CORE_ASSERT(m_DeviceContext, "Windows failed to provide a device context!");
-
-		int pixelFormat = 0;
-		unsigned int numPixelFormat = 0;
-
-		const int pixelAttribs[] = {
-			WGL_DRAW_TO_WINDOW_ARB,		GL_TRUE,
-			WGL_SUPPORT_OPENGL_ARB,		GL_TRUE,
-			WGL_DOUBLE_BUFFER_ARB,		GL_TRUE,
-			WGL_ACCELERATION_ARB,		WGL_FULL_ACCELERATION_ARB,
-			WGL_PIXEL_TYPE_ARB,			WGL_TYPE_RGBA_ARB,
-			WGL_COLOR_BITS_ARB,			32,
-			WGL_DEPTH_BITS_ARB,			24,
-			WGL_STENCIL_BITS_ARB,		8,
-			WGL_SAMPLE_BUFFERS_ARB,		GL_TRUE,
-			WGL_SAMPLES_ARB,			4,
-			0, // End
-		};
-
-		QK_CORE_ASSERTEX(
-			s_WGL.ChoosePixelFormatARB(m_DeviceContext, pixelAttribs, NULL, 1, &pixelFormat, &numPixelFormat),
-			"Failed to choose pixel format!"
-		);
-
-		PIXELFORMATDESCRIPTOR PFD;
-		QK_CORE_ASSERTEX(
-			DescribePixelFormat(m_DeviceContext, pixelFormat, sizeof(PFD), &PFD),
-			"Failed to describe pixel format!"
-		);
-		QK_CORE_ASSERTEX(SetPixelFormat(m_DeviceContext, pixelFormat, &PFD), "Unable to set pixel format!");
-
-		const int attribs[] = {
-			WGL_CONTEXT_MAJOR_VERSION_ARB, 4,
-			WGL_CONTEXT_MINOR_VERSION_ARB, 6,
-			WGL_CONTEXT_LAYER_PLANE_ARB,   0, // main plane
-			WGL_CONTEXT_FLAGS_ARB,         WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB | WGL_CONTEXT_DEBUG_BIT_ARB,
-			WGL_CONTEXT_PROFILE_MASK_ARB,  WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
-			0
-		};
-
-		m_GLContext = s_WGL.CreateContextAttribsARB(m_DeviceContext, NULL, attribs);
-		QK_CORE_ASSERT(m_GLContext, "Could not create wgl context!");
-		QK_CORE_ASSERTEX(wglMakeCurrent(m_DeviceContext, m_GLContext), "Failed to make GL context current!");
-	}
-
-	void OpenGLContext::DestroyContext(View<Window> window) {
-		QK_CORE_ASSERTEX(wglDeleteContext(m_GLContext), "Failed to delete context!");
-		QK_CORE_ASSERTEX(ReleaseDC((HWND)window->GetNativeHandle(), m_DeviceContext), "Failed to release DC!");
-	}
-
-#endif // QK_PLATFORM_WINDOWS
-
 }
 
+#endif // QK_PLATFORM_WINDOWS

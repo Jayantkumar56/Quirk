@@ -3,7 +3,6 @@
 #pragma once
 
 #include "Core/Renderer/RendererAPI.h"
-#include "Platform/OpenGL/OpenGLContext.h"
 
 
 namespace Quirk {

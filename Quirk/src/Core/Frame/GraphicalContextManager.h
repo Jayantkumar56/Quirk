@@ -2,29 +2,38 @@
 
 #pragma once
 
-#include "GraphicalContext.h"
-#include "Core/Utility/View.h"
+#include "Core/RHI/RenderSystem.h"
 #include "FrameInitContext.h"
+
 
 namespace Quirk::Internals {
 
     class GraphicalContextManager {
     public:
-        GraphicalContextManager(const FrameInitContext& initContext, auto& frame) :
-                m_Context(GraphicalContext::Create(frame.GetWindow()))
+        GraphicalContextManager(const FrameInitContext& initContext, auto& frame) noexcept :
+                m_Window       ( frame.GetWindow()                                     ),
+                m_RenderSystem ( initContext.GraphicsAPI                               ),
+                m_Context      ( m_RenderSystem.GetFactory()->CreateGraphicalContext() )
         {
-            m_Context->MakeContextCurrent();
+            m_Context->CreateContext(m_Window);
         }
 
-        inline View<GraphicalContext> GetGraphicalContext() const noexcept {
+        ~GraphicalContextManager() noexcept {
+            m_Context->DestroyContext(m_Window);
+        }
+
+        inline View<RHI::GraphicalContext> GetGraphicalContext() const noexcept {
             return m_Context.get();
         }
 
-        inline void SwapBuffer() const   { m_Context->SwapBuffer();     }
-        inline void SetVSync(int toggle) { m_Context->SetVSync(toggle); }
+        inline void SwapBuffer()   const noexcept { m_Context->SwapBuffer();     }
+        inline void SetVSync(int toggle) noexcept { m_Context->SetVSync(toggle); }
 
     private:
-        Scope<GraphicalContext> m_Context;
+        View<Window>      m_Window;
+        RHI::RenderSystem m_RenderSystem;
+
+        Scope<RHI::GraphicalContext> m_Context;
     };
 
 }

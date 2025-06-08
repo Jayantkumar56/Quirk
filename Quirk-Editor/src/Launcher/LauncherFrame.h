@@ -44,6 +44,9 @@ namespace QuirkEditor {
                     .PosX              { 200            },      .PosY      { 50    },
                     .VSyncOn           { true           },      .Maximized { false },
                     .CustomTitleBar    { true           }
+                },
+                .GraphicsAPI{
+                    Quirk::RHI::GraphicsAPI::OpenGL
                 }
             };
         }

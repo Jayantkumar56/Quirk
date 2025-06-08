@@ -3,7 +3,7 @@
 #pragma once
 
 #include "Window.h"
-
+#include "Core/RHI/GraphicsAPI.h"
 
 namespace Quirk {
 
@@ -18,6 +18,11 @@ namespace Quirk {
         //-------------------------------------------------------------------
         // for FrameFeature::Widow
         WindowSpecification WindowSpec;
+        //___________________________________________________________________
+
+        //-------------------------------------------------------------------
+        // for FrameFeature::GraphicalContext
+        RHI::GraphicsAPI GraphicsAPI;
         //___________________________________________________________________
 
     };

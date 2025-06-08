@@ -1,4 +1,5 @@
 
+
 #pragma once
 
 #if QK_PLATFORM_WINDOWS
@@ -6,10 +7,7 @@
 #endif // QK_PLATFORM_WINDOWS
 
 #include "Core/Core.h"
-#include "Core/Renderer/RendererAPI.h"
-#include "Core/Frame/GraphicalContext.h"
 
-#include "glm/glm.hpp"
 
 namespace Quirk {
 

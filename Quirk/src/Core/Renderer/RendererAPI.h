@@ -19,7 +19,7 @@ namespace Quirk {
 		~RendererAPI() {}
 
 		static inline API GetAPI() { 
-			QK_CORE_ASSERT(s_API != API::Invalid, "RendererAPI is not Initialized yet!");
+			//QK_CORE_ASSERT(s_API != API::Invalid, "RendererAPI is not Initialized yet!");
 			return s_API; 
 		}
 
@@ -38,7 +38,7 @@ namespace Quirk {
 		virtual inline void DrawVertices(uint32_t vertexCount) = 0;
 
 	private:
-		static API s_API;
+		inline static API s_API = API::OpenGL;
 	};
 
 }

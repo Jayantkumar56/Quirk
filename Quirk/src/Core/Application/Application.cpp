@@ -6,7 +6,6 @@
 #include "Core/Input/Events.h"
 #include "Core/Input/MouseEvents.h"
 #include "Core/Application/Application.h"
-#include "Core/Frame/GraphicalContext.h"
 
 #include "Core/Renderer/Renderer.h"
 #include "Core/Renderer/Renderer2D.h"
@@ -26,7 +25,7 @@ namespace Quirk {
 
 		EventDispatcher::RegisterEventCallback(QK_BIND_EVENT_FN(Application::OnEvent));
 
-		GraphicalContext::Init(renderingAPI);
+		//GraphicalContext::Init(renderingAPI);
 		RenderCommands::Init(renderingAPI);
 	}
 
@@ -50,7 +49,7 @@ namespace Quirk {
 	}
 
 	bool Application::OnWindowResize(WindowResizeEvent& event) {
-		RenderCommands::UpdateViewPort(event.GetWidth(), event.GetHeight());
+		//RenderCommands::UpdateViewPort(event.GetWidth(), event.GetHeight());
 		return false;
 	}
 
