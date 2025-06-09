@@ -6,8 +6,8 @@
 
 #include "Core/Frame/Panel.h"
 #include "Core/Scene/Scene.h"
-#include "Core/Renderer/RendererPrimitives/FrameBuffer.h"
 #include "Core/Renderer/EditorSceneRenderer.h"
+#include "Core/RHI/FrameBuffer.h"
 
 namespace QuirkEditor {
 
@@ -37,7 +37,8 @@ namespace QuirkEditor {
 
 		EditorCamera m_Camera;
 
-        Quirk::Ref<Quirk::FrameBuffer> m_Frame;
+        Quirk::Ref<Quirk::RHI::FrameBuffer> m_FrameBuffer;
+
         Quirk::EditorSceneRenderer     m_SceneRenderer;
 
         Quirk::View<EditorFrame> m_EditorFrame;

@@ -4,13 +4,13 @@
 
 #include "Core/Core.h"
 #include "Core/Scene/Scene.h"
-#include "Core/Renderer/RendererPrimitives/FrameBuffer.h"
+#include "Core/RHI/FrameBuffer.h"
 
 namespace Quirk {
 
     class EditorSceneRenderer {
     public:
-        EditorSceneRenderer(View<Scene> scene, View<FrameBuffer> frameBuffer) noexcept :
+        EditorSceneRenderer(View<Scene> scene, View<RHI::FrameBuffer> frameBuffer) noexcept :
                 m_Scene       ( scene       ),
                 m_FrameBuffer ( frameBuffer )
         {}
@@ -21,7 +21,7 @@ namespace Quirk {
 
     private:
         View<Scene>       m_Scene;
-        View<FrameBuffer> m_FrameBuffer;
+        View<RHI::FrameBuffer> m_FrameBuffer;
     };
 
 }

@@ -31,8 +31,6 @@ namespace QuirkEditor {
         void Init();
         void Terminate();
 
-		void LoadFontFiles();
-
     private:
         ProjectManager m_ProjManager;
 	};

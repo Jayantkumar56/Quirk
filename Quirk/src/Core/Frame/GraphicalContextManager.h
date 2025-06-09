@@ -26,6 +26,10 @@ namespace Quirk::Internals {
             return m_Context.get();
         }
 
+        inline ConstView<RHI::RenderSystem> GetRenderSystem() const noexcept {
+            return &m_RenderSystem;
+        }
+
         inline void SwapBuffer()   const noexcept { m_Context->SwapBuffer();     }
         inline void SetVSync(int toggle) noexcept { m_Context->SetVSync(toggle); }
 
