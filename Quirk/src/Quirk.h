@@ -30,7 +30,6 @@
 #include "Core/Renderer/Light/Light.h"
 
 #include "Core/Renderer/RendererPrimitives/Buffers.h"
-#include "Core/Assets/RenderAssets/Texture.h"
 #include "Core/Assets/RenderAssets/Shader.h"
 #include "Core/Renderer/RendererPrimitives/VertexArray.h"
 #include "Core/Renderer/RendererAPI.h"

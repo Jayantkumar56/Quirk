@@ -4,7 +4,7 @@
 
 #include "Core/Renderer/RendererAPI.h"
 #include "Core/Assets/RenderAssets/Shader.h"
-#include "Core/Assets/RenderAssets/Texture.h"
+#include "Core/RHI/Texture2D.h"
 #include "Core/Scene/Entity.h"
 
 namespace Quirk {
@@ -52,8 +52,8 @@ namespace Quirk {
 			// Textures relate data
 			uint32_t	   NextTextureSlotToBind;
 			int32_t*	   Sampler;
-			Ref<Texture2D>*  TextureSlots;
-			Ref<Texture2D> WhiteTexture;
+			Ref<RHI::Texture2D>*  TextureSlots;
+			Ref<RHI::Texture2D> WhiteTexture;
 
 			// Quad related data
 			uint32_t		  NoOfSubmitedQuads;

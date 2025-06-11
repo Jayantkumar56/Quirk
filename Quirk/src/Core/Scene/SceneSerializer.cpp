@@ -179,8 +179,9 @@ namespace Quirk {
 			auto& component = entity.AddComponent<SpriteRendererComponent>(deserializedComponent["Color"].as<glm::vec4>());
 
 			std::filesystem::path texturefilePath = deserializedComponent["Texture"].as<std::string>();
-			if (std::filesystem::exists(texturefilePath))
-                component.Texture = AssetImporter<Texture2D>::CreateFromImage(texturefilePath);
+			if (std::filesystem::exists(texturefilePath)) {
+                //component.Texture = TextureImporter::CreateFromImage(texturefilePath);
+			}
 		}
 
 		if (auto deserializedComponent = entityNode["CameraComponent"];			deserializedComponent) {

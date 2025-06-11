@@ -62,7 +62,7 @@ namespace QuirkEditor {
         void AddRecentProject(ProjectMetadata projMeta);
 
     private:
-        Quirk::Scope<Quirk::Project>   m_ActiveProject;
+        Quirk::Scope<Quirk::Project> m_ActiveProject;
         std::vector<ProjectMetadata> m_RecentProjectsList;
     };
 

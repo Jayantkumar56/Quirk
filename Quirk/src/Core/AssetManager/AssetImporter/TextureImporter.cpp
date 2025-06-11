@@ -4,20 +4,72 @@
 
 #include "TextureImporter.h"
 #include "Core/Utility/Buffer.h"
+#include "Core/Reflection/Registrations/TextureEnums.h"
+#include "Core/Reflection/Registrations/EditorTexture2D.h"
+#include "Core/Serialization/Serialization.h"
 
 #include "stb_image.h"
 
+
 namespace Quirk {
 
-    Ref<Texture2D> AssetImporter<Texture2D>::CreateFromImage(const std::filesystem::path& filePath, const TextureProperties& properties) {
+    Ref<EditorTexture2D> AssetImporter<EditorTexture2D>::Create(const EditorTexture2DSpec& spec, ConstView<RHI::Factory> factory) noexcept {
+        return CreateRef<EditorTexture2D>(
+            CreateTexture2D(spec.ImagePath, factory, spec.TextureProps),
+            EditorTexture2DMeta(spec.ImagePath)
+        );
+    }
+
+    Ref<EditorTexture2D> AssetImporter<EditorTexture2D>::Import(const std::filesystem::path& texturePath, ConstView<RHI::Factory> factory) noexcept {
+        try {
+            EditorTexture2DSpec textureSpec = Serialization::Deserialize<EditorTexture2DSpec>(texturePath);
+            return Create(std::move(textureSpec), factory);
+        }
+        catch (const std::exception& e) {
+            QK_ERROR("Importing EditorTexture2D with path {0} failed with error: {1}", texturePath.string(), e.what());
+            return nullptr;
+        }
+        catch (...) {
+            QK_ERROR("Importing EditorTexture2D with path {0} failed with some unknown error.", texturePath.string());
+            return nullptr;
+        }
+    }
+
+    bool AssetImporter<EditorTexture2D>::Save(ConstView<EditorTexture2D> texture, const std::filesystem::path& texturePath) noexcept {
+        EditorTexture2DSpec textureSpec{
+            texture->MetaData.ImagePath,
+            texture->Asset->GetProperties()
+        };
+
+        try {
+            if (!Serialization::Serialize(textureSpec, texturePath)) {
+                QK_ERROR("Saving EditorTexture2D with path {} failed.", texturePath.string());
+                return false;
+            }
+        }
+        catch (...) {
+            QK_ERROR("Saving EditorTexture2D with path {} failed with some unknown error.", texturePath.string());
+            return false;
+        }
+
+        return true;
+    }
+
+    Ref<RHI::Texture2D> AssetImporter<EditorTexture2D>::CreateTexture2D(
+            const std::filesystem::path&  filePath,
+            ConstView<RHI::Factory>       factory,
+            const RHI::TextureProperties& properties
+    ) noexcept 
+    {
         stbi_uc*    data = nullptr;
         std::string file = filePath.string();
 
-        TextureSpecification textureSpec{
+        RHI::TextureSpec textureSpec{
             .Width             { 0                          },
             .Height            { 0                          },
-            .DataFormat        { ImageDataFormat::RGBA      },
-            .GpuInternalFormat { ImageInternalFormat::RGBA8 },
+            .Channels          { 0                          },
+            .DataFormat        { RHI::ImgDataFmt::RGBA      },
+            .GpuInternalFormat { RHI::ImgInternalFmt::RGBA8 },
             .MinFilter         { properties.MinFilter       },
             .MagFilter         { properties.MagFilter       },
             .WrapS             { properties.WrapS           },
@@ -27,8 +79,14 @@ namespace Quirk {
 
         // loading image data from the file
         {
+            int width = 0, height = 0, channels = 0;
+
             stbi_set_flip_vertically_on_load(1);
-            data = stbi_load(file.c_str(), &textureSpec.Width, &textureSpec.Height, &textureSpec.Channels, 0);
+            data = stbi_load(file.c_str(), &width, &height, &channels, 0);
+
+            textureSpec.Width    = static_cast<uint32_t>(width);
+            textureSpec.Height   = static_cast<uint32_t>(height);
+            textureSpec.Channels = static_cast<uint32_t>(channels);
 
             QK_CORE_WARN_IF(data == nullptr, "Failed to load image with path {0}", file);
         }
@@ -41,26 +99,26 @@ namespace Quirk {
 
         switch (textureSpec.Channels) {
             case 1: {
-                textureSpec.DataFormat = ImageDataFormat::Red;
-                textureSpec.GpuInternalFormat = ImageInternalFormat::R8;
+                textureSpec.DataFormat = RHI::ImgDataFmt::Red;
+                textureSpec.GpuInternalFormat = RHI::ImgInternalFmt::R8;
                 break;
             }
 
             case 2: {
-                textureSpec.DataFormat = ImageDataFormat::RG;
-                textureSpec.GpuInternalFormat = ImageInternalFormat::RG8;
+                textureSpec.DataFormat = RHI::ImgDataFmt::RG;
+                textureSpec.GpuInternalFormat = RHI::ImgInternalFmt::RG8;
                 break;
             }
 
             case 3: {
-                textureSpec.DataFormat = ImageDataFormat::RGB;
-                textureSpec.GpuInternalFormat = ImageInternalFormat::RGB8;
+                textureSpec.DataFormat = RHI::ImgDataFmt::RGB;
+                textureSpec.GpuInternalFormat = RHI::ImgInternalFmt::RGB8;
                 break;
             }
 
             case 4: {
-                textureSpec.DataFormat = ImageDataFormat::RGBA;
-                textureSpec.GpuInternalFormat = ImageInternalFormat::RGBA8;
+                textureSpec.DataFormat = RHI::ImgDataFmt::RGBA;
+                textureSpec.GpuInternalFormat = RHI::ImgInternalFmt::RGBA8;
                 break;
             }
 
@@ -74,20 +132,19 @@ namespace Quirk {
             textureSpec.SwizzleMask = GetDefaultSwizzleMask(textureSpec.DataFormat);
         }
 
-        return Texture2D::Create(std::move(dataBuffer), textureSpec);
+        return factory->CreateTexture(dataBuffer, textureSpec);
     }
 
-    TextureSwizzle AssetImporter<Texture2D>::GetDefaultSwizzleMask(ImageDataFormat format) noexcept {
+    RHI::TextureSwizzle AssetImporter<EditorTexture2D>::GetDefaultSwizzleMask(RHI::ImgDataFmt format) noexcept {
         switch (format) {
-            case ImageDataFormat::Red:  return { Swizzle::Red, Swizzle::Red,   Swizzle::Red,  Swizzle::One   };
-            case ImageDataFormat::RG:   return { Swizzle::Red, Swizzle::Green, Swizzle::Zero, Swizzle::One   };
-            case ImageDataFormat::RGB:  return { Swizzle::Red, Swizzle::Green, Swizzle::Blue, Swizzle::One   };
-            case ImageDataFormat::RGBA: return { Swizzle::Red, Swizzle::Green, Swizzle::Blue, Swizzle::Alpha };
+            case RHI::ImgDataFmt::Red:  return { RHI::Swizzle::Red, RHI::Swizzle::Red,   RHI::Swizzle::Red,  RHI::Swizzle::One   };
+            case RHI::ImgDataFmt::RG:   return { RHI::Swizzle::Red, RHI::Swizzle::Green, RHI::Swizzle::Zero, RHI::Swizzle::One   };
+            case RHI::ImgDataFmt::RGB:  return { RHI::Swizzle::Red, RHI::Swizzle::Green, RHI::Swizzle::Blue, RHI::Swizzle::One   };
+            case RHI::ImgDataFmt::RGBA: return { RHI::Swizzle::Red, RHI::Swizzle::Green, RHI::Swizzle::Blue, RHI::Swizzle::Alpha };
         }
 
         QK_WARN("No TextureSwizzle support for given ImageDataFormat {0}", static_cast<int>(format));
-        return { Swizzle::Red, Swizzle::Green, Swizzle::Blue, Swizzle::Alpha };
+        return { RHI::Swizzle::Red, RHI::Swizzle::Green, RHI::Swizzle::Blue, RHI::Swizzle::Alpha };
     }
 
 }
-

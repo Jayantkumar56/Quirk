@@ -5,6 +5,7 @@
 #include "FrameBase.h"
 #include "FrameTraits.h"
 #include "FrameInitContext.h"
+#include "Core/Renderer/RenderCommands.h"
 
 namespace Quirk::Internals {
 

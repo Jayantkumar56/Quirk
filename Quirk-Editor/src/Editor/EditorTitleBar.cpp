@@ -7,6 +7,9 @@
 #include "Editor/EditorTheme.h"
 #include "EditorFrame.h"
 
+#include "Core/RHI/Factory.h"
+
+
 namespace QuirkEditor {
 
 	void EditorTitleBar::SetImguiProperties() {
@@ -20,6 +23,7 @@ namespace QuirkEditor {
 	}
 
 	void EditorTitleBar::OnImguiUiUpdate() {
+		auto resourceManager = m_EditorFrame->GetResourceManager();
         EditorFrame* frame = m_EditorFrame.Get();
 
         auto scene = frame->GetActiveSceneView();
@@ -82,17 +86,17 @@ namespace QuirkEditor {
 		float buttonX     = windowSize.x - (3 * buttonSize) - 2 * (buttonPadding + framePadding.x);
 
 		ImGui::SetCursorPos({ buttonX, buttonY });
-		ImTextureID minimiseIconId = (ImTextureID)(intptr_t)m_MinimiseIcon->GetRendererId();
+		ImTextureID minimiseIconId = resourceManager->GetIconMinimise();
 		ImGui::ImageButton(minimiseIconId, { buttonSize, buttonSize }, { 0, 1 }, { 1, 0 });
 		SetCursorOverMinimiseButton(ImGui::IsItemHovered());
 
 		ImGui::SetCursorPos({ buttonX + buttonSize + buttonPadding, buttonY });
-		ImTextureID maximiseIconId = (ImTextureID)(intptr_t)m_MaximiseIcon->GetRendererId();
+		ImTextureID maximiseIconId = resourceManager->GetIconMaximise();
 		ImGui::ImageButton(maximiseIconId, { buttonSize, buttonSize }, { 0, 1 }, { 1, 0 });
 		SetCursorOverMaximiseButton(ImGui::IsItemHovered());
 
 		ImGui::SetCursorPos({ buttonX + 2 * (buttonSize + buttonPadding), buttonY });
-		ImTextureID closeIconId = (ImTextureID)(intptr_t)m_CloseIcon->GetRendererId();
+		ImTextureID closeIconId = resourceManager->GetIconClose();
 		ImGui::ImageButton(closeIconId, { buttonSize, buttonSize }, { 0, 1 }, { 1, 0 });
 		SetCursorOverCloseButton(ImGui::IsItemHovered());
 

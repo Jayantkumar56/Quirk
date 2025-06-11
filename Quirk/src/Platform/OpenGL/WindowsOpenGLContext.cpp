@@ -22,6 +22,11 @@ namespace Quirk::OpenGL {
 
 
     void WindowsOpenGLContext::CreateContext(View<Window> window) noexcept {
+        if (m_GLContext) {
+            QK_WARN("Trying to create Graphical Context but it is already created.");
+            return;
+        }
+
         WindowsWindow* nativeWndObj = (WindowsWindow*)window->GetNativeWindowObject();
 		m_DeviceContext = GetDC((HWND)nativeWndObj->GetNativeHandle());
 		QK_CORE_ASSERT(m_DeviceContext, "Windows failed to provide a device context!");

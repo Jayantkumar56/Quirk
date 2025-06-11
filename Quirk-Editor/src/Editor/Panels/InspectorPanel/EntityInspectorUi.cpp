@@ -165,7 +165,7 @@ namespace QuirkEditor {
         	if (ImGui::BeginDragDropTarget()) {
         		const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("IMAGE_PATH");
         		if (payload) {
-        			component.Texture = Quirk::TextureImporter::CreateFromImage(**(std::filesystem::path**)payload->Data);
+        			//component.Texture = Quirk::TextureImporter::CreateFromImage(**(std::filesystem::path**)payload->Data);
         		}
         
         		ImGui::EndDragDropTarget();
@@ -187,7 +187,7 @@ namespace QuirkEditor {
         
         		std::filesystem::path filePath;
         		if (Quirk::FileDialog::OpenFile(fileDialogSpec, filePath)) {
-        			component.Texture = Quirk::TextureImporter::CreateFromImage(filePath);
+        			//component.Texture = Quirk::TextureImporter::CreateFromImage(filePath);
         		}
         	}
         	if (ImGui::IsItemHovered()) {

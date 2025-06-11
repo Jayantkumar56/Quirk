@@ -111,7 +111,7 @@ namespace QuirkEditor {
 
 					if (entityId != -1) {
                         Quirk::Entity entity((entt::entity)entityId, scene.Get());
-						entity.GetComponent<Quirk::SpriteRendererComponent>().Texture = Quirk::TextureImporter::CreateFromImage(**(std::filesystem::path**)imagePayload->Data);
+						//entity.GetComponent<Quirk::SpriteRendererComponent>().Texture = Quirk::TextureImporter::CreateFromImage(**(std::filesystem::path**)imagePayload->Data);
 					}
 				}
 

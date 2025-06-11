@@ -70,11 +70,11 @@ namespace Quirk {
                 *whiteTextureData = 0xffffffff;
 
                 Buffer whiteTextureDataBuffer((void*)whiteTextureData, sizeof(uint32_t));
-                s_Data.WhiteTexture = Texture2D::Create(std::move(whiteTextureDataBuffer), TextureSpecification{});
+                //s_Data.WhiteTexture = RHI::Texture2D::Create(std::move(whiteTextureDataBuffer), TextureSpecification{});
             }
         }
 
-		s_Data.TextureSlots = new Ref<Texture2D>[s_Data.MaxNoOfTextureSlots];
+		s_Data.TextureSlots = new Ref<RHI::Texture2D>[s_Data.MaxNoOfTextureSlots];
 		s_Data.TextureSlots[0] = s_Data.WhiteTexture;
 		s_Data.NextTextureSlotToBind = 1;
 
@@ -150,7 +150,7 @@ namespace Quirk {
 		const SpriteRendererComponent& sprite = entity.GetComponent<SpriteRendererComponent>();
 		int texSlot = 0;
 
-		const Ref<Texture2D>& texture = sprite.Texture;
+		const Ref<RHI::Texture2D>& texture = sprite.Texture;
 
 		if (texture != nullptr) {
 			// iterating from texslot[1] since texslot[0] is already reserved for default white texture

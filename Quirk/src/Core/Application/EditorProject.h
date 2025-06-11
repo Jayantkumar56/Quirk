@@ -6,6 +6,7 @@
 #include "EditorProjectConfig.h"
 #include "Core/AssetManager/EditorAssetManager.h"
 #include "Core/Scene/EditorSceneManager.h"
+#include "Core/RHI/Factory.h"
 
 #include <filesystem>
 
@@ -13,7 +14,13 @@ namespace Quirk {
 
     // NOTE:
     // 
-    // - Init must be called after construction EditorProject object
+    // - m_ProjectRootDirectory field is not set by the constructor, it must be manually assigned
+    //
+    // - Init() must be called once, and only after the construction of the EditorProject object.
+    //   This function performs initialization that cannot be done safely in the constructor.
+    //
+    // - Typically, the parent system (e.g. EditorFrame or ProjectManager) is responsible for setting
+    //   m_ProjectRootDirectory and calling Init() in the correct order.
 
     class EditorProject {
     public:
@@ -27,9 +34,16 @@ namespace Quirk {
                 m_Config ( std::move(config) )
         {}
 
-        inline void Init(std::filesystem::path directory) noexcept {
+        inline void SetProjectRootDirectory(std::filesystem::path directory) noexcept {
+            QK_ASSERT(m_ProjectRootDirectory.empty(), "Project root directory is already set!");
+
             m_ProjectRootDirectory = std::move(directory);
             m_SceneManager.Init(m_ProjectRootDirectory, &m_AssetManager);
+        }
+
+        inline void SetRHIFactory(ConstView<RHI::Factory> factory) noexcept {
+            QK_ASSERT(!m_AssetManager.HasFactory(), "Factory is already set!");
+            m_AssetManager.SetRHIFactory(factory);
         }
 
         inline const auto& GetTitle()        const noexcept { return m_Config.ProjectName;   }

@@ -20,9 +20,10 @@ namespace QuirkEditor {
     class EditorFrame final : public Quirk::ImguiFrame<Quirk::FrameFeature::Panels, Quirk::FrameFeature::TitleBar> {
 	public:
 		inline EditorFrame(Quirk::Scope<Quirk::Project> project) noexcept :
-                ImguiFrame   ( GetFrameSpec()     ),
-                m_EditorMode ( EditorMode::Edit   ),
-                m_Project    ( std::move(project) )
+                ImguiFrame        ( GetFrameSpec()                  ),
+                m_EditorMode      ( EditorMode::Edit                ),
+                m_Project         ( std::move(project)              ),
+                m_ResourceManager ( GetRenderSystem()->GetFactory() )
 		{}
 
         virtual void Init()      noexcept override;

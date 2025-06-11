@@ -2,15 +2,15 @@
 
 #include "QkEditorpch.h"
 
-#include "Quirk.h"
-
 #include "LauncherFrame.h"
-#include "imgui_internal.h"
-
-#include "Editor/EditorFrame.h"
+#include "Launcher/LauncherTitleBar.h"
+#include "Base/ProjectManager.h"
 #include "QuirkEditorApp.h"
 
-#include "Base/ProjectManager.h"
+#include "Quirk.h"
+
+#include "imgui_internal.h"
+
 
 namespace QuirkEditor {
 
@@ -33,9 +33,11 @@ namespace QuirkEditor {
 
 		SetTitleBar<LauncherTitleBar>(this);
 
-		m_ProjectIcon		= Quirk::TextureImporter::CreateFromImage( "assets/Images/Launcher/project.png"       );
-		m_OpenProjectIcon   = Quirk::TextureImporter::CreateFromImage( "assets/Images/Launcher/openFolder.png"    );
-		m_CreateProjectIcon = Quirk::TextureImporter::CreateFromImage( "assets/Images/Launcher/createProject.png" );
+		Quirk::ConstView<Quirk::RHI::Factory> factory = GetRenderSystem()->GetFactory();
+
+		m_ProjectIcon		= Quirk::TextureImporter::CreateTexture2D( "assets/Images/Launcher/project.png",       factory );
+		m_OpenProjectIcon   = Quirk::TextureImporter::CreateTexture2D( "assets/Images/Launcher/openFolder.png",    factory );
+		m_CreateProjectIcon = Quirk::TextureImporter::CreateTexture2D( "assets/Images/Launcher/createProject.png", factory );
 
 		// reserving some storage to get input through imgui
 		m_TempProject.Title = "Untitled";

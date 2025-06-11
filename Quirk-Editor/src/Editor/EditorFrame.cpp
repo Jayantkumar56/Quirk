@@ -12,6 +12,8 @@
 namespace QuirkEditor {
 
     void EditorFrame::Init() noexcept {
+        m_Project->SetRHIFactory(GetRenderSystem()->GetFactory());
+
         Quirk::Renderer::InitRenderer();
 		Quirk::Renderer2D::InitRenderer();
 

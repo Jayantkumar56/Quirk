@@ -3,12 +3,12 @@
 #pragma once
 
 #include "Core/Reflection/EnumRegistry.h"
-#include "Core/Assets/RenderAssets/Texture.h"
+#include "Core/RHI/Texture2D.h"
 
 
 namespace Quirk {
 
-    REGISTER_ENUM( Swizzle, 
+    REGISTER_ENUM( RHI::Swizzle, 
         None, 
         Red,  
         Green,
@@ -19,13 +19,13 @@ namespace Quirk {
     );
 
 
-    REGISTER_ENUM( TextureFilter,
+    REGISTER_ENUM( RHI::TextureFilter,
         Linear,
         Nearest,
     );
 
 
-    REGISTER_ENUM( TextureWrap,
+    REGISTER_ENUM( RHI::TextureWrap,
         Repeat,
         MirroredRepeat,
         ClampToEdge,

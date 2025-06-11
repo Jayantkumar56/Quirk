@@ -49,6 +49,8 @@ namespace QuirkEditor {
         CreateProjectDirectoryStructure(projMeta.ProjectRootDirectory, projConfig);
 
         m_ActiveProject = Quirk::CreateScope<Quirk::Project>(std::move(projConfig));
+        m_ActiveProject->SetProjectRootDirectory(projMeta.ProjectRootDirectory);
+
         if (m_ActiveProject == nullptr) {
             return false;
         }
@@ -91,7 +93,7 @@ namespace QuirkEditor {
 
         try {
             m_ActiveProject = Quirk::Serialization::Deserialize<Quirk::Scope<Quirk::Project>>(projFilePath);
-            m_ActiveProject->Init(projFilePath.parent_path());
+            m_ActiveProject->SetProjectRootDirectory(projFilePath.parent_path());
 
             std::string title = m_ActiveProject->GetTitle();
 

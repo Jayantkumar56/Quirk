@@ -3,7 +3,6 @@
 #pragma once
 
 #include "Base/ProjectManager.h"
-#include "Launcher/LauncherTitleBar.h"
 
 #include "Core/Frame/Frame.h"
 #include "Core/AssetManager/AssetImporter/TextureImporter.h"
@@ -52,9 +51,9 @@ namespace QuirkEditor {
         }
 
 	private:
-		Quirk::Ref<Quirk::Texture2D> m_ProjectIcon;
-		Quirk::Ref<Quirk::Texture2D> m_OpenProjectIcon;
-		Quirk::Ref<Quirk::Texture2D> m_CreateProjectIcon;
+		Quirk::Ref<Quirk::RHI::Texture2D> m_ProjectIcon;
+		Quirk::Ref<Quirk::RHI::Texture2D> m_OpenProjectIcon;
+		Quirk::Ref<Quirk::RHI::Texture2D> m_CreateProjectIcon;
 		LauncherState  m_State;
 
 		// used for temporary things (in the creation of new project)

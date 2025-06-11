@@ -2,51 +2,29 @@
 
 #pragma once
 
-#include "Core/Core.h"
-#include "Core/Assets/Asset.h"
-#include "Core/Utility/TypeTraits.h"
-
-#include <filesystem>
+#include "EditorAsset.h"
 
 
 namespace Quirk {
 
     // NOTE:
     //
-    // - every EditorAsset specialization must have the following functions signatures:
+    // - every AssetImporter specialization must have the following function signature and must define:
     // 
-    //   inline Ref<T> GetAsset() noexcept { }
-    //   inline bool   IsLoaded() noexcept { }
-    // 
-
-    template <typename T>
-    struct EditorAsset {
-        Ref<T> Asset;
-        std::filesystem::path AssetPath;
-
-        inline Ref<T> GetAsset() noexcept { return Asset;            }
-        inline bool   IsLoaded() noexcept { return Asset != nullptr; }
-
-        static_assert(AlwaysFalse_V<T>, "No Specialization created for AssetType T, must have specialization to be used");
-    };
-
-    // NOTE:
-    //
-    // - every AssetImporter specialization must have the following signature and must define:
-    // 
-    //   static AssetHandle Create(EditorAsset<T>& outAsset)  { }
-    //   static void        Import(EditorAsset<T>& outAsset)  { }
-    //   static void        Save(const EditorAsset<T>& asset) { }
+    //   static EditorAsset<T> Create(EditorAssetSpec<T> spec)
+    //   static EditorAsset<T> Import(std::filesystem::path assetPath)
+    //   static bool           Save(const EditorAsset<T>& asset)
     //
 
     template<typename T>
     class AssetImporter {
     public:
-        static AssetHandle Create(EditorAsset<T>& outAsset)  { }
-        static void        Import(EditorAsset<T>& outAsset)  { }
-        static void        Save(const EditorAsset<T>& asset) { }
+        static EditorAsset<T> Create(EditorAssetSpec<T> spec)         {}
+        static EditorAsset<T> Import(std::filesystem::path assetPath) {}
+        static bool           Save(const EditorAsset<T>& asset)       {}
 
         static_assert(AlwaysFalse_V<T>, "No importer exist for given Asset type!");
     };
 
 }
+ 

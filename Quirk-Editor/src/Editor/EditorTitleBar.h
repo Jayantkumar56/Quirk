@@ -9,11 +9,9 @@ namespace QuirkEditor {
 
 	class EditorTitleBar : public Quirk::TitleBar{
 	public:
-		EditorTitleBar(EditorFrame* editor) : m_EditorFrame(editor) {
-			m_CloseIcon    = Quirk::TextureImporter::CreateFromImage("assets/Images/close.png");
-			m_MinimiseIcon = Quirk::TextureImporter::CreateFromImage("assets/Images/minus.png");
-			m_MaximiseIcon = Quirk::TextureImporter::CreateFromImage("assets/Images/maximize.png");
-		}
+		EditorTitleBar(EditorFrame* editor) noexcept : 
+				m_EditorFrame(editor) 
+		{}
 
 		~EditorTitleBar() = default;
 
@@ -24,10 +22,6 @@ namespace QuirkEditor {
 		virtual bool OnEvent(Quirk::Event& event) override { return false; }
 
 	private:
-		Quirk::Ref<Quirk::Texture2D> m_CloseIcon;
-		Quirk::Ref<Quirk::Texture2D> m_MinimiseIcon;
-		Quirk::Ref<Quirk::Texture2D> m_MaximiseIcon;
-
         Quirk::View<EditorFrame> m_EditorFrame;
 	};
 

@@ -3,6 +3,7 @@
 #pragma once
 
 #include "Core/Utility/Buffer.h"
+#include "Core/Assets/Asset.h"
 
 #include <utility>
 
@@ -107,7 +108,7 @@ namespace Quirk::RHI {
         TextureSwizzle SwizzleMask{ };
     };
 
-    class Texture2D {
+    class Texture2D : public Asset {
     public:
         Texture2D(const TextureSpec& spec) noexcept : m_Specification(spec) {}
         virtual ~Texture2D() = default;
@@ -132,6 +133,18 @@ namespace Quirk::RHI {
         inline       uint32_t     GetWidth()  const noexcept { return m_Specification.Width;  }
         inline       uint32_t     GetHeight() const noexcept { return m_Specification.Height; }
         inline const TextureSpec& GetSpec()   const noexcept { return m_Specification;        }
+
+        inline TextureProperties GetProperties() const noexcept{
+            return TextureProperties{
+                .MinFilter{ m_Specification.MinFilter },
+                .MagFilter{ m_Specification.MagFilter },
+
+                .WrapS{ m_Specification.WrapS },
+                .WrapT{ m_Specification.WrapT },
+
+                .SwizzleMask{ m_Specification.SwizzleMask }
+            };
+        }
 
     private:
         virtual inline bool Equal(const Texture2D& other) const noexcept = 0;

@@ -4,6 +4,7 @@
 
 #include "Core/Utility/TypeTraits.h"
 #include "AssetImporter/TextureImporter.h"
+#include "Core/RHI/Factory.h"
 
 #include <unordered_map>
 
@@ -17,8 +18,6 @@ namespace Quirk {
     //
 
 	class EditorAssetManager {
-        friend class Reflect<EditorAssetManager>;
-
 	public:
         EditorAssetManager() noexcept = default;
 
@@ -28,10 +27,9 @@ namespace Quirk {
 
         template<typename T>
         AssetHandle RegisterAsset(EditorAsset<T>&& metaData) {
-            AssetHandle handle = AssetImporter<T>::Create(metaData);
+            // TODO: Register the asset 
 
-            GetStorage<T>().emplace(handle, std::move(metaData));
-            return handle;
+            return AssetHandle();
         }
 
         template<typename T>
@@ -41,12 +39,9 @@ namespace Quirk {
                 return nullptr;
             }
 
-            EditorAsset<T>& asset = GetStorage<T>().at(handle);
+           // TODO: load the asset if not loaded
 
-            if (!asset->IsLoaded())
-                AssetImporter<T>::Import(asset);
-
-            return asset.GetAsset();
+            return nullptr;
         }
 
         template<typename T>
@@ -55,7 +50,12 @@ namespace Quirk {
         template<typename T>
 		bool IsAssetLoaded(AssetHandle handle) { return GetStorage<T>().at(handle).IsLoaded(); }
 
-        inline const auto& GetAssetRegistry() const noexcept{ return m_AssetRegistry; }
+        inline const auto& GetAssetRegistry() const noexcept { return m_AssetRegistry;        }
+        inline const bool  HasFactory()       const noexcept { return m_RHIFactory.IsValid(); }
+
+        inline void SetRHIFactory(ConstView<RHI::Factory> factory) noexcept {
+            m_RHIFactory = factory;
+        }
 
     private:
         // === Begin: Per type Storage Access ===
@@ -63,12 +63,14 @@ namespace Quirk {
         template<typename T>
         auto& GetStorage() { static_assert(AlwaysFalse_V<T>, "Storage is not defined for the Type!"); }
 
-        template<> inline auto& GetStorage<Texture2D>() { return m_Texture2DStorage; }
+        template<> inline auto& GetStorage<RHI::Texture2D>() { return m_Texture2DStorage; }
 
         // === End:   Per type Storage Access ===
 
 	private:
-        std::unordered_map<AssetHandle, EditorAsset<Texture2D>> m_Texture2DStorage;
+        ConstView<RHI::Factory> m_RHIFactory;
+
+        std::unordered_map<AssetHandle, EditorAsset<RHI::Texture2D>> m_Texture2DStorage;
 
         std::unordered_map<AssetHandle, std::filesystem::path> m_AssetRegistry;
 	};
