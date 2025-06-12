@@ -6,6 +6,9 @@
 #include "FrameBuffer.h"
 #include "GraphicalContext.h"
 #include "Texture2D.h"
+#include "VertexBuffer.h"
+#include "IndexBuffer.h"
+#include "VertexArray.h"
 
 
 namespace Quirk::OpenGL {
@@ -22,6 +25,26 @@ namespace Quirk::OpenGL {
 
         virtual Ref<RHI::Texture2D> CreateTexture(BufferView dataBuffer, const RHI::TextureSpec& specification) const noexcept override {
             return CreateRef<OpenGL::Texture2D>(dataBuffer, specification);
+        }
+
+        virtual Ref<RHI::VertexBuffer> CreateVertexBuffer() const noexcept override {
+            return CreateRef<OpenGL::VertexBuffer>();
+        }
+
+        virtual Ref<RHI::VertexBuffer> CreateVertexBuffer(BufferView buffer) const noexcept override {
+            return CreateRef<OpenGL::VertexBuffer>(buffer);
+        }
+
+        virtual Ref<RHI::VertexBuffer> CreateVertexBuffer(uint32_t size) const noexcept override {
+            return CreateRef<OpenGL::VertexBuffer>(size);
+        }
+
+        virtual Ref<RHI::IndexBuffer> CreateIndexBuffer(uint32_t* indices, uint32_t count) const noexcept override {
+            return CreateRef<OpenGL::IndexBuffer>(indices, count);
+        }
+
+        virtual Ref<RHI::VertexArray> CreateVertexArray() const noexcept {
+            return CreateRef<OpenGL::VertexArray>();
         }
     };
 

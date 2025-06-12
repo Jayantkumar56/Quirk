@@ -15,7 +15,7 @@ namespace Quirk::Internals {
 
 namespace Quirk::OpenGL {
 
-    class WindowsOpenGLContext : public RHI::GraphicalContext {
+    class WindowsOpenGLContext final : public RHI::GraphicalContext {
     public:
         static void Init();
         static inline const Internals::WGLExtensions& GetWGLExtensions() noexcept { return s_WGL; }

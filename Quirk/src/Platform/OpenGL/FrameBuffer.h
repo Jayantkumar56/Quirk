@@ -7,7 +7,7 @@
 
 namespace Quirk::OpenGL {
 
-    class FrameBuffer : public RHI::FrameBuffer {
+    class FrameBuffer final : public RHI::FrameBuffer {
     public:
         FrameBuffer(const RHI::FrameBufferSpecification& spec) noexcept;
         ~FrameBuffer() noexcept;
