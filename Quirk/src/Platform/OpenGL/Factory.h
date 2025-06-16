@@ -15,8 +15,8 @@ namespace Quirk::OpenGL {
 
     class Factory : public RHI::Factory {
     public:
-        virtual Scope<RHI::GraphicalContext> CreateGraphicalContext() const noexcept override {
-            return CreateScope<OpenGL::GraphicalContext>();
+        virtual Scope<RHI::GraphicalContext> CreateGraphicalContext(View<Window> window) const noexcept override {
+            return CreateScope<OpenGL::GraphicalContext>(window);
         }
 
         virtual Scope<RHI::FrameBuffer> CreateFrameBuffer(const RHI::FrameBufferSpecification& spec) const noexcept override {

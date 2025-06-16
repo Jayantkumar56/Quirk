@@ -8,6 +8,19 @@
 
 namespace Quirk::RHI {
 
+    RenderSystem::RenderSystem(GraphicsAPI api, View<Window> window) noexcept :
+            m_GraphicsAPI(api)
+    {
+        switch (api) {
+            case GraphicsAPI::None:      InitializeHeadLess();       break;
+            case GraphicsAPI::OpenGL:    InitializeWithOpenGL();     break;
+
+            default: QK_CORE_ASSERT(false, "Unknown RendererAPI");
+        }
+
+        m_Context = m_Factory->CreateGraphicalContext(window);
+    }
+
     void RenderSystem::InitializeHeadLess() noexcept {
         QK_CORE_ERROR("RendererAPI::None selected — no rendering backend available.");
         QK_CORE_ASSERT(false, "Currently Quirk do not support Headless build.");

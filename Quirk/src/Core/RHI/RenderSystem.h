@@ -5,31 +5,25 @@
 #include "Factory.h"
 #include "GraphicsAPI.h"
 
+
 namespace Quirk::RHI {
 
     class RenderSystem {
     public:
-        explicit RenderSystem(GraphicsAPI api)  noexcept :
-                m_RendererAPI(api)
-        {
-            switch (api) {
-                case GraphicsAPI::None:      InitializeHeadLess();       break;
-                case GraphicsAPI::OpenGL:    InitializeWithOpenGL();     break;
+        explicit RenderSystem(GraphicsAPI api, View<Window> window)  noexcept;
 
-                default: QK_CORE_ASSERT(false, "Unknown RendererAPI");
-            }
-        }
-
-        inline ConstView<Factory> GetFactory()     const noexcept { return m_Factory;     }
-        inline const GraphicsAPI  GetRendererAPI() const noexcept { return m_RendererAPI; }
+        inline const GraphicsAPI           GetGraphicsAPI()      const noexcept { return m_GraphicsAPI; }
+        inline ConstView<Factory>          GetFactory()          const noexcept { return m_Factory;     }
+        inline ConstView<GraphicalContext> GetGraphicalContext() const noexcept { return m_Context;     }
 
     private:
         void InitializeHeadLess()   noexcept;
         void InitializeWithOpenGL() noexcept;
 
     private:
-        GraphicsAPI    m_RendererAPI;
-        Scope<Factory> m_Factory;
+        GraphicsAPI             m_GraphicsAPI;
+        Scope<Factory>          m_Factory;
+        Scope<GraphicalContext> m_Context;
     };
 
 }

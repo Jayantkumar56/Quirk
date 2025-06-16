@@ -29,13 +29,10 @@
 
 #include "Core/Renderer/Light/Light.h"
 
-#include "Core/Renderer/RendererPrimitives/Buffers.h"
 #include "Core/Assets/RenderAssets/Shader.h"
-#include "Core/Renderer/RendererPrimitives/VertexArray.h"
 #include "Core/Renderer/RendererAPI.h"
 #include "Core/Renderer/RenderCommands.h"
 #include "Core/Renderer/Renderer.h"
-#include "Core/Renderer/Renderer2D.h"
 
 #include "Core/Scene/Components.h"
 #include "Core/Scene/Entity.h"

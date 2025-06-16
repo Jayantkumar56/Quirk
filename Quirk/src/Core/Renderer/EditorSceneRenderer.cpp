@@ -3,7 +3,6 @@
 #include "Qkpch.h"
 
 #include "EditorSceneRenderer.h"
-#include "Core/Renderer/Renderer2D.h"
 #include "Core/Renderer/Renderer.h"
 
 
@@ -24,8 +23,9 @@ namespace Quirk {
             return;
         }
 
+        // TODO: create 2d renderer
         // rendering the 2D quads
-        Renderer2D::BeginScene(projectionViewMat);
+        /*Renderer2D::BeginScene(projectionViewMat);
 
         auto renderables = entityRegistry.view<TransformComponent, SpriteRendererComponent>();
         for (auto entity : renderables) {
@@ -33,25 +33,25 @@ namespace Quirk {
             Renderer2D::SubmitQuadEntity(entt);
         }
 
-        Renderer2D::EndScene();
+        Renderer2D::EndScene();*/
 
         // rendering the 3D meshes
-        Renderer::BeginScene(projectionViewMat, cameraPos);
+        m_Renderer->BeginScene(projectionViewMat, cameraPos);
         {
             std::vector<Entity> lightSourceEntities;
 
             auto lightSources = entityRegistry.view<LightComponent>();
             for (auto entity : lightSources) {
                 lightSourceEntities.emplace_back(entity, m_Scene.Get());
-                Renderer::SubmitLightSource({ entity, m_Scene.Get() });
+                m_Renderer->SubmitLightSource({ entity, m_Scene.Get() });
             }
 
             auto renderables = entityRegistry.view<TransformComponent, MeshRendererComponent>();
             for (auto entity : renderables) {
-                Renderer::Submit({ entity, m_Scene.Get() }, lightSourceEntities);
+                m_Renderer->Submit({ entity, m_Scene.Get() }, lightSourceEntities);
             }
         }
-        Renderer::EndScene();
+        m_Renderer->EndScene();
 
         m_FrameBuffer->Unbind();
     }

@@ -40,18 +40,18 @@ namespace Quirk {
 		};
 
 	public:
-		static Ref<Shader> LoadShader(const std::string& filePath);
-		static Ref<Shader> LoadShader(const std::string& name, const std::string& filePath);
-		static Ref<Shader> LoadShader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc);
+		Ref<Shader> LoadShader(const std::string& filePath);
+		Ref<Shader> LoadShader(const std::string& name, const std::string& filePath);
+		Ref<Shader> LoadShader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc);
 
-		static Ref<Shader> GetShader(const std::string& name);
-
-	private:
-		static Ref<Shader> LoadShaderFromFile(const std::string& filePath);
-		static SahderType ShaderTypeFromString(const std::string& type);
+		Ref<Shader> GetShader(const std::string& name);
 
 	private:
-		static std::unordered_map<std::string, Ref<Shader>> m_LoadedShaders;
+		Ref<Shader> LoadShaderFromFile(const std::string& filePath);
+		SahderType ShaderTypeFromString(const std::string& type);
+
+	private:
+		std::unordered_map<std::string, Ref<Shader>> m_LoadedShaders;
 	};
 
 }

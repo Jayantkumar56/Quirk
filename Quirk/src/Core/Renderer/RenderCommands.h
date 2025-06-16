@@ -3,7 +3,7 @@
 
 #include "Core/Core.h"
 #include "RendererAPI.h"
-#include "Core/Renderer/RendererPrimitives/VertexArray.h"
+#include "Core/RHI/VertexArray.h"
 
 namespace Quirk {
 
@@ -22,11 +22,11 @@ namespace Quirk {
 		static inline void EnableFaceCulling()	{ s_RendererAPI->EnableFaceCulling(); }
 		static inline void DisableFaceCulling() { s_RendererAPI->DisableFaceCulling(); }
 
-		static inline void DrawIndexed(Ref<VertexArray>& vertexArray, uint32_t indicesCount) { 
+		static inline void DrawIndexed(Ref<RHI::VertexArray>& vertexArray, uint32_t indicesCount) {
 			s_RendererAPI->DrawIndexed(vertexArray, indicesCount); 
 		}
 
-		static inline void DrawIndexedInstanced(Ref<VertexArray>& vertexArray, uint32_t noOfInstances) { 
+		static inline void DrawIndexedInstanced(Ref<RHI::VertexArray>& vertexArray, uint32_t noOfInstances) {
 			s_RendererAPI->DrawIndexedInstanced(vertexArray, noOfInstances); 
 		}
 

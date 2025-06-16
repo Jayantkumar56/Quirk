@@ -6,6 +6,8 @@
 #include "Core/Frame/ImguiUI.h"
 
 #include "Core/Frame/Window.h"
+#include "Platform/OpenGL/GraphicalContext.h"
+
 
 #ifdef QK_PLATFORM_WINDOWS
 #include "wglext.h"
@@ -26,7 +28,7 @@ namespace Quirk {
 
 #ifdef QK_PLATFORM_WINDOWS
 
-	void ImguiContext::Init(View<Window> window, View<RHI::GraphicalContext> context) {
+	ImguiContext::ImguiContext(View<Window> window, ConstView<RHI::GraphicalContext> context) noexcept {
         m_GraphicalContext = context;
 
 		// Setup Dear ImGui context with the fontAtlas
@@ -55,7 +57,7 @@ namespace Quirk {
 		InitForOpenGL(window, context);
 	}
 
-	void ImguiContext::Terminate() {
+	ImguiContext::~ImguiContext() noexcept {
         if (!m_ImguiContext)
             return;
 
@@ -103,7 +105,7 @@ namespace Quirk {
 		}
 	}
 
-	void ImguiContext::InitForOpenGL(View<Window> window, View<RHI::GraphicalContext> context) {
+	void ImguiContext::InitForOpenGL(View<Window> window, ConstView<RHI::GraphicalContext> context) {
 		const char* glsl_version = "#version 410";
 
 		ImGui_ImplWin32_InitForOpenGL((HWND)window->GetNativeHandle());

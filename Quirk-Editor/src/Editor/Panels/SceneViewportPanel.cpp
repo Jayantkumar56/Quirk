@@ -22,7 +22,7 @@ namespace QuirkEditor {
                     static_cast<uint32_t>(m_PanelSize.y)
                 })
             ),
-            m_SceneRenderer ( frame->GetActiveSceneView(), m_FrameBuffer ),
+            m_SceneRenderer ( frame->GetRenderer(), frame->GetActiveSceneView(), m_FrameBuffer ),
             m_EditorFrame   ( frame                                      )
 	{
         Quirk::RenderCommands::UpdateViewPort(

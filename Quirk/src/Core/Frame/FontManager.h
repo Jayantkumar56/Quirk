@@ -24,7 +24,7 @@ namespace Quirk {
 
 	class FontManager {
 	public:
-		FontManager(ImFontAtlas* fontatlas) :
+		FontManager(ImFontAtlas* fontatlas) noexcept:
                 m_FontAtlas(fontatlas)
         {}
 

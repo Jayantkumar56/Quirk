@@ -3,8 +3,7 @@
 
 #include <utility>
 #include "glm/vec4.hpp"
-
-#include "Core/Renderer/RendererPrimitives/VertexArray.h"
+#include "Core/RHI/VertexArray.h"
 
 namespace Quirk {
 
@@ -33,8 +32,8 @@ namespace Quirk {
 		virtual inline void EnableFaceCulling() const = 0;
 		virtual inline void DisableFaceCulling() const = 0;
 
-		virtual inline void DrawIndexed(Ref<VertexArray>& vertexArray, uint32_t indicesCount) = 0;
-		virtual inline void DrawIndexedInstanced(Ref<VertexArray>& vertexArray, uint32_t noOfInstances) = 0;
+		virtual inline void DrawIndexed(Ref<RHI::VertexArray>& vertexArray, uint32_t indicesCount) = 0;
+		virtual inline void DrawIndexedInstanced(Ref<RHI::VertexArray>& vertexArray, uint32_t noOfInstances) = 0;
 		virtual inline void DrawVertices(uint32_t vertexCount) = 0;
 
 	private:

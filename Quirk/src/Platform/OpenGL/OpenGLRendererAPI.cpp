@@ -41,12 +41,12 @@ namespace Quirk {
 		glEnable(GL_DEPTH_TEST);
 	}
 
-	inline void OpenGLRendererAPI::DrawIndexed(Ref<VertexArray>& vertexArray, uint32_t indicesCount) {
+	inline void OpenGLRendererAPI::DrawIndexed(Ref<RHI::VertexArray>& vertexArray, uint32_t indicesCount) {
 		glDrawElements(GL_TRIANGLES, indicesCount, GL_UNSIGNED_INT, nullptr);
 		glFlush();
 	}
 
-	inline void OpenGLRendererAPI::DrawIndexedInstanced(Ref<VertexArray>& vertexArray, uint32_t noOfInstances) {
+	inline void OpenGLRendererAPI::DrawIndexedInstanced(Ref<RHI::VertexArray>& vertexArray, uint32_t noOfInstances) {
 		glDrawElementsInstanced(GL_TRIANGLES, vertexArray->GetIndexBuffer()->GetCount(), GL_UNSIGNED_INT, nullptr, noOfInstances);
 		glFlush();
 	}

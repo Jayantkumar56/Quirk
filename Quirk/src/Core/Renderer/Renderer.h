@@ -2,28 +2,29 @@
 
 #pragma once
 
-#include "Core/Core.h"
-
 #include "RendererAPI.h"
-#include "Core/Renderer/RendererPrimitives/VertexArray.h"
 #include "Core/Assets/RenderAssets/Shader.h"
-#include "Core/RHI/Texture2D.h"
 
 #include "Core/Assets/Geometry/Geometry.h"
 #include "Core/Scene/Entity.h"
+
+
+
+#include "Core/RHI/RenderSystem.h"
+
 
 namespace Quirk {
 
 	class Renderer {
 	public:
-		static void InitRenderer();
+		Renderer(ConstView<RHI::RenderSystem> renderSystem) noexcept;
 
-		static void BeginScene(const glm::mat4& projectionView, glm::vec3& cameraPos);
-		static void Submit(Entity entity, std::vector<Entity>& lightSources);
-		static void SubmitLightSource(Entity entity);
-		static void EndScene();
+		void BeginScene(const glm::mat4& projectionView, glm::vec3& cameraPos);
+		void Submit(Entity entity, std::vector<Entity>& lightSources);
+		void SubmitLightSource(Entity entity);
+		void EndScene();
 
-		inline static RendererAPI::API GetAPI() { return RendererAPI::GetAPI(); }
+		static inline RendererAPI::API GetAPI() { return RendererAPI::GetAPI(); }
 
 	private:
 		struct SceneData {
@@ -33,16 +34,19 @@ namespace Quirk {
 
 			// general mesh shader
 			Ref<Shader>       MeshShader;
-			Ref<VertexArray>  MeshVertexArray;
-			Ref<VertexBuffer> MeshPositionBuffer;
-			Ref<VertexBuffer> MeshNormalBuffer;
-			Ref<VertexBuffer> MeshUVBuffer;
+			Ref<RHI::VertexArray>  MeshVertexArray;
+			Ref<RHI::VertexBuffer> MeshPositionBuffer;
+			Ref<RHI::VertexBuffer> MeshNormalBuffer;
+			Ref<RHI::VertexBuffer> MeshUVBuffer;
 
 			// for light sources
 			Ref<Shader> LightSourceShader;
 		};
 
-		static SceneData s_SceneData;
+	private:
+		ConstView<RHI::RenderSystem> m_RenderSystem;
+		ShaderLibrary                m_ShaderLibrary;
+		SceneData                    m_SceneData;
 	};
 
 }

@@ -7,6 +7,7 @@
 #include "FrameInitContext.h"
 #include "Core/Renderer/RenderCommands.h"
 
+
 namespace Quirk::Internals {
 
     template<typename PolicyList>
@@ -57,7 +58,7 @@ namespace Quirk::Internals {
             }
 
             if constexpr (HaveImguiPolicy) {
-                ImguiPolicy::GetImguiContext().UpdateViewPorts();
+                ImguiPolicy::GetImguiContext()->UpdateViewPorts();
             }
 
             if constexpr (HavePanelPolicy) {
@@ -72,7 +73,7 @@ namespace Quirk::Internals {
 
             // updating imgui ui of the current frame and it's panels
             if constexpr (HaveImguiPolicy) {
-                ImguiPolicy::GetImguiContext().Begin();
+                ImguiPolicy::GetImguiContext()->Begin();
             }
 
             if constexpr (HaveWindowPolicy) {
@@ -95,7 +96,7 @@ namespace Quirk::Internals {
             }
 
             if constexpr (HaveImguiPolicy) {
-                ImguiPolicy::GetImguiContext().End();
+                ImguiPolicy::GetImguiContext()->End();
             }
 
             GraphicalContextPolicy::SwapBuffer();

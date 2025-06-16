@@ -21,12 +21,12 @@ namespace Quirk::OpenGL {
         static inline const Internals::WGLExtensions& GetWGLExtensions() noexcept { return s_WGL; }
 
     public:
-        virtual void CreateContext(View<Window> window)  noexcept override;
-        virtual void DestroyContext(View<Window> window) noexcept override;
+        WindowsOpenGLContext(View<Window> window)  noexcept;
+        ~WindowsOpenGLContext() noexcept;
 
-        virtual void SwapBuffer()          noexcept override;
-        virtual void SetVSync(int toggle)  noexcept override;
-        virtual void MakeContextCurrent()  noexcept override;
+        virtual void SwapBuffer()         const noexcept override;
+        virtual void SetVSync(int toggle) const noexcept override;
+        virtual void MakeContextCurrent() const noexcept override;
 
         inline HGLRC GetGLContext()     const noexcept { return m_GLContext;     }
         inline HDC   GetDeviceContext() const noexcept { return m_DeviceContext; }
@@ -35,6 +35,7 @@ namespace Quirk::OpenGL {
         static Internals::WGLExtensions s_WGL;
 
     private:
+        HWND  m_WindowHandle;
         HDC   m_DeviceContext;
         HGLRC m_GLContext;
     };

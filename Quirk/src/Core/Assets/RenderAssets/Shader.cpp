@@ -36,8 +36,6 @@ namespace Quirk {
 
 	/////////////   ShaderLibrary   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	std::unordered_map<std::string, Ref<Shader>> ShaderLibrary::m_LoadedShaders;
-
 	Ref<Shader> ShaderLibrary::LoadShader(const std::string& filePath) {
 		// Extract name from file
 		size_t lastSlash = filePath.find_last_of("/\\");
@@ -47,6 +45,7 @@ namespace Quirk {
 		size_t count = (lastDot == std::string::npos) ? (filePath.size() - lastSlash) : (lastDot - lastSlash);
 
 		std::string name = filePath.substr(lastSlash, count);
+
 		QK_CORE_ASSERT(!m_LoadedShaders.contains(name), "Shader named {0} already exists!", name);
 
 		m_LoadedShaders[name] = LoadShaderFromFile(filePath);

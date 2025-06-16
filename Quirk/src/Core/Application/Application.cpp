@@ -8,7 +8,6 @@
 #include "Core/Application/Application.h"
 
 #include "Core/Renderer/Renderer.h"
-#include "Core/Renderer/Renderer2D.h"
 #include "Core/Renderer/RenderCommands.h"
 
 #include "Core/Utility/Time.h"
@@ -25,7 +24,6 @@ namespace Quirk {
 
 		EventDispatcher::RegisterEventCallback(QK_BIND_EVENT_FN(Application::OnEvent));
 
-		//GraphicalContext::Init(renderingAPI);
 		RenderCommands::Init(renderingAPI);
 	}
 

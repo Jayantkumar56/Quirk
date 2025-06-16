@@ -21,14 +21,10 @@ namespace Quirk::OpenGL {
     Internals::WGLExtensions WindowsOpenGLContext::s_WGL{};
 
 
-    void WindowsOpenGLContext::CreateContext(View<Window> window) noexcept {
-        if (m_GLContext) {
-            QK_WARN("Trying to create Graphical Context but it is already created.");
-            return;
-        }
-
-        WindowsWindow* nativeWndObj = (WindowsWindow*)window->GetNativeWindowObject();
-		m_DeviceContext = GetDC((HWND)nativeWndObj->GetNativeHandle());
+    WindowsOpenGLContext::WindowsOpenGLContext(View<Window> window) noexcept :
+			m_WindowHandle(static_cast<HWND>(window->GetNativeHandle()))
+	{
+		m_DeviceContext = GetDC(m_WindowHandle);
 		QK_CORE_ASSERT(m_DeviceContext, "Windows failed to provide a device context!");
 
 		int pixelFormat = 0;
@@ -74,33 +70,38 @@ namespace Quirk::OpenGL {
 		QK_CORE_ASSERTEX(wglMakeCurrent(m_DeviceContext, m_GLContext), "Failed to make GL context current!");
     }
 
-    void WindowsOpenGLContext::DestroyContext(View<Window> window) noexcept {
+    WindowsOpenGLContext::~WindowsOpenGLContext() noexcept {
         QK_CORE_ASSERTEX(
             wglDeleteContext(m_GLContext),
             "Failed to delete context!"
         );
 
+		QK_CORE_ASSERT(
+			IsWindow(m_WindowHandle), 
+			"Window has been destroyed before destruction of Graphical Context"
+		);
+
         QK_CORE_ASSERTEX(
-            ReleaseDC((HWND)window->GetNativeHandle(), m_DeviceContext),
+            ReleaseDC(m_WindowHandle, m_DeviceContext),
             "Failed to release DC!"
         );
     }
 
-    void WindowsOpenGLContext::SwapBuffer() noexcept {
+    void WindowsOpenGLContext::SwapBuffer() const noexcept {
         QK_CORE_ASSERTEX(
             SwapBuffers(m_DeviceContext), 
             "Failed to Swap Buffer"
         );
     }
 
-    void WindowsOpenGLContext::SetVSync(int interval) noexcept {
+    void WindowsOpenGLContext::SetVSync(int interval) const noexcept {
         QK_CORE_ASSERTEX(
             s_WGL.SwapIntervalEXT(interval), 
             "Failed to Set VSync!"
         );
     }
 
-    void WindowsOpenGLContext::MakeContextCurrent() noexcept {
+    void WindowsOpenGLContext::MakeContextCurrent() const noexcept {
         QK_CORE_ASSERTEX(
             wglMakeCurrent(m_DeviceContext, m_GLContext),
             "Failed to make GL context current!"

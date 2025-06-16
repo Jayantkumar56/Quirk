@@ -9,13 +9,11 @@
 #include "Panels/InspectorPanel/InspectorPanel.h"
 #include "Panels/ContentBrowserPanel.h"
 
+
 namespace QuirkEditor {
 
     void EditorFrame::Init() noexcept {
         m_Project->SetRHIFactory(GetRenderSystem()->GetFactory());
-
-        Quirk::Renderer::InitRenderer();
-		Quirk::Renderer2D::InitRenderer();
 
         m_Theme.SetTheme(ThemeName::DarkTheme);
 

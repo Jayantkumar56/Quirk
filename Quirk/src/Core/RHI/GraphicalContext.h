@@ -10,12 +10,9 @@ namespace Quirk::RHI {
 
     class GraphicalContext {
     public:
-        virtual void CreateContext(View<Window> window)  noexcept = 0;
-        virtual void DestroyContext(View<Window> window) noexcept = 0;
-
-        virtual void SwapBuffer()          noexcept = 0;
-        virtual void SetVSync(int toggle)  noexcept = 0;
-        virtual void MakeContextCurrent()  noexcept = 0;
+        virtual void SwapBuffer()         const noexcept = 0;
+        virtual void SetVSync(int toggle) const noexcept = 0;
+        virtual void MakeContextCurrent() const noexcept = 0;
     };
 
 }
