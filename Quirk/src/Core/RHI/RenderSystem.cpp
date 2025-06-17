@@ -3,7 +3,7 @@
 #include "Qkpch.h"
 
 #include "RenderSystem.h"
-#include "Platform/OpenGL/Factory.h"
+#include "Platform/OpenGL/OpenGLFactory.h"
 
 
 namespace Quirk::RHI {

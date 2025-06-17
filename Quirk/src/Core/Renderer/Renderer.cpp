@@ -8,7 +8,8 @@
 namespace Quirk {
 
 	Renderer::Renderer(ConstView<RHI::RenderSystem> renderSystem) noexcept :
-			m_RenderSystem(renderSystem)
+			m_RenderSystem  ( renderSystem               ),
+			m_ShaderLibrary ( renderSystem->GetFactory() )
 	{
 		ConstView<RHI::Factory>       factory       = m_RenderSystem->GetFactory();
 		ConstView<RHI::RenderCommand> renderCommand = m_RenderSystem->GetRenderCommandContext();

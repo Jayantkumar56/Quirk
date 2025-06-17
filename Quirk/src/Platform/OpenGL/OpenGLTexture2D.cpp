@@ -2,7 +2,7 @@
 
 #include "Qkpch.h"
 
-#include "Texture2D.h"
+#include "OpenGLTexture2D.h"
 #include "Core/Core.h"
 
 #include "glad/glad.h"

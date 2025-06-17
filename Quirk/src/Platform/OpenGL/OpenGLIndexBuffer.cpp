@@ -2,7 +2,7 @@
 
 #include "Qkpch.h"
 
-#include "IndexBuffer.h"
+#include "OpenGLIndexBuffer.h"
 
 #include "glad/glad.h"
 

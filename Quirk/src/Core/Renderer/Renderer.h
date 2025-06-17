@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "Core/Assets/RenderAssets/Shader.h"
+#include "Core/Assets/RenderAssets/ShaderLibrary.h"
 #include "Core/Assets/Geometry/Geometry.h"
 #include "Core/Scene/Entity.h"
 #include "Core/RHI/RenderSystem.h"
@@ -26,14 +26,14 @@ namespace Quirk {
 			glm::vec3 CameraPosition;
 
 			// general mesh shader
-			Ref<Shader>       MeshShader;
+			Ref<RHI::Shader>       MeshShader;
 			Ref<RHI::VertexArray>  MeshVertexArray;
 			Ref<RHI::VertexBuffer> MeshPositionBuffer;
 			Ref<RHI::VertexBuffer> MeshNormalBuffer;
 			Ref<RHI::VertexBuffer> MeshUVBuffer;
 
 			// for light sources
-			Ref<Shader> LightSourceShader;
+			Ref<RHI::Shader> LightSourceShader;
 		};
 
 	private:

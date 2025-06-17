@@ -2,8 +2,8 @@
 
 #include "Qkpch.h"
 
-#include "FrameBuffer.h"
-#include "Texture2D.h"
+#include "OpenGLFrameBuffer.h"
+#include "OpenGLTexture2D.h"
 
 #include "glad/glad.h"
 

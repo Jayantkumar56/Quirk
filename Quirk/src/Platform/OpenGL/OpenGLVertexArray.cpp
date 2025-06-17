@@ -2,7 +2,7 @@
 
 #include "Qkpch.h"
 
-#include "VertexArray.h"
+#include "OpenGLVertexArray.h"
 
 #include "glad/glad.h"
 

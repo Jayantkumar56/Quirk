@@ -1,26 +1,15 @@
 
 
 #include "Qkpch.h"
+
+#include "Core/Assets/RenderAssets/ShaderLibrary.h"
+
 #include <fstream>
 
-#include "Core/Assets/RenderAssets/Shader.h"
-#include "Core/Renderer/Renderer.h"
-
-#include "Platform/OpenGL/OpenGLShader.h"
 
 namespace Quirk {
-	//////////////////////   Shader   ///////////////////////////////////////////////////////////////////////////////////////////////////
-	Ref<Shader> Shader::Create(const std::string& vertexSrc, const std::string& fragmentSrc) {
-		return std::make_shared<OpenGLShader>(vertexSrc, fragmentSrc);
-	}
 
-	Ref<Shader> Shader::Create(const std::string shaderSourcesArray[], uint8_t size) {
-		return std::make_shared<OpenGLShader>(shaderSourcesArray, size);
-	}
-
-	/////////////   ShaderLibrary   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-	Ref<Shader> ShaderLibrary::LoadShader(const std::string& filePath) {
+	Ref<RHI::Shader> ShaderLibrary::LoadShader(const std::string& filePath) {
 		// Extract name from file
 		size_t lastSlash = filePath.find_last_of("/\\");
 		lastSlash = (lastSlash == std::string::npos) ? 0 : lastSlash + 1;
@@ -36,26 +25,31 @@ namespace Quirk {
 		return m_LoadedShaders[name];
 	}
 
-	Ref<Shader> ShaderLibrary::LoadShader(const std::string& name, const std::string& filePath) {
+	Ref<RHI::Shader> ShaderLibrary::LoadShader(const std::string& name, const std::string& filePath) {
 		QK_CORE_ASSERT(!m_LoadedShaders.contains(name), "Shader named {0} already exists!", name);
 
 		m_LoadedShaders[name] = LoadShaderFromFile(filePath);
 		return m_LoadedShaders[name];
 	}
 
-	Ref<Shader> ShaderLibrary::LoadShader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc) {
+	Ref<RHI::Shader> ShaderLibrary::LoadShader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc) {
 		QK_CORE_ASSERT(!m_LoadedShaders.contains(name), "Shader named {0} already exists!", name);
 
-		m_LoadedShaders[name] = Shader::Create(vertexSrc, fragmentSrc);
+		ShaderSource src{
+			.VertexShader{vertexSrc},
+			.FragmentShader{fragmentSrc}
+		};
+
+		m_LoadedShaders[name] = m_RHIFactory->CreateShader(src);
 		return m_LoadedShaders[name];
 	}
 
-	Ref<Shader> ShaderLibrary::GetShader(const std::string& name) {
+	Ref<RHI::Shader> ShaderLibrary::GetShader(const std::string& name) {
 		QK_CORE_ASSERT(m_LoadedShaders.contains(name), "Shader named {0} isn't loaded yet", name);
 		return m_LoadedShaders[name];
 	}
 
-	Ref<Shader> ShaderLibrary::LoadShaderFromFile(const std::string& filePath) {
+	Ref<RHI::Shader> ShaderLibrary::LoadShaderFromFile(const std::string& filePath) {
 		std::string source;
 		std::ifstream in(filePath, std::ios::in | std::ios::binary);
 
@@ -100,7 +94,12 @@ namespace Quirk {
 			shaderSources[shaderType -1] = (pos == std::string::npos) ? source.substr(shaderStart) : source.substr(shaderStart, pos - shaderStart);
 		}
 
-		return Shader::Create(shaderSources, SahderType::NoTypesOfShader);
+		ShaderSource src{
+			.VertexShader{shaderSources[SahderType::VertexShader -1]},
+			.FragmentShader{shaderSources[SahderType::FragmentShader -1]}
+		};
+
+		return m_RHIFactory->CreateShader(src);
 	}
 
 	ShaderLibrary::SahderType ShaderLibrary::ShaderTypeFromString(const std::string& type) {

@@ -3,13 +3,14 @@
 #pragma once
 
 #include "Core/RHI/Factory.h"
-#include "FrameBuffer.h"
-#include "GraphicalContext.h"
-#include "Texture2D.h"
-#include "VertexBuffer.h"
-#include "IndexBuffer.h"
-#include "VertexArray.h"
-#include "RenderCommand.h"
+#include "OpenGLFrameBuffer.h"
+#include "OpenGLGraphicalContext.h"
+#include "OpenGLTexture2D.h"
+#include "OpenGLVertexBuffer.h"
+#include "OpenGLIndexBuffer.h"
+#include "OpenGLVertexArray.h"
+#include "OpenGLRenderCommand.h"
+#include "OpenGLShader.h"
 
 
 namespace Quirk::OpenGL {
@@ -51,6 +52,11 @@ namespace Quirk::OpenGL {
         virtual Scope<RHI::RenderCommand> CreateRenderCommandContext() const noexcept override {
             return CreateScope<OpenGL::RenderCommand>();
         }
+
+        virtual Scope<RHI::Shader> CreateShader(ShaderSource shaderSrc) const noexcept override {
+            return CreateScope<OpenGL::Shader>(shaderSrc);
+        }
+
     };
 
 }

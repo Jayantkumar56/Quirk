@@ -9,6 +9,7 @@
 #include "IndexBuffer.h"
 #include "VertexArray.h"
 #include "RenderCommand.h"
+#include "Shader.h"
 
 
 namespace Quirk::RHI {
@@ -30,6 +31,8 @@ namespace Quirk::RHI {
         virtual Ref<VertexArray> CreateVertexArray() const noexcept = 0;
 
         virtual Scope<RenderCommand> CreateRenderCommandContext() const noexcept = 0;
+
+        virtual Scope<Shader> CreateShader(ShaderSource shaderSrc) const noexcept = 0;
     };
 
 }
