@@ -2,14 +2,9 @@
 
 #pragma once
 
-#include "RendererAPI.h"
 #include "Core/Assets/RenderAssets/Shader.h"
-
 #include "Core/Assets/Geometry/Geometry.h"
 #include "Core/Scene/Entity.h"
-
-
-
 #include "Core/RHI/RenderSystem.h"
 
 
@@ -23,8 +18,6 @@ namespace Quirk {
 		void Submit(Entity entity, std::vector<Entity>& lightSources);
 		void SubmitLightSource(Entity entity);
 		void EndScene();
-
-		static inline RendererAPI::API GetAPI() { return RendererAPI::GetAPI(); }
 
 	private:
 		struct SceneData {

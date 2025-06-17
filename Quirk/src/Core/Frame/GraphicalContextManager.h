@@ -16,10 +16,11 @@ namespace Quirk::Internals {
                 m_Renderer     ( &m_RenderSystem                            )
         {}
 
-        inline ConstView<RHI::GraphicalContext> GetGraphicalContext() const noexcept { return m_RenderSystem.GetGraphicalContext(); }
-        inline ConstView<RHI::RenderSystem>     GetRenderSystem()     const noexcept { return &m_RenderSystem;                      }
-        inline ConstView<RHI::Factory>          GetRHIFactory()       const noexcept { return m_RenderSystem.GetFactory();          }
-        inline View<Renderer>                   GetRenderer()               noexcept { return &m_Renderer;                          }
+        inline ConstView<RHI::GraphicalContext> GetGraphicalContext()     const noexcept { return m_RenderSystem.GetGraphicalContext();     }
+        inline ConstView<RHI::RenderSystem>     GetRenderSystem()         const noexcept { return &m_RenderSystem;                          }
+        inline ConstView<RHI::Factory>          GetRHIFactory()           const noexcept { return m_RenderSystem.GetFactory();              }
+        inline View<Renderer>                   GetRenderer()                   noexcept { return &m_Renderer;                              }
+        inline ConstView<RHI::RenderCommand>    GetRenderCommandContext() const noexcept { return m_RenderSystem.GetRenderCommandContext(); }
 
         inline void SwapBuffer()         const noexcept { GetGraphicalContext()->SwapBuffer();     }
         inline void SetVSync(int toggle) const noexcept { GetGraphicalContext()->SetVSync(toggle); }

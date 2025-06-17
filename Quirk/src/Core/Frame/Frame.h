@@ -5,7 +5,6 @@
 #include "FrameBase.h"
 #include "FrameTraits.h"
 #include "FrameInitContext.h"
-#include "Core/Renderer/RenderCommands.h"
 
 
 namespace Quirk::Internals {
@@ -69,7 +68,7 @@ namespace Quirk::Internals {
         }
 
         void UpdateFrameUI() {
-            RenderCommands::Clear();
+            GraphicalContextPolicy::GetRenderCommandContext()->Clear();
 
             // updating imgui ui of the current frame and it's panels
             if constexpr (HaveImguiPolicy) {

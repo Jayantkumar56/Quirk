@@ -9,6 +9,7 @@
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
 #include "VertexArray.h"
+#include "RenderCommand.h"
 
 
 namespace Quirk::OpenGL {
@@ -43,8 +44,12 @@ namespace Quirk::OpenGL {
             return CreateRef<OpenGL::IndexBuffer>(indices, count);
         }
 
-        virtual Ref<RHI::VertexArray> CreateVertexArray() const noexcept {
+        virtual Ref<RHI::VertexArray> CreateVertexArray() const noexcept override {
             return CreateRef<OpenGL::VertexArray>();
+        }
+
+        virtual Scope<RHI::RenderCommand> CreateRenderCommandContext() const noexcept override {
+            return CreateScope<OpenGL::RenderCommand>();
         }
     };
 

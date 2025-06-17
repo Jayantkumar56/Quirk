@@ -30,8 +30,6 @@
 #include "Core/Renderer/Light/Light.h"
 
 #include "Core/Assets/RenderAssets/Shader.h"
-#include "Core/Renderer/RendererAPI.h"
-#include "Core/Renderer/RenderCommands.h"
 #include "Core/Renderer/Renderer.h"
 
 #include "Core/Scene/Components.h"

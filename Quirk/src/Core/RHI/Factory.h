@@ -8,6 +8,7 @@
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
 #include "VertexArray.h"
+#include "RenderCommand.h"
 
 
 namespace Quirk::RHI {
@@ -27,6 +28,8 @@ namespace Quirk::RHI {
         virtual Ref<IndexBuffer> CreateIndexBuffer(uint32_t* indices, uint32_t count) const noexcept = 0;
 
         virtual Ref<VertexArray> CreateVertexArray() const noexcept = 0;
+
+        virtual Scope<RenderCommand> CreateRenderCommandContext() const noexcept = 0;
     };
 
 }

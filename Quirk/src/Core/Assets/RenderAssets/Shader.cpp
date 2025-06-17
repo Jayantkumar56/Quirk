@@ -11,27 +11,11 @@
 namespace Quirk {
 	//////////////////////   Shader   ///////////////////////////////////////////////////////////////////////////////////////////////////
 	Ref<Shader> Shader::Create(const std::string& vertexSrc, const std::string& fragmentSrc) {
-		RendererAPI::API currentAPI = Renderer::GetAPI();
-
-		switch (currentAPI) {
-			case RendererAPI::API::None:		QK_CORE_ASSERT(false, "RendererAPI::API::None is not supported right now!"); return nullptr;
-			case RendererAPI::API::OpenGL:	return std::make_shared<OpenGLShader>(vertexSrc, fragmentSrc);
-		}
-
-		QK_CORE_ASSERT(false, "Invalid Renderer API Selected!");
-		return nullptr;
+		return std::make_shared<OpenGLShader>(vertexSrc, fragmentSrc);
 	}
 
 	Ref<Shader> Shader::Create(const std::string shaderSourcesArray[], uint8_t size) {
-		RendererAPI::API currentAPI = Renderer::GetAPI();
-
-		switch (currentAPI) {
-			case RendererAPI::API::None:		QK_CORE_ASSERT(false, "RendererAPI::API::None is not supported right now!"); return nullptr;
-			case RendererAPI::API::OpenGL:	return std::make_shared<OpenGLShader>(shaderSourcesArray, size);
-		}
-
-		QK_CORE_ASSERT(false, "Invalid Renderer API Selected!");
-		return nullptr;
+		return std::make_shared<OpenGLShader>(shaderSourcesArray, size);
 	}
 
 	/////////////   ShaderLibrary   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////

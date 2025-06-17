@@ -18,7 +18,8 @@ namespace Quirk::RHI {
             default: QK_CORE_ASSERT(false, "Unknown RendererAPI");
         }
 
-        m_Context = m_Factory->CreateGraphicalContext(window);
+        m_Context  = m_Factory->CreateGraphicalContext(window);
+        m_Commands = m_Factory->CreateRenderCommandContext();
     }
 
     void RenderSystem::InitializeHeadLess() noexcept {

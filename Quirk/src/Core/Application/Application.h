@@ -1,9 +1,10 @@
 
+
 #pragma once
 
 #include "Core/Input/ApplicationEvents.h"
 #include "Core/Frame/FrameManager.h"
-#include "Core/Renderer/Renderer.h"
+
 
 namespace Quirk {
 
@@ -27,14 +28,13 @@ namespace Quirk {
         }
 
 	public:
-		Application(std::wstring appName, RendererAPI::API renderingAPI);
-		virtual ~Application() = default;
+		Application(std::wstring appName) noexcept;
+		virtual ~Application() noexcept = default;
 
 		void Run();
 
 		void OnEvent(Event& event);
 		bool OnWindowClose(WindowCloseEvent& event);
-		bool OnWindowResize(WindowResizeEvent& event);
 
 		// adds a new frame to the frame manager and makes the frame be the current context
 		// if called from another frame make sure to reset the context with Frame::MakeContextCurrent()

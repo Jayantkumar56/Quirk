@@ -2,7 +2,6 @@
 
 #include "Qkpch.h"
 #include "Renderer.h"
-#include "RenderCommands.h"
 
 #include "Core/Camera/Camera.h"
 
@@ -11,10 +10,13 @@ namespace Quirk {
 	Renderer::Renderer(ConstView<RHI::RenderSystem> renderSystem) noexcept :
 			m_RenderSystem(renderSystem)
 	{
-		ConstView<RHI::Factory> factory = m_RenderSystem->GetFactory();
+		ConstView<RHI::Factory>       factory       = m_RenderSystem->GetFactory();
+		ConstView<RHI::RenderCommand> renderCommand = m_RenderSystem->GetRenderCommandContext();
 
-		RenderCommands::SetClearColor({ 0.10156f, 0.17968f, 0.20703f, 1.0f });
-		RenderCommands::EnableBlending();
+		renderCommand->SetClearColor({ 0.10156f, 0.17968f, 0.20703f, 1.0f });
+		renderCommand->EnableBlending();
+		renderCommand->EnableDepthTesting();
+		//renderCommand->SetCullMode(RHI::CullMode::Back);
 
 		m_SceneData.MeshShader = m_ShaderLibrary.LoadShader("assets/Shaders/Mesh.glsl");
 		m_SceneData.LightSourceShader = m_ShaderLibrary.LoadShader("assets/Shaders/emissive_mesh.glsl");
@@ -40,6 +42,8 @@ namespace Quirk {
 	}
 
 	void Renderer::Submit(Entity entity, std::vector<Entity>& lightSources) {
+		ConstView<RHI::RenderCommand> renderCommand = m_RenderSystem->GetRenderCommandContext();
+
 		auto& transform = entity.GetComponent<TransformComponent>();
 		auto& mesh      = entity.GetComponent<MeshRendererComponent>().MeshObject;
 		int entityId    = (uint32_t)entity;
@@ -94,10 +98,12 @@ namespace Quirk {
 		}
 
 		uint32_t vertCount = 36;
-		RenderCommands::DrawVertices(vertCount);
+		renderCommand->DrawVertices(vertCount);
 	}
 
 	void Renderer::SubmitLightSource(Entity entity) {
+		ConstView<RHI::RenderCommand> renderCommand = m_RenderSystem->GetRenderCommandContext();
+
 		if (!entity.HasComponent<MeshRendererComponent>()) return;
 
 		auto transform = entity.GetComponent<TransformComponent>().GetTransform();
@@ -128,7 +134,7 @@ namespace Quirk {
 		m_SceneData.LightSourceShader->UploadUniform("u_Color",          light.Color                     );
 
 		uint32_t vertCount = 36;
-		RenderCommands::DrawVertices(vertCount);
+		renderCommand->DrawVertices(vertCount);
 	}
 
 	void Renderer::EndScene() {

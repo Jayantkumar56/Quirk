@@ -25,7 +25,7 @@ namespace Quirk {
 namespace QuirkEditor {
 
 	void QuirkEditorApp::LaunchEditor() {
-		auto* frame = AddFrame<EditorFrame>(m_ProjManager.GetActive());
+		AddFrame<EditorFrame>(m_ProjManager.GetActive());
 	}
 
     void QuirkEditorApp::Init() {

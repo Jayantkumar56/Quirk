@@ -25,7 +25,7 @@ namespace QuirkEditor {
             m_SceneRenderer ( frame->GetRenderer(), frame->GetActiveSceneView(), m_FrameBuffer ),
             m_EditorFrame   ( frame                                      )
 	{
-        Quirk::RenderCommands::UpdateViewPort(
+		frame->GetRenderCommandContext()->SetViewport(
             static_cast<uint32_t>(m_PanelSize.x),
             static_cast<uint32_t>(m_PanelSize.y)
         );
@@ -172,7 +172,7 @@ namespace QuirkEditor {
 			m_Camera.SetViewportSize(m_PanelSize.x, m_PanelSize.y);
 
             m_FrameBuffer->Resize(width, height);
-            Quirk::RenderCommands::UpdateViewPort(width, height);
+			m_EditorFrame->GetRenderCommandContext()->SetViewport(width, height);
 
 			scene->OnViewportResize(width, height);
 		}

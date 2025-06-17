@@ -14,18 +14,18 @@ namespace Quirk {
 
 namespace QuirkEditor {
 
-	class QuirkEditorApp : public Quirk::Application {
+	class QuirkEditorApp final : public Quirk::Application {
         friend void Quirk::LaunchApp();
 
 	public:
-		QuirkEditorApp() :
-                Application(L"Quirk Engine", Quirk::RendererAPI::API::OpenGL)
+		QuirkEditorApp() noexcept :
+                Application(L"Quirk Engine")
         {}
 
 		// creates the editor frame with default parameters
 		void LaunchEditor();
 
-        const auto& GetProjectManagerView() const noexcept { return m_ProjManager; }
+        Quirk::ConstView<ProjectManager> GetProjectManagerView() const noexcept { return &m_ProjManager; }
 
 	private:
         void Init();

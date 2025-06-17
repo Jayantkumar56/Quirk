@@ -12,9 +12,10 @@ namespace Quirk::RHI {
     public:
         explicit RenderSystem(GraphicsAPI api, View<Window> window)  noexcept;
 
-        inline const GraphicsAPI           GetGraphicsAPI()      const noexcept { return m_GraphicsAPI; }
-        inline ConstView<Factory>          GetFactory()          const noexcept { return m_Factory;     }
-        inline ConstView<GraphicalContext> GetGraphicalContext() const noexcept { return m_Context;     }
+        inline const GraphicsAPI           GetGraphicsAPI()          const noexcept { return m_GraphicsAPI; }
+        inline ConstView<Factory>          GetFactory()              const noexcept { return m_Factory;     }
+        inline ConstView<GraphicalContext> GetGraphicalContext()     const noexcept { return m_Context;     }
+        inline ConstView<RenderCommand>    GetRenderCommandContext() const noexcept { return m_Commands;    }
 
     private:
         void InitializeHeadLess()   noexcept;
@@ -24,6 +25,7 @@ namespace Quirk::RHI {
         GraphicsAPI             m_GraphicsAPI;
         Scope<Factory>          m_Factory;
         Scope<GraphicalContext> m_Context;
+        Scope<RenderCommand>    m_Commands;
     };
 
 }
