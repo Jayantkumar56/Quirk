@@ -8,9 +8,15 @@
 [submodule "Quirk/vendor/glm"]
 	path = Quirk/vendor/glm
 	url = https://github.com/g-truc/glm
+[submodule "Quirk/vendor/EnTT"]
+	path = Quirk/vendor/EnTT
+	url = https://github.com/skypjack/entt
+[submodule "Quirk/vendor/stb"]
+	path = Quirk/vendor/stb
+	url = https://github.com/nothings/stb
+[submodule "Quirk/vendor/OpenGL-Registry"]
+	path = Quirk/vendor/OpenGL-Registry
+	url = https://github.com/KhronosGroup/OpenGL-Registry
 [submodule "Quirk/vendor/yaml-cpp"]
 	path = Quirk/vendor/yaml-cpp
-	url = https://github.com/Jayantkumar56/yaml-cpp
-[submodule "Quirk/vendor/ImGuizmo"]
-	path = Quirk/vendor/ImGuizmo
-	url = https://github.com/Jayantkumar56/ImGuizmo
+	url = https://github.com/jbeder/yaml-cpp
