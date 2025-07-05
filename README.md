@@ -6,7 +6,7 @@ Quirk is primarily an early-stage interactive application and rendering engine. 
 
 # Getting Started
 
-Visual Studio 2022 is recommended, Quirk is not tested on other development environments, while it uses Premake to generate project files for various platforms and IDEs.
+Visual Studio 2022 is recommended, Quirk is not tested on other development environments, while it uses Cmake to generate project files for various platforms and IDEs.
 
 <ins>**1. Downloading the repository:**</ins>
 
