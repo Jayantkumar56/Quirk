@@ -1,15 +1,14 @@
 
-#include "qkpch.h"
 
 #include "Core/Core.h"
-#include "Core/Renderer/RendererAPI.h"
 #include "Core/Frame/ImguiUI.h"
 
 #include "Core/Frame/Window.h"
-#include "Platform/OpenGL/GraphicalContext.h"
+#include "Platform/OpenGL/OpenGLGraphicalContext.h"
 
 
 #ifdef QK_PLATFORM_WINDOWS
+#include "glad/glad.h"
 #include "wglext.h"
 #include "backends/imgui_impl_win32.h"
 #include <dwmapi.h>

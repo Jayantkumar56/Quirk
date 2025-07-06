@@ -6,7 +6,7 @@
 #include "Core/Scene/Scene.h"
 #include "Core/Scene/Components.h"
 
-#include "entt.hpp"
+#include "entt/entt.hpp"
 
 
 namespace Quirk {

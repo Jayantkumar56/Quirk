@@ -1,5 +1,4 @@
 
-#include "QkEditorpch.h"
 
 #include "EditorCamera.h"
 

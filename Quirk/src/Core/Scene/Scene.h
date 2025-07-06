@@ -7,7 +7,7 @@
 #include "Core/AssetManager/EditorAssetManager.h"
 #include "Core/Config.h"
 
-#include "entt.hpp"
+#include "entt/entt.hpp"
 
 namespace Quirk {
 

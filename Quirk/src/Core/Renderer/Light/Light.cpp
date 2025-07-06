@@ -1,8 +1,5 @@
 
 
-
-
-#include "Qkpch.h"
 #include "Light.h"
 
 namespace Quirk {

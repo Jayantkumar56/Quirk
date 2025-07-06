@@ -1,7 +1,5 @@
 
 
-#include "Qkpch.h"
-
 #include "EditorSceneManager.h"
 
 

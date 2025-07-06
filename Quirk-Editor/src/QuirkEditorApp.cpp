@@ -1,7 +1,5 @@
 
 
-#include "QkEditorpch.h"
-
 #include "QuirkEditorApp.h"
 #include "Launcher/LauncherFrame.h"
 #include "Editor/EditorFrame.h"

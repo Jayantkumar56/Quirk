@@ -1,7 +1,5 @@
 
 
-#include "Qkpch.h"
-
 #include "EditorSceneRenderer.h"
 #include "Core/Renderer/Renderer.h"
 

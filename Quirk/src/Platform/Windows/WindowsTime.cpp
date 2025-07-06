@@ -1,7 +1,5 @@
 
 
-#include "Qkpch.h"
-
 #ifdef QK_PLATFORM_WINDOWS
 
 #include "WindowsTime.h"

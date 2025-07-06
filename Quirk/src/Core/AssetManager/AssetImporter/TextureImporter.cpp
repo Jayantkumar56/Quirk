@@ -1,7 +1,5 @@
 
 
-#include "Qkpch.h"
-
 #include "TextureImporter.h"
 #include "Core/Utility/Buffer.h"
 #include "Core/Reflection/Registrations/TextureEnums.h"

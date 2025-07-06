@@ -1,7 +1,5 @@
 
 
-#include "QkEditorpch.h"
-
 #include "EditorTheme.h"
 
 namespace QuirkEditor {

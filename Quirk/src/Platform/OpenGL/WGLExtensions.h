@@ -5,6 +5,7 @@
 #ifdef QK_PLATFORM_WINDOWS
 
 
+#include "glad/glad.h"
 #include "wglext.h"
 
 

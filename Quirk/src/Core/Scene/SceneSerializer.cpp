@@ -1,5 +1,4 @@
 
-#include "Qkpch.h"
 
 #include "Core/Core.h"
 #include "Core/Scene/Scene.h"

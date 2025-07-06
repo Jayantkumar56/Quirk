@@ -16,6 +16,17 @@ namespace Quirk {
 #ifdef QK_PLATFORM_WINDOWS
 
 int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPSTR lpCmdLine, _In_ int nShowCmd) {
+	// Set binary directory as current working directory
+	// Ensure consistent working directory across different build systems
+	{
+		// Get the full path to the executable
+		wchar_t exePath[MAX_PATH];
+		GetModuleFileNameW(NULL, exePath, MAX_PATH);
+
+		std::filesystem::path exeDir = std::filesystem::path(exePath).parent_path();
+		std::filesystem::current_path(exeDir);
+	}
+
 #ifdef QK_ENABLE_LOG
 	Quirk::Log::Init();
 #endif // QK_ENABLE_LOG

@@ -1,7 +1,5 @@
 
 
-#include "Qkpch.h"
-
 #define IMGUI_IMPL_OPENGL_LOADER_GLAD
 
 #pragma warning(push)

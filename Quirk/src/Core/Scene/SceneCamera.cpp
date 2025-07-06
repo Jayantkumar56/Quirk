@@ -1,7 +1,5 @@
 
 
-#include "Qkpch.h"
-
 #include "Core/core.h"
 #include "SceneCamera.h"
 #include "glm/gtc/matrix_transform.hpp"

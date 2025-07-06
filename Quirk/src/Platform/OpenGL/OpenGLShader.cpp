@@ -1,7 +1,5 @@
 
 
-#include "Qkpch.h"
-
 #include "Core/Core.h"
 #include "OpenGLShader.h"
 

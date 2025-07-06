@@ -1,7 +1,5 @@
 
 
-#include "Qkpch.h"
-
 #include "Core/Assets/RenderAssets/ShaderLibrary.h"
 
 #include <fstream>

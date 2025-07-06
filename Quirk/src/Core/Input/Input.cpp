@@ -1,9 +1,8 @@
 
 
-#include "Qkpch.h"
-
 #include "Events.h"
 #include "Input.h"
+
 
 namespace Quirk {
 

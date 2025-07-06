@@ -1,7 +1,5 @@
 
 
-#include "QkEditorpch.h"
-
 #include "LauncherFrame.h"
 #include "Launcher/LauncherTitleBar.h"
 #include "Base/ProjectManager.h"

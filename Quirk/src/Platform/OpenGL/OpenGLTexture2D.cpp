@@ -1,7 +1,5 @@
 
 
-#include "Qkpch.h"
-
 #include "OpenGLTexture2D.h"
 #include "Core/Core.h"
 

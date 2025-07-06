@@ -1,7 +1,5 @@
 
 
-#include "QkEditorpch.h"
-
 #include "SceneHierarchyPanel.h"
 #include "Editor/EditorTheme.h"
 #include "Editor/EditorFrame.h"

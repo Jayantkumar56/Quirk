@@ -1,5 +1,4 @@
 
-#include<qkpch.h>
 
 #include "Core/Core.h"
 

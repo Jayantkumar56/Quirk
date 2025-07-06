@@ -1,9 +1,9 @@
 
 
-#include "Qkpch.h"
 #include "Renderer.h"
 
 #include "Core/Camera/Camera.h"
+
 
 namespace Quirk {
 

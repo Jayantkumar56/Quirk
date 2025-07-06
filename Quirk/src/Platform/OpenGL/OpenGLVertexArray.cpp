@@ -1,7 +1,5 @@
 
 
-#include "Qkpch.h"
-
 #include "OpenGLVertexArray.h"
 
 #include "glad/glad.h"

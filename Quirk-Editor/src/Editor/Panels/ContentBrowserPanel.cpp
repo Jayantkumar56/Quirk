@@ -1,7 +1,5 @@
 
 
-#include "QkEditorpch.h"
-
 #include "ContentBrowserPanel.h"
 #include "Editor/EditorFrame.h"
 

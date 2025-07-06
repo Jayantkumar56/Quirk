@@ -1,7 +1,5 @@
 
 
-#include "Qkpch.h"
-
 #ifdef QK_PLATFORM_WINDOWS
 
 #include "Core/Core.h"
@@ -61,7 +59,7 @@ namespace Quirk {
 		wc.cbWndExtra    = 0;
 		wc.hInstance     = s_HInstance;
 		wc.hIcon         = 0;
-		wc.hCursor       = LoadCursorW(NULL, IDC_ARROW);
+		wc.hCursor       = LoadCursorW(NULL, (LPCWSTR)IDC_ARROW);
 		wc.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
 		wc.lpszMenuName  = 0;
 		wc.lpszClassName = s_WindClassName.data();

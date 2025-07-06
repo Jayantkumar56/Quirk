@@ -1,7 +1,5 @@
 
 
-#include "Qkpch.h"
-
 #include "RenderSystem.h"
 #include "Platform/OpenGL/OpenGLFactory.h"
 

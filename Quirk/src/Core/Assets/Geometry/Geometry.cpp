@@ -1,6 +1,5 @@
 
 
-#include "Qkpch.h"
 #include "Geometry.h"
 
 

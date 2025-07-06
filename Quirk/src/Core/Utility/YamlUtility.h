@@ -44,12 +44,12 @@ namespace Quirk {
 
 namespace YAML {
 
-    static Emitter& operator << (Emitter& out, const std::string_view& str) {
-        out << str.data();
-        return out;
-    }
+    //inline Emitter& operator << (Emitter& out, const std::string_view& str) {
+    //    out << str.data();
+    //    return out;
+    //}
 
-    static Emitter& operator << (Emitter& out, const glm::vec2& v) {
+    inline Emitter& operator << (Emitter& out, const glm::vec2& v) {
         out << Flow;
         out << BeginSeq << v.x << v.y << EndSeq;
         return out;
@@ -75,7 +75,7 @@ namespace YAML {
         }
     };
 
-    static Emitter& operator << (Emitter& out, const glm::vec3& v) {
+    inline Emitter& operator << (Emitter& out, const glm::vec3& v) {
         out << Flow;
         out << BeginSeq << v.x << v.y << v.z << EndSeq;
         return out;
@@ -103,7 +103,7 @@ namespace YAML {
         }
     };
 
-    static Emitter& operator << (Emitter& out, const glm::vec4& v) {
+    inline Emitter& operator << (Emitter& out, const glm::vec4& v) {
         out << Flow;
         out << BeginSeq << v.x << v.y << v.z << v.w << EndSeq;
         return out;
@@ -133,7 +133,7 @@ namespace YAML {
         }
     };
 
-    static Emitter& operator<<(Emitter& out, const std::filesystem::path& p) {
+    inline Emitter& operator<<(Emitter& out, const std::filesystem::path& p) {
         out << p.string();
         return out;
     }

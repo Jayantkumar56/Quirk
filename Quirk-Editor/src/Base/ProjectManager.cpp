@@ -1,7 +1,5 @@
 
 
-#include "QkEditorpch.h"
-
 #include "ProjectManager.h"
 #include "Base/Reflection/ProjectManagerReflection.h"
 

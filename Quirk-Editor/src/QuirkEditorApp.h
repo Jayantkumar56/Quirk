@@ -25,8 +25,6 @@ namespace QuirkEditor {
 		// creates the editor frame with default parameters
 		void LaunchEditor();
 
-        Quirk::ConstView<ProjectManager> GetProjectManagerView() const noexcept { return &m_ProjManager; }
-
 	private:
         void Init();
         void Terminate();

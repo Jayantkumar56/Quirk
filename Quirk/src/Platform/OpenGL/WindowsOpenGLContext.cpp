@@ -1,15 +1,11 @@
 
 
-#include "Qkpch.h"
-
-
 #ifdef QK_PLATFORM_WINDOWS
 
 #include "WindowsOpenGLContext.h"
 #include "WGLExtensions.h"
 
 #include "glad/glad.h"
-
 
 
 namespace Quirk::OpenGL {

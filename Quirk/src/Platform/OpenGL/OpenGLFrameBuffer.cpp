@@ -1,7 +1,5 @@
 
 
-#include "Qkpch.h"
-
 #include "OpenGLFrameBuffer.h"
 #include "OpenGLTexture2D.h"
 
