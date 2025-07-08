@@ -20,3 +20,6 @@
 [submodule "Quirk/vendor/yaml-cpp"]
 	path = Quirk/vendor/yaml-cpp
 	url = https://github.com/jbeder/yaml-cpp
+[submodule "Quirk/vendor/assimp"]
+	path = Quirk/vendor/assimp
+	url = https://github.com/assimp/assimp
