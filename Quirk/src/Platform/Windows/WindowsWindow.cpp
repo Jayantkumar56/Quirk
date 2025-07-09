@@ -54,7 +54,7 @@ namespace Quirk {
 		WNDCLASSEXW wc   = {};
 		wc.cbSize        = sizeof(WNDCLASSEXW);
 		wc.style         = CS_HREDRAW | CS_VREDRAW | CS_OWNDC | CS_DBLCLKS;
-		wc.lpfnWndProc   = WindowProc;
+		wc.lpfnWndProc   = reinterpret_cast<WNDPROC>(WindowProc);
 		wc.cbClsExtra    = 0;
 		wc.cbWndExtra    = 0;
 		wc.hInstance     = s_HInstance;
