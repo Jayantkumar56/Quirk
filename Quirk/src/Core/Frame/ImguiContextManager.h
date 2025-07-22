@@ -18,10 +18,10 @@ namespace Quirk::Internals {
                 m_FontManager      ( ImGui::GetIO().Fonts                  )
         {}
 
-        inline void                   MakeImguiContextCurrent() noexcept { m_ImguiContext.MakeImguiContextCurrent(); }
-        inline View<ImguiContext>     GetImguiContext()         noexcept { return &m_ImguiContext;                   }
-        inline View<FontManager>      GetFontManager()          noexcept { return &m_FontManager;                    }
-        inline ConstView<FontManager> GetFontManager()    const noexcept { return &m_FontManager;                    }
+        inline void                   MakeImguiContextCurrent()        noexcept { m_ImguiContext.MakeImguiContextCurrent(); }
+        inline View<ImguiContext>     GetImguiContext()                noexcept { return &m_ImguiContext;                   }
+        inline View<FontManager>      GetFontManager()                 noexcept { return &m_FontManager;                    }
+        inline ConstView<FontManager> GetFontManagerForRead()    const noexcept { return &m_FontManager;                    }
 
         // will get called between Imgui::Begin() and Imgui::End()
         virtual void OnImguiUiUpdate() = 0;

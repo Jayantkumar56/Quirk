@@ -13,7 +13,7 @@ namespace Quirk::Internals {
         TitleBarManager(const FrameInitContext& initContext, auto& frame) noexcept {}
 
         template<TitleBarType T, typename ...Args>
-        inline void SetTitleBar(auto* frame, Args&& ... args) {
+        void SetTitleBar(auto* frame, Args&& ... args) {
             // TODO: refactor it for proper error logging and checking
 
             if constexpr (std::is_constructible_v<T, decltype(frame), Args&&...>) {

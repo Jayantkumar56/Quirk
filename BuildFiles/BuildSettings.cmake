@@ -2,7 +2,7 @@
 # Set global output directories
 # CMAKE_BINARY_DIR will be defined by the top-level CMakeLists.txt or build system
 set( BIN_BASE_DIR  "${CMAKE_BINARY_DIR}/bin"     )
-set( LIB_BASE_DIR  "${CMAKE_BINARY_DIR}/lib"     )
+set( LIB_BASE_DIR  "${CMAKE_BINARY_DIR}/bin"     )
 set( ARCH_BASE_DIR "${CMAKE_BINARY_DIR}/archive" )
 
 # For Executables and Shared Libraries (.dll, .so, .dylib)

@@ -5,7 +5,7 @@
 #include "Base/ProjectManager.h"
 #include "QuirkEditorApp.h"
 
-#include "Quirk.h"
+//#include "Quirk.h"
 
 #include "imgui_internal.h"
 

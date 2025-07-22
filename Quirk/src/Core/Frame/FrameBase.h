@@ -6,8 +6,8 @@
 
 namespace Quirk {
 
-    class FrameManager;
-
+    struct FrameContext;
+    class  FrameManager;
 }
 
 namespace Quirk::Internals {
@@ -41,6 +41,7 @@ namespace Quirk::Internals {
     protected:
         virtual void UpdateFrame()             = 0;
         virtual bool HandleEvent(Event& event) = 0;
+        virtual void GetFrameContext(FrameContext& outFrameContext) = 0;
 
     private:
 		bool		m_Running = true;

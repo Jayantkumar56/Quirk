@@ -21,7 +21,7 @@ namespace Quirk {
     Ref<EditorTexture2D> AssetImporter<EditorTexture2D>::Import(const std::filesystem::path& texturePath, ConstView<RHI::Factory> factory) noexcept {
         try {
             EditorTexture2DSpec textureSpec = Serialization::Deserialize<EditorTexture2DSpec>(texturePath);
-            return Create(std::move(textureSpec), factory);
+            return Create(textureSpec, factory);
         }
         catch (const std::exception& e) {
             QK_ERROR("Importing EditorTexture2D with path {0} failed with error: {1}", texturePath.string(), e.what());

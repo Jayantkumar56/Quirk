@@ -5,6 +5,7 @@
 #include "FrameBase.h"
 #include "FrameTraits.h"
 #include "FrameInitContext.h"
+#include "FrameManager.h"
 
 
 namespace Quirk::Internals {
@@ -17,17 +18,17 @@ namespace Quirk::Internals {
             public FrameBase,
             public Policy...
     {
-        using GraphicalContextPolicy = GraphicalContextManager;
+        using GraphicalContextPolicy = FramePolicyType_T< FrameFeature::GraphicalContext >;
+        using WindowPolicy           = FramePolicyType_T< FrameFeature::Window           >;
+        using ImguiPolicy            = FramePolicyType_T< FrameFeature::ImGuiContext     >;
+        using PanelPolicy            = FramePolicyType_T< FrameFeature::Panels           >;
+        using TitleBarPolicy         = FramePolicyType_T< FrameFeature::TitleBar         >;
 
-        using WindowPolicy   = FramePolicyType_T<FrameFeature::Window      >;
-        using ImguiPolicy    = FramePolicyType_T<FrameFeature::ImGuiContext>;
-        using PanelPolicy    = FramePolicyType_T<FrameFeature::Panels      >;
-        using TitleBarPolicy = FramePolicyType_T<FrameFeature::TitleBar    >;
-
-        static constexpr bool HaveWindowPolicy   = IsPresent_V<WindowPolicy,   Policy...>;
-        static constexpr bool HaveImguiPolicy    = IsPresent_V<ImguiPolicy,    Policy...>;
-        static constexpr bool HavePanelPolicy    = IsPresent_V<PanelPolicy,    Policy...>;
-        static constexpr bool HaveTitleBarPolicy = IsPresent_V<TitleBarPolicy, Policy...>;
+        static constexpr bool HaveGraphicalContextPolicy = IsPresent_V<GraphicalContextPolicy, Policy...>;
+        static constexpr bool HaveWindowPolicy           = IsPresent_V<WindowPolicy,           Policy...>;
+        static constexpr bool HaveImguiPolicy            = IsPresent_V<ImguiPolicy,            Policy...>;
+        static constexpr bool HavePanelPolicy            = IsPresent_V<PanelPolicy,            Policy...>;
+        static constexpr bool HaveTitleBarPolicy         = IsPresent_V<TitleBarPolicy,         Policy...>;
 
     public:
         FrameImpl(const FrameInitContext& initContext) noexcept :
@@ -35,7 +36,9 @@ namespace Quirk::Internals {
         {}
         
         inline void MakeContextCurrent() noexcept final override {
-            GraphicalContextPolicy::GetGraphicalContext()->MakeContextCurrent();
+            if constexpr (HaveGraphicalContextPolicy) {
+                GraphicalContextPolicy::GetGraphicalContext()->MakeContextCurrent();
+            }
 
             if constexpr (HaveImguiPolicy) {
                 ImguiPolicy::MakeImguiContextCurrent();
@@ -44,7 +47,9 @@ namespace Quirk::Internals {
         
     private:
         virtual void UpdateFrame() final override {
-            GraphicalContextPolicy::GetGraphicalContext()->MakeContextCurrent();
+            if constexpr (HaveGraphicalContextPolicy) {
+                GraphicalContextPolicy::GetGraphicalContext()->MakeContextCurrent();
+            }
 
             FrameBase::OnUpdate();
 
@@ -68,7 +73,9 @@ namespace Quirk::Internals {
         }
 
         void UpdateFrameUI() {
-            GraphicalContextPolicy::GetRenderCommandContext()->Clear();
+            if constexpr (HaveGraphicalContextPolicy) {
+                GraphicalContextPolicy::GetRenderCommandContext()->Clear();
+            }
 
             // updating imgui ui of the current frame and it's panels
             if constexpr (HaveImguiPolicy) {
@@ -98,7 +105,9 @@ namespace Quirk::Internals {
                 ImguiPolicy::GetImguiContext()->End();
             }
 
-            GraphicalContextPolicy::SwapBuffer();
+            if constexpr (HaveGraphicalContextPolicy) {
+                GraphicalContextPolicy::SwapBuffer();
+            }
         }
 
         virtual bool HandleEvent(Event& event) final override {
@@ -113,6 +122,21 @@ namespace Quirk::Internals {
             }
 
             return false;
+        }
+
+        virtual void GetFrameContext(FrameContext& outFrameContext) final override {
+            if constexpr (HaveGraphicalContextPolicy) {
+                outFrameContext.RenderSystem = GraphicalContextPolicy::GetRenderSystem();
+                outFrameContext.Renderer     = GraphicalContextPolicy::GetRenderer();
+            }
+
+            if constexpr (HaveWindowPolicy) {
+                outFrameContext.Window = WindowPolicy::GetWindow();
+            }
+
+            if constexpr (HaveImguiPolicy) {
+                outFrameContext.FontManager = ImguiPolicy::GetFontManagerForRead();
+            }
         }
     };
 

@@ -1,13 +1,16 @@
 
-cmake_minimum_required(VERSION 3.20...4.0)
+cmake_minimum_required(VERSION 3.27...4.0)
 cmake_policy(SET CMP0069 NEW)
 
 set(CURRENT_PROJ_NAME "Quirk-Editor")
 add_executable(${CURRENT_PROJ_NAME})
 
+set_target_properties(${CURRENT_PROJ_NAME} PROPERTIES
+    VS_DEBUGGER_WORKING_DIRECTORY "$<TARGET_FILE_DIR:${CURRENT_PROJ_NAME}>"
+)
 
 # c++ standard to be used
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 20) 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 

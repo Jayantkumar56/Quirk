@@ -12,7 +12,7 @@ namespace Quirk {
 	public:
         template<typename T>
         requires std::derived_from<T, Application>
-        inline static T& GetAs() noexcept {
+        static T& GetAs() noexcept {
             QK_CORE_ASSERT(s_Instance, "Application object is not instanciated yet!");
             return *(static_cast<T*>(s_Instance));
         }
@@ -39,9 +39,9 @@ namespace Quirk {
 		// adds a new frame to the frame manager and makes the frame be the current context
 		// if called from another frame make sure to reset the context with Frame::MakeContextCurrent()
 		template<FrameType T, typename ...Args>
-		inline T* AddFrame(Args&& ...args) { return m_FrameManager.AddFrame<T>(std::forward<Args>(args)...); }
+		inline View<T> AddFrame(Args&& ...args) { return m_FrameManager.AddFrame<T>(std::forward<Args>(args)...); }
 
-		static FrameManager& GetFrameManager() { return s_Instance->m_FrameManager; }
+		inline FrameContext GetCurrentFrameContext() const noexcept { return m_FrameManager.GetCurrentFrameContext(); }
 
 	private:
 		std::wstring m_AppName;
