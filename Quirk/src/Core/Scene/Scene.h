@@ -4,7 +4,7 @@
 
 #include "Core/core.h"
 #include "Core/Scene/Components.h"
-#include "Core/AssetManager/EditorAssetManager.h"
+#include "Core/AssetManager/AssetManager.h"
 #include "Core/Config.h"
 
 #include "entt/entt.hpp"

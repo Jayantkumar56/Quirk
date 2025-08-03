@@ -3,7 +3,7 @@
 #pragma once
 
 #include "Core/Reflection/Reflection.h"
-#include "Core/AssetManager/AssetImporter/EditorTexture.h"
+#include "Core/AssetManager/EditorTexture.h"
 
 
 namespace Quirk {

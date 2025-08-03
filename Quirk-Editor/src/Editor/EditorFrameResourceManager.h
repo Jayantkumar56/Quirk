@@ -5,6 +5,7 @@
 
 #include "Core/RHI/Factory.h"
 #include "Core/RHI/Texture2D.h"
+#include "Core/AssetImporter/TextureImporter.h"
 
 #include "imgui.h"
 

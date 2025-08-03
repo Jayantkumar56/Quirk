@@ -86,7 +86,7 @@ namespace Quirk {
     struct IsComplexReflectable<T> : TrueType {};
 
     template<typename T>
-    constexpr bool HasReflection_V = IsComplexReflectable<T>::Value;
+    constexpr bool HasReflection_V = IsComplexReflectable<std::remove_cvref_t<T>>::Value;
 
     template<class T>
     concept ComplexReflectable = HasReflection_V<T>;

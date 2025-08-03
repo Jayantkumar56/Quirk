@@ -46,11 +46,14 @@ namespace Quirk {
             m_AssetManager.SetRHIFactory(factory);
         }
 
-        inline const auto& GetTitle()        const noexcept { return m_Config.ProjectName;   }
-        inline const auto& GetConfig()       const noexcept { return m_Config;               }
-        inline const auto& GetDirectory()    const noexcept { return m_ProjectRootDirectory; }
-        inline const auto& GetAssetManager() const noexcept { return m_AssetManager;         }
-        inline const auto& GetSceneManager() const noexcept { return m_SceneManager;         }
+        inline const auto& GetTitle()               const noexcept { return m_Config.ProjectName;   }
+        inline const auto& GetConfig()              const noexcept { return m_Config;               }
+        inline const auto& GetDirectory()           const noexcept { return m_ProjectRootDirectory; }
+        inline const auto& GetAssetManagerForRead() const noexcept { return m_AssetManager;         }
+        inline const auto& GetSceneManagerForRead() const noexcept { return m_SceneManager;         }
+
+        inline auto& GetAssetManager() noexcept { return m_AssetManager; }
+        inline auto& GetSceneManager() noexcept { return m_SceneManager; }
 
         // === Begin: Utility Getters =======
 
@@ -64,6 +67,14 @@ namespace Quirk {
 
         inline auto GetAssetFileSystemPath(const std::filesystem::path& path) const noexcept { 
             return GetAssetDirectory() / path; 
+        }
+
+        inline auto GetProjectRootDirectory() const { return m_ProjectRootDirectory; }
+
+        inline auto GetProjFilePath() const noexcept {
+            std::filesystem::path projFile     = m_Config.ProjectName + ".qkproj";
+            std::filesystem::path projFilePath = m_ProjectRootDirectory / projFile;
+            return projFilePath;
         }
 
         // === End:   Utility Getters =======

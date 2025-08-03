@@ -6,7 +6,6 @@
 #include "SceneSerializer.h"
 #include "Core/Assets/Geometry/PrimitiveMeshGenerator.h"
 #include "Core/Utility/YamlUtility.h"
-#include "Core/AssetManager/AssetImporter/TextureImporter.h"
 
 
 namespace Quirk {
@@ -93,8 +92,7 @@ namespace Quirk {
 
 			emitter << YAML::Key << "Color" << YAML::Value << component.Color;
 
-			//std::string filePath = (component.Texture != nullptr) ? std::filesystem::proximate(component.Texture->GetPath()).string() : "";
-			//emitter << YAML::Key << "Texture" << YAML::Value << filePath;
+			emitter << YAML::Key << "Texture" << YAML::Value << (uint64_t)component.Texture;
 
 			emitter << YAML::Key << "TillingFactor" << YAML::Value << component.TillingFactor;
 
@@ -176,11 +174,7 @@ namespace Quirk {
 
 		if(auto deserializedComponent = entityNode["SpriteRendererComponent"];  deserializedComponent) {
 			auto& component = entity.AddComponent<SpriteRendererComponent>(deserializedComponent["Color"].as<glm::vec4>());
-
-			std::filesystem::path texturefilePath = deserializedComponent["Texture"].as<std::string>();
-			if (std::filesystem::exists(texturefilePath)) {
-                //component.Texture = TextureImporter::CreateFromImage(texturefilePath);
-			}
+			component.Texture = deserializedComponent["Texture"].as<uint64_t>();
 		}
 
 		if (auto deserializedComponent = entityNode["CameraComponent"];			deserializedComponent) {

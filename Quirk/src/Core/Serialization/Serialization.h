@@ -48,7 +48,7 @@ namespace Quirk {
         }
 
         static bool Serialize(const auto& data, const std::filesystem::path& path) {
-            using SerializingType = PointingType_T<decltype(data)>;
+            using SerializingType = RemoveAllWrapperTypes_T<PointingType_T<decltype(data)>>;
 
             if constexpr (HasReflection_V<SerializingType>) {
                 return SerializeWithFieldName(Reflect<SerializingType>::TypeName, data, path);

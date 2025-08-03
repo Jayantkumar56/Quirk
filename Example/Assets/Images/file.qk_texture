@@ -1,0 +1,11 @@
+TextureAsset:
+  SourcePath: D:\Dev\Quirk\Example\Assets\Images\file.png
+  MinFilter: Linear
+  MagFilter: Linear
+  WrapS: Repeat
+  WrapT: Repeat
+  SwizzleMask:
+    R: None
+    G: None
+    B: None
+    A: None

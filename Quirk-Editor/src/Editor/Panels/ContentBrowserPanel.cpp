@@ -34,6 +34,41 @@ namespace QuirkEditor {
 		ImVec2 cellPadding = ImGui::GetStyle().CellPadding;
 		ImGui::GetStyle().CellPadding = ImVec2(10.0f, 8.0f);
 
+		if (ImGui::BeginPopupContextWindow(0, ImGuiPopupFlags_MouseButtonRight | ImGuiPopupFlags_NoOpenOverItems)) {
+			if (ImGui::MenuItem("Create Texture")) {
+				Quirk::FileFilter filters[] = {
+					{L"image",		L"*.png;*.JPG;*.JPEG*.jpg;*.jpeg"}
+				};
+
+				Quirk::FileDialogSpecification fileDialogSpec{
+					.Title           { L"Open Project"                             },
+					.DefaultPath     { nullptr                                     },
+					.FileNameLabel   { L"Project Folder"                           },
+					.DefaultFileName { nullptr                                     },
+					.ParentWindow    { m_EditorFrame->GetWindow().Get()            },
+					.Filters         { filters                                     },
+					.NoOfFilters     { sizeof(filters) / sizeof(Quirk::FileFilter) }
+				};
+
+				std::filesystem::path imgfilePath;
+				if (Quirk::FileDialog::OpenFile(fileDialogSpec, imgfilePath)) {
+					std::filesystem::path fileName           = imgfilePath.filename();
+					std::filesystem::path pathToPlaceTexture = m_CurrentDirectory / fileName;
+
+					if (!std::filesystem::exists(pathToPlaceTexture)) {
+						std::filesystem::copy_file(imgfilePath, pathToPlaceTexture);
+
+						auto& assetManager = m_EditorFrame->GetProject()->GetAssetManager();
+						assetManager.ImportNewAssetFromSource<Quirk::TextureAsset>(pathToPlaceTexture);
+					}
+
+					FetchCurrentDirectoryContent();
+				}
+			}
+
+			ImGui::EndPopup();
+		}
+
 		if (ImGui::BeginTable("Propertycheckbox", noOfColumns)) {
 			for (size_t i = 0; i < m_CurrentDirectoryContent.size(); ++i) {
 				ImGui::TableNextColumn();

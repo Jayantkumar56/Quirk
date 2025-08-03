@@ -1,27 +1,50 @@
 
 
 #include "TextureImporter.h"
-#include "Core/Utility/Buffer.h"
 #include "Core/Reflection/Registrations/TextureEnums.h"
-#include "Core/Reflection/Registrations/EditorTexture2D.h"
+#include "Core/Reflection/Registrations/TextureAsset.h"
 #include "Core/Serialization/Serialization.h"
+#include "Core/RHI/Factory.h"
+#include "Core/Utility/Buffer.h"
 
 #include "stb_image.h"
 
 
 namespace Quirk {
 
-    Ref<EditorTexture2D> AssetImporter<EditorTexture2D>::Create(const EditorTexture2DSpec& spec, ConstView<RHI::Factory> factory) noexcept {
-        return CreateRef<EditorTexture2D>(
-            CreateTexture2D(spec.ImagePath, factory, spec.TextureProps),
-            EditorTexture2DMeta(spec.ImagePath)
-        );
+    Ref<TextureAsset> AssetImporter<TextureAsset>::CreateFromSource(
+            const std::filesystem::path& filePath, 
+            ConstView<RHI::Factory> factory
+    ) {
+        Ref<TextureAsset> textureAsset = CreateRef<TextureAsset>();
+        textureAsset->SetSourcePath(filePath);
+
+        RHI::TextureProperties prop{
+            .MinFilter   { textureAsset->GetMinFilter()   },
+            .MagFilter   { textureAsset->GetMagFilter()   },
+            .WrapS       { textureAsset->GetWrapS()       },
+            .WrapT       { textureAsset->GetWrapT()       },
+            .SwizzleMask { textureAsset->GetSwizzleMask() }
+        };
+
+        textureAsset->SetRHITexture(CreateTexture2D(filePath, factory, prop));
+        return textureAsset;
     }
 
-    Ref<EditorTexture2D> AssetImporter<EditorTexture2D>::Import(const std::filesystem::path& texturePath, ConstView<RHI::Factory> factory) noexcept {
+    Ref<TextureAsset> AssetImporter<TextureAsset>::Import(const std::filesystem::path& texturePath, ConstView<RHI::Factory> factory) {
         try {
-            EditorTexture2DSpec textureSpec = Serialization::Deserialize<EditorTexture2DSpec>(texturePath);
-            return Create(textureSpec, factory);
+            Ref<TextureAsset> textureAsset = Serialization::Deserialize<Ref<TextureAsset>>(texturePath);
+
+            RHI::TextureProperties prop{
+                .MinFilter   { textureAsset->GetMinFilter()   },
+                .MagFilter   { textureAsset->GetMagFilter()   },
+                .WrapS       { textureAsset->GetWrapS()       },
+                .WrapT       { textureAsset->GetWrapT()       },
+                .SwizzleMask { textureAsset->GetSwizzleMask() }
+            };
+
+            textureAsset->SetRHITexture(CreateTexture2D(textureAsset->GetSourcePath(), factory, prop));
+            return textureAsset;
         }
         catch (const std::exception& e) {
             QK_ERROR("Importing EditorTexture2D with path {0} failed with error: {1}", texturePath.string(), e.what());
@@ -33,14 +56,9 @@ namespace Quirk {
         }
     }
 
-    bool AssetImporter<EditorTexture2D>::Save(ConstView<EditorTexture2D> texture, const std::filesystem::path& texturePath) noexcept {
-        EditorTexture2DSpec textureSpec{
-            texture->MetaData.ImagePath,
-            texture->Asset->GetProperties()
-        };
-
+    bool AssetImporter<TextureAsset>::Save(ConstView<TextureAsset> texture, const std::filesystem::path& texturePath) {
         try {
-            if (!Serialization::Serialize(textureSpec, texturePath)) {
+            if (!Serialization::Serialize(texture.Get(), texturePath)) {
                 QK_ERROR("Saving EditorTexture2D with path {} failed.", texturePath.string());
                 return false;
             }
@@ -53,7 +71,7 @@ namespace Quirk {
         return true;
     }
 
-    Ref<RHI::Texture2D> AssetImporter<EditorTexture2D>::CreateTexture2D(
+    Ref<RHI::Texture2D> AssetImporter<TextureAsset>::CreateTexture2D(
             const std::filesystem::path&  filePath,
             ConstView<RHI::Factory>       factory,
             const RHI::TextureProperties& properties
@@ -133,7 +151,7 @@ namespace Quirk {
         return factory->CreateTexture(dataBuffer, textureSpec);
     }
 
-    RHI::TextureSwizzle AssetImporter<EditorTexture2D>::GetDefaultSwizzleMask(RHI::ImgDataFmt format) noexcept {
+    RHI::TextureSwizzle AssetImporter<TextureAsset>::GetDefaultSwizzleMask(RHI::ImgDataFmt format) noexcept {
         switch (format) {
             case RHI::ImgDataFmt::Red:  return { RHI::Swizzle::Red, RHI::Swizzle::Red,   RHI::Swizzle::Red,  RHI::Swizzle::One   };
             case RHI::ImgDataFmt::RG:   return { RHI::Swizzle::Red, RHI::Swizzle::Green, RHI::Swizzle::Zero, RHI::Swizzle::One   };

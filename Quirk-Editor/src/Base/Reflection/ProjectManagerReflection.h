@@ -23,10 +23,10 @@ namespace Quirk {
     //--------- Editor Project Related Reflection Registrations -------------------------------------------------------------------
 
     REGISTER_REFLECTION(EditorProject, "Project", (CONSTRUCTOR),
-        ( ProjectConfigs, GetConfig,       DUMMY_SETTER, PROPFLAG_SERIALIZABLE ),
-        ( RootDirectory,  GetDirectory,    DUMMY_SETTER, PROPFLAG_NONE         ),
-        ( AssetManager,   GetAssetManager, DUMMY_SETTER, PROPFLAG_SERIALIZABLE ),
-        ( SceneManager,   GetSceneManager, DUMMY_SETTER, PROPFLAG_SERIALIZABLE )
+        ( ProjectConfigs, GetConfig,              DUMMY_SETTER, PROPFLAG_SERIALIZABLE ),
+        ( RootDirectory,  GetDirectory,           DUMMY_SETTER, PROPFLAG_NONE         ),
+        ( AssetManager,   GetAssetManagerForRead, DUMMY_SETTER, PROPFLAG_SERIALIZABLE ),
+        ( SceneManager,   GetSceneManagerForRead, DUMMY_SETTER, PROPFLAG_SERIALIZABLE )
     );
 
 

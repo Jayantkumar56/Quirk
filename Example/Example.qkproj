@@ -1,16 +1,19 @@
 Project:
-    ProjectConfigs:
-        ProjectName: Example
-        StartScene: newTest3D.yaml
-        AssetDirectory: Assets
-        SceneDirectory: Assets/Scenes
-        ScriptModulePath: Scripts
-        AssetRegistryPath: AssetRegistry.yaml
-    AssetManager:
-      AssetRegistry:
-        {}
-    SceneManager:
-        ActiveSceneName: "test3D"
-        SceneRegistry:
-            newTest3D: Assets/Scenes/newTest3D.yaml
-            test3D: Assets/Scenes/test3D.yaml
+  ProjectConfigs:
+    ProjectName: Example
+    StartScene: newTest3D.yaml
+    AssetDirectory: Assets
+    SceneDirectory: Assets/Scenes
+    ScriptModulePath: Scripts
+    AssetRegistryPath: AssetRegistry.yaml
+  AssetManager:
+    AssetRegistry:
+      4111398699228178352: D:\Dev\Quirk\Example\Assets\Images\container.qk_texture
+      13097823595625069304: D:\Dev\Quirk\Example\Assets\Images\file.qk_texture
+      11756950883927733640: D:\Dev\Quirk\Example\Assets\Images\folder.qk_texture
+      6323977491720854651: D:\Dev\Quirk\Example\Assets\Images\wallpaperflare.com_wallpaper.qk_texture
+  SceneManager:
+    ActiveSceneName: test3D
+    SceneRegistry:
+      newTest3D: Assets/Scenes/newTest3D.yaml
+      test3D: Assets/Scenes/test3D.yaml

@@ -7,7 +7,7 @@
 #include "Quirk.h"
 #include "Core/Utility/View.h"
 #include "Core/RHI/Factory.h"
-#include "Core/AssetManager/AssetImporter/TextureImporter.h"
+#include "Core/AssetImporter/TextureImporter.h"
 
 
 namespace QuirkEditor {

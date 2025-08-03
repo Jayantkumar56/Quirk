@@ -6,6 +6,9 @@
 #include "Panels/SceneHierarchyPanel.h"
 #include "Panels/InspectorPanel/InspectorPanel.h"
 #include "Panels/ContentBrowserPanel.h"
+#include "Base/Reflection/ProjectManagerReflection.h"
+#include "Core/AssetManager/EditorAssetManager.h"
+#include "Core/Serialization/Serialization.h"
 
 
 namespace QuirkEditor {
@@ -70,7 +73,7 @@ namespace QuirkEditor {
     }
 
     void EditorFrame::Terminate() noexcept {
-        // Currently empty — all cleanup is handled by destructors.
+        Quirk::Serialization::Serialize(m_Project, m_Project->GetProjFilePath());
     }
 
 }

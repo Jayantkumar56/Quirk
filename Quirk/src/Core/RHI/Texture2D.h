@@ -3,7 +3,6 @@
 #pragma once
 
 #include "Core/Utility/Buffer.h"
-#include "Core/Assets/Asset.h"
 
 #include <utility>
 
@@ -64,8 +63,12 @@ namespace Quirk::RHI {
         Swizzle B{ Swizzle::None };
         Swizzle A{ Swizzle::None };
 
-        bool IsValid() const noexcept {
+        inline bool IsValid() const noexcept {
             return R != Swizzle::None && G != Swizzle::None && B != Swizzle::None && A != Swizzle::None;
+        }
+
+        inline bool operator==(const TextureSwizzle& other) const noexcept {
+            return other.R == R && other.G == G && other.B == B && other.A == A;
         }
     };
 
@@ -108,7 +111,7 @@ namespace Quirk::RHI {
         TextureSwizzle SwizzleMask{ };
     };
 
-    class Texture2D : public Asset {
+    class Texture2D {
     public:
         Texture2D(const TextureSpec& spec) noexcept : m_Specification(spec) {}
         virtual ~Texture2D() = default;

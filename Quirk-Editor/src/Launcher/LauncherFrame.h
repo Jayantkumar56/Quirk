@@ -5,7 +5,7 @@
 #include "Base/ProjectManager.h"
 
 #include "Core/Frame/Frame.h"
-#include "Core/AssetManager/AssetImporter/TextureImporter.h"
+#include "Core/AssetImporter/TextureImporter.h"
 
 
 namespace QuirkEditor {

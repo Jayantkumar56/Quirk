@@ -28,12 +28,16 @@ RegisterSourceFiles(QUIRK_SOURCE_FILES "${BASE_SOURCE_DIRECTORY}/Core/Applicatio
 
 # Source files in Core/AssetManager
 RegisterSourceFiles(QUIRK_SOURCE_FILES "${BASE_SOURCE_DIRECTORY}/Core/AssetManager"
-    "AssetImporter/AssetImporter.h"
-    "AssetImporter/EditorAsset.h"
-    "AssetImporter/EditorTexture.h"
-    "AssetImporter/TextureImporter.h"
-    "AssetImporter/TextureImporter.cpp"
+    "AssetStorage.h"
+    "AssetManager.h"
     "EditorAssetManager.h"
+)
+
+# Source files in Core/AssetImporter
+RegisterSourceFiles(QUIRK_SOURCE_FILES "${BASE_SOURCE_DIRECTORY}/Core/AssetImporter"
+    "AssetImporter.h"
+    "TextureImporter.h"
+    "TextureImporter.cpp"
 )
 
 # Source files in Core/Assets
@@ -44,7 +48,8 @@ RegisterSourceFiles(QUIRK_SOURCE_FILES "${BASE_SOURCE_DIRECTORY}/Core/Assets"
     "Geometry/PrimitiveMeshGenerator.cpp"
     "RenderAssets/ShaderLibrary.h"
     "RenderAssets/ShaderLibrary.cpp"
-    "Asset.h"
+    "AssetHandle.h"
+    "TextureAsset.h"
 )
 
 # Source files in Core/Camera
@@ -75,6 +80,11 @@ RegisterSourceFiles(QUIRK_SOURCE_FILES "${BASE_SOURCE_DIRECTORY}/Core/Frame"
     "WindowManager.h"
 )
 
+# Source files in Core/Geometry
+RegisterSourceFiles(QUIRK_SOURCE_FILES "${BASE_SOURCE_DIRECTORY}/Core/Geometry"
+    "Mesh.h"
+)
+
 # Source files in Core/Input
 RegisterSourceFiles(QUIRK_SOURCE_FILES "${BASE_SOURCE_DIRECTORY}/Core/Input"
     "ApplicationEvents.h"
@@ -89,7 +99,7 @@ RegisterSourceFiles(QUIRK_SOURCE_FILES "${BASE_SOURCE_DIRECTORY}/Core/Input"
 # Source files in Core/Reflection
 RegisterSourceFiles(QUIRK_SOURCE_FILES "${BASE_SOURCE_DIRECTORY}/Core/Reflection"
     "Registrations/ComponentList.h"
-    "Registrations/EditorTexture2D.h"
+    "Registrations/TextureAsset.h"
     "Registrations/TextureEnums.h"
     "CommonMacros.h"
     "EnumRegistry.h"

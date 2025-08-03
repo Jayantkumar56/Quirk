@@ -131,9 +131,9 @@ namespace QuirkEditor {
 
         std::string texturePathStr = "No Texture";
         ImFont* labelFont = fontManager->GetFont("PropertyLabel");
-        if (component.Texture != nullptr) {
-        	//texturePathStr = component.Texture->GetPath().filename().string();
-        }
+        //if (component.Texture != nullptr) {
+        //	//texturePathStr = component.Texture->GetPath().filename().string();
+        //}
         
         ImVec2 cellPadding = ImGui::GetStyle().CellPadding;
         ImGui::GetStyle().CellPadding = ImVec2(10.0f, 6.0f);
@@ -204,7 +204,7 @@ namespace QuirkEditor {
         	if (ImGui::BeginPopupContextItem(NULL, ImGuiPopupFlags_MouseButtonLeft)) {
         		ImGui::Text("Remove Image?");
         
-        		if (ImGui::Button("Yes")) { component.Texture = nullptr; ImGui::CloseCurrentPopup(); }
+        		//if (ImGui::Button("Yes")) { component.Texture = nullptr; ImGui::CloseCurrentPopup(); }
         		if (ImGui::Button("No")) ImGui::CloseCurrentPopup();
         
         		ImGui::EndPopup();

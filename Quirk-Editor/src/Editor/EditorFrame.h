@@ -43,6 +43,8 @@ namespace QuirkEditor {
         inline Quirk::ConstView<EditorTheme>                GetTheme()           const noexcept { return &m_Theme;           }
         inline Quirk::ConstView<EditorFrameResourceManager> GetResourceManager() const noexcept { return &m_ResourceManager; }
 
+        inline Quirk::View<Quirk::Project> GetProject() noexcept { return m_Project; }
+
     private:
         inline Quirk::FrameInitContext GetFrameSpec() const noexcept {
             return Quirk::FrameInitContext {

@@ -4,15 +4,16 @@
 
 #include "Core/Core.h"
 #include "Core/Scene/SceneCamera.h"
-#include "Core/RHI/Texture2D.h"
 #include "Core/Utility/UUID.h"
+
+#include "Core/Assets/Geometry/Geometry.h"
+#include "Core/Renderer/Light/Light.h"
+
+#include "Core/Assets/AssetHandle.h"
 
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtx/quaternion.hpp"
-
-#include "Core/Assets/Geometry/Geometry.h"
-#include "Core/Renderer/Light/Light.h"
 
 
 namespace Quirk {
@@ -50,9 +51,9 @@ namespace Quirk {
 	};
 
 	struct SpriteRendererComponent {
-		glm::vec4 Color{ 1.0f, 1.0f, 1.0f, 1.0f };
-		Ref<RHI::Texture2D> Texture;
-		float TillingFactor = 1.0f;
+		glm::vec4   Color{ 1.0f, 1.0f, 1.0f, 1.0f };
+		AssetHandle Texture;
+		float       TillingFactor = 1.0f;
 
 		SpriteRendererComponent() = default;
 		SpriteRendererComponent(const SpriteRendererComponent&) = default;
